@@ -9,5 +9,27 @@
     { "round": 6, "startDate": "2026-09-25", "endDate": "2026-09-27", "name": "6 Hours of Fuji" },
     { "round": 7, "startDate": "2026-10-16", "endDate": "2026-10-18", "name": "6 Hours of Barcelona" },
     { "round": 8, "startDate": "2026-11-06", "endDate": "2026-11-08", "name": "6 Hours of Monza" }
+  ],
+  "cancelledRounds": [
+    {
+      "originalRound": 7,
+      "name": "Qatar 1812 km",
+      "place": "Qatar",
+      "originalStartDate": "2026-10-22",
+      "originalEndDate": "2026-10-24",
+      "previousStartDate": "2026-03-26",
+      "previousEndDate": "2026-03-28",
+      "reason": "Ongoing regional developments affecting freight and travel arrangements",
+      "rescheduleStatus": "called off on 28 July"
+    },
+    {
+      "originalRound": 8,
+      "name": "Bapco Energies 8 Hours of Bahrain",
+      "place": "Bahrain",
+      "originalStartDate": "2026-11-05",
+      "originalEndDate": "2026-11-07",
+      "reason": "Ongoing regional developments affecting freight and travel arrangements",
+      "rescheduleStatus": "called off on 28 July"
+    }
   ]
 }

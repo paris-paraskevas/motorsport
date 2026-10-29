@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.304 — 2026-11-12
+
+Behind the scenes: the endurance and GT championships, the FIA World Endurance Championship, IMSA and GT World Challenge Europe, now keep every session of a race weekend, practice and qualifying as well as the race, with each car's crew as it raced that weekend and every driver and team written as they write themselves. The WEC's last two rounds, Barcelona and Monza, and IMSA's last six rounds join their results, and the WEC's two called-off rounds, Qatar and Bahrain, are recorded for the season page. Nothing changes for readers yet.
+
 ## 1.0.301 — 2026-10-27
 
 Behind the scenes: every Formula 1 race page gets a lap chart. Each driver's place at the end of every lap, from the grid to the flag, with the pit stops, the safety car laps and the cars that retired, and a mark where the official result differs from the order at the line. Point at a line, or tap it, to follow one driver; the same places are there as a table too. The pit stops follow the FIA's official record, on the chart and in Pit wall below it. Nothing changes for readers yet.

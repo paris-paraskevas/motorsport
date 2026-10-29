@@ -9,7 +9,8 @@ import indycarSessions from '../content/series/indycar/sessions.json';
 // (F1 and WEC on 2026-07-31, IndyCar on 2026-10-01):
 //   F1  — formula1.com's 2026 calendar (23 rounds) plus the Malaysia announcement.
 //   WEC — fiawec.com and the live Google-calendar ICS the app consumes, both of
-//         which list Barcelona and Monza and NO Qatar or Bahrain.
+//         which list Barcelona and Monza and NO Qatar or Bahrain (both kept as
+//         called off since 2026-10-28, O34).
 //   IndyCar — indycar.com's 2026 event pages and the Mid-Ohio track's own timetable:
 //         18 rounds, the Honda Indy 200 at Mid-Ohio on 3-5 July as round 11 (B2:
 //         the curated file had skipped it, so the results pool, numbered by
@@ -80,6 +81,17 @@ describe('WEC 2026 calendar', () => {
 
   it('no longer lists Qatar or Bahrain, which left the calendar', () => {
     expect(JSON.stringify(rounds)).not.toMatch(/Qatar|Bahrain/i);
+  });
+
+  // fiawec.com: the Qatar 1812 km was first set for 26-28 March, postponed on 3 March to 22-24 October, and called off
+  // on 28 July with the 8 Hours of Bahrain (5-7 November). Each keeps the dates it held when called off (where the
+  // season page's struck-through tile sits, the operator's answer C5) and Qatar its first dates beside them.
+  it('keeps Qatar and Bahrain as called off, at the dates they held then', () => {
+    expect(wecRounds.cancelledRounds).toEqual([
+      expect.objectContaining({ originalRound: 7, name: 'Qatar 1812 km', originalStartDate: '2026-10-22', originalEndDate: '2026-10-24', previousStartDate: '2026-03-26', previousEndDate: '2026-03-28' }),
+      expect.objectContaining({ originalRound: 8, name: 'Bapco Energies 8 Hours of Bahrain', originalStartDate: '2026-11-05', originalEndDate: '2026-11-07' }),
+    ]);
+    for (const c of wecRounds.cancelledRounds) expect(c.reason).toBe('Ongoing regional developments affecting freight and travel arrangements');
   });
 
   // Overrides inject sessions by matchDate with a ±2 day window, so a leftover

@@ -43,15 +43,36 @@ import { venueForecast, type VenueForecast } from '../lib/met-norway';
 import { fetchDTMSeasonResults } from '../lib/results/dtm';
 import { fetchNascarCupSeasonResults } from '../lib/results/nascar-cup';
 import { fetchNlsSeasonResults } from '../lib/results/nls';
-import { fetchAllGtWorldSeasonRaces } from '../lib/results/gt-world';
-import { fetchImsaSeasonResults } from '../lib/results/imsa';
-import { fetchWecSeasonResults } from '../lib/results/wec';
+import { buildEventResultsUrl, discoverGtWorldEventListings, roundForGtWorldEvent } from '../lib/results/gt-world';
+import { extractLiveProps, parseSelectOptions } from '../lib/results/wec';
 import { fetchIndyCarSeasonResults } from '../lib/results/indycar';
 import { loadCircuits, matchCircuitEntry, normalise, venueCandidates } from '../lib/circuits';
 import contentFs from '../lib/content-fs';
 import type { CancelledRoundEntry, Series, SeriesRoundEntry } from '../lib/types';
 import { ROUND2_SERIES, seriesFamily, seriesList } from '../lib/wp/series';
 import { lapChartNotes, weekendPages } from '../lib/wp/weekend';
+import {
+  alkamelSession,
+  emptyCrews,
+  fetchedRound,
+  gtSessionOptions,
+  gtTable,
+  mergeRounds,
+  nameSpeller,
+  respell,
+  roundsDue,
+  teamSpeller,
+  WEC_CLASSES,
+  wecCarCrew,
+  wecCarsDue,
+  wecDriverName,
+  wecDriversDue,
+  wecSession,
+  wecTable,
+  withWecCrews,
+  type WecClass,
+  type WecCrews,
+} from '../lib/wp/endurance';
 import {
   calendarEntries,
   calendarMonthPages,
@@ -86,6 +107,7 @@ import {
   type LapsStore,
   type Page,
   type ResultRound,
+  type ResultSession,
   type SeriesData,
   type Table,
   type WpPageRow,
@@ -633,6 +655,294 @@ async function f1Laps(out: Fetched, now: Date, season: number): Promise<void> {
   log('W', `laps f1 ${asked} of ${due.length} races asked, ${calls} calls; ${F1_LAPS} ${changed ? 'changed' : 'unchanged'}`);
 }
 
+// ── Family C (O34): FIA WEC, IMSA and GT World ───────────────────────────────
+//
+// Every session of a round (the operator's All 3), each car's crew from its own race with every name spelled as the
+// series' drivers.json spells it (C2), the teams as they write themselves (team-names.json). A round is fetched while it
+// runs and for a week after, or until it is stored in this shape, then kept and never asked again, though spelled again
+// every run, so an edit to drivers.json or team-names.json reaches it; what a run decides lives in lib/wp/endurance.ts
+// (roundsDue, mergeRounds, respell, withWecCrews), where it is tested. WEC's tables name no driver:
+// each car's crew comes from its car page for that race, kept in wec/crews.json with each driver's name, asked once.
+// The three share one deadline inside the run's twenty minutes; what is left waits for the next run.
+
+const FAMILY_C_MS = 4 * 60_000;
+/** Family C asks nothing once the run is this old, whatever its own deadline says: the job has twenty minutes in all. */
+const FAMILY_C_LATEST = Date.now() + 14 * 60_000;
+/** The rounds a run fetches for each, the newest first: Al Kamel's files are quick, fiawec.com's component is slow. */
+const FAMILY_C_ROUNDS: Record<string, number> = { imsa: 11, 'gt-world': 4, wec: 3 };
+const WEC_CREWS = 'wec/crews.json';
+const FIAWEC = 'https://www.fiawec.com';
+const FIAWEC_RESULTS = `${FIAWEC}/en/page/resultats-1`;
+const FIAWEC_COMPONENT = `${FIAWEC}/en/_components/Editorial%3ACMS%3ACompleteResultsComponent`;
+const BROWSER_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36';
+
+/** Each host's last request, so the next waits its gap: one request at a time, as the old loader asked. */
+const lastAsked = new Map<string, number>();
+
+/** A page or file as text, spaced `gapMs` from the last request to its host; null on any failure. */
+async function politeText(url: string, gapMs: number, init: { method?: string; headers?: Record<string, string>; body?: string } = {}): Promise<string | null> {
+  const host = new URL(url).host;
+  const wait = (lastAsked.get(host) ?? 0) + gapMs - Date.now();
+  if (wait > 0) await new Promise(resolve => setTimeout(resolve, wait));
+  lastAsked.set(host, Date.now());
+  try {
+    const res = await fetchUpstream(url, { ...init, headers: { 'User-Agent': BROWSER_UA, ...init.headers } });
+    return res.ok ? await res.text() : null;
+  } catch {
+    return null;
+  }
+}
+
+/** content/series/<slug>/<file> through the content bundle, or null. */
+function seriesJson<T>(slug: string, file: string): T | null {
+  try {
+    return JSON.parse(contentFs.readFileSync(join(process.cwd(), 'content', 'series', slug, file))) as T;
+  } catch {
+    return null;
+  }
+}
+
+/** drivers.json's spelling of a name (endurance.ts nameSpeller). */
+async function spellerOf(slug: string): Promise<(name: string) => string | null> {
+  return nameSpeller(((await loadCuratedDrivers(slug))?.teams ?? []).flatMap(t => t.drivers.map(d => d.name)));
+}
+
+/** A team as team-names.json spells it (endurance.ts teamSpeller); a name the feed writes in capitals with no line
+ *  there is kept for the log. */
+async function teamSpelling(slug: string, season: number, unlisted: Set<string>): Promise<(name: string) => string> {
+  const lines = (await loadTeamNames(slug))?.[String(season)];
+  const spell = teamSpeller(lines && typeof lines === 'object' ? lines : {});
+  return name => {
+    const out = spell(name);
+    if (out === null && /\p{Lu}{2}/u.test(name) && !/\p{Ll}/u.test(name)) unlisted.add(name);
+    return out ?? name;
+  };
+}
+
+interface FamilyCRun {
+  rounds: ResultRound[];
+  due: number;
+  got: number;
+}
+
+/** IMSA: each round's files as alkamel-rounds.json lists them, the race and every other session. */
+async function imsaRounds(entries: SeriesRoundEntry[], stored: ResultRound[] | null, now: Date, deadline: number, season: number): Promise<FamilyCRun> {
+  const files = seriesJson<{ rounds?: { round: number; url: string; sessions?: { label: string; url: string }[] }[] }>('imsa', 'alkamel-rounds.json')?.rounds ?? [];
+  const spell = await spellerOf('imsa');
+  const unlisted = new Set<string>();
+  const team = await teamSpelling('imsa', season, unlisted);
+  const due = roundsDue(entries, stored, now, FAMILY_C_ROUNDS.imsa);
+  const fresh: ResultRound[] = [];
+  for (const round of due) {
+    if (Date.now() > deadline) {
+      log('F', 'results imsa out of time: the rest for the next run');
+      break;
+    }
+    const entry = entries.find(e => e.round === round);
+    const listed = files.find(f => f.round === round);
+    if (!entry || !listed) {
+      log('F', `results imsa R${round} not in alkamel-rounds.json`);
+      continue;
+    }
+    const sessions: (ResultSession & { race: boolean })[] = [];
+    for (const s of [...(listed.sessions ?? []), { label: 'Race', url: listed.url }]) {
+      const raw = await politeText(s.url, 300);
+      const session = raw ? alkamelSession(raw, s.label, s.label === 'Race', spell, team) : null;
+      if (session) sessions.push({ ...session, race: s.label === 'Race' });
+      else log('F', `results imsa R${round} ${s.label} ${raw ? 'EMPTY' : 'NOT FOUND'} ${s.url}`);
+    }
+    if (sessions.length) fresh.push(fetchedRound(entry, sessions));
+    log('F', `results imsa R${round} ${sessions.length} of ${(listed.sessions?.length ?? 0) + 1} sessions`);
+  }
+  const rounds = respell(mergeRounds(fresh, stored), spell, team);
+  if (unlisted.size) log('F', `results imsa teams with no line in team-names.json: ${[...unlisted].join(', ')}`);
+  return { rounds, due: due.length, got: fresh.length };
+}
+
+/** GT World: each round's event page and every session it offers. */
+async function gtWorldRounds(entries: SeriesRoundEntry[], stored: ResultRound[] | null, now: Date, deadline: number, season: number): Promise<FamilyCRun> {
+  const due = roundsDue(entries, stored, now, FAMILY_C_ROUNDS['gt-world']);
+  const fresh: ResultRound[] = [];
+  const events = due.length ? await discoverGtWorldEventListings(season) : [];
+  const spell = await spellerOf('gt-world');
+  for (const round of due) {
+    if (Date.now() > deadline) {
+      log('F', 'results gt-world out of time: the rest for the next run');
+      break;
+    }
+    const entry = entries.find(e => e.round === round);
+    // The listing's link names the event ("Brands Hatch"); its slug ("brands-hatch") when the link reads otherwise.
+    const event = events.find(e => (roundForGtWorldEvent(e.eventName) ?? roundForGtWorldEvent(e.eventSlug.replace(/-/g, ' '))) === round);
+    if (!entry || !event) {
+      log('F', `results gt-world R${round} not on the results listing`);
+      continue;
+    }
+    const page = await politeText(`https://www.gt-world-challenge-europe.com/results/${season}/${encodeURI(event.eventSlug)}`, 1000);
+    const sessions: (ResultSession & { race: boolean })[] = [];
+    for (const o of page ? gtSessionOptions(page) : []) {
+      if (Date.now() > deadline) break;
+      const html = await politeText(buildEventResultsUrl({ year: season, eventSlug: event.eventSlug, raceId: o.id }), 1000);
+      const table = html ? gtTable(html, o.label, spell) : null;
+      if (table) sessions.push({ label: o.label, tables: [table], race: o.race });
+      else log('F', `results gt-world R${round} ${o.label} ${html ? 'EMPTY' : 'NOT FOUND'}`);
+    }
+    if (sessions.length) fresh.push(fetchedRound(entry, sessions));
+    log('F', `results gt-world R${round} ${event.eventSlug} ${sessions.length} sessions`);
+  }
+  // GT World writes its teams as the teams do: no team-names.json, the names only.
+  return { rounds: respell(mergeRounds(fresh, stored), spell, name => name), due: due.length, got: fresh.length };
+}
+
+/** fiawec.com's results component, replayed as its page does (lib/results/wec.ts:13-28): the last props, one change. */
+function wecPost(props: Record<string, unknown>, updated: Record<string, number>): Promise<string | null> {
+  return politeText(FIAWEC_COMPONENT, 700, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/vnd.live-component+html, text/html',
+      'Content-Type': 'application/x-www-form-urlencoded',
+      Origin: FIAWEC,
+      Referer: FIAWEC_RESULTS,
+      'Sec-Fetch-Site': 'same-origin',
+      'Sec-Fetch-Mode': 'cors',
+      'X-Requested-With': 'XMLHttpRequest',
+    },
+    body: new URLSearchParams({ data: JSON.stringify({ props, updated }) }).toString(),
+  });
+}
+
+/** One WEC round: every session the component lists for its race, a table a class (a session for every class asks only
+ *  the classes the race ran), in running order (the component lists the latest first). */
+async function wecRound(
+  props: Record<string, unknown>,
+  raceId: number,
+  entry: SeriesRoundEntry,
+  categories: Partial<Record<WecClass, number>>,
+  team: (name: string) => string,
+  deadline: number,
+): Promise<{ round: ResultRound | null; props: Record<string, unknown> }> {
+  const raceHtml = await wecPost(props, { raceId });
+  if (!raceHtml) return { round: null, props };
+  let p = extractLiveProps(raceHtml) ?? props;
+  const listed = parseSelectOptions(raceHtml, 'sessionChanged').reverse();
+  const classOf = (id: unknown): WecClass | undefined => WEC_CLASSES.find(c => categories[c] === id);
+  const byLabel = new Map<string, ResultSession & { race: boolean }>();
+  let raced: WecClass[] = [];
+  for (const o of [...listed.filter(x => /^race$/i.test(x.label)), ...listed.filter(x => !/^race$/i.test(x.label))]) {
+    if (Date.now() > deadline) break;
+    const s = wecSession(o.label);
+    if (!s) {
+      log('F', `results wec R${entry.round} ${o.label}: no classification`);
+      continue;
+    }
+    const html = await wecPost(p, { sessionId: o.id });
+    if (!html) continue;
+    p = extractLiveProps(html) ?? p;
+    const want = s.classes ?? (raced.length ? raced : [...WEC_CLASSES]);
+    const tables: Table[] = [];
+    const shown = classOf(p.categoryId);
+    if (shown && want.includes(shown)) {
+      const t = wecTable(html, shown, s.race, team);
+      if (t) tables.push(t);
+    }
+    for (const cls of want) {
+      const id = categories[cls];
+      if (cls === shown || id === undefined) continue;
+      const catHtml = await wecPost(p, { categoryId: id });
+      if (!catHtml) continue;
+      p = extractLiveProps(catHtml) ?? p;
+      const t = wecTable(catHtml, cls, s.race, team);
+      if (t) tables.push(t);
+    }
+    if (s.race) raced = tables.map(t => t.title as WecClass);
+    const into = byLabel.get(s.label) ?? { label: s.label, tables: [], race: s.race };
+    into.tables.push(...tables);
+    byLabel.set(s.label, into);
+  }
+  const order = listed.map(o => wecSession(o.label)?.label).filter((l): l is string => Boolean(l));
+  const sessions = [...byLabel.values()]
+    .filter(s => s.tables.length > 0)
+    .map(s => ({ ...s, tables: [...s.tables].sort((a, b) => WEC_CLASSES.indexOf(a.title as WecClass) - WEC_CLASSES.indexOf(b.title as WecClass)) }))
+    .sort((a, b) => order.indexOf(a.label) - order.indexOf(b.label));
+  return { round: sessions.length ? fetchedRound(entry, sessions) : null, props: p };
+}
+
+/** WEC: the due rounds' sessions from the results component, then the crews still missing from the car pages and the
+ *  names drivers.json cannot spell from the drivers' pages, kept in wec/crews.json. */
+async function wecRounds(entries: SeriesRoundEntry[], stored: ResultRound[] | null, now: Date, deadline: number, season: number): Promise<FamilyCRun> {
+  const manifest = seriesJson<{ categories?: Partial<Record<WecClass, number>>; races?: { round: number; raceId: number }[] }>('wec', 'fiawec-races.json');
+  const raceIds = new Map((manifest?.races ?? []).map(r => [r.round, r.raceId]));
+  const unlisted = new Set<string>();
+  const team = await teamSpelling('wec', season, unlisted);
+  const spell = await spellerOf('wec');
+  const due = roundsDue(entries.filter(e => raceIds.has(e.round)), stored, now, FAMILY_C_ROUNDS.wec);
+  const fresh: ResultRound[] = [];
+  let props = due.length ? extractLiveProps((await politeText(FIAWEC_RESULTS, 700)) ?? '') : null;
+  if (due.length && !props) log('F', 'results wec the results page gave no component props');
+  for (const round of due) {
+    if (!props || Date.now() > deadline) break;
+    const entry = entries.find(e => e.round === round);
+    const raceId = raceIds.get(round);
+    if (!entry || raceId === undefined) continue;
+    const got = await wecRound(props, raceId, entry, manifest?.categories ?? {}, team, deadline);
+    props = got.props;
+    if (got.round) fresh.push(got.round);
+    log('F', `results wec R${round} race ${raceId}: ${got.round ? [...got.round.sessions, ...(got.round.others ?? [])].map(s => s.label).join(', ') : 'NOTHING'}`);
+  }
+  const rounds = respell(mergeRounds(fresh, stored), spell, team);
+
+  const crews = readStored<WecCrews>(WEC_CREWS) ?? emptyCrews();
+  let pages = 0;
+  for (const { raceId, car } of wecCarsDue(rounds, raceIds, crews)) {
+    if (Date.now() > deadline) {
+      log('F', 'crews wec out of time: the rest for the next run');
+      break;
+    }
+    pages++;
+    const html = await politeText(`${FIAWEC}/en/car/${season}/${encodeURIComponent(car)}?race=${raceId}`, 1000);
+    const crew = html ? wecCarCrew(html) : [];
+    if (crew.length === 0) {
+      log('F', `crews wec race ${raceId} #${car} ${html ? 'NO DRIVERS' : 'NOT FOUND'}`);
+      continue;
+    }
+    (crews.races[String(raceId)] ??= {})[car] = crew.map(d => d.id);
+    for (const d of crew) crews.drivers[d.id] = { ...crews.drivers[d.id], card: d.card };
+  }
+  for (const id of wecDriversDue(crews, spell)) {
+    if (Date.now() > deadline) break;
+    pages++;
+    const name = wecDriverName((await politeText(`${FIAWEC}/en/driver/${season}/${id}`, 1000)) ?? '');
+    if (name) crews.drivers[id].name = name;
+    else log('F', `crews wec driver ${id} (${crews.drivers[id].card}) NO NAME`);
+  }
+  const changed = writeStored(WEC_CREWS, crews);
+  log('W', `crews wec ${pages} pages read; ${WEC_CREWS} ${changed ? 'changed' : 'unchanged'}`);
+  if (unlisted.size) log('F', `results wec teams with no line in team-names.json: ${[...unlisted].join(', ')}`);
+  return { rounds: withWecCrews(rounds, raceIds, crews, spell), due: due.length, got: fresh.length };
+}
+
+/** Family C's results into the run, a series at a time inside one deadline. A series that answered for no due round
+ *  keeps its stored results and reads STALE. */
+async function familyC(out: Fetched, now: Date, roundsOf: (slug: string) => SeriesRoundEntry[], seasonOf: (slug: string) => number): Promise<void> {
+  const deadline = Math.min(Date.now() + FAMILY_C_MS, FAMILY_C_LATEST);
+  const runs: [string, typeof imsaRounds][] = [
+    ['imsa', imsaRounds],
+    ['gt-world', gtWorldRounds],
+    ['wec', wecRounds],
+  ];
+  for (const [slug, run] of runs) {
+    const started = Date.now();
+    try {
+      const got = await run(roundsOf(slug), readStored<ResultRound[]>(relOf(slug, 'results')), now, deadline, seasonOf(slug));
+      const silent = got.due > 0 && got.got === 0;
+      out.results.set(slug, { data: got.rounds.length ? got.rounds : null, partial: silent, error: silent ? 'no due round answered' : got.rounds.length ? undefined : 'empty answer' });
+      log('F', `results ${slug} ${silent ? 'SILENT' : 'OK'} ${got.got} of ${got.due} due rounds fetched, ${got.rounds.length} kept ${Date.now() - started}ms`);
+    } catch (err) {
+      out.results.set(slug, { data: null, error: errorText(err) });
+      log('F', `results ${slug} ERROR ${errorText(err)} ${Date.now() - started}ms`);
+    }
+  }
+}
+
 async function fetchEverything(slugs: string[], now: Date): Promise<Fetched> {
   const out: Fetched = { standings: new Map(), results: new Map(), calendar: new Map() };
 
@@ -717,12 +1027,8 @@ async function fetchEverything(slugs: string[], now: Date): Promise<Fetched> {
   setResults('nascar-cup', nascar.value, nascar.error);
   const nls = await extra('nls', () => fetchNlsSeasonResults(seasonOf('nls')));
   setResults('nls', nls.value, nls.error);
-  const gt = await extra('gt-world', () => fetchAllGtWorldSeasonRaces(seasonOf('gt-world')));
-  setResults('gt-world', gt.value, gt.error);
-  const imsa = await extra('imsa', () => fetchImsaSeasonResults());
-  setResults('imsa', imsa.value, imsa.error);
-  const wec = await extra('wec', () => fetchWecSeasonResults());
-  setResults('wec', wec.value, wec.error);
+  // Family C (O34): IMSA, GT World and WEC, every session and each race's crews (familyC above).
+  await familyC(out, now, roundsOf, seasonOf);
 
   return out;
 }
