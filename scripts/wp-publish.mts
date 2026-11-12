@@ -893,7 +893,7 @@ async function indycarFamilyB(entries: SeriesRoundEntry[], stored: ResultRound[]
     if (got.round) fresh.push(got.round);
     log('F', `results indycar R${round} ${event.name}: ${labels(got.round)}${unanswered(got.missed)}`);
   }
-  return { rounds: respell(mergeRounds(fresh, stored, season), spell), due: due.length, got: fresh.length };
+  return { rounds: respell(mergeRounds(fresh, stored, entries), spell), due: due.length, got: fresh.length };
 }
 
 /** NASCAR: the season's races from race_list_basic.json, each round's by its day, then its weekend feed (and the Duels'
@@ -938,7 +938,7 @@ async function nascarFamilyB(entries: SeriesRoundEntry[], stored: ResultRound[] 
     if (got) fresh.push(got);
     log('F', `results nascar-cup R${round} race ${races.race.id}: ${labels(got)}${unanswered(missed)}`);
   }
-  return { rounds: respell(mergeRounds(fresh, stored, season), spell), due: due.length, got: fresh.length };
+  return { rounds: respell(mergeRounds(fresh, stored, entries), spell), due: due.length, got: fresh.length };
 }
 
 /** Formula E: the season's rounds as its results page links them, then each round's sessions as its race page links them. */
@@ -984,7 +984,7 @@ async function formulaEFamilyB(entries: SeriesRoundEntry[], stored: ResultRound[
     if (got) fresh.push(got);
     log('F', `results formula-e R${round} ${slug}: ${labels(got)}${unanswered(missed)}`);
   }
-  return { rounds: respell(mergeRounds(fresh, stored, season), spell), due: due.length, got: fresh.length };
+  return { rounds: respell(mergeRounds(fresh, stored, entries), spell), due: due.length, got: fresh.length };
 }
 
 /** Family B's results into the run, a series at a time inside one deadline. A series that answered for no due round

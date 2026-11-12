@@ -549,18 +549,22 @@ const dayAfter = (iso: string, days: number): string => new Date(Date.parse(`${i
  *  after (a penalty, a disqualification), and any not yet stored in this shape. */
 export function roundsDue(rounds: readonly Pick<SeriesRoundEntry, 'round' | 'startDate' | 'endDate'>[], stored: readonly ResultRound[] | null, now: Date, max: number, settleDays = 7): number[] {
   const today = now.toISOString().slice(0, 10);
-  const kept = (e: Pick<SeriesRoundEntry, 'round'>): ResultRound | undefined => (stored ?? []).find(r => r.round === e.round && r.date?.slice(0, 4) === today.slice(0, 4));
   return rounds
-    .filter(r => r.startDate <= today && (dayAfter(r.endDate, settleDays) >= today || !inShape(kept(r))))
+    .filter(r => r.startDate <= today && (dayAfter(r.endDate, settleDays) >= today || !inShape(keptFor(stored, r))))
     .sort((a, b) => b.startDate.localeCompare(a.startDate))
     .slice(0, Math.max(0, max))
     .map(r => r.round);
 }
 
-/** The season's stored rounds with the fresh ones in their place, by date then round: a round is replaced whole, as
- *  only a whole fetch is kept. Rounds of another season are dropped (a new season starts its own). */
-export function mergeRounds(fresh: readonly ResultRound[], stored: readonly ResultRound[] | null, season: number): ResultRound[] {
-  const out = new Map((stored ?? []).filter(r => r.round !== null && r.date?.slice(0, 4) === String(season)).map(r => [r.round as number, r]));
+/** A round's stored result: its number, dated within a week of its dates. A season is told by its rounds' dates, not
+ *  the year: Formula E's 2026 season opened in São Paulo on 6 December 2025. */
+const keptFor = (stored: readonly ResultRound[] | null, e: Pick<SeriesRoundEntry, 'round' | 'startDate' | 'endDate'>): ResultRound | undefined =>
+  (stored ?? []).find(r => r.round === e.round && r.date !== null && nearRound(r.date, e, 7, 7));
+
+/** The season's stored rounds with the fresh ones in their place, by date then round: a round is replaced whole, as only
+ *  a whole fetch is kept. A stored round no round of the season's rounds.json dates (last season's) is dropped. */
+export function mergeRounds(fresh: readonly ResultRound[], stored: readonly ResultRound[] | null, rounds: readonly Pick<SeriesRoundEntry, 'round' | 'startDate' | 'endDate'>[]): ResultRound[] {
+  const out = new Map(rounds.flatMap(e => keptFor(stored, e) ?? []).map(r => [r.round as number, r]));
   for (const f of fresh) if (f.round !== null) out.set(f.round, f);
   return [...out.values()].sort((a, b) => (a.date ?? '').localeCompare(b.date ?? '') || (a.round ?? 0) - (b.round ?? 0));
 }

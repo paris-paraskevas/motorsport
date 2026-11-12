@@ -348,9 +348,20 @@ describe('what a run fetches, and what it keeps', () => {
     expect(roundsDue(rounds, [shaped(1, '2026-03-01'), shaped(2, '2026-03-08')], new Date('2026-03-30T00:00:00Z'), 10)).toEqual([4, 3]);
   });
 
-  it('puts the fresh rounds in the stored ones’ place, by date, the other seasons dropped', () => {
-    const merged = mergeRounds([shaped(2, '2026-03-08')], [old(2, '2026-03-08'), old(1, '2026-03-01'), old(9, '2025-09-01')], 2026);
+  it('puts the fresh rounds in the stored ones’ place, by date, last season’s dropped', () => {
+    const merged = mergeRounds([shaped(2, '2026-03-08')], [old(2, '2026-03-08'), old(1, '2026-03-01'), old(9, '2025-09-01'), old(3, '2025-03-16')], rounds);
     expect(merged.map(r => `${r.round} ${inShape(r)}`)).toEqual(['1 false', '2 true']);
+  });
+
+  // Formula E's 2026 season opened in São Paulo on 6 December 2025: a season is told by its rounds' dates, not the year.
+  it('keeps a season’s round run the year before, and asks for it only when it is not in this shape', () => {
+    const fe = [
+      { round: 1, startDate: '2025-12-05', endDate: '2025-12-06' },
+      { round: 2, startDate: '2026-01-09', endDate: '2026-01-10' },
+    ];
+    expect(mergeRounds([shaped(2, '2026-01-10')], [shaped(1, '2025-12-06'), old(2, '2026-01-10')], fe).map(r => r.round)).toEqual([1, 2]);
+    expect(roundsDue(fe, [shaped(1, '2025-12-06'), old(2, '2026-01-10')], new Date('2026-11-12T00:00:00Z'), 10)).toEqual([2]);
+    expect(roundsDue(fe, [shaped(1, '2025-12-06'), shaped(2, '2026-01-10')], new Date('2026-11-12T00:00:00Z'), 10)).toEqual([]);
   });
 
   it('spells every kept round’s drivers again as drivers.json does', () => {
