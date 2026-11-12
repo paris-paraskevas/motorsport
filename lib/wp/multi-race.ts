@@ -126,7 +126,7 @@ export function dtmTable(title: string, rows: readonly DtmRow[], points: readonl
 /** A name as drivers.json spells it, from a source's short form: a name a driver lists under `also` (motorsport.com's
  *  "P. Maximilian" for Maximilian Paul), else the one driver whose surname and first initial match ("M. Engel"); a
  *  name it cannot spell one way stays as the source wrote it. */
-export function nameSpeller(roster: readonly { name: string; also?: readonly string[] }[]): (name: string) => string {
+export function initialsSpeller(roster: readonly { name: string; also?: readonly string[] }[]): (name: string) => string {
   const fold = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
   return name => {
     const listed = roster.filter(d => (d.also ?? []).some(a => fold(a) === fold(name)));

@@ -125,7 +125,7 @@ import { fetchFomJson, roundOfMeeting, type FomManifest, type FomSessionResponse
 import { buildSessionClassification } from '../lib/results/motogp';
 import { MOTOGP_API_BASE, MOTOGP_CATEGORY_UUID_EXPORT, resolveMotoGPSeasonUuid } from '../lib/standings/motogp';
 import { parseSessionClassification } from '../lib/results/wsbk';
-import { DTM_QUALIFYING_POINTS, dtmEvents, dtmRows, dtmSessions, dtmTable, dtmTime, fomQualifyingLabel, fomTable, nameSpeller, sessionsWanted, timedTable, wsbkRaceTable } from '../lib/wp/multi-race';
+import { DTM_QUALIFYING_POINTS, dtmEvents, dtmRows, dtmSessions, dtmTable, dtmTime, fomQualifyingLabel, fomTable, initialsSpeller, sessionsWanted, timedTable, wsbkRaceTable } from '../lib/wp/multi-race';
 import { calledOffOf } from '../lib/wp/render';
 
 const argv = process.argv.slice(2);
@@ -1277,7 +1277,7 @@ async function dtmPage(url: string): Promise<string | null> {
 async function dtmData(out: Fetched, season: number, entries: SeriesRoundEntry[], deadline: number): Promise<void> {
   const fresh = out.results.get('dtm');
   if (!fresh?.data) return;
-  const spell = nameSpeller(((await loadCuratedDrivers('dtm'))?.teams ?? []).flatMap(t => t.drivers as { name: string; also?: string[] }[]));
+  const spell = initialsSpeller(((await loadCuratedDrivers('dtm'))?.teams ?? []).flatMap(t => t.drivers as { name: string; also?: string[] }[]));
   const tidy = (t: Table): Table => {
     const name = t.columns.indexOf('Driver');
     const time = t.columns.indexOf('Time');

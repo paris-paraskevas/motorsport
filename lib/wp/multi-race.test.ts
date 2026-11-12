@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { FomResultRow } from '../results/fom-api';
-import { DTM_QUALIFYING_POINTS, dtmEvents, dtmRows, dtmSessions, dtmTable, dtmTime, fomQualifyingLabel, fomTable, nameSpeller, sessionsWanted, timedTable, wsbkPoints, wsbkRaceTable } from './multi-race';
+import { DTM_QUALIFYING_POINTS, dtmEvents, dtmRows, dtmSessions, dtmTable, dtmTime, fomQualifyingLabel, fomTable, initialsSpeller, sessionsWanted, timedTable, wsbkPoints, wsbkRaceTable } from './multi-race';
 import { calledOffOf, padHour, type CalendarEntry, type ResultRound } from './render';
 
 // Rows as FOM's API wrote them for Formula 2's 2026 sessions (probed 12 Nov 2026): a placed driver, a "666" with
@@ -156,7 +156,7 @@ describe("DTM from motorsport.com's pages (O33)", () => {
 
   it("spells motorsport.com's initials as drivers.json does, and leaves a name it cannot place alone", async () => {
     const file = JSON.parse(await fixture('../../content/series/dtm/drivers.json')) as { teams: { drivers: { name: string; also?: string[] }[] }[] };
-    const spell = nameSpeller(file.teams.flatMap(t => t.drivers));
+    const spell = initialsSpeller(file.teams.flatMap(t => t.drivers));
     expect(spell('M. Engel')).toBe('Maro Engel');
     expect(spell('K. van der Linde')).toBe('Kelvin van der Linde');
     expect(spell('B. Dörr')).toBe('Ben Dörr');
@@ -164,7 +164,7 @@ describe("DTM from motorsport.com's pages (O33)", () => {
     expect(spell('C. Engelhart')).toBe('Christian Engelhart');
     expect(spell('S. Connor Primm')).toBe('Simon Connor Primm');
     expect(spell('X. Nobody')).toBe('X. Nobody');
-    expect(nameSpeller([{ name: 'Max Muster' }, { name: 'Mia Muster' }])('M. Muster')).toBe('M. Muster');
+    expect(initialsSpeller([{ name: 'Max Muster' }, { name: 'Mia Muster' }])('M. Muster')).toBe('M. Muster');
   });
 });
 
