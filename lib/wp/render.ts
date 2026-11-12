@@ -7,7 +7,7 @@
 // every href is built here from a series slug, never taken from a feed.
 
 import { createHash } from 'node:crypto';
-import type { Champion, Series, SeriesRoundEntry } from '@/lib/types';
+import type { Champion, Series, SeriesRoundEntry, SessionsOverridesFile } from '@/lib/types';
 import { groupByWeekend } from '@/lib/group';
 import type { MapsStore, SessionExtras, SessionsStore } from '@/lib/openf1/weekend';
 import type { VenueForecast } from '@/lib/met-norway';
@@ -733,8 +733,20 @@ function sessionName(title: string): string {
 }
 
 /** The season's sessions with their event and round (rounds.json through the
- *  site's own weekend grouping, lib/group.ts), sorted by start. */
-export function calendarEntries(series: Pick<Series, 'sessions' | 'rounds'>, now: Date): CalendarEntry[] {
+ *  site's own weekend grouping, lib/group.ts), sorted by start. A session that
+ *  sessions.json places in a round (its block's `round`) stays in that round,
+ *  named as rounds.json names it: the grouping joins sessions four days apart or
+ *  less, so the Indianapolis 500's first practice, three days after round 6's
+ *  race, would fall into round 6. A round rounds.json lacks or calls off leaves
+ *  the grouping's. */
+export function calendarEntries(series: Pick<Series, 'sessions' | 'rounds'>, now: Date, overrides?: SessionsOverridesFile): CalendarEntry[] {
+  const live = new Map((series.rounds?.rounds ?? []).filter(r => !r.cancelled).map(r => [r.round, r.name]));
+  // Keyed by the session's start instant and its title, as the block writes both.
+  const placed = new Map<string, number>();
+  for (const b of overrides?.overrides ?? []) {
+    if (b.round === undefined || !live.has(b.round)) continue;
+    for (const s of b.sessions) placed.set(`${Date.parse(s.start)} ${s.title}`, b.round);
+  }
   const out: CalendarEntry[] = [];
   for (const w of groupByWeekend(series.sessions, now, series.rounds)) {
     const place = w.sessions.find(s => s.location)?.location?.split(',')[0].trim();
@@ -744,13 +756,14 @@ export function calendarEntries(series: Pick<Series, 'sessions' | 'rounds'>, now
       if (!Number.isFinite(start)) continue;
       const end = Number.isFinite(s.end?.getTime()) ? s.end.getTime() : start;
       const location = s.location?.trim();
+      const own = placed.get(`${start} ${s.title}`);
       out.push({
         start: new Date(start).toISOString(),
         end: new Date(end).toISOString(),
         dateOnly: s.dateOnly === true,
-        event,
+        event: own !== undefined && own !== w.round ? live.get(own) || `Round ${own}` : event,
         session: sessionName(s.title),
-        round: w.round > 0 ? w.round : null,
+        round: own ?? (w.round > 0 ? w.round : null),
         ...(location ? { location } : {}),
       });
     }

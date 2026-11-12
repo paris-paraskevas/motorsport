@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.303 — 2026-11-12
+
+Behind the scenes: on the calendar's May page, the Indianapolis 500's first week of practice and qualifying now sits with the 500 itself, no longer with the road course race at the Brickyard the weekend before. Nothing changes for readers yet.
+
 ## 1.0.302 — 2026-10-28
 
 Behind the scenes: Formula 3's rounds on the calendar now carry Formula 3's own numbers. Its round in Sakhir was called off in March and the series renumbered its season, so Monaco is round 2 and the Madrid finale round 9; Monaco's weekend also starts on its Thursday practice.
