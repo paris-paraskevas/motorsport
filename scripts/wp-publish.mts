@@ -98,6 +98,12 @@ import {
   type WpPageRow,
 } from '../lib/wp/render';
 import { decideFeed, resultsShrank, statusPage, type FeedHealth, type FeedKind, type Fresh } from '../lib/wp/health';
+// Family A (O33): Formula 2, Formula 3, MotoGP, WorldSBK and DTM (familyA below).
+import { fetchFomJson, roundOfMeeting, type FomManifest, type FomSessionResponse } from '../lib/results/fom-api';
+import { buildSessionClassification } from '../lib/results/motogp';
+import { MOTOGP_API_BASE, MOTOGP_CATEGORY_UUID_EXPORT, resolveMotoGPSeasonUuid } from '../lib/standings/motogp';
+import { parseSessionClassification } from '../lib/results/wsbk';
+import { fomQualifyingLabel, fomTable, sessionsWanted, timedTable } from '../lib/wp/multi-race';
 
 const argv = process.argv.slice(2);
 // An unknown argument, or a flag missing its value, stops the run: "--only" with nothing after it would publish every page.
@@ -693,6 +699,188 @@ async function seriesForecasts(slugs: readonly string[], out: Fetched, rally: (s
   log('W', `forecasts ${answers.size} circuits for ${[...soon.values()].filter(s => s.size > 0).length} series; ${changed} files changed`);
 }
 
+// ── Family A (O33): Formula 2, Formula 3, MotoGP, WorldSBK and DTM ───────────
+
+/** Family A's sessions beside its races (Task 2.b, All 3): each asked once and kept from then on (carrySessions), all
+ *  inside FAMILY_A_MS so a backfill never holds the job up; what is left waits for the next run, logged. */
+const FAMILY_A_MS = 5 * 60_000;
+/** The most sessions a run asks MotoGP's or WorldSBK's API for, each: a classification each, and a session list a round. */
+const FAMILY_A_MAX = 20;
+/** The timetable's names of MotoGP's timed sessions, as its results API types them. */
+const MOTOGP_SESSIONS = new Map<string, { type: string; number?: number }>([
+  ['FP1', { type: 'FP', number: 1 }],
+  ['Practice', { type: 'PR' }],
+  ['FP2', { type: 'FP', number: 2 }],
+  ['Q1', { type: 'Q', number: 1 }],
+  ['Q2', { type: 'Q', number: 2 }],
+  ['Warm Up', { type: 'WUP' }],
+]);
+/** WorldSBK's, as its events API names them (its list writes some with a trailing space: Jerez 2026's "FP2 "). */
+const WSBK_SESSIONS = new Map([['FP1', 'FP1'], ['FP2', 'FP2'], ['FP3', 'FP3'], ['Superpole', 'SP'], ['Warm Up', 'WUP']]);
+const WSBK_API = 'https://api.wsbk.pulselive.com';
+
+/** Formula 2's and 3's practice and qualifying from FOM's own rows: every meeting that has begun is asked for what its
+ *  round does not hold yet, and where the qualifying answers empty (Monaco's and Monza's groups, Baku's and Madrid's
+ *  two), each qualifying by its number. */
+async function fomSessions(out: Fetched, brand: 'f2' | 'f3', season: number, entries: SeriesRoundEntry[], now: Date, deadline: number): Promise<void> {
+  const fresh = out.results.get(brand);
+  if (!fresh?.data) return;
+  let rounds = carrySessions(fresh.data, readStored<ResultRound[]>(relOf(brand, 'results')), season);
+  const manifest = await timed(() => fetchFomJson<FomManifest>(brand, `/driver-standings-breakdown?season=${season}`), 60_000);
+  const today = now.toISOString().slice(0, 10);
+  let asked = 0;
+  let kept = 0;
+  const ask = async (path: string) => {
+    asked++;
+    return (await timed(() => fetchFomJson<FomSessionResponse>(brand, path), 60_000)).value?.sessionResults;
+  };
+  for (const [i, m] of (manifest.value?.meetings ?? []).entries()) {
+    if (m.meetingKey == null || !m.meetingStartDate || m.meetingStartDate > today) continue;
+    if (Date.now() > deadline) {
+      log('F', `results ${brand}-sessions out of time: the rest waits for the next run`);
+      break;
+    }
+    const round = roundOfMeeting(m, i + 1, entries);
+    const held = (rounds.find(r => r.round === round)?.others ?? []).map(o => o.label);
+    const keep = (label: string, rows: Parameters<typeof fomTable>[1] | undefined) => {
+      const t = fomTable(label, rows ?? []);
+      if (!t || held.includes(label)) return;
+      rounds = withSession(rounds, round, m.meetingCountryName ?? m.meetingLocation ?? '', m.meetingEndDate ?? null, { label, tables: [t] });
+      kept++;
+    };
+    if (!held.includes('Practice')) keep('Practice', (await ask(`/practice?meeting=${m.meetingKey}&session=0`))?.results);
+    if (!held.includes('Qualifying') && held.filter(l => /^Qualifying ./.test(l)).length < 2) {
+      const one = await ask(`/qualifying?meeting=${m.meetingKey}`);
+      if (one?.results?.length) keep('Qualifying', one.results);
+      // FOM names an ordinary qualifying "Qualifying 0"; a weekend of groups or of two answers "Qualifying 1", empty.
+      else if (/[1-9]$/.test(one?.session ?? ''))
+        for (const n of [1, 2]) {
+          const s = await ask(`/qualifying?meeting=${m.meetingKey}&session=${n}`);
+          if (s?.results?.length) keep(fomQualifyingLabel(s.shortName, n), s.results);
+        }
+    }
+  }
+  log('F', `results ${brand}-sessions ${manifest.value ? `${asked} asked, ${kept} kept` : `ERROR ${manifest.error ?? 'no meetings'}`}`);
+  out.results.set(brand, { ...fresh, data: rounds });
+}
+
+/** A JSON answer, or null on any failure. */
+async function getJson<T>(url: string): Promise<T | null> {
+  const t = await timed(async () => {
+    const res = await fetchUpstream(url);
+    return res.ok ? ((await res.json()) as T) : null;
+  }, 30_000);
+  return t.value;
+}
+
+/** A timed session as its API lists it: its status (FINISHED, CANCELLED, …) and the way to its classification. */
+interface RiderSession {
+  status: string;
+  table(): Promise<Table | null>;
+}
+type FindSession = (round: number, label: string) => Promise<RiderSession | null>;
+
+/** MotoGP's and WorldSBK's practice, qualifying, Superpole and warm-up straight from their own APIs (the old site's
+ *  fetchers drop a Q1 under ten riders, Qatar 2026's eight, and miss WorldSBK's "FP2 "), the newest first, at most
+ *  FAMILY_A_MAX a run. A session the API lists cancelled is kept as "called off", one that finished without a
+ *  classification as "no classification" once its round is a day over; anything else is asked again next run. */
+async function riderSessions(out: Fetched, slug: 'motogp' | 'wsbk', season: number, entries: SeriesRoundEntry[], names: ReadonlySet<string>, finder: () => Promise<FindSession>, now: Date, deadline: number): Promise<void> {
+  const fresh = out.results.get(slug);
+  if (!fresh?.data) return;
+  let rounds = carrySessions(fresh.data, readStored<ResultRound[]>(relOf(slug, 'results')), season);
+  const wanted = sessionsWanted(rounds, out.calendar.get(slug)?.data ?? [], names, now, FAMILY_A_MAX);
+  const find = wanted.length ? await finder() : null;
+  for (const [i, e] of wanted.entries()) {
+    if (Date.now() > deadline) {
+      log('F', `results ${slug}-sessions out of time: ${wanted.length - i} sessions left for the next run`);
+      break;
+    }
+    const round = e.round;
+    if (round === null || !find) continue;
+    const entry = entries.find(r => r.round === round);
+    const s = await find(round, e.session);
+    const cancelled = Boolean(s && /cancel/i.test(s.status));
+    const table = s && !cancelled ? await s.table() : null;
+    const over = entry ? Date.parse(`${entry.endDate}T23:59:59Z`) + 86_400_000 < now.getTime() : false;
+    const none = cancelled ? 'called off' : s && !table && over && /finish/i.test(s.status) ? 'no classification' : undefined;
+    if (table || none) rounds = withSession(rounds, round, e.event, entry?.endDate ?? null, table ? { label: e.session, tables: [table] } : { label: e.session, tables: [], none });
+    log('F', `results ${slug}-sessions R${round} ${e.session} ${table ? `OK ${table.rows.length} rows` : none ? none.toUpperCase() : s ? `EMPTY (${s.status || 'no status'})` : 'NOT LISTED'}`);
+  }
+  out.results.set(slug, { ...fresh, data: rounds });
+}
+
+/** MotoGP's sessions: the season's events once a run, each matched to its round by dates (rounds.json), its session
+ *  list once a round, then each session's classification (lib/results/motogp.ts buildSessionClassification). */
+async function motogpFinder(season: number, entries: SeriesRoundEntry[]): Promise<FindSession> {
+  type Event = { id?: string; test?: boolean; date_start?: string; date_end?: string };
+  type Listed = { id?: string; type?: string; number?: number | null; status?: string };
+  const uuid = await resolveMotoGPSeasonUuid(season);
+  const events = (uuid ? await getJson<Event[]>(`${MOTOGP_API_BASE}/motogp/v1/results/events?seasonUuid=${uuid}`) : null) ?? [];
+  const lists = new Map<string, Promise<Listed[]>>();
+  return async (round, label) => {
+    const r = entries.find(x => x.round === round);
+    const want = MOTOGP_SESSIONS.get(label);
+    const ev = r && events.find(e => e.id && e.test !== true && (e.date_start ?? '').slice(0, 10) <= r.endDate && r.startDate <= (e.date_end ?? e.date_start ?? '').slice(0, 10));
+    if (!want || !ev?.id) return null;
+    const id = ev.id;
+    if (!lists.has(id)) lists.set(id, getJson<Listed[]>(`${MOTOGP_API_BASE}/motogp/v1/results/sessions?eventUuid=${id}&categoryUuid=${MOTOGP_CATEGORY_UUID_EXPORT}`).then(x => (Array.isArray(x) ? x : [])));
+    const s = (await lists.get(id))?.find(x => x?.type === want.type && (want.number === undefined || x.number === want.number));
+    if (!s?.id) return null;
+    const sid = s.id;
+    return {
+      status: String(s.status ?? ''),
+      table: async () => {
+        const c = await getJson<{ classification?: unknown[] }>(`${MOTOGP_API_BASE}/motogp/v1/results/session/${sid}/classification?test=false`);
+        return c?.classification?.length ? timedTable(label, buildSessionClassification(c.classification as Parameters<typeof buildSessionClassification>[0]).entries, 'Rider') : null;
+      },
+    };
+  };
+}
+
+/** WorldSBK's sessions: the season's rounds once a run (numbered by sequence_order, as its races), a round's SBK
+ *  session list once, then each session's results (lib/results/wsbk.ts parseSessionClassification). */
+async function wsbkFinder(season: number): Promise<FindSession> {
+  type Item = { id?: string; attributes?: Record<string, unknown> };
+  const roundsEnv = await getJson<{ data?: Item[] }>(`${WSBK_API}/wsbk-events/v1/seasons/${season}/rounds`);
+  const lists = new Map<string, Promise<Item[]>>();
+  return async (round, label) => {
+    const short = WSBK_SESSIONS.get(label);
+    const src = roundsEnv?.data?.find(r => r.attributes?.sequence_order === round)?.attributes?.source_id;
+    if (!short || typeof src !== 'string') return null;
+    if (!lists.has(src))
+      lists.set(src, getJson<{ data?: Item[] }>(`${WSBK_API}/wsbk-events/v1/seasons/${season}/rounds/${src}/sessions`).then(x => (x?.data ?? []).filter(s => String(s?.id ?? '').includes('-SBK-'))));
+    const s = (await lists.get(src))?.find(x => String(x.attributes?.short_name ?? '').trim() === short);
+    const sid = s?.attributes?.source_id;
+    if (typeof sid !== 'string') return null;
+    return {
+      status: String(s?.attributes?.status ?? ''),
+      table: async () => {
+        const env = await getJson<unknown>(`${WSBK_API}/wsbk-results/v1/seasons/${season}/categories/SBK/rounds/${src}/sessions/${sid}/results`);
+        const cls = env ? parseSessionClassification(env as Parameters<typeof parseSessionClassification>[0]) : null;
+        return cls ? timedTable(label, cls.entries, 'Rider') : null;
+      },
+    };
+  };
+}
+
+/** Family A's step after the races are fetched; a part that fails is logged and its stored files stay as they were. */
+async function familyA(out: Fetched, now: Date, roundsOf: (slug: string) => SeriesRoundEntry[], seasonOf: (slug: string) => number): Promise<void> {
+  const deadline = Date.now() + FAMILY_A_MS;
+  const steps: [string, () => Promise<void>][] = [
+    ['f2', () => fomSessions(out, 'f2', seasonOf('f2'), roundsOf('f2'), now, deadline)],
+    ['f3', () => fomSessions(out, 'f3', seasonOf('f3'), roundsOf('f3'), now, deadline)],
+    ['motogp', () => riderSessions(out, 'motogp', seasonOf('motogp'), roundsOf('motogp'), new Set(MOTOGP_SESSIONS.keys()), () => motogpFinder(seasonOf('motogp'), roundsOf('motogp')), now, deadline)],
+    ['wsbk', () => riderSessions(out, 'wsbk', seasonOf('wsbk'), roundsOf('wsbk'), new Set(WSBK_SESSIONS.keys()), () => wsbkFinder(seasonOf('wsbk')), now, deadline)],
+  ];
+  for (const [slug, step] of steps) {
+    try {
+      await step();
+    } catch (err) {
+      log('F', `results ${slug}-sessions ERROR ${errorText(err)}: the stored sessions stay as they were`);
+    }
+  }
+}
+
 async function fetchEverything(slugs: string[], now: Date): Promise<Fetched> {
   const out: Fetched = { standings: new Map(), results: new Map(), calendar: new Map() };
 
@@ -779,6 +967,8 @@ async function fetchEverything(slugs: string[], now: Date): Promise<Fetched> {
   setResults('indycar', indycar.value, indycar.error);
   const dtm = await extra('dtm', () => fetchDTMSeasonResults(seasonOf('dtm'), roundsOf('dtm')));
   setResults('dtm', dtm.value, dtm.error);
+  // Family A (O33): every session beside the races (familyA above).
+  await familyA(out, now, roundsOf, seasonOf);
   const nascar = await extra('nascar-cup', () =>
     fetchNascarCupSeasonResults({ rounds: roundsOf('nascar-cup').map(r => ({ round: r.round, startDate: r.startDate, name: r.name })) }),
   );

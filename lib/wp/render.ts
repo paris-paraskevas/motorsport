@@ -26,6 +26,9 @@ export interface Table {
 export interface ResultSession {
   label: string;
   tables: Table[];
+  /** Why a timed session holds no table (family A, O33): "called off" when its source lists it cancelled, "no
+   *  classification" when it ran and its source published none. Kept so a run does not ask for it again. */
+  none?: string;
 }
 
 export interface ResultRound {
@@ -188,6 +191,10 @@ function sessionRank(label: string): number {
   return 2;
 }
 
+/** A race time written with a one-digit minute after the hour, as FOM's feed writes Formula 2's and 3's ("1:3:29.190"),
+ *  with its zero restored ("1:03:29.190"); every other time as it is. */
+export const padHour = (time: string): string => time.replace(/^(\d+):(\d):(\d\d(?:\.\d+)?)$/, '$1:0$2:$3');
+
 /** A single-class race's classified finishers, every one (the pages cut to ten when they draw). Position 0
  *  (IndyCar's non-finishers) and 90+ (DTM's synthetic DNF slots) are not classified places. A lapped car reads
  *  Lapped: jolpi.ca gives it a time behind the winner over a lap fewer ("+2.171" for Singapore 2026's eleventh,
@@ -196,7 +203,7 @@ function raceTable(title: string, entries: unknown, person: string): Table | nul
   if (!Array.isArray(entries)) return null;
   const lines = entries
     .filter(isObj)
-    .map(e => ({ pos: num(e.position), name: str(e.driverName), team: str(e.team), time: /^lapped$/i.test(str(e.status)) ? 'Lapped' : str(e.time) || str(e.status), points: num(e.points) }))
+    .map(e => ({ pos: num(e.position), name: str(e.driverName), team: str(e.team), time: /^lapped$/i.test(str(e.status)) ? 'Lapped' : padHour(str(e.time)) || str(e.status), points: num(e.points) }))
     .filter((l): l is typeof l & { pos: number } => l.pos !== null && l.pos >= 1 && l.pos < 90 && l.name !== '')
     .sort((a, b) => a.pos - b.pos);
   if (lines.length === 0) return null;
@@ -999,6 +1006,8 @@ function standingsPage(d: SeriesData, tables: Table[]): Page {
 function resultsPage(d: SeriesData, rounds: ResultRound[]): Page {
   const parts: string[] = [];
   for (const r of [...rounds].reverse()) {
+    // A round holding only its practice and qualifying so far (family A, O33) waits for its first race.
+    if (!r.sessions.length) continue;
     parts.push(heading(roundTitle(r)));
     if (r.date) parts.push(paragraph(formatDay(r.date)));
     for (const s of r.sessions) {
