@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { FomResultRow } from '../results/fom-api';
-import { fomQualifyingLabel, fomTable, sessionsWanted, timedTable } from './multi-race';
+import { DTM_QUALIFYING_POINTS, dtmEvents, dtmRows, dtmSessions, dtmTable, dtmTime, fomQualifyingLabel, fomTable, nameSpeller, sessionsWanted, timedTable, wsbkPoints, wsbkRaceTable } from './multi-race';
 import { calledOffOf, padHour, type CalendarEntry, type ResultRound } from './render';
 
 // Rows as FOM's API wrote them for Formula 2's 2026 sessions (probed 12 Nov 2026): a placed driver, a "666" with
@@ -113,5 +113,92 @@ describe("Formula 2's and 3's race times (O33)", () => {
     expect(padHour('47:21.330')).toBe('47:21.330');
     expect(padHour('+2.678s')).toBe('+2.678s');
     expect(padHour('DNF')).toBe('DNF');
+  });
+});
+
+describe("DTM from motorsport.com's pages (O33)", () => {
+  const fixture = async (name: string) => (await import('node:fs')).readFileSync(`tests/fixtures/${name}`, 'utf8');
+
+  it("reads a race's rows in order, each with its own time, and keeps the disqualified car under the page's word", async () => {
+    const rows = dtmRows(await fixture('dtm-oschersleben-race2-2026.html'));
+    expect(rows[0]).toMatchObject({ pos: 'dq', name: 'M. Bortolotti', time: '57:30.754' });
+    expect(rows[1]).toMatchObject({ pos: '1', name: 'M. Engel', team: 'Mercedes-AMG Team Winward', time: '57:33.781' });
+    const t = dtmTable('Race 2', rows);
+    expect(t?.rows[0].slice(0, 2)).toEqual(['1', 'M. Engel']);
+    // The unplaced follow the placed in the page's order: the disqualified winner first, then the retirements.
+    const first = t?.rows.findIndex(r => !/^\d+$/.test(r[0])) ?? -1;
+    expect(t?.rows[first].slice(0, 2)).toEqual(['DQ', 'M. Bortolotti']);
+    expect(t?.rows.slice(0, first).every(r => /^\d+$/.test(r[0]))).toBe(true);
+  });
+
+  it("gives qualifying's top three their 3, 2 and 1, with colons in the times", async () => {
+    const t = dtmTable('Qualifying 2', dtmRows(await fixture('dtm-hockenheim-q2-2026.html')), DTM_QUALIFYING_POINTS);
+    expect(t?.columns).toEqual(['Pos', 'Driver', 'Team', 'Time', 'Pts']);
+    expect(t?.rows.slice(0, 4).map(r => [r[0], r[1], r[3], r[4]])).toEqual([
+      ['1', 'B. Buus', '1:36.923', '3'],
+      ['2', 'R. Feller', '1:36.929', '2'],
+      ['3', 'M. Engel', '1:37.051', '1'],
+      ['4', t?.rows[3][1], t?.rows[3][3], ''],
+    ]);
+  });
+
+  it("lists a grouped weekend's sessions: four qualifying groups and two grids", async () => {
+    const st = dtmSessions(await fixture('dtm-norisring-q3-2026.html'));
+    expect(st).toEqual(expect.arrayContaining(['FP1', 'FP2', 'Q1', 'Q2', 'Q3', 'Q4', 'GRID1', 'GRID2', 'RACE1', 'RACE2']));
+    expect(dtmRows(await fixture('dtm-norisring-q3-2026.html'))[0]).toMatchObject({ pos: '1', name: 'N. Thiim', time: '48.583' });
+  });
+
+  it('writes minutes with colons', () => {
+    expect(dtmTime("1:50'55.938")).toBe('1:50:55.938');
+    expect(dtmTime("+1'00.591")).toBe('+1:00.591');
+    expect(dtmTime('+3.027')).toBe('+3.027');
+  });
+
+  it("spells motorsport.com's initials as drivers.json does, and leaves a name it cannot place alone", async () => {
+    const file = JSON.parse(await fixture('../../content/series/dtm/drivers.json')) as { teams: { drivers: { name: string; also?: string[] }[] }[] };
+    const spell = nameSpeller(file.teams.flatMap(t => t.drivers));
+    expect(spell('M. Engel')).toBe('Maro Engel');
+    expect(spell('K. van der Linde')).toBe('Kelvin van der Linde');
+    expect(spell('B. Dörr')).toBe('Ben Dörr');
+    expect(spell('P. Maximilian')).toBe('Maximilian Paul');
+    expect(spell('C. Engelhart')).toBe('Christian Engelhart');
+    expect(spell('S. Connor Primm')).toBe('Simon Connor Primm');
+    expect(spell('X. Nobody')).toBe('X. Nobody');
+    expect(nameSpeller([{ name: 'Max Muster' }, { name: 'Mia Muster' }])('M. Muster')).toBe('M. Muster');
+  });
+});
+
+describe("DTM's events on motorsport.com (O33)", () => {
+  it("reads the picker's events and the page's own, in the order of their ids, and nothing else", () => {
+    const html =
+      '<a class="msnt-select__option" href="/dtm/results/2026/zandvoort-665347/">Zandvoort</a>' +
+      '<a class="msnt-select__option" href="/dtm/results/2026/red-bull-ring-665344/">Red Bull Ring</a>' +
+      '<a class="ms-tab-menu__link" href="/dtm/results/2026/hockenheim-665365/?st=FP1">FP1</a>' +
+      '<a href="/dtm/results/2026/hockenheim-663181/">another Hockenheim page</a>';
+    expect(dtmEvents(html, 2026)).toEqual(['red-bull-ring-665344', 'zandvoort-665347', 'hockenheim-665365']);
+  });
+});
+
+describe("WorldSBK's race points (O33)", () => {
+  it('pays a classified rider by place and nothing to a retirement, wherever it is listed', () => {
+    expect(wsbkPoints(1, 'Classified', false)).toBe(25);
+    expect(wsbkPoints(15, 'Classified', false)).toBe(1);
+    expect(wsbkPoints(16, 'Classified', false)).toBe(0);
+    expect(wsbkPoints(9, 'Classified', true)).toBe(1);
+    expect(wsbkPoints(15, 'Retired', false)).toBe(0);
+  });
+
+  it("builds a restarted race's table from its results answer, as the stored tables write it", () => {
+    const row = (id: string, position: number, status: string, time: number | null) => ({ type: 'results', attributes: { position, status, time }, relationships: { rider: { data: { id } }, team: { data: { id: `t${id}` } } } });
+    const names = ['Bulega', 'Lecuona', 'Lowes', 'Montella', 'Lowes', 'Baldassarri', 'Bassani', 'Surra', 'Bridewell'];
+    const env = {
+      data: [...names.slice(0, 8).map((_, i) => row(`r${i}`, i + 1, 'Classified', 1_000_000 + i * 1500)), row('r8', 15, 'Retired', null)],
+      included: names.flatMap((n, i) => [{ type: 'rider', id: `r${i}`, attributes: { name: `R${i}`, surname: n } }, { type: 'team', id: `tr${i}`, attributes: { name: `Team ${i}` } }]),
+    };
+    const t = wsbkRaceTable('Race 1', env, false);
+    expect(t?.columns).toEqual(['Pos', 'Rider', 'Team', 'Time', 'Pts']);
+    expect(t?.rows[0]).toEqual(['1', 'R0 Bulega', 'Team 0', '16:40.000', '25']);
+    expect(t?.rows[1]).toEqual(['2', 'R1 Lecuona', 'Team 1', '+1.500s', '20']);
+    expect(t?.rows[8]).toEqual(['15', 'R8 Bridewell', 'Team 8', 'Retired', '0']);
   });
 });

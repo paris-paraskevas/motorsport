@@ -103,7 +103,7 @@ import { fetchFomJson, roundOfMeeting, type FomManifest, type FomSessionResponse
 import { buildSessionClassification } from '../lib/results/motogp';
 import { MOTOGP_API_BASE, MOTOGP_CATEGORY_UUID_EXPORT, resolveMotoGPSeasonUuid } from '../lib/standings/motogp';
 import { parseSessionClassification } from '../lib/results/wsbk';
-import { fomQualifyingLabel, fomTable, sessionsWanted, timedTable } from '../lib/wp/multi-race';
+import { DTM_QUALIFYING_POINTS, dtmEvents, dtmRows, dtmSessions, dtmTable, dtmTime, fomQualifyingLabel, fomTable, nameSpeller, sessionsWanted, timedTable, wsbkRaceTable } from '../lib/wp/multi-race';
 import { calledOffOf } from '../lib/wp/render';
 
 const argv = process.argv.slice(2);
@@ -864,6 +864,212 @@ async function wsbkFinder(season: number): Promise<FindSession> {
   };
 }
 
+/** WorldSBK's race points as the series awards them (Task 2.b): a race its API holds twice, stopped and restarted
+ *  (Magny-Cours 2026's Race 1: "001" the nine laps before the red flag, "101" the restart, the official result), from
+ *  its restart; a retirement scores nothing. Every rider's total is checked against the official table each run. */
+async function wsbkRaces(out: Fetched, season: number): Promise<void> {
+  const fresh = out.results.get('wsbk');
+  if (!fresh?.data) return;
+  type Item = { id?: string; attributes?: Record<string, unknown> };
+  const races: [string, string, boolean][] = [['RC1', 'Race 1', false], ['SPRC', 'Superpole Race', true], ['RC2', 'Race 2', false]];
+  const roundsEnv = await getJson<{ data?: Item[] }>(`${WSBK_API}/wsbk-events/v1/seasons/${season}/rounds`);
+  const rounds = fresh.data.map(r => ({ ...r, sessions: [...r.sessions] }));
+  for (const r of rounds) {
+    const src = roundsEnv?.data?.find(x => x.attributes?.sequence_order === r.round)?.attributes?.source_id;
+    if (typeof src !== 'string' || !r.sessions.length) continue;
+    const list = ((await getJson<{ data?: Item[] }>(`${WSBK_API}/wsbk-events/v1/seasons/${season}/rounds/${src}/sessions`))?.data ?? []).filter(s => String(s.id ?? '').includes('-SBK-'));
+    for (const [short, label, superpole] of races) {
+      const same = list.filter(s => String(s.attributes?.short_name ?? '').trim() === short).map(s => String(s.attributes?.source_id ?? '')).sort();
+      if (same.length < 2) continue;
+      const env = await getJson<unknown>(`${WSBK_API}/wsbk-results/v1/seasons/${season}/categories/SBK/rounds/${src}/sessions/${same[same.length - 1]}/results`);
+      const t = env ? wsbkRaceTable(label, env, superpole) : null;
+      if (!t) continue;
+      r.sessions = r.sessions.map(s => (s.label === label ? { ...s, tables: [t] } : s));
+      log('F', `results wsbk R${r.round} ${label}: restarted, its classification from session ${same[same.length - 1]} (of ${same.join(', ')})`);
+    }
+  }
+  const data = rounds.map(r => ({
+    ...r,
+    sessions: r.sessions.map(s => ({
+      ...s,
+      tables: s.tables.map(t => {
+        const time = t.columns.indexOf('Time');
+        const pts = t.columns.indexOf('Pts');
+        return time < 0 || pts < 0 ? t : { ...t, rows: t.rows.map(row => (/^(retired|not classified|dns|dnq|dsq|exc)/i.test(row[time] ?? '') ? row.map((v, i) => (i === pts ? '0' : v)) : row)) };
+      }),
+    })),
+  }));
+  const table = out.standings.get('wsbk')?.data?.[0];
+  if (table) {
+    const sum = new Map<string, number>();
+    for (const r of data)
+      for (const s of r.sessions) {
+        const t = s.tables[0];
+        const name = t?.columns.indexOf('Rider') ?? -1;
+        const pts = t?.columns.indexOf('Pts') ?? -1;
+        if (t && name >= 0 && pts >= 0) for (const row of t.rows) sum.set(row[name], (sum.get(row[name]) ?? 0) + (Number(row[pts]) || 0));
+      }
+    const name = table.columns.indexOf('Rider');
+    const pts = table.columns.indexOf('Pts');
+    const off = table.rows.filter(row => (sum.get(row[name]) ?? 0) !== Number(row[pts]));
+    log('F', `results wsbk points: ${table.rows.length - off.length} of ${table.rows.length} riders' totals equal the official table${off.length ? ` (not ${off.map(row => `${row[name]} ${sum.get(row[name]) ?? 0} for ${row[pts]}`).join(', ')})` : ''}`);
+  }
+  out.results.set('wsbk', { ...fresh, data });
+}
+
+const DTM_RESULTS = 'https://www.motorsport.com/dtm/results';
+const DTM_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36';
+/** The most motorsport.com pages DTM's step fetches a run, a page every 1.5 s: about two rounds' sessions. */
+const DTM_PAGES_MAX = 20;
+
+/** A motorsport.com page as text, then a pause: its pages are scraped, the politest-treated kind of source. */
+async function dtmPage(url: string): Promise<string | null> {
+  const t = await timed(async () => {
+    const res = await fetchUpstream(url, { headers: { 'User-Agent': DTM_UA, Accept: 'text/html' } });
+    return res.ok ? await res.text() : null;
+  }, 30_000);
+  await new Promise(resolve => setTimeout(resolve, 1500));
+  return t.value;
+}
+
+/** DTM (Task 2.b): each round dated by its last day (rounds.json; the old fetcher's dates are placeholders), names as
+ *  drivers.json spells motorsport.com's initials in the results, the standings and the sessions, minutes with colons,
+ *  a winner whose line shows the gap to a disqualified car given his own time (Oschersleben's second race), and each
+ *  round's practice and qualifying from motorsport.com, asked once a round and carried. Qualifying's points (3-2-1;
+ *  at the Norisring the grid's top three) stay only while every driver's total equals the official table. */
+async function dtmData(out: Fetched, season: number, entries: SeriesRoundEntry[], deadline: number): Promise<void> {
+  const fresh = out.results.get('dtm');
+  if (!fresh?.data) return;
+  const spell = nameSpeller(((await loadCuratedDrivers('dtm'))?.teams ?? []).flatMap(t => t.drivers as { name: string; also?: string[] }[]));
+  const tidy = (t: Table): Table => {
+    const name = t.columns.indexOf('Driver');
+    const time = t.columns.indexOf('Time');
+    return { ...t, rows: t.rows.map(r => r.map((v, i) => (i === name ? spell(v) : i === time ? dtmTime(v) : v))) };
+  };
+  let rounds = carrySessions(fresh.data, readStored<ResultRound[]>(relOf('dtm', 'results')), season).map(r => {
+    const end = entries.find(e => e.round === r.round)?.endDate;
+    return { ...r, ...(end ? { date: end } : {}), sessions: r.sessions.map(s => ({ ...s, tables: s.tables.map(tidy) })), ...(r.others ? { others: r.others.map(s => ({ ...s, tables: s.tables.map(tidy) })) } : {}) };
+  });
+  const standings = out.standings.get('dtm');
+  if (standings?.data) out.standings.set('dtm', { ...standings, data: standings.data.map(t => (t.columns.includes('Driver') ? tidy(t) : t)) });
+
+  // motorsport.com's events, a round each in the order of their ids (the old fetcher's own numbering).
+  const winnerGap = rounds.some(r => r.sessions.some(s => /^\+/.test(s.tables[0]?.rows[0]?.[s.tables[0].columns.indexOf('Time')] ?? '')));
+  const missing = rounds.filter(r => r.round !== null && r.sessions.length && !(r.others ?? []).some(o => o.label === 'Free Practice 1'));
+  const landing = winnerGap || missing.length ? await dtmPage(`${DTM_RESULTS}/${season}/`) : null;
+  const events = landing ? dtmEvents(landing, season) : [];
+  if (landing && events.length !== entries.length) log('F', `results dtm-sessions ${events.length} events on motorsport.com for ${entries.length} rounds: nothing asked`);
+  if (events.length === entries.length) rounds = await dtmPages(rounds, events, season, spell, tidy, missing, deadline);
+  out.results.set('dtm', { ...fresh, data: dtmQualifyingPoints(rounds, out.standings.get('dtm')?.data?.find(t => t.columns.includes('Driver'))) });
+}
+
+/** DTM's pages on motorsport.com a run asks for: a race whose winner's line shows a gap, and each round's practice and
+ *  qualifying not yet held, at most DTM_PAGES_MAX pages. */
+async function dtmPages(
+  start: ResultRound[],
+  events: string[],
+  season: number,
+  spell: (name: string) => string,
+  tidy: (t: Table) => Table,
+  missing: ResultRound[],
+  deadline: number,
+): Promise<ResultRound[]> {
+  let rounds = start;
+  const url = (round: number, st: string) => `${DTM_RESULTS}/${season}/${events[round - 1]}/?st=${st}`;
+  let pages = 0;
+  const page = async (round: number, st: string) => {
+    pages++;
+    return dtmPage(url(round, st));
+  };
+
+  // A race whose winner's line shows a gap: his own time from the race's page.
+  for (const r of rounds) {
+    for (const [i, s] of r.sessions.entries()) {
+      const t = s.tables[0];
+      const at = t?.columns.indexOf('Time') ?? -1;
+      if (r.round === null || !t || at < 0 || !/^\+/.test(t.rows[0]?.[at] ?? '')) continue;
+      const html = await page(r.round, s.label === 'Race 1' ? 'RACE1' : 'RACE2');
+      const own = html ? dtmRows(html).find(x => x.pos === '1') : undefined;
+      if (own && spell(own.name) === t.rows[0][t.columns.indexOf('Driver')]) {
+        const rows = t.rows.map((row, k) => (k === 0 ? row.map((v, c) => (c === at ? own.time : v)) : row));
+        r.sessions = r.sessions.map((x, k) => (k === i ? { ...x, tables: [{ ...t, rows }, ...x.tables.slice(1)] } : x));
+        log('F', `results dtm R${r.round} ${s.label}: the winner's time ${own.time} for the gap to a car out of the classification`);
+      }
+    }
+  }
+
+  // Each round's practice and qualifying, once: a grouped weekend (Q3 listed) by the groups rounds.json names.
+  const groupsOf = (round: number) => (roundsFile('dtm').rounds.find(x => x.round === round) as { qualifyingGroups?: Record<string, { A?: string; B?: string }> } | undefined)?.qualifyingGroups;
+  for (const r of missing) {
+    if (r.round === null || pages + 8 > DTM_PAGES_MAX || Date.now() > deadline) {
+      log('F', `results dtm-sessions R${r.round} and after wait for the next run`);
+      break;
+    }
+    const round = r.round;
+    const first = await page(round, 'FP1');
+    if (!first) continue;
+    const listed = dtmSessions(first);
+    const grouped = listed.includes('Q3');
+    const keep: { label: string; table: Table | null }[] = [{ label: 'Free Practice 1', table: dtmTable('Free Practice 1', dtmRows(first)) }];
+    const get = async (st: string) => (listed.includes(st) ? await page(round, st) : null);
+    const fp2 = await get('FP2');
+    keep.push({ label: 'Free Practice 2', table: fp2 ? dtmTable('Free Practice 2', dtmRows(fp2)) : null });
+    if (!grouped) {
+      for (const [st, label] of [['Q1', 'Qualifying 1'], ['Q2', 'Qualifying 2']] as const) {
+        const html = await get(st);
+        keep.push({ label, table: html ? dtmTable(label, dtmRows(html)) : null });
+      }
+    } else {
+      const groups = groupsOf(round);
+      for (const [grid, label] of [['GRID1', 'Qualifying 1'], ['GRID2', 'Qualifying 2']] as const) {
+        const html = await get(grid);
+        keep.push({ label, table: html ? dtmTable(label, dtmRows(html)) : null });
+        for (const g of ['A', 'B'] as const) {
+          const st = groups?.[label]?.[g];
+          const part = st ? await get(st) : null;
+          if (!st) log('F', `results dtm-sessions R${round} ${label}: rounds.json names no page for group ${g}`);
+          keep.push({ label: `${label} Group ${g}`, table: part ? dtmTable(`${label} Group ${g}`, dtmRows(part)) : null });
+        }
+      }
+    }
+    for (const k of keep) if (k.table) rounds = withSession(rounds, round, r.name, r.date, { label: k.label, tables: [tidy(k.table)] });
+    log('F', `results dtm-sessions R${round} ${keep.map(k => `${k.label} ${k.table ? k.table.rows.length : 'EMPTY'}`).join(', ')}`);
+  }
+
+  return rounds;
+}
+
+/** DTM's qualifying points, worked out afresh each run from the places stored (3-2-1 to each qualifying's top three; a
+ *  qualifying in groups, its grid's, both "Qualifying 1" and "Qualifying 2"), and kept only while every driver's total,
+ *  races and qualifying, equals the official table; else every qualifying table is stored without points. */
+function dtmQualifyingPoints(rounds: ResultRound[], table: Table | undefined): ResultRound[] {
+  const qualifying = (label: string) => label === 'Qualifying 1' || label === 'Qualifying 2';
+  const strip = (t: Table): Table => (t.columns.includes('Pts') ? { ...t, columns: t.columns.filter(c => c !== 'Pts'), rows: t.rows.map(row => row.filter((_, c) => t.columns[c] !== 'Pts')) } : t);
+  const award = (t: Table): Table => {
+    const bare = strip(t);
+    const placed = bare.rows.filter(row => /^\d+$/.test(row[0] ?? '')).map(row => Number(row[0])).sort((a, b) => a - b);
+    const top = new Map(placed.slice(0, DTM_QUALIFYING_POINTS.length).map((p, i) => [p, DTM_QUALIFYING_POINTS[i]]));
+    return { ...bare, columns: [...bare.columns, 'Pts'], rows: bare.rows.map(row => [...row, /^\d+$/.test(row[0] ?? '') && top.has(Number(row[0])) ? String(top.get(Number(row[0]))) : '']) };
+  };
+  const mapQ = (f: (t: Table) => Table) => rounds.map(r => (r.others ? { ...r, others: r.others.map(s => (qualifying(s.label) ? { ...s, tables: s.tables.map(f) } : s)) } : r));
+  const scored = mapQ(award);
+  if (!table) return mapQ(strip);
+  const sum = new Map<string, number>();
+  for (const r of scored)
+    for (const s of [...r.sessions, ...(r.others ?? [])]) {
+      const t = s.tables[0];
+      const name = t?.columns.indexOf('Driver') ?? -1;
+      const pts = t?.columns.indexOf('Pts') ?? -1;
+      if (t && name >= 0 && pts >= 0) for (const row of t.rows) sum.set(row[name], (sum.get(row[name]) ?? 0) + (Number(row[pts]) || 0));
+    }
+  const name = table.columns.indexOf('Driver');
+  const pts = table.columns.indexOf('Pts');
+  const off = table.rows.filter(row => (sum.get(row[name]) ?? 0) !== Number(row[pts]));
+  const all = scored.every(r => !r.sessions.length || (r.others ?? []).filter(s => qualifying(s.label)).length === 2);
+  log('F', `results dtm points: ${table.rows.length - off.length} of ${table.rows.length} drivers' totals equal the official table with qualifying's points${all ? '' : ' (the qualifying of some rounds not held yet)'}${off.length ? `; kept without them (not ${off.map(row => `${row[name]} ${sum.get(row[name]) ?? 0} for ${row[pts]}`).join(', ')})` : ''}`);
+  return off.length ? mapQ(strip) : scored;
+}
+
 /** Family A's step after the races are fetched; a part that fails is logged and its stored files stay as they were. */
 async function familyA(out: Fetched, now: Date, roundsOf: (slug: string) => SeriesRoundEntry[], seasonOf: (slug: string) => number): Promise<void> {
   const deadline = Date.now() + FAMILY_A_MS;
@@ -872,6 +1078,8 @@ async function familyA(out: Fetched, now: Date, roundsOf: (slug: string) => Seri
     ['f3', () => fomSessions(out, 'f3', seasonOf('f3'), roundsOf('f3'), now, deadline)],
     ['motogp', () => riderSessions(out, 'motogp', seasonOf('motogp'), roundsOf('motogp'), new Set(MOTOGP_SESSIONS.keys()), () => motogpFinder(seasonOf('motogp'), roundsOf('motogp')), now, deadline)],
     ['wsbk', () => riderSessions(out, 'wsbk', seasonOf('wsbk'), roundsOf('wsbk'), new Set(WSBK_SESSIONS.keys()), () => wsbkFinder(seasonOf('wsbk')), now, deadline)],
+    ['wsbk-points', () => wsbkRaces(out, seasonOf('wsbk'))],
+    ['dtm', () => dtmData(out, seasonOf('dtm'), roundsOf('dtm'), deadline)],
   ];
   for (const [slug, step] of steps) {
     try {
