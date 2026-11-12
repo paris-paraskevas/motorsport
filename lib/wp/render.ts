@@ -761,7 +761,7 @@ export function calendarEntries(series: Pick<Series, 'sessions' | 'rounds'>, now
         start: new Date(start).toISOString(),
         end: new Date(end).toISOString(),
         dateOnly: s.dateOnly === true,
-        event: own !== undefined && own !== w.round ? (live.get(own) ?? event) : event,
+        event: own !== undefined && own !== w.round ? live.get(own) || `Round ${own}` : event,
         session: sessionName(s.title),
         round: own ?? (w.round > 0 ? w.round : null),
         ...(location ? { location } : {}),

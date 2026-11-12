@@ -735,9 +735,53 @@ describe('calendarEntries', () => {
       const grouped = [6, 6, 6, 6, 6, 6, 6, 6, 7, 7];
       expect(roundsOf(calendarEntries(series, now))).toEqual(grouped);
       expect(roundsOf(calendarEntries(series, now, file()))).toEqual(grouped);
-      expect(roundsOf(calendarEntries(series, now, file(6, 9)))).toEqual(grouped);
+      const missing = calendarEntries(series, now, file(6, 9));
+      expect(roundsOf(missing)).toEqual(grouped);
+      expect(missing[2].event).toBe('Sonsio Grand Prix at the Brickyard');
       const off = { ...series, rounds: { season: 2026, rounds: roundsList.map(r => (r.round === 7 ? { ...r, cancelled: true } : r)) } };
-      expect(roundsOf(calendarEntries(off, now, file(6, 7)))).toEqual([6, 6, 6, 6, 6, 6, 6, 6, null, null]);
+      const called = calendarEntries(off, now, file(6, 7));
+      expect(roundsOf(called)).toEqual([6, 6, 6, 6, 6, 6, 6, 6, null, null]);
+      expect(called[2].event).toBe('Sonsio Grand Prix at the Brickyard');
+    });
+
+    it('reads “Round 7” for a moved session when rounds.json gives round 7 no name', () => {
+      const blank = { ...series, rounds: { season: 2026, rounds: roundsList.map(r => (r.round === 7 ? { ...r, name: '' } : r)) } };
+      expect(calendarEntries(blank, now, file(6, 7))[2]).toMatchObject({ session: 'Indianapolis 500 Practice 1', round: 7, event: 'Round 7' });
+    });
+
+    // Formula E's Jeddah: one weekend to the grouping, which splits it by rounds.json's dates; its blocks agree.
+    it('keeps a double-header as the grouping splits it', () => {
+      const jeddah: Pick<Series, 'sessions' | 'rounds'> = {
+        sessions: ([
+          ['FP1 (Jeddah R4)', '2026-02-12T14:00:00Z'],
+          ['FP2 (Jeddah R4)', '2026-02-13T09:00:00Z'],
+          ['Qualifying (Jeddah R4)', '2026-02-13T11:20:00Z'],
+          ['Race (Jeddah R4)', '2026-02-13T17:05:00Z'],
+          ['FP3 (Jeddah R5)', '2026-02-14T09:00:00Z'],
+          ['Qualifying (Jeddah R5)', '2026-02-14T11:20:00Z'],
+          ['Race (Jeddah R5)', '2026-02-14T17:05:00Z'],
+        ] as [string, string][]).map(([title, start]) => session(`FE - ${title}`, start, { seriesSlug: 'formula-e', location: 'Jeddah Corniche Circuit' })),
+        rounds: {
+          season: 2026,
+          rounds: [
+            { round: 4, startDate: '2026-02-12', endDate: '2026-02-13', name: 'Jeddah E-Prix — Race 1' },
+            { round: 5, startDate: '2026-02-14', endDate: '2026-02-14', name: 'Jeddah E-Prix — Race 2' },
+          ],
+        },
+      };
+      const blocks: SessionsOverridesFile = {
+        season: 2026,
+        overrides: [
+          { matchDate: '2026-02-13', round: 4, sessions: jeddah.sessions.slice(0, 4).map(s => ({ title: s.title, start: s.start.toISOString(), end: s.end.toISOString() })) },
+          { matchDate: '2026-02-14', round: 5, sessions: jeddah.sessions.slice(4).map(s => ({ title: s.title, start: s.start.toISOString(), end: s.end.toISOString() })) },
+        ],
+      };
+      const entries = calendarEntries(jeddah, new Date('2026-02-01T00:00:00Z'), blocks);
+      expect(entries).toEqual(calendarEntries(jeddah, new Date('2026-02-01T00:00:00Z')));
+      expect(entries.map(e => [e.round, e.event])).toEqual([
+        ...Array(4).fill([4, 'Jeddah E-Prix — Race 1']),
+        ...Array(3).fill([5, 'Jeddah E-Prix — Race 2']),
+      ]);
     });
   });
 });

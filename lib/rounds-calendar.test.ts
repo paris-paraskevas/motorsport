@@ -1,3 +1,5 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import { describe, it, expect } from 'vitest';
 import f1Rounds from '../content/series/f1/rounds.json';
 import wecRounds from '../content/series/wec/rounds.json';
@@ -117,5 +119,44 @@ describe('IndyCar 2026 calendar', () => {
       expect(round, `round ${block.round} for ${block.matchDate}`).toBeDefined();
       expect(block.matchDate >= round!.startDate && block.matchDate <= round!.endDate, `${block.matchDate} inside round ${block.round}`).toBe(true);
     }
+  });
+});
+
+// The Calendar puts each session in the round its sessions.json block names (lib/wp/render.ts calendarEntries), so a
+// block that names a round must name a live one of its own series, close to that round's dates (the longest event week,
+// the Indianapolis 500's, opens ten days before its race weekend; Le Mans and Spa's open three and four), and a session
+// belongs to one block only.
+describe('sessions.json blocks, every series', () => {
+  const root = path.resolve(process.cwd(), 'content', 'series');
+  const read = (f: string): unknown => (fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, 'utf8')) : null);
+  type Block = { matchDate: string; round?: number; sessions: { title: string; start: string }[] };
+  type Round = { round: number; startDate: string; endDate: string; cancelled?: boolean };
+  const day = (iso: string): number => Date.parse(`${iso.slice(0, 10)}T00:00:00Z`) / 86_400_000;
+
+  it('name a live round of their series, within 14 days of its dates, and no session twice', () => {
+    let named = 0;
+    for (const slug of fs.readdirSync(root)) {
+      const blocks = (read(path.join(root, slug, 'sessions.json')) as { overrides?: Block[] } | null)?.overrides ?? [];
+      const file = read(path.join(root, slug, 'rounds.json')) as Round[] | { rounds?: Round[] } | null;
+      const rounds = (Array.isArray(file) ? file : file?.rounds) ?? [];
+      const live = new Map(rounds.filter(r => !r.cancelled).map(r => [r.round, r]));
+      const seen = new Set<string>();
+      for (const b of blocks) {
+        for (const s of b.sessions) {
+          const key = `${Date.parse(s.start)} ${s.title}`;
+          expect(seen.has(key), `${slug}: ${s.title} at ${s.start} in two blocks`).toBe(false);
+          seen.add(key);
+        }
+        if (b.round === undefined) continue;
+        named++;
+        const r = live.get(b.round);
+        expect(r, `${slug}: the block of ${b.matchDate} names round ${b.round}, which rounds.json lacks or calls off`).toBeDefined();
+        for (const s of b.sessions) {
+          const off = Math.max(day(r!.startDate) - day(s.start), day(s.start) - day(r!.endDate), 0);
+          expect(off, `${slug}: ${s.title} on ${s.start.slice(0, 10)}, round ${b.round} runs ${r!.startDate} to ${r!.endDate}`).toBeLessThanOrEqual(14);
+        }
+      }
+    }
+    expect(named).toBeGreaterThan(200);
   });
 });
