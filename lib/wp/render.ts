@@ -864,6 +864,57 @@ export interface SeriesData {
   category?: string;
   colour?: string;
   champion?: string;
+  /** Every series' `site` setting (meta.json), keyed by slug, the same object on every series: a page reads its own
+   *  series' pages and links another series' built ones (O33). */
+  sites?: Readonly<Record<string, SeriesSite>>;
+}
+
+// ── A series' setting (O33): its family and the pages built ──────────────────
+//
+// content/series/<slug>/meta.json `site`: { "family": "F1", "pages": ["results", "standings", "champions", "weekends"] }.
+// Without it a series keeps the plain pages (seriesPages). It replaced three Formula 1 switches: the round-2 design,
+// the built tabs and the weekend pages.
+
+/** The weekend families of O20, Formula 1 its own: whose code draws a series' weekends and its rounds' folds. */
+export const FAMILIES = ['F1', 'A', 'B', 'C', 'D', 'E'] as const;
+export type Family = (typeof FAMILIES)[number];
+/** The pages a series can have built beyond its Overview, which is built once the series has a `site`. */
+export const SITE_PAGES = ['results', 'standings', 'champions', 'weekends'] as const;
+export type SitePage = (typeof SITE_PAGES)[number];
+
+export interface SeriesSite {
+  family: Family;
+  pages: SitePage[];
+}
+
+/** A meta.json's `site`, checked: null when it has none. A wrong value throws, naming the file, so a hand edit stops
+ *  the run before anything is published instead of rewriting a series' pages plain. */
+export function siteOf(slug: string, raw: unknown): SeriesSite | null {
+  if (raw === undefined || raw === null) return null;
+  const at = `content/series/${slug}/meta.json`;
+  if (!isObj(raw)) throw new Error(`${at}: site must be an object such as { "family": "A", "pages": ["results"] }`);
+  const family = raw.family;
+  if (typeof family !== 'string' || !(FAMILIES as readonly string[]).includes(family)) {
+    throw new Error(`${at}: site.family ${JSON.stringify(family)} is not one of ${FAMILIES.join(', ')}`);
+  }
+  // Formula 1's family reads stores kept for Formula 1 alone (OpenF1's sessions and maps, Jolpica's laps).
+  if (family === 'F1' && slug !== 'f1') throw new Error(`${at}: site.family "F1" is Formula 1's own; another series takes A to E`);
+  if (!Array.isArray(raw.pages)) throw new Error(`${at}: site.pages must be a list, such as ["results", "standings"]`);
+  const wrong = raw.pages.find(p => typeof p !== 'string' || !(SITE_PAGES as readonly string[]).includes(p));
+  if (wrong !== undefined) throw new Error(`${at}: site.pages holds ${JSON.stringify(wrong)}, not one of ${SITE_PAGES.join(', ')}`);
+  return { family: family as Family, pages: [...new Set(raw.pages as SitePage[])] };
+}
+
+/** A page built for the series, or for another series named by its slug. */
+export const built = (d: Pick<SeriesData, 'slug' | 'sites'>, page: SitePage, slug: string = d.slug): boolean => Boolean(d.sites?.[slug]?.pages.includes(page));
+
+/** What a family draws itself (O33), registered in scripts/wp-publish.mts; Formula 1's are weekend.ts's and series.ts's. */
+export interface FamilyKit {
+  /** The season page, each round's Overview and each session's page. */
+  weekendPages(d: SeriesData): Page[];
+  /** The fold under a round's row on the Results page: the weekend's points as the family counts them, '' for none;
+   *  without it, Formula 1's sprint and race points. */
+  resultsFold?(d: SeriesData, r: ResultRound): string;
 }
 
 export interface SeriesTeam {
@@ -885,8 +936,6 @@ export interface ChampionsData {
 export const seriesPath = (slug: string, sub?: 'standings' | 'results' | 'calendar' | 'champions'): string =>
   `/series/${slug}/${sub ? `${sub}/` : ''}`;
 
-/** The series whose weekends have pages of their own (slot O19). */
-export const WEEKEND_PAGES: ReadonlySet<string> = new Set(['f1']);
 /** A season's page, each weekend under it at round-<n>/, and each session under its weekend ("Practice 1" → practice-1/). */
 export const seasonPath = (slug: string, season: number): string => `/series/${slug}/${season}/`;
 export const weekendPath = (slug: string, season: number, round: number): string => `${seasonPath(slug, season)}round-${round}/`;
@@ -1168,7 +1217,7 @@ function weekendCard({ d, r }: Held): string {
     `<b>${escapeHtml(r.name.replace(/\s*\([^)]*\)\s*$/, ''))}</b>${host ? `<span>${escapeHtml(host)}</span>` : ''}<i class="pd-wc-num" aria-hidden="true"><b class="pd-wc-series">${escapeHtml(chipLabel(d))}</b>${r.round}</i></header>` +
     (list.length ? `<div class="pd-wc-days">${days.join('')}</div>` : '<p class="pd-wc-none">Times not published yet.</p>') +
     `<footer class="pd-wc-foot"><span>${list.length} session${list.length === 1 ? '' : 's'} · <span data-pd-zonename>UTC</span></span>` +
-    (WEEKEND_PAGES.has(d.slug) && d.season ? `<a href="${weekendPath(d.slug, d.season, r.round)}">Weekend page →</a>` : '') +
+    (built(d, 'weekends') && d.season ? `<a href="${weekendPath(d.slug, d.season, r.round)}">Weekend page →</a>` : '') +
     '</footer></article>'
   );
 }
@@ -1342,4 +1391,65 @@ export function planSync(desired: Page[], existing: WpPageRow[]): SyncStep[] {
       const at = pathOf.get(row.id) ?? page.path;
       return mark[1] === hash ? { kind: 'same', id: row.id, page, at } : { kind: 'update', id: row.id, page, hash, at };
     });
+}
+
+// ── WordPress's 429 (O33): wait as asked, then try again ─────────────────────
+//
+// WordPress.com answered HTTP 429 to the publisher's requests from GitHub's runners and the run stopped at the first one
+// (IDEAS, 27 Oct). A request is tried up to five times, each wait as the answer's Retry-After says (seconds, or a date:
+// RFC 9110 § 10.2.3), 30 s when it says nothing and two minutes at most, so a run keeps inside its twenty; an answer
+// asking for longer ends the tries. Every 429 is logged with the headers and the start of the body WordPress sent.
+
+export const RETRY_TRIES = 5;
+const RETRY_DEFAULT_MS = 30_000;
+const RETRY_MAX_MS = 120_000;
+/** A Retry-After of 0 or a date already past still waits this long, so the tries are not sent back to back. */
+const RETRY_MIN_MS = 1_000;
+
+/** Retry-After in milliseconds from now, from delta-seconds or an HTTP-date; null when absent or unreadable. */
+export function retryAfterMs(value: string | null, now: number): number | null {
+  const v = value?.trim() ?? '';
+  if (/^\d+$/.test(v)) return Number(v) * 1000;
+  // An HTTP-date starts with its day's name ("Thu, 12 Nov 2026 12:00:30 GMT"): Date.parse also reads "1.5" as a day in 2001.
+  const at = /^[A-Za-z]{3}/.test(v) ? Date.parse(v) : NaN;
+  return Number.isFinite(at) ? Math.max(0, at - now) : null;
+}
+
+/** The wait before the next try after a 429 on try `attempt`; null when the tries end. */
+export function retryWait(value: string | null, attempt: number, now: number): number | null {
+  if (attempt >= RETRY_TRIES) return null;
+  const asked = retryAfterMs(value, now);
+  if (asked !== null && asked > RETRY_MAX_MS) return null;
+  return asked === null ? RETRY_DEFAULT_MS : Math.max(RETRY_MIN_MS, asked);
+}
+
+/** An answer's headers for the log, sorted by name, its cookies left out. */
+export function headerLine(headers: Headers): string {
+  const out: string[] = [];
+  headers.forEach((value, name) => {
+    if (name !== 'set-cookie') out.push(`${name}=${value}`);
+  });
+  return out.sort().join('; ');
+}
+
+/** Sends until the answer is not a 429, waiting as retryWait says between tries. The last answer comes back, a 429
+ *  among them when the tries ended, and its body still unread. */
+export async function sendWithRetry(
+  send: () => Promise<Response>,
+  deps: { what: string; sleep: (ms: number) => Promise<void>; log: (line: string, waited: boolean) => void; now: () => number },
+): Promise<Response> {
+  for (let attempt = 1; ; attempt++) {
+    const res = await send();
+    if (res.status !== 429) return res;
+    const after = res.headers.get('retry-after');
+    const wait = retryWait(after, attempt, deps.now());
+    const body = (await res.clone().text().catch(() => '')).replace(/\s+/g, ' ').trim().slice(0, 200);
+    deps.log(
+      `429 ${deps.what} (try ${attempt} of ${RETRY_TRIES}): Retry-After ${after ?? 'not sent'}, ${wait === null ? 'no more tries' : `waiting ${Math.round(wait / 1000)} s`}; ` +
+        `headers ${headerLine(res.headers) || 'none'}; body ${JSON.stringify(body)}`,
+      wait !== null,
+    );
+    if (wait === null) return res;
+    await deps.sleep(wait);
+  }
 }
