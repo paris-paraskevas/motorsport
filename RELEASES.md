@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.306 — 2026-11-12
+
+Behind the scenes: the project's own records brought up to date.
+
 ## 1.0.305 — 2026-11-12
 
 Behind the scenes: the endurance and GT championships, the FIA World Endurance Championship, IMSA and GT World Challenge Europe, now keep every session of a race weekend, practice and qualifying as well as the race, with each car's crew as it raced that weekend and every driver and team written as they write themselves. The WEC's last two rounds, Barcelona and Monza, and IMSA's last six rounds join their results, and the WEC's two called-off rounds, Qatar and Bahrain, are recorded for the season page. Nothing changes for readers yet.

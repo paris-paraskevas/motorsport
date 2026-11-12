@@ -14,6 +14,18 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1196 · 1.0.306 · records (sessions 71 and 72, the desk) · opened 2026-11-12 into `next` on the operator's "do it" for the records PR; `next` merged in first (0e3a12d1) and again after #1195 (f09001b3), the records files union-resolved; 1.0.306 provisional, after #1195 (1.0.304) and #1194 (1.0.305); the merge on the word
+**The desk's records.** The ledger, the handoff and IDEAS as sessions 71 and 72 kept them on the local branch desk/records since 25 October. No code, content or page changes.
+- **Readers see:** nothing.
+- **Editors get:** nothing.
+- **Files (9):**
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · session 71's evidence (O17, O28, O29, O31, O20 done; the tests of 28 Oct; O10's 429 outage) and session 72's (O18 split into O32 to O37 with its dated changes line; O32 done; O33 to O35 started; O10's Formula 1 publish after rounds 19 and 20).
+  - `docs/HANDOFF.md` · session 71's sections and session 72's (12 Nov), with its landmines.
+  - `IDEAS.md` · eight findings of 25 Oct to 12 Nov.
+  - `docs/pull-requests.md` · #1186's entry completed; this entry.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json` · 1.0.306.
+- **Review:** none; records only, no code or content.
+
 ## #1194 · 1.0.305 · O34 (family C's data: every WEC, IMSA and GT World session and each race's own crews) · opened 2026-11-12 into `next` on the operator's "Push and open PR", Task 2.c's first PR, planned in plan mode and approved on 28 Oct with two answers ("Every session", "Teams' own spelling"), built 28–29 Oct as 1.0.303; `next` merged in after #1191, #1193 and #1195, whose 1.0.302, 1.0.303 and 1.0.304 came first, so this takes 1.0.305; reviewed on "Yes, under 60%" (12 Nov) and the review folded; the merge on the word
 **Family C's data.** FIA WEC, IMSA and GT World store every session of a round, not just the race, and each car's crew from its own race, every name spelled as the series' drivers.json spells it and every team as it writes itself; WEC's two called-off rounds, Barcelona's and Monza's race ids, and IMSA's rounds 6–11 with every session's file. No page code: family C's pages come with the second PR, on Task 2.b's groundwork.
 - **Readers see:** nothing. With the stored data, `next` and this branch render the same 214 pages. Once runs from `next` have refilled the data, 7 of them change, none that a publish run sends by default (`--only /calendar/,/series/f1/`, which brings `/series/`): `/status/` and the plain `/series/wec/`, `/series/imsa/`, `/series/gt-world/` and their results pages. The old Next.js app, which no reader reaches (paddock-tracker.com answers from WordPress.com) and whose main has not moved since 13 Oct, reads the same content files: deployed, it would draw WEC's two called-off rounds, and its fetchers would gain IMSA's rounds 6–11 and WEC's 7–8.
@@ -323,7 +335,9 @@ Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), fro
   2. Point at the button: it darkens slightly and the year stays hidden behind it.
   3. The same page on a phone: the button across the card, readable over the year.
 - **After the merge:** the upload of 0.1.19; CSS only, so no publish run.
-- **Review:** one fresh-context Sonnet reader, on the operator's 5-hour figure (about 25k tokens).
+- **Review:** not run; the operator merged before giving the 5-hour figure.
+- **Merged:** 25 Oct 03:39Z into `next` as 05d9ca5f, by the operator.
+- **Uploaded and checked:** 0.1.19 uploaded by the operator on 25 Oct. Checked on the site, signed in, at 1,440 px: the live stylesheet's Version 0.1.19 (`curl` of the theme's style.css); the button's background rgb(255, 128, 0), equal to the card's; the button the topmost element at its centre. The operator's test, with the three checks above, follows.
 
 ## #1185 · 1.0.296 · O17 (Formula 1's Champions: the roll of honour) · opened 2026-10-23 into `next` on the operator's "Push o17/champions and open the PR into next.", built on "Go: plan O17 in plan mode." and "Build O17 now in this session.", the plan approved in plan mode; the review and the merge on the word
 **The Champions page.** Built as drawn on The Paddock Drafts, full width; the three doorways to pages the new site does not have yet are greyed, as answered in plan mode. The records of the lap chart's draft (O28, answered "All six lap chart defaults stand.") and of O17's opening and plan ride in from the local o16/records.
