@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import type { Series, Session } from '../types';
+import type { Series, Session, SessionsOverridesFile } from '../types';
 import type { CircuitMap, MapsStore, SessionExtras, SessionsStore, SessionWeather } from '../openf1/weekend';
 import {
   askableAt,
@@ -9,6 +9,8 @@ import {
   carrySessions,
   escapeHtml,
   hashOf,
+  isRaceLaps,
+  lapsDue,
   onlyFamily,
   latestRace,
   mapsDue,
@@ -18,6 +20,7 @@ import {
   openf1Session,
   openf1Wanted,
   planSync,
+  raceLaps,
   resultRounds,
   withSession,
   seriesPages,
@@ -32,8 +35,10 @@ import {
   wpPaths,
   type CalendarEntry,
   type CalendarRound,
+  type LapsStore,
   type ListedSession,
   type Page,
+  type RaceLaps,
   type ResultRound,
   type SeriesData,
   type WpPageRow,
@@ -408,13 +413,26 @@ describe("Formula 1's weekend data: what a run asks OpenF1 for (O19)", () => {
     expect(nextAsk(Date.parse('2026-10-10T14:00:00Z'), now)).toBe('2026-10-12T14:00:00.000Z');
   });
 
-  it('calls a session whole with its weather and marks, and its tyres when it is a race or a sprint', () => {
+  it('calls a session whole with its weather and marks, its tyres when it is a race or a sprint, and a race with its safety car laps', () => {
     expect(weekendWhole(undefined, 'Race')).toBe(false);
     expect(weekendWhole(extras({ weather, marks: {} }), 'Practice 1')).toBe(true);
     expect(weekendWhole(extras({ weather, marks: {} }), 'Sprint Qualifying')).toBe(true);
     expect(weekendWhole(extras({ weather, marks: {} }), 'Sprint')).toBe(false);
-    expect(weekendWhole(extras({ weather, marks: {}, stints: [[1, [['MEDIUM', 1, 19]]]] }), 'Race')).toBe(true);
+    expect(weekendWhole(extras({ weather, marks: {}, stints: [[1, [['MEDIUM', 1, 19]]]] }), 'Sprint')).toBe(true);
+    // O28: a race kept before its safety car laps were read is asked again once; none is [].
+    expect(weekendWhole(extras({ weather, marks: {}, stints: [[1, [['MEDIUM', 1, 19]]]] }), 'Race')).toBe(false);
+    expect(weekendWhole(extras({ weather, marks: { neutral: [] }, stints: [[1, [['MEDIUM', 1, 19]]]] }), 'Race')).toBe(false);
+    expect(weekendWhole(extras({ weather, marks: { neutral: [], lanes: [] }, stints: [[1, [['MEDIUM', 1, 19]]]] }), 'Race')).toBe(true);
     expect(weekendWhole(extras({ marks: {} }), 'Practice 1')).toBe(false);
+  });
+
+  it('asks a race kept before its safety car laps again, and a race with them no more', () => {
+    const calendar = [at(1, 'Race', '2026-03-08T04:00:00Z', 2)];
+    const list = [listed(9002, 'Race', '2026-03-08T04:00:00+00:00', '2026-03-08T06:00:00+00:00')];
+    const kept = (marks: SessionExtras['marks']): SessionsStore => ({ '2026': { '1': { Race: extras({ weather, marks, stints: [[1, [['MEDIUM', 1, 58]]]] }) } } });
+    const now = new Date('2026-10-25T09:00:00Z');
+    expect(weekendDue(calendar, list, kept({}), 2026, now, 20).due.map(d => d.session.session_key)).toEqual([9002]);
+    expect(weekendDue(calendar, list, kept({ neutral: [{ kind: 'VSC', from: 12, to: 14 }], lanes: [] }), 2026, now, 20).due).toEqual([]);
   });
 
   describe('weekendDue', () => {
@@ -534,6 +552,99 @@ describe("Formula 1's weekend data: what a run asks OpenF1 for (O19)", () => {
   });
 });
 
+describe("Formula 1's lap chart: what a run asks Jolpica for (O28)", () => {
+  // Jolpica's answers as it gives them: numbers as strings, the race in MRData.RaceTable.Races[0], 100 timings a page.
+  const answer = (race: Record<string, unknown>, total?: number) => ({ MRData: { limit: '100', ...(total === undefined ? {} : { total: String(total) }), RaceTable: { Races: [race] } } });
+  const result = (driverId: string, givenName: string, familyName: string, grid: number, laps: number, status = 'Finished') => ({
+    position: '1', Driver: { driverId, givenName, familyName }, grid: String(grid), laps: String(laps), status,
+  });
+  const lap = (n: number, ...ids: string[]) => ({ number: String(n), Timings: ids.map((driverId, i) => ({ driverId, position: String(i + 1), time: '1:40.000' })) });
+  // Three laps: Verstappen from pole leads two and loses the lead on the third, Leclerc from second; Hülkenberg from
+  // the pit lane runs two and retires.
+  const results = answer({
+    Results: [result('leclerc', 'Charles', 'Leclerc', 2, 3), result('max_verstappen', 'Max', 'Verstappen', 1, 3), result('hulkenberg', 'Nico', 'Hülkenberg', 0, 2, 'Retired')],
+  });
+  const laps = [lap(1, 'max_verstappen', 'leclerc', 'hulkenberg'), lap(2, 'max_verstappen', 'leclerc', 'hulkenberg'), lap(3, 'leclerc', 'max_verstappen')];
+  // Jolpica's pit stops: Verstappen stopped on lap 2, Leclerc on laps 1 and 2.
+  const stop = (driverId: string, n: number, lapNo: number) => ({ driverId, lap: String(lapNo), stop: String(n), time: '15:00:00', duration: '22.100' });
+  const stops = [answer({ PitStops: [stop('leclerc', 1, 1), stop('max_verstappen', 1, 2), stop('leclerc', 2, 2)] }, 3)];
+
+  it('keeps each driver of the result with the grid slot, the pit lane as 0, the place at the end of each lap and its stops', () => {
+    expect(raceLaps(results, [answer({ Laps: laps }, 8)], stops)).toEqual({
+      laps: 3,
+      drivers: [['Charles Leclerc', 2, '2.2.1', '1@15:00:00.2@15:00:00'], ['Max Verstappen', 1, '1.1.2', '2@15:00:00'], ['Nico Hülkenberg', 0, '3.3', '']],
+      complete: true,
+      why: '',
+    });
+  });
+
+  it('reads a lap split across two pages, as Jolpica splits them at 100 timings', () => {
+    const split = [answer({ Laps: [laps[0], { ...laps[1], Timings: laps[1].Timings.slice(0, 1) }] }, 8), answer({ Laps: [{ ...laps[1], Timings: laps[1].Timings.slice(1) }, laps[2]] }, 8)];
+    expect(raceLaps(results, split, stops).complete).toBe(true);
+    expect(raceLaps(results, split, stops).drivers[1]).toEqual(['Max Verstappen', 1, '1.1.2', '2@15:00:00']);
+  });
+
+  it('keeps the places a penalty lap left past a driver’s result: Sainz in Britain, 52 laps run, classified a lap down', () => {
+    // Hülkenberg ran all three laps on the road, but his result counts two.
+    const penalty = [lap(1, 'max_verstappen', 'leclerc', 'hulkenberg'), lap(2, 'max_verstappen', 'leclerc', 'hulkenberg'), lap(3, 'leclerc', 'max_verstappen', 'hulkenberg')];
+    const lapped = answer({ Results: [result('leclerc', 'Charles', 'Leclerc', 2, 3), result('max_verstappen', 'Max', 'Verstappen', 1, 3), result('hulkenberg', 'Nico', 'Hülkenberg', 0, 2, 'Lapped')] });
+    expect(raceLaps(lapped, [answer({ Laps: penalty }, 9)], stops)).toMatchObject({ laps: 3, complete: true });
+    expect(raceLaps(lapped, [answer({ Laps: penalty }, 9)], stops).drivers[2]).toEqual(['Nico Hülkenberg', 0, '3.3.3', '']);
+  });
+
+  it('calls the laps incomplete for a page missing, a place doubled, a driver short of laps or a driver it cannot name', () => {
+    expect(raceLaps(results, [answer({ Laps: laps.slice(0, 2) }, 8)], stops)).toMatchObject({ complete: false, why: '6 of 8 timings' });
+    const doubled = { number: '2', Timings: [{ driverId: 'max_verstappen', position: '1' }, { driverId: 'leclerc', position: '1' }, { driverId: 'hulkenberg', position: '3' }] };
+    expect(raceLaps(results, [answer({ Laps: [laps[0], doubled, laps[2]] }, 8)], stops)).toMatchObject({ complete: false, why: 'lap 2 holds places 1,1,3' });
+    const short = answer({ Results: [result('leclerc', 'Charles', 'Leclerc', 2, 3), result('max_verstappen', 'Max', 'Verstappen', 1, 3), result('hulkenberg', 'Nico', 'Hülkenberg', 0, 3, 'Lapped')] });
+    expect(raceLaps(short, [answer({ Laps: laps }, 8)], stops)).toMatchObject({ complete: false, why: 'Nico Hülkenberg has 2 places for 3 laps' });
+    // A lap missing before the last is a gap, though the count of places would do.
+    const holed = [answer({ Laps: [lap(1, 'max_verstappen', 'leclerc'), lap(2, 'max_verstappen', 'leclerc', 'hulkenberg'), lap(3, 'leclerc', 'max_verstappen', 'hulkenberg')] }, 8)];
+    expect(raceLaps(results, holed, stops)).toMatchObject({ complete: false, why: 'Nico Hülkenberg has no place on lap 1' });
+    const stranger = [answer({ Laps: [...laps.slice(0, 2), lap(3, 'leclerc', 'max_verstappen', 'bottas')] }, 9)];
+    expect(raceLaps(results, stranger, stops)).toMatchObject({ complete: false, why: 'laps for bottas, who is not in the result' });
+    expect(raceLaps(answer({ Results: [] }), [answer({ Laps: laps }, 8)], stops)).toMatchObject({ complete: false, why: 'no result' });
+    expect(raceLaps(results, [answer({ Laps: [] }, 0)], stops)).toMatchObject({ complete: false, why: 'no laps' });
+    expect(raceLaps(results, [], stops)).toMatchObject({ complete: false, why: 'no laps' });
+  });
+
+  it('calls the race incomplete until its pit stops are listed whole', () => {
+    expect(raceLaps(results, [answer({ Laps: laps }, 8)], [])).toMatchObject({ complete: false, why: 'no pit stops yet' });
+    expect(raceLaps(results, [answer({ Laps: laps }, 8)], [{ MRData: { total: '0', RaceTable: { Races: [] } } }])).toMatchObject({ complete: false, why: 'no pit stops yet' });
+    expect(raceLaps(results, [answer({ Laps: laps }, 8)], [answer({ PitStops: [stop('leclerc', 1, 1)] }, 3)])).toMatchObject({ complete: false, why: '1 of 3 pit stops' });
+    expect(raceLaps(results, [answer({ Laps: laps }, 8)], [answer({ PitStops: [stop('bottas', 1, 1)] }, 1)])).toMatchObject({ complete: false, why: 'pit stops for bottas, who is not in the result' });
+  });
+
+  it('asks for the races classified this season and not yet whole, a miss after its next ask, the newest first', () => {
+    const race = (round: number, date: string, label = 'Race'): ResultRound => ({ round, name: `Round ${round}`, date, sessions: [{ label, tables: [{ title: '', columns: ['Pos', 'Driver'], rows: [['1', 'Max Verstappen']] }] }] });
+    const rounds = [race(1, '2026-03-08'), race(2, '2026-03-15'), race(3, '2026-03-29'), race(4, '2026-05-02', 'Sprint'), race(5, '2026-05-24'), race(6, '2025-06-01')];
+    const whole: RaceLaps = { laps: 3, at: '2026-10-25T09:00:00.000Z', drivers: [] };
+    const store: LapsStore = {
+      '2026': { '1': whole, '2': { miss: '2026-10-25T08:00:00.000Z', next: '2026-10-25T10:00:00.000Z' }, '3': { miss: '2026-10-24T08:00:00.000Z', next: '2026-10-25T08:00:00.000Z' } },
+    };
+    const now = new Date('2026-10-25T09:00:00Z');
+    expect(lapsDue(rounds, store, 2026, now)).toEqual([5, 3]);
+    expect(lapsDue(rounds, store, 2026, new Date('2026-10-25T10:00:00Z'))).toEqual([5, 3, 2]);
+    // The first fill: every race classified this season; a whole race is never asked again.
+    expect(lapsDue(rounds, {}, 2026, now)).toEqual([5, 3, 2, 1]);
+    expect(isRaceLaps(whole)).toBe(true);
+    expect(isRaceLaps(store['2026']['2'])).toBe(false);
+  });
+
+  it('takes a race the store holds in another shape (a file edited by hand) as a miss to ask again, never one to draw', () => {
+    const row: [string, number, string, string] = ['Max Verstappen', 1, '1.1.1', '2@15:40:00'];
+    expect(isRaceLaps({ laps: 3, at: '2026-10-25T09:00:00.000Z', drivers: [row] })).toBe(true);
+    // A file written before the visits: three fields a row.
+    expect(isRaceLaps({ laps: 3, at: '2026-10-25T09:00:00.000Z', drivers: [row.slice(0, 3)] })).toBe(true);
+    for (const drivers of [null, {}, [null], [[1, 1, '1.1.1', '']], [['Max Verstappen', '1', '1.1.1', '']], [['Max Verstappen', 1, '1.1.1', 2]]]) {
+      expect(isRaceLaps({ laps: 3, at: '2026-10-25T09:00:00.000Z', drivers })).toBe(false);
+    }
+    expect(isRaceLaps({ laps: '3', at: '2026-10-25T09:00:00.000Z', drivers: [row] })).toBe(false);
+    const rounds: ResultRound[] = [{ round: 1, name: 'Round 1', date: '2026-03-08', sessions: [{ label: 'Race', tables: [{ title: '', columns: ['Pos', 'Driver'], rows: [['1', 'Max Verstappen']] }] }] }];
+    expect(lapsDue(rounds, { '2026': { '1': { laps: 3, at: '2026-10-25T09:00:00.000Z', drivers: {} } as unknown as RaceLaps } }, 2026, new Date('2026-10-25T09:00:00Z'))).toEqual([1]);
+  });
+});
+
 describe('latestRace', () => {
   it("is the newest round's last race", () => {
     const rounds: ResultRound[] = [
@@ -573,6 +684,105 @@ describe('calendarEntries', () => {
     ]);
     expect(entries[1]).toMatchObject({ start: '2026-03-06T01:30:00.000Z', end: '2026-03-06T02:30:00.000Z' });
     expect(entries[1].location).toBe('Albert Park Circuit, Melbourne');
+  });
+
+  // The grouping joins sessions four days apart or less, so the Indianapolis 500's first week, three days after round 6's
+  // race, falls into round 6; content/series/indycar/sessions.json puts it in round 7.
+  describe('a session in the round its sessions.json block names', () => {
+    const at = 'Indianapolis Motor Speedway, Indianapolis, IN';
+    const six: [string, string][] = [
+      ['Qualifying', '2026-05-09T14:45:00Z'],
+      ['Sonsio Grand Prix', '2026-05-09T20:30:00Z'],
+    ];
+    const seven: [string, string][] = [
+      ['Indianapolis 500 Practice 1', '2026-05-12T16:00:00Z'],
+      ['Indianapolis 500 Practice 2', '2026-05-13T16:00:00Z'],
+      ['Indianapolis 500 Practice 3', '2026-05-14T16:00:00Z'],
+      ['Indianapolis 500 Fast Friday Practice', '2026-05-15T16:00:00Z'],
+      ['Indianapolis 500 Qualifying Day 1', '2026-05-16T15:00:00Z'],
+      ['Indianapolis 500 Firestone Fast Six', '2026-05-17T22:25:00Z'],
+      ['Indianapolis 500 Carb Day Practice', '2026-05-22T15:00:00Z'],
+      ['110th Indianapolis 500', '2026-05-24T16:30:00Z'],
+    ];
+    const roundsList = [
+      { round: 6, startDate: '2026-05-08', endDate: '2026-05-09', name: 'Sonsio Grand Prix at the Brickyard' },
+      { round: 7, startDate: '2026-05-22', endDate: '2026-05-24', name: '110th Indianapolis 500' },
+    ];
+    const series: Pick<Series, 'sessions' | 'rounds'> = {
+      sessions: [...six, ...seven].map(([title, start]) => session(`IndyCar - ${title}`, start, { seriesSlug: 'indycar', location: at })),
+      rounds: { season: 2026, rounds: roundsList },
+    };
+    const block = (matchDate: string, list: [string, string][], round?: number) => ({
+      matchDate,
+      ...(round === undefined ? {} : { round }),
+      sessions: list.map(([title, start]) => ({ title: `IndyCar - ${title}`, start, end: start, location: at })),
+    });
+    const file = (r6?: number, r7?: number): SessionsOverridesFile => ({
+      season: 2026,
+      overrides: [block('2026-05-09', six, r6), block('2026-05-24', seven, r7)],
+    });
+    const now = new Date('2026-05-01T00:00:00Z');
+    const roundsOf = (entries: CalendarEntry[]) => entries.map(e => e.round);
+
+    it('keeps the Indianapolis 500’s first week in round 7, named as rounds.json names it', () => {
+      const entries = calendarEntries(series, now, file(6, 7));
+      expect(roundsOf(entries)).toEqual([6, 6, 7, 7, 7, 7, 7, 7, 7, 7]);
+      expect(entries[1]).toMatchObject({ session: 'Sonsio Grand Prix', event: 'Sonsio Grand Prix at the Brickyard' });
+      expect(entries[2]).toMatchObject({ session: 'Indianapolis 500 Practice 1', event: '110th Indianapolis 500', start: '2026-05-12T16:00:00.000Z' });
+    });
+
+    it('leaves the grouping’s round where no block names one, or where the round named is missing or called off', () => {
+      const grouped = [6, 6, 6, 6, 6, 6, 6, 6, 7, 7];
+      expect(roundsOf(calendarEntries(series, now))).toEqual(grouped);
+      expect(roundsOf(calendarEntries(series, now, file()))).toEqual(grouped);
+      const missing = calendarEntries(series, now, file(6, 9));
+      expect(roundsOf(missing)).toEqual(grouped);
+      expect(missing[2].event).toBe('Sonsio Grand Prix at the Brickyard');
+      const off = { ...series, rounds: { season: 2026, rounds: roundsList.map(r => (r.round === 7 ? { ...r, cancelled: true } : r)) } };
+      const called = calendarEntries(off, now, file(6, 7));
+      expect(roundsOf(called)).toEqual([6, 6, 6, 6, 6, 6, 6, 6, null, null]);
+      expect(called[2].event).toBe('Sonsio Grand Prix at the Brickyard');
+    });
+
+    it('reads “Round 7” for a moved session when rounds.json gives round 7 no name', () => {
+      const blank = { ...series, rounds: { season: 2026, rounds: roundsList.map(r => (r.round === 7 ? { ...r, name: '' } : r)) } };
+      expect(calendarEntries(blank, now, file(6, 7))[2]).toMatchObject({ session: 'Indianapolis 500 Practice 1', round: 7, event: 'Round 7' });
+    });
+
+    // Formula E's Jeddah: one weekend to the grouping, which splits it by rounds.json's dates; its blocks agree.
+    it('keeps a double-header as the grouping splits it', () => {
+      const jeddah: Pick<Series, 'sessions' | 'rounds'> = {
+        sessions: ([
+          ['FP1 (Jeddah R4)', '2026-02-12T14:00:00Z'],
+          ['FP2 (Jeddah R4)', '2026-02-13T09:00:00Z'],
+          ['Qualifying (Jeddah R4)', '2026-02-13T11:20:00Z'],
+          ['Race (Jeddah R4)', '2026-02-13T17:05:00Z'],
+          ['FP3 (Jeddah R5)', '2026-02-14T09:00:00Z'],
+          ['Qualifying (Jeddah R5)', '2026-02-14T11:20:00Z'],
+          ['Race (Jeddah R5)', '2026-02-14T17:05:00Z'],
+        ] as [string, string][]).map(([title, start]) => session(`FE - ${title}`, start, { seriesSlug: 'formula-e', location: 'Jeddah Corniche Circuit' })),
+        rounds: {
+          season: 2026,
+          rounds: [
+            { round: 4, startDate: '2026-02-12', endDate: '2026-02-13', name: 'Jeddah E-Prix — Race 1' },
+            { round: 5, startDate: '2026-02-14', endDate: '2026-02-14', name: 'Jeddah E-Prix — Race 2' },
+          ],
+        },
+      };
+      const blocks: SessionsOverridesFile = {
+        season: 2026,
+        overrides: [
+          { matchDate: '2026-02-13', round: 4, sessions: jeddah.sessions.slice(0, 4).map(s => ({ title: s.title, start: s.start.toISOString(), end: s.end.toISOString() })) },
+          { matchDate: '2026-02-14', round: 5, sessions: jeddah.sessions.slice(4).map(s => ({ title: s.title, start: s.start.toISOString(), end: s.end.toISOString() })) },
+        ],
+      };
+      const entries = calendarEntries(jeddah, new Date('2026-02-01T00:00:00Z'), blocks);
+      expect(entries).toEqual(calendarEntries(jeddah, new Date('2026-02-01T00:00:00Z')));
+      expect(entries.map(e => [e.round, e.event])).toEqual([
+        ...Array(4).fill([4, 'Jeddah E-Prix — Race 1']),
+        ...Array(3).fill([5, 'Jeddah E-Prix — Race 2']),
+      ]);
+    });
   });
 });
 

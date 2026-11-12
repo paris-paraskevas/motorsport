@@ -1,0 +1,117 @@
+{
+  "season": 2025,
+  "intro": "Three drivers went to the last race with a chance. Max Verstappen, 104 points behind at the end of August, finished the season second; Oscar Piastri had led the standings after 15 of the 24 rounds.",
+  "sources": [
+    "https://www.formula1.com/en/latest/article/timeline-every-twist-and-turn-from-a-dramatic-2025-battle-for-the-drivers.4aJLnF16FT7QnKkhjtrGvf",
+    "https://www.formula1.com/en/latest/article/norris-secures-maiden-f1-title-in-abu-dhabi-with-podium-finish-behind.EMJtmvRA0uzmzUC4MZgmw",
+    "https://www.formula1.com/en/results/2025/drivers"
+  ],
+  "turns": [
+    {
+      "round": 5,
+      "text": "Piastri wins and takes the lead from Norris by 10 points. Norris crashed in qualifying, started tenth and finished fourth.",
+      "sources": [
+        "https://www.formula1.com/en/latest/article/piastri-clinches-victory-in-saudi-arabia-from-verstappen-and-leclerc-as.1XBezBwUfLfjOayPSKNs41",
+        "https://www.formula1.com/en/latest/article/timeline-every-twist-and-turn-from-a-dramatic-2025-battle-for-the-drivers.4aJLnF16FT7QnKkhjtrGvf"
+      ]
+    },
+    {
+      "round": 15,
+      "text": "Norris's car fails a few laps from the end and Piastri wins to lead by 34. Verstappen, second in the race, is 104 points behind, his furthest of the year.",
+      "sources": [
+        "https://www.formula1.com/en/latest/article/piastri-wins-as-norris-faces-late-race-retirement-in-dramatic-dutch-grand.5gVVQeQH0zjZk9hl6k6wvv",
+        "https://www.formula1.com/en/latest/article/timeline-every-twist-and-turn-from-a-dramatic-2025-battle-for-the-drivers.4aJLnF16FT7QnKkhjtrGvf"
+      ]
+    },
+    {
+      "round": 17,
+      "text": "Piastri jumps the start and crashes out on the opening lap, his first retirement of the year. Verstappen wins again and Norris cuts the lead to 25.",
+      "sources": [
+        "https://www.formula1.com/en/latest/article/verstappen-claims-dominant-azerbaijan-win-over-russell-and-sainz-after.gT4fbKTwpl3dI79nDmrHS",
+        "https://www.formula1.com/en/latest/article/timeline-every-twist-and-turn-from-a-dramatic-2025-battle-for-the-drivers.4aJLnF16FT7QnKkhjtrGvf"
+      ]
+    },
+    {
+      "round": 20,
+      "text": "Norris wins from pole while Piastri finishes fifth, and the lead changes hands for the second time, by one point.",
+      "sources": [
+        "https://www.formula1.com/en/latest/article/norris-seals-commanding-win-in-action-packed-mexico-city-gp-to-take-world.5ztiajHhdtqagu0qQLx0vS",
+        "https://www.formula1.com/en/latest/article/timeline-every-twist-and-turn-from-a-dramatic-2025-battle-for-the-drivers.4aJLnF16FT7QnKkhjtrGvf"
+      ]
+    },
+    {
+      "round": 22,
+      "text": "Both McLarens are disqualified, their skid blocks worn below the 9 mm minimum. Verstappen wins and draws level with Piastri, 24 behind Norris.",
+      "sources": [
+        "https://www.formula1.com/en/latest/article/norris-and-piastri-disqualified-from-las-vegas-gp-as-mclarens-fail-post-race.10uHwsN6mLfCNoZ6nKQvPy",
+        "https://www.formula1.com/en/latest/article/timeline-every-twist-and-turn-from-a-dramatic-2025-battle-for-the-drivers.4aJLnF16FT7QnKkhjtrGvf"
+      ]
+    },
+    {
+      "round": 24,
+      "text": "Verstappen wins and Piastri is second, but third place is enough for Norris: champion by two points.",
+      "sources": [
+        "https://www.formula1.com/en/latest/article/norris-secures-maiden-f1-title-in-abu-dhabi-with-podium-finish-behind.EMJtmvRA0uzmzUC4MZgmw"
+      ]
+    }
+  ],
+  "decider": {
+    "going": "In Qatar a week before, McLaren left both cars out under an early safety car; Verstappen pitted and won. One Grand Prix and 25 points were left.",
+    "needed": [
+      {
+        "driver": "Lando Norris",
+        "text": "A podium, whatever the others did."
+      },
+      {
+        "driver": "Max Verstappen",
+        "text": "To win, with Norris fourth or lower."
+      },
+      {
+        "driver": "Oscar Piastri",
+        "text": "To win with Norris sixth or lower, or to be second with Norris tenth or lower and Verstappen off the podium."
+      }
+    ],
+    "neededNote": "As formula1.com set out the permutations before the race.",
+    "after": "Norris won the title by two points, Verstappen's run of four titles in a row ended, and McLaren had already taken the teams' title in Singapore.",
+    "sources": [
+      "https://www.formula1.com/en/latest/article/verstappen-wins-qatar-gp-as-title-battle-goes-to-abu-dhabi-with-piastri.5KlYT7q8OcrJ7AnMALjkxJ",
+      "https://www.formula1.com/en/latest/article/championship-permutations-where-does-norris-need-to-finish-in-abu-dhabi-to.DtWufByimYARjI5kujzt3",
+      "https://www.formula1.com/en/latest/article/norris-secures-maiden-f1-title-in-abu-dhabi-with-podium-finish-behind.EMJtmvRA0uzmzUC4MZgmw",
+      "https://www.formula1.com/en/latest/article/fastest-lap-point-to-be-scrapped-in-2025-after-latest-fia-world-motor-sport.4pUjDzWnGRN7KVWENLc1BY",
+      "https://www.formula1.com/en/latest/article/fia-and-formula-1-announce-2025-sprint-calendar.3fjONI6I9cAyThBj73oQRX",
+      "https://www.formula1.com/en/latest/article/jacques-efficiency-decisive-leadership-and-driver-harmony-how-mclaren-sealed.JKMdmfl46zDrk8srKfHp7"
+    ]
+  },
+  "sprints": true,
+  "rounds": [
+    {"round": 1, "name": "Australian Grand Prix", "date": "2025-03-16", "winner": "Lando Norris", "team": "McLaren", "leader": "Lando Norris", "lead": 25},
+    {"round": 2, "name": "Chinese Grand Prix", "date": "2025-03-23", "winner": "Oscar Piastri", "team": "McLaren", "leader": "Lando Norris", "lead": 44},
+    {"round": 3, "name": "Japanese Grand Prix", "date": "2025-04-06", "winner": "Max Verstappen", "team": "Red Bull Racing", "leader": "Lando Norris", "lead": 62},
+    {"round": 4, "name": "Bahrain Grand Prix", "date": "2025-04-13", "winner": "Oscar Piastri", "team": "McLaren", "leader": "Lando Norris", "lead": 77},
+    {"round": 5, "name": "Saudi Arabian Grand Prix", "date": "2025-04-20", "winner": "Oscar Piastri", "team": "McLaren", "leader": "Oscar Piastri", "lead": 99},
+    {"round": 6, "name": "Miami Grand Prix", "date": "2025-05-04", "winner": "Oscar Piastri", "team": "McLaren", "leader": "Oscar Piastri", "lead": 131},
+    {"round": 7, "name": "Emilia Romagna Grand Prix", "date": "2025-05-18", "winner": "Max Verstappen", "team": "Red Bull Racing", "leader": "Oscar Piastri", "lead": 146},
+    {"round": 8, "name": "Monaco Grand Prix", "date": "2025-05-25", "winner": "Lando Norris", "team": "McLaren", "leader": "Oscar Piastri", "lead": 161},
+    {"round": 9, "name": "Spanish Grand Prix", "date": "2025-06-01", "winner": "Oscar Piastri", "team": "McLaren", "leader": "Oscar Piastri", "lead": 186},
+    {"round": 10, "name": "Canadian Grand Prix", "date": "2025-06-15", "winner": "George Russell", "team": "Mercedes", "leader": "Oscar Piastri", "lead": 198},
+    {"round": 11, "name": "Austrian Grand Prix", "date": "2025-06-29", "winner": "Lando Norris", "team": "McLaren", "leader": "Oscar Piastri", "lead": 216},
+    {"round": 12, "name": "British Grand Prix", "date": "2025-07-06", "winner": "Lando Norris", "team": "McLaren", "leader": "Oscar Piastri", "lead": 234},
+    {"round": 13, "name": "Belgian Grand Prix", "date": "2025-07-27", "winner": "Oscar Piastri", "team": "McLaren", "leader": "Oscar Piastri", "lead": 266},
+    {"round": 14, "name": "Hungarian Grand Prix", "date": "2025-08-03", "winner": "Lando Norris", "team": "McLaren", "leader": "Oscar Piastri", "lead": 284},
+    {"round": 15, "name": "Dutch Grand Prix", "date": "2025-08-31", "winner": "Oscar Piastri", "team": "McLaren", "leader": "Oscar Piastri", "lead": 309},
+    {"round": 16, "name": "Italian Grand Prix", "date": "2025-09-07", "winner": "Max Verstappen", "team": "Red Bull Racing", "leader": "Oscar Piastri", "lead": 324},
+    {"round": 17, "name": "Azerbaijan Grand Prix", "date": "2025-09-21", "winner": "Max Verstappen", "team": "Red Bull Racing", "leader": "Oscar Piastri", "lead": 324},
+    {"round": 18, "name": "Singapore Grand Prix", "date": "2025-10-05", "winner": "George Russell", "team": "Mercedes", "leader": "Oscar Piastri", "lead": 336},
+    {"round": 19, "name": "United States Grand Prix", "date": "2025-10-19", "winner": "Max Verstappen", "team": "Red Bull Racing", "leader": "Oscar Piastri", "lead": 346},
+    {"round": 20, "name": "Mexico City Grand Prix", "date": "2025-10-26", "winner": "Lando Norris", "team": "McLaren", "leader": "Lando Norris", "lead": 357},
+    {"round": 21, "name": "São Paulo Grand Prix", "date": "2025-11-09", "winner": "Lando Norris", "team": "McLaren", "leader": "Lando Norris", "lead": 390},
+    {"round": 22, "name": "Las Vegas Grand Prix", "date": "2025-11-22", "winner": "Max Verstappen", "team": "Red Bull Racing", "leader": "Lando Norris", "lead": 390},
+    {"round": 23, "name": "Qatar Grand Prix", "date": "2025-11-30", "winner": "Max Verstappen", "team": "Red Bull Racing", "leader": "Lando Norris", "lead": 408},
+    {"round": 24, "name": "Abu Dhabi Grand Prix", "date": "2025-12-07", "winner": "Max Verstappen", "team": "Red Bull Racing", "leader": "Lando Norris", "lead": 423}
+  ],
+  "drivers": [
+    {"name": "Lando Norris", "code": "NOR", "team": "McLaren", "last": 3, "points": [25,44,62,77,89,115,133,158,176,176,201,226,250,275,275,293,299,314,332,357,390,390,408,423]},
+    {"name": "Max Verstappen", "code": "VER", "team": "Red Bull Racing", "last": 1, "points": [18,36,61,69,87,99,124,136,137,155,155,165,185,187,205,230,255,273,306,321,341,366,396,421]},
+    {"name": "Oscar Piastri", "code": "PIA", "team": "McLaren", "last": 2, "points": [2,34,49,74,99,131,146,161,186,198,216,234,266,284,309,324,324,336,346,356,366,366,392,410]}
+  ]
+}

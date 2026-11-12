@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { hasWeekendNote, weekendNoteKey, type WeekendNotesFile } from './series-content';
+import { hasWeekendNote, loadTitleRaces, weekendNoteKey, type WeekendNotesFile } from './series-content';
+
+describe('loadTitleRaces', () => {
+  it('reads each named season that has a whole file, oldest first, and leaves out the rest', async () => {
+    const races = await loadTitleRaces('f1', [2025, 1999, 2025]);
+    expect(races.map(r => r.season)).toEqual([2025]);
+    expect(races[0].drivers.map(d => d.name)).toEqual(['Lando Norris', 'Max Verstappen', 'Oscar Piastri']);
+    expect(await loadTitleRaces('f1', [])).toEqual([]);
+    expect(await loadTitleRaces('no-such-series', [2025])).toEqual([]);
+  });
+});
 
 // R14 (2026-09-28): a race-weekend page is indexed, and the sitemap advertises
 // it, only when the weekend carries an authored note with text. One predicate

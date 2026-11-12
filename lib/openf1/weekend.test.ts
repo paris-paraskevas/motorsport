@@ -91,6 +91,129 @@ describe('sessionMarks', () => {
   });
 });
 
+describe("sessionMarks: a race's safety cars (O28)", () => {
+  const sc = (date: string, lap: number, message: string) => rc(date, message, { category: 'SafetyCar', lap_number: lap });
+  const flag = (date: string, lap: number) => rc(date, 'CHEQUERED FLAG', { category: 'Flag', flag: 'CHEQUERED', lap_number: lap });
+  const marks = (msgs: OF1RaceControl[], race = true) => sessionMarks(msgs, '2026-10-11T12:00:00Z', 'Asia/Singapore', race);
+
+  // Singapore's race, 11 October 2026, as OpenF1's race control has it.
+  const singapore = [
+    status('2026-10-11T12:03:39.077000+00:00', 'SESSION STARTED', 1),
+    sc('2026-10-11T12:16:35+00:00', 8, 'VSC DEPLOYED'),
+    sc('2026-10-11T12:17:40+00:00', 9, 'VSC ENDING'),
+    sc('2026-10-11T13:07:14+00:00', 39, 'VSC DEPLOYED'),
+    sc('2026-10-11T13:09:13+00:00', 40, 'VSC ENDING'),
+    flag('2026-10-11T13:45:40+00:00', 62),
+    status('2026-10-11T13:45:40.086000+00:00', 'SESSION FINISHED', 62),
+  ];
+
+  it("reads round 17's four VSC messages as laps 8 to 9 and 39 to 40", () => {
+    expect(marks(singapore)).toEqual({ neutral: [{ kind: 'VSC', from: 8, to: 9 }, { kind: 'VSC', from: 39, to: 40 }], lanes: [] });
+  });
+
+  it('reads the safety car in its own words and the virtual one as race control wrote it before 2026', () => {
+    const china = [sc('2026-03-15T07:20:00Z', 10, 'SAFETY CAR DEPLOYED'), sc('2026-03-15T07:26:00Z', 13, 'SAFETY CAR IN THIS LAP')];
+    const older = [sc('2026-03-15T07:50:00Z', 21, 'VIRTUAL SAFETY CAR DEPLOYED'), sc('2026-03-15T07:53:00Z', 22, 'VIRTUAL SAFETY CAR ENDING')];
+    expect(marks([...older, ...china]).neutral).toEqual([{ kind: 'SC', from: 10, to: 13 }, { kind: 'VSC', from: 21, to: 22 }]);
+    // Words about the safety car that neither send it out nor bring it in shade nothing.
+    const asides = [
+      rc('2026-10-04T07:00:00Z', 'FORMATION LAP(S) BEHIND SAFETY CAR', { lap_number: 1 }),
+      rc('2026-10-04T07:01:00Z', 'SAFETY CAR LIGHTS ON', { lap_number: 1 }),
+      rc('2026-10-04T08:00:00Z', 'LAPPED CARS MAY NOW OVERTAKE THE SAFETY CAR: 77', { lap_number: 26 }),
+    ];
+    expect(marks(asides).neutral).toEqual([]);
+  });
+
+  it('closes a span still open at the flag on the last lap', () => {
+    expect(marks([sc('2026-07-05T15:18:50Z', 48, 'SAFETY CAR DEPLOYED'), flag('2026-07-05T15:31:05Z', 52)]).neutral).toEqual([{ kind: 'SC', from: 48, to: 52 }]);
+    // Without the flag (OpenF1 still sending), on the last lap race control has named.
+    expect(marks([sc('2026-07-05T15:18:50Z', 48, 'SAFETY CAR DEPLOYED'), rc('2026-07-05T15:25:00Z', 'TRACK CLEAR', { lap_number: 50 })]).neutral).toEqual([{ kind: 'SC', from: 48, to: 50 }]);
+  });
+
+  it('closes a span at a red flag, so the standing restart is not shaded (Monza and Monaco 2026)', () => {
+    const monza = [
+      sc('2026-09-06T13:06:49+00:00', 3, 'SAFETY CAR DEPLOYED'),
+      status('2026-09-06T13:07:42+00:00', 'SESSION ABORTED', 3),
+      rc('2026-09-06T13:07:43+00:00', 'RED FLAG - RACE SUSPENDED', { lap_number: 3 }),
+      rc('2026-09-06T13:34:00+00:00', 'SAFETY CAR LIGHTS ON', { lap_number: 4 }),
+      status('2026-09-06T13:39:00+00:00', 'SESSION STARTED', 4),
+      flag('2026-09-06T14:54:46+00:00', 53),
+    ];
+    expect(marks(monza)).toEqual({
+      red: [{ lap: 3, restarted: true }],
+      neutral: [{ kind: 'SC', from: 3, to: 3 }],
+      // The tyre changes under the red flag, from the flag to the restart.
+      lanes: [{ kind: 'red', from: '2026-09-06T13:07:43.000Z', to: '2026-09-06T13:39:00.000Z' }],
+    });
+    const monaco = [
+      sc('2026-06-07T14:20:00Z', 60, 'SAFETY CAR DEPLOYED'),
+      sc('2026-06-07T14:29:41Z', 65, 'SAFETY CAR IN THIS LAP'),
+      sc('2026-06-07T14:31:18Z', 66, 'SAFETY CAR DEPLOYED'),
+      rc('2026-06-07T14:35:07Z', 'RED FLAG - RACE SUSPENDED', { lap_number: 68 }),
+      status('2026-06-07T15:12:00Z', 'SESSION STARTED', 68),
+      flag('2026-06-07T15:40:00Z', 78),
+    ];
+    expect(marks(monaco).neutral).toEqual([{ kind: 'SC', from: 60, to: 65 }, { kind: 'SC', from: 66, to: 68 }]);
+  });
+
+  it('closes a VSC a lap before the safety car that follows it, and keeps one span for a car redeployed on the lap it came in', () => {
+    const malaysia = [sc('2026-10-04T09:53:01Z', 43, 'VSC DEPLOYED'), sc('2026-10-04T09:58:26Z', 45, 'SAFETY CAR DEPLOYED'), sc('2026-10-04T10:11:34Z', 51, 'SAFETY CAR IN THIS LAP')];
+    expect(marks(malaysia).neutral).toEqual([{ kind: 'VSC', from: 43, to: 44 }, { kind: 'SC', from: 45, to: 51 }]);
+    const britain = [
+      sc('2026-07-05T15:18:50Z', 48, 'SAFETY CAR DEPLOYED'),
+      sc('2026-07-05T15:27:42Z', 51, 'SAFETY CAR IN THIS LAP'),
+      sc('2026-07-05T15:27:50Z', 51, 'SAFETY CAR DEPLOYED'),
+      sc('2026-07-05T15:29:51Z', 52, 'SAFETY CAR IN THIS LAP'),
+      flag('2026-07-05T15:31:05Z', 52),
+    ];
+    expect(marks(britain).neutral).toEqual([{ kind: 'SC', from: 48, to: 52 }]);
+    // Deployed and ended on the same lap: one lap shaded.
+    expect(marks([sc('2026-03-08T05:00:00Z', 34, 'VSC DEPLOYED'), sc('2026-03-08T05:01:00Z', 34, 'VSC ENDING')]).neutral).toEqual([{ kind: 'VSC', from: 34, to: 34 }]);
+  });
+
+  it('closes a span whose closing message came without its lap on the last lap race control named, not at the flag', () => {
+    const unlapped = [
+      sc('2026-03-08T05:00:00Z', 10, 'SAFETY CAR DEPLOYED'),
+      rc('2026-03-08T05:04:00Z', 'LAPPED CARS MAY NOW OVERTAKE THE SAFETY CAR: 77', { lap_number: 12 }),
+      rc('2026-03-08T05:06:00Z', 'SAFETY CAR IN THIS LAP', { category: 'SafetyCar' }),
+      flag('2026-03-08T06:00:00Z', 40),
+    ];
+    expect(marks(unlapped).neutral).toEqual([{ kind: 'SC', from: 10, to: 12 }]);
+    // With no lap named since the deployment, its own lap.
+    expect(marks([sc('2026-03-08T05:00:00Z', 10, 'VSC DEPLOYED'), rc('2026-03-08T05:01:00Z', 'VSC ENDING', { category: 'SafetyCar' }), flag('2026-03-08T06:00:00Z', 40)]).neutral).toEqual([{ kind: 'VSC', from: 10, to: 10 }]);
+  });
+
+  it('marks when race control sent the whole field through the pit lane, as Monaco and Baku saved it (2026)', () => {
+    const through = (date: string, lap: number) => rc(date, 'ALL CARS THROUGH THE PIT LANE', { lap_number: lap });
+    const monaco = [
+      sc('2026-06-07T14:20:00+00:00', 60, 'SAFETY CAR DEPLOYED'),
+      through('2026-06-07T14:21:52+00:00', 61),
+      sc('2026-06-07T14:29:41+00:00', 65, 'SAFETY CAR IN THIS LAP'),
+      sc('2026-06-07T14:31:18+00:00', 66, 'SAFETY CAR DEPLOYED'),
+      through('2026-06-07T14:31:38+00:00', 66),
+      status('2026-06-07T14:35:06+00:00', 'SESSION ABORTED', 68),
+      rc('2026-06-07T14:35:07+00:00', 'RED FLAG - RACE SUSPENDED', { lap_number: 68 }),
+      status('2026-06-07T15:12:00+00:00', 'SESSION STARTED', 68),
+    ];
+    expect(marks(monaco).lanes).toEqual([
+      { kind: 'through', from: '2026-06-07T14:21:52.000Z', to: '2026-06-07T14:24:52.000Z' },
+      { kind: 'through', from: '2026-06-07T14:31:38.000Z', to: '2026-06-07T14:34:38.000Z' },
+      { kind: 'red', from: '2026-06-07T14:35:07.000Z', to: '2026-06-07T15:12:00.000Z' },
+    ]);
+    const baku = [sc('2026-09-26T12:12:30+00:00', 36, 'SAFETY CAR DEPLOYED'), through('2026-09-26T12:12:43+00:00', 36)];
+    expect(marks(baku).lanes).toEqual([{ kind: 'through', from: '2026-09-26T12:12:43.000Z', to: '2026-09-26T12:15:43.000Z' }]);
+    // The pit exit closed before the start, or a sprint: no lane.
+    expect(marks([rc('2026-10-11T11:30:00Z', 'PIT EXIT CLOSED', { lap_number: 1 })]).lanes).toEqual([]);
+    expect('lanes' in marks(baku, false)).toBe(false);
+  });
+
+  it('shades nothing for words it does not know, and reads no spans for a session that is not a race', () => {
+    expect(marks([sc('2027-03-08T05:00:00Z', 5, 'SC DEPLOYED'), sc('2027-03-08T05:04:00Z', 7, 'SC ENDING')]).neutral).toEqual([]);
+    expect(marks(singapore, false)).toEqual({});
+    expect('neutral' in marks([], true)).toBe(true);
+  });
+});
+
 describe('finishedAt', () => {
   it('gives the last time race control said the session finished, or nothing', () => {
     expect(finishedAt([status('2026-09-06T14:54:46+00:00', 'SESSION FINISHED', 53), status('2026-09-06T13:03:30+00:00', 'SESSION STARTED', 1)])).toBe(Date.parse('2026-09-06T14:54:46Z'));

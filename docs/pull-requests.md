@@ -14,6 +14,234 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1193 · 1.0.303 · O35 (the Indianapolis 500's first week under its own round on the Calendar) · opened 2026-11-12 into `next` on the operator's "Push and open PR", Task 2.d's first PR (rule 11), built 29 Oct on the plan approved in plan mode; `next` merged in after #1191, whose 1.0.302 came first, and the checks run again before the push; reviewed on "Under 60%: review" (12 Nov), its nits folded; the merge on the word
+**The Indianapolis 500's first week on the Calendar.** The May Calendar's IndyCar round 6 card (Sonsio Grand Prix at the Brickyard, 8–9 May) listed the 500's practice and qualifying of 12–17 May: the weekend grouping joins sessions four days apart or less, so the race of 9 May and the 500's first practice of 12 May formed one weekend that only round 6's dates cover. The publisher now keeps every session in the round its sessions.json block names (B3, 25 Oct); only those eight sessions move. lib/group.ts, which the old code shares, is unchanged.
+- **Readers see:** nothing yet; the site is in Coming Soon. After the desk's publish run of /calendar/ once this is merged into `next`: on /calendar/2026-05/ the Sonsio Grand Prix's card with its four sessions and the Indianapolis 500's with its eleven, Practice 1 on 12 May to the race on 24 May, in the 22–24 May weekend; the month grid unchanged.
+- **Editors get:** nothing.
+- **Files (9):**
+  - `lib/wp/render.ts` · `calendarEntries(series, now, overrides?)`: a session a sessions.json block places in a round rounds.json holds and has not called off keeps that round, named as rounds.json names it ("Round N" when it has no name).
+  - `lib/wp/render.test.ts` · 4 new tests: the 500's first week in round 7; a block naming no round, a missing round or a called-off round leaves the grouping's round and event; a round without a name reads "Round 7"; Formula E's Jeddah double-header stays as the grouping splits it.
+  - `lib/rounds-calendar.test.ts` · a guard over every series' sessions.json: a block naming a round names a live round of its series, each session within 14 days of its dates, and no session sits in two blocks.
+  - `scripts/wp-publish.mts` · each series' sessions.json handed to `calendarEntries` through `loadSessionsOverrides` (read only).
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json`, `docs/pull-requests.md` · 1.0.303, after #1191's 1.0.302 (numbers taken at merge).
+- **Verification:** tsc 0; lint 0 errors (the 2 known warnings); the full vitest, 282 files, 2,972 tests (after the review's fold). Every series' calendar rebuilt from its live feed in UTC (the runner's zone) with and without the rounds, again after the fold (byte-identical): only IndyCar's eight sessions of 12–17 May change, round 6 to 7; without, all fifteen equal the stored files (paddock-data 91812318, its calendars from 27 Oct's run) but for Formula 3's 36 round numbers, #1191's own renumbering, which moves nothing through the new rule; against 77402397 (12 Nov, 12:25Z), which stores that renumbering, all fifteen equal. The publisher's dry runs on 12 Nov with #1191 merged in, before from `origin/paddock-data` and after from a local commit with IndyCar's calendar rebuilt (b4e35f5a: no branch, never pushed): 214 pages both, 3,527,850 and 3,527,851 bytes; /calendar/2026-05/ changed, and /status/ by the local commit's dates only; Formula 1's 144 pages (2,069,142 bytes) byte-identical; round 6's card 4 sessions, round 7's 11. The same checks on 29 Oct gave the same result. In the theme preview on 29 Oct (the same code, data and theme; the May page 121,545 bytes then and now), with May as its calendar page and the Agenda view by a real click: both cards at 1,440 and 390 px, Day and Night, no sideways scroll at 390.
+- **Reviewed:** one fresh-context Sonnet reader, 384,934 tokens, 107 tool calls; mergeable, 0 blockers, 0 should-fix, 6 nits, five folded (a nameless round's empty event, the tests' events and two cases, the guard over every series' blocks, the after-merge check, the stale Formula 3 line in the PR body); the sixth, the find's 25 Oct date, stands (Task 1.b's hand-over and the inventory, both 25 Oct).
+- **After the merge:** the desk's publish of /calendar/, a run that fetches (never `--from-ref`): its log reads `calendar indycar OK`, never STALE (`changed` only when it writes the file); `indycar/calendar.json` on paddock-data then holds the eight sessions in round 7.
+- **Test after the publish, signed in:** `/calendar/2026-05/` shows IndyCar's Round 6 card (Sonsio Grand Prix at the Brickyard) with 4 sessions and Round 7's (110th Indianapolis 500) with 11, from Practice 1 on Tuesday 12 May to the race on Sunday 24 May.
+- **Noted, not done:** the 500's card names its rows by weekday only (Tue to Sun, then Fri and Sun again) and a phone cuts its long session names short, both for the pages batch with B3; lib/ics.ts:40 reads a date-only session in the machine's own zone, so a local rebuild needs TZ=UTC.
+
+## #1191 · 1.0.302 · O32 (Formula 3's rounds on the Calendar, numbered and dated as Formula 3 gives them) · opened 2026-10-28 into `next` on the operator's "Push o32/f3-rounds and open its PR into next.", the desk's Task 2.a on Task 2's plan approved in plan mode (session 72); reviewed on "My 5-hour usage is under 60%: run the fresh-context Sonnet review of #1191."; the merge and the publish run on the word
+**Formula 3's round numbers.** Planning O18 found the Calendar naming Formula 3's rounds 3 to 10 where the series numbers them 1 to 9: its Sakhir round (10–12 April) was called off on 14 March and Formula 3 renumbered the rest, while `rounds.json` kept the gap. Rule 11 puts a wrong fact on the site first. Content only.
+- **Readers see:** nothing yet; the public site is in Coming Soon. Signed in, and through the REST API, after one publish run of /calendar/: June, July and September name Formula 3's rounds 2 to 9 (Monaco 2 to Madrid 9), and Monaco's band starts on its Thursday practice, 4 June.
+- **Editors get:** nothing.
+- **Files (7):**
+  - `content/series/f3/rounds.json` · rounds 3–10 renumbered 2–9; Monaco from 4 June; Sakhir added to `cancelledRounds` (the Bahrain Grand Prix, original round 2, 10–12 April, its reason in the series' words), for the season page's tile in O33.
+  - `content/series/f3/sessions.json` · the eight overrides from Monaco on renumbered; no time changed.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json`, `docs/pull-requests.md` · 1.0.302.
+- **Sources:** https://www.fiaformula3.com/en/racing/2026 (rounds 1 to 9, Monaco 4–7 June; read 28 Oct through its old address, /Calendar, which now answers 308); https://www.fia.com/events/fia-formula-3-championship/season-2026/races-calendar (Sakhir, 10–12 April, "Called Off"); https://www.fiaformula3.com/en/latest/article/round-in-sakhir-will-not-take-place-in-april.7eBAUIEw1Eig2Dd6J0gACt (the reason, verbatim; "original round 2" is inferred from the calendar's order, no page states it); https://www.formula1.com/en/latest/article/bahrain-and-saudi-arabian-grands-prix-will-not-take-place-in-april.1hnqllVG85RSt8pbFc5Ivx (14 March 2026: "The Formula 2, Formula 3 and F1 ACADEMY rounds will also not take place during their scheduled times.").
+- **Verified:**
+  - `npx tsc --noEmit` exit 0; `npm run lint` 0 errors, the 2 known `_encoding` warnings; `npm test` 282 files, 2,967 tests;
+  - two fetching dry runs of `/calendar/` against a scratch worktree of paddock-data (3a1aac6f), `next`'s content then this branch's: 15 pages each, exit 0, 42 feeds OK; only June, July and September differ, by Formula 3's cards (Round 2 to Round 9) and Monaco's band from 4 June; every race time the same;
+  - a dry run from stored data (`--from-ref origin/paddock-data`) shows why the publish run must fetch: the stored `f3/calendar.json` keeps the old numbers, so every Formula 3 card from Monaco on goes wrong. Monaco's card has no sessions ("Times not published yet"), and rounds 3 to 9 each take the previous round's sessions, race time and circuit (Austria's card names Circuit de Barcelona-Catalunya; Monza's band takes Budapest's race time).
+- **Reviewed** on the operator's "My 5-hour usage is under 60%: run the fresh-context Sonnet review of #1191.": one fresh-context Sonnet reader, 383,217 tokens, 114 tool calls; mergeable after fixes, 0 blockers, 1 should-fix, 6 nits. It read the four sources' pages on 29 Oct and found every round, date and the reason as committed; by script, `sessions.json` changes only its `round` values and `rounds.json` only the renumbering and Monaco's start; `cancelledRounds` fits `CancelledRoundEntry` and Formula 1's entry; no test, fixture or preview file keys on the old numbers; the stored `f3/calendar.json` (3a1aac6f) numbers Monaco 3 to Madrid 10.
+- **Folded:** the should-fix, a fetching run can still keep the old numbers: when Formula 3's calendar feed fails, `decideFeed` (`lib/wp/health.ts`) keeps the stored calendar as STALE and the run still exits 0, so the publish run's log is checked (below); the stored-data damage described in full (above); the sources' current addresses; this entry's provenance and review lines.
+- **Listed, not changed** (outside the slot):
+  - stale comments that describe the old numbering: `lib/betting/series-sources.ts:31-36` and its test (the old Next.js code, F3's gate (c) now holds) and `lib/results/fom-api.ts:207,351,389` with `fom-api.test.ts:293-294,351` (Task 2.b, which works in that file, is told);
+  - `content/series/f3/history.md:27` still says "ten rounds and twenty races" beside the called-off Bahrain round (2026 is nine rounds and nineteen races); no page on the new site reads that file today, and Task 2.b is told before Formula 3's pages publish;
+  - `lib/rounds-calendar.test.ts` guards Formula 1, WEC and IndyCar but not Formula 3: a guard for family A's slot.
+- **Test after the publish run:** `/calendar/2026-06/`, `/calendar/2026-07/` and `/calendar/2026-09/`, signed in: Formula 3's cards read Round 2 (Monaco, from Thursday 4 June) to Round 9 (Madrid), each band with its own Feature Race time (Monaco Sunday 05:45 UTC, Monza Sunday 06:15 UTC).
+- **After the merge:** one publish run that fetches, `--only /calendar/` (the GitHub workflow's dispatch), never `--from-ref`. Its log must show `calendar f3 OK` (with `changed`); a `calendar f3 STALE` means Formula 3's feed failed and the stored, old numbering was kept, so the run is repeated. Afterwards `f3/calendar.json` on paddock-data carries rounds 2 to 9.
+
+## #1189 · 1.0.301 · O28 (Formula 1's lap chart) · opened 2026-10-26 into `next` on the operator's "Push the O28 branch as o28/lap-chart and open its PR into next (after Part A's merge, merge next in first).", built 2026-10-25 in a parallel session (Task 1.a) on the plan approved in plan mode with its three answers (a dotted step marked †; the six differing races checked against Formula 1's reports; Pit wall's notes widened on the race page), and the operator's "Both defaults" and "Follow the FIA's documents (Jolpica, as built)" during the build; the review's fixes, the whole-field passes and Pit wall's stops folded in on "The desk's answers stand: drop the whole-field passes (by race control's messages) and move Pit wall's stops to the FIA's laps in #1189, with tests; then review the new diff.", "Keep tyre changes" and, after the second review, "Show it, count it" (27 Oct); `next` merged in after #1186, #1187 and #1188, whose 1.0.299, theme 0.1.21 and 1.0.300 came first, so the lap chart takes 1.0.301 and theme 0.1.22 (built as 1.0.298 and 0.1.20); the second review and the merge on the word
+**The lap chart.** Each driver's place at the end of every lap on the race page, between the Classification and Pit wall, as drawn on Paddock Lap Chart. The data is Jolpica's: its laps and its pit stops, kept in `f1/laps.json` on paddock-data; the safety car laps are race control's (OpenF1).
+- **Readers see:** nothing yet; the site is in Coming Soon. After the upload of 0.1.22 and the publish runs:
+  - on every Formula 1 race page whose laps are stored, the Lap chart: a line a driver from the grid to the flag, pit stops, safety car laps, retirements, and † where the result differs from the order at the flag; a pointer, a tap or the arrow keys follow one driver; the places as a table under it;
+  - on each round's Overview, "Lap chart →" beside "All 22 on the race's page";
+  - on the race page, Pit wall's notes column 94 px wide (68 on a phone), so its laps line up with the chart's;
+  - Pit wall's stops from the FIA's record: on a race page and its Overview, each stint changes on the FIA's stop lap, a tyre change under a red flag among them and a whole-field pass only where the tyre changed, its tyre OpenF1's or "Tyre not recorded" where OpenF1 named none (Singapore's Hadjar, Alonso and Stroll); the note counts every change (Monza's drivers "1 stop" for the change under the red flag); the key names "Tyre not recorded" when a row draws one and credits Jolpica.
+- **Editors get:** nothing new; the publisher fills `f1/laps.json` by itself, race by race.
+- **Files (18):**
+  - `lib/openf1/weekend.ts` · `NeutralSpan`, `SessionMarks.neutral`, `LaneWindow`, `SessionMarks.lanes`; `sessionMarks(…, race)` reads a race's safety car spans and its lane windows (a red flag to the restart, a whole-field pass); a closing message without its lap closes on the last lap named; `trackDay` exported for the visits' day.
+  - `lib/openf1/weekend.test.ts` · 8 new tests (Monaco's and Baku's saved messages among them).
+  - `lib/wp/render.ts` · `RaceLaps` (the visits with the track's time of day), `LapsMiss`, `LapsStore`, `isRaceLaps` (each row's shape), `raceLaps`, `lapsDue`; `weekendWhole` wants a race's spans and lanes; `SeriesData.weekend.laps`.
+  - `lib/wp/render.test.ts` · 8 new tests; one changed on purpose (a race is whole only with its spans and lanes).
+  - `lib/wp/series.ts` · `sameDriver`, `seatOf`.
+  - `lib/wp/weekend.ts` · `lapChart` in the race's page, its dots less the red flags' changes and the passes by race control's times, a tyre change inside a pass kept, the visits on the track's day; `fiaStints` (matched in order) and Pit wall on the FIA's laps, a red flag's change counted, its key's "Tyre not recorded" and Jolpica credit; `stintsOf` and the guards for a store edited by hand; `lapChartNotes` for the log; the Overview's link.
+  - `lib/wp/weekend.test.ts` · 16 new tests (Pit wall in the eight races' cases and at a red flag, Las Vegas's day among them); one changed on purpose (the Overview's Pit wall key); the fixture's round 2 gains its laps.
+  - `scripts/wp-publish.mts` · `f1Laps` with its spacing and log; `sessionMarks` told when the session is the race; `d.weekend.laps`; the notes logged each run.
+  - `wp-theme/paddock/style.css` · 0.1.22: `.pd-lc*`, the two column widths Pit wall's rows share on the race page, the scroll margin; the review's fixes (`.pd-wk-links`, the table inside its card, pinch-zoom, no selection, the readout at 340 px, `.pd-pw-credit`).
+  - `wp-theme/paddock/assets/js/paddock.js` · the chart's block, with the reviews' fixes (the compact labels, modified arrows, the axis, the labels' second row and a third label left out, "classified").
+  - `wp-theme/preview/f1-race.html` · new, round 17's race page from the dry run; `blueprint.json` inserts it under round 17.
+  - `wp-theme/preview/f1-weekend.html` · regenerated from the dry run: the link, Hadjar's Pit wall row, and Pit wall's key and credit.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json`, `docs/pull-requests.md` · 1.0.301.
+- **Answered during the build** ("Both defaults", 25 Oct): a driver's places may run past his result's laps (Britain's penalty lap); the pit stop dots from Jolpica's pit stops, a fourth field in laps.json; Pit wall's stints to IDEAS. Then, the stops checked against the official records: "Follow the FIA's documents (Jolpica, as built): the dots stay as they are, red-flag laps out; add the official sources to the records." With the PR open, the desk relayed on 26 Oct: the dots the FIA's record less the whole-field passes, found by race control's own messages and never a typed list of laps, penalty and garage visits staying dots; Pit wall's stint changes on the FIA's stop laps, its tyres OpenF1's, "Tyre not recorded" where OpenF1 named none. On 27 Oct, shown that a pass had hidden five real tyre stops (Antonelli, Russell, Pérez and Bortoleto at Monaco, Lawson at Baku), "Keep tyre changes": inside a pass a visit stays a stop when OpenF1's compound changes there. After the second review found Pit wall had lost the tyre changes under a red flag (Monza: 19 of 22 drivers on one tyre for 53 laps), "Show it, count it": Pit wall's stints change at every FIA stop lap, a red flag's included, a pass only where the tyre changed, and the note counts every change; the chart's dots unchanged.
+- **The pit stops against the official records:** Jolpica's list equals the FIA's Race Pit Stop Summary car by car and lap by lap in all 17 races. formula1.com's Pit stop summary pages differ from the FIA's documents in 12 races: they leave out the tyre changes under a red flag, the passes when every car was sent through the pit lane (Monaco's laps 61 and 66, Baku's 36; the tyre stops made during them they keep), penalties served in the pit lane and single visits, and Baku's misses Hamilton's stop on lap 31. After the pass rule, the chart holds every formula1.com stop in all 17 races; 18 cars in 11 races carry visits the FIA lists and formula1.com leaves out (penalties, garage visits, single visits, Monaco's two passes a lap before race control's message, Baku's Hamilton). OpenF1's stints, which Pit wall draws, match neither in 8 races (Australia, Canada, Monaco, Barcelona, Belgium, Hungary, Malaysia, Singapore). Sources:
+  - the FIA, Race Pit Stop Summary, linked from each race's Event & Timing Information page on fia.com (Singapore's: https://www.fia.com/events/fia-formula-one-world-championship/season-2026/singapore-grand-prix/eventtiming-information):
+    - https://www.fia.com/sites/default/files/2026_01_aus_f1_r0_timing_racepitstopsummary_v01.pdf
+    - https://www.fia.com/sites/default/files/2026_02_chn_f1_r0_timing_racepitstopsummary_v01.pdf
+    - https://www.fia.com/sites/default/files/2026_03_jpn_f1_r0_timing_racepitstopsummary_v01.pdf
+    - https://www.fia.com/sites/default/files/2026_04_usa_f1_r0_timing_racepitstopsummary_v01.pdf (Miami)
+    - https://www.fia.com/sites/default/files/2026_05_can_f1_r0_timing_racepitstopsummary_v01.pdf
+    - https://www.fia.com/sites/default/files/2026_06_mon_f1_r0_timing_racepitstopsummary_v01.pdf
+    - https://www.fia.com/sites/default/files/2026_07_esp_f1_r0_timing_racepitstopsummary_v01.pdf (Barcelona)
+    - https://www.fia.com/sites/default/files/2026_08_aut_f1_r0_timing_racepitstopsummary_v01.pdf
+    - https://www.fia.com/sites/default/files/2026_09_gbr_f1_r0_timing_racepitstopsummary_v01.pdf (Britain)
+    - https://www.fia.com/sites/default/files/2026_10_bel_f1_r0_timing_racepitstopsummary_v01.pdf
+    - https://www.fia.com/sites/default/files/2026_11_hun_f1_r0_timing_racepitstopsummary_v01.pdf
+    - https://www.fia.com/sites/default/files/2026_12_ned_f1_r0_timing_racepitstopsummary_v01.pdf
+    - https://www.fia.com/sites/default/files/2026_13_ita_f1_r0_timing_racepitstopsummary_v01.pdf
+    - https://www.fia.com/sites/default/files/2026_14_esp_f1_r0_timing_racepitstopsummary_v01.pdf (Madrid)
+    - https://www.fia.com/sites/default/files/2026_15_aze_f1_r0_timing_racepitstopsummary_v01.pdf
+    - https://www.fia.com/sites/default/files/2026_16_brn_f1_r0_timing_racepitstopsummary_v01.pdf (Malaysia)
+    - https://www.fia.com/sites/default/files/2026_17_sgp_f1_r0_timing_racepitstopsummary_v01.pdf
+  - formula1.com, Pit stop summary:
+    - https://www.formula1.com/en/results/2026/races/1279/australia/pit-stop-summary
+    - https://www.formula1.com/en/results/2026/races/1280/china/pit-stop-summary
+    - https://www.formula1.com/en/results/2026/races/1281/japan/pit-stop-summary
+    - https://www.formula1.com/en/results/2026/races/1284/miami/pit-stop-summary
+    - https://www.formula1.com/en/results/2026/races/1285/canada/pit-stop-summary
+    - https://www.formula1.com/en/results/2026/races/1286/monaco/pit-stop-summary
+    - https://www.formula1.com/en/results/2026/races/1287/barcelona-catalunya/pit-stop-summary
+    - https://www.formula1.com/en/results/2026/races/1288/austria/pit-stop-summary
+    - https://www.formula1.com/en/results/2026/races/1289/great-britain/pit-stop-summary
+    - https://www.formula1.com/en/results/2026/races/1290/belgium/pit-stop-summary
+    - https://www.formula1.com/en/results/2026/races/1291/hungary/pit-stop-summary
+    - https://www.formula1.com/en/results/2026/races/1292/netherlands/pit-stop-summary
+    - https://www.formula1.com/en/results/2026/races/1293/italy/pit-stop-summary
+    - https://www.formula1.com/en/results/2026/races/1294/spain/pit-stop-summary
+    - https://www.formula1.com/en/results/2026/races/1295/azerbaijan/pit-stop-summary
+    - https://www.formula1.com/en/results/2026/races/1308/bahrain/pit-stop-summary (Malaysia)
+    - https://www.formula1.com/en/results/2026/races/1296/singapore/pit-stop-summary
+- **Verified:**
+  - `npx tsc --noEmit` exit 0; `npm run lint` 0 errors, the 2 known warnings; `npx vitest run` 282 files, 2,944 tests; with `next` merged in (#1188), 282 files, 2,963 tests; after the last edit (review 2's fixes), 282 files, 2,967 tests;
+  - after review 2's fixes, the dry run again (`= feeds 42 OK, 0 STALE, 0 MISSING; 145 pages; exit 0`): the chart's data unchanged in all 18 races; Pit wall's tyres against OpenF1's stored stints, 396 rows: Monza's 22 equal (19 differed), Malaysia's four rows right, the cars out on the first lap on their first tyre; the 20 rows that differ are the races where OpenF1 is wrong (Barcelona's Bearman, Belgium's Antonelli, Malaysia, Singapore's three); in the browser, Monza's Russell "Medium laps 1–3 | Hard laps 4–53 · 1 stop" beside the chart's "no stop", the key's "Tyre not recorded" and the Jolpica credit in Day and Night at 1,440 and 390 px, Canada's safety car labels never crossing down to a 191 px chart, 0 page errors;
+  - the dry runs into a scratch copy of paddock-data (`--only /series/f1/ --openf1-max 20`, WordPress not called): all 17 races' safety car spans in one run; the laps filled from an empty store in five runs (Jolpica's 429 after about 77 calls a run), every race OK (`laps f1 R17 OK 62 laps 15 calls`); `f1/laps.json` 86,085 bytes; the race pages 30,960 to 48,574 bytes, their chart 10 to 15 KB;
+  - round 17: the 1,236 places and 22 grid slots of 23 Oct's check, VSC on laps 8–9 and 39–40, its 25 stops as Jolpica and the FIA's document list them;
+  - the stops of every race against the FIA's documents (17, read with pdfplumber) and formula1.com's pages (17), as above; every source link above answered 200 when checked;
+  - the six races placed differently, each against formula1.com's race result and its penalty notes: Miami https://www.formula1.com/en/results/2026/races/1284/miami/race-result (and the explainer https://www.formula1.com/en/latest/article/explained-why-leclerc-was-hit-with-a-20-second-time-penalty-after-the-miami-grand-prix.4EbZXOee2tXei29C5ktNMG), Monaco https://www.formula1.com/en/results/2026/races/1286/monaco/race-result, Barcelona https://www.formula1.com/en/results/2026/races/1287/barcelona-catalunya/race-result, Britain https://www.formula1.com/en/results/2026/races/1289/great-britain/race-result, Hungary https://www.formula1.com/en/results/2026/races/1291/hungary/race-result, Azerbaijan https://www.formula1.com/en/results/2026/races/1295/azerbaijan/race-result;
+  - on the theme preview (0.1.22): 20 widths from 300 to 2,560 px in Day and Night with no sideways scroll; lap 30 within 0.05 px of Pit wall's; pointer, tap and keys by real input; the Overview's link lands on the chart; without the script the table; Miami's and Britain's finish marks; 0 page errors;
+  - after the 26 and 27 Oct changes, the last dry run: `= feeds 42 OK, 0 STALE, 0 MISSING; 145 pages; exit 0`, every race's lane windows stored, rounds 17 and 18 fetched by the publisher with the visits' times (`laps f1 R18 OK 56 laps 14 calls`); `f1/laps.json` 97,686 bytes for 18 races; the race pages 30,961 to 45,600 bytes, the chart's section 10,389 to 14,449; Champions still the largest page (75,332); the Worker unchanged, as no module of this PR is imported by `app/`, `components/` or the rest of `lib/` (git grep);
+  - the dots against formula1.com's 17 pages after the pass rule, as above: Monaco's and Baku's five tyre stops back, every formula1.com stop drawn;
+  - on the theme preview again (Playwright, real input), round 17 at 19 widths from 300 to 2,560 px: no sideways scroll with the table shut or open; compact labels from 300 to 698 px, no code over the plot or a delta; lap 30 within 0.2 px of Pit wall's; the Overview's links 18 px apart; Shift and Ctrl arrows left to the browser; a click on the lap numbers pins nobody; "classified P22, out after lap 7"; Pit wall's Hadjar, Alonso and Stroll "Tyre not recorded" after their real stops; with Monaco's and Belgium's race pages in a scratch copy of the preview (not committed): Antonelli "stops on laps 37 and 61", Belgium's third label a row lower at 1,024, 390 and 300 px, Pit wall's "Lap · 44" with lap 30 within 0.01 px; 0 page errors.
+- **Review 1** (fresh-context Sonnet, 561,855 tokens, 173 tool calls, about 51 minutes, on 59e72373 before the 26 Oct answers): mergeable after fixes, 0 blockers, 4 should-fix, 12 nits, 1 note. Folded: the Overview's links touching; labels colliding at 630 to 698 px; the opened table widening the page; modified arrows taken; pinch-zoom; text selection; the axis pinning a driver; safety car labels colliding; the readout at 320 px; "finished" for a retired car; a stale comment; a closing message without its lap; a store of another shape throwing. Closed by Pit wall's FIA laps: round 10's 44 laps against Pit wall's 45. To IDEAS: a test of its own for `f1Laps`, and one retry a call. Answered here: the Worker statement; the first fill is about four manual dispatches.
+- **Review 2** (fresh-context Sonnet, 553,564 tokens, 175 tool calls, about 50 minutes, on b41809dd): mergeable after fixes, 0 blockers, 4 should-fix, 4 nits; the operator's decisions confirmed on the real data, review 1's fixes confirmed in the browser. Pit wall's lost red-flag changes answered by the operator ("Show it, count it"); Las Vegas's day (Jolpica dates a race by UTC), Malaysia's tyre matching (four rows on Intermediate) and overlapping windows fixed with tests; the nits fixed (a third close label, a store edited by hand, "Tyre not recorded" in the key, the Jolpica credit on Pit wall). Found while checking: a car out on the first lap had lost its tyre on Pit wall, fixed with a test. Noted, not changed: `marks()` trusts a red flag's row, as before this PR.
+- **Test after upload:**
+  1. A race page with its laps stored (`/series/f1/2026/round-17/race/`) on a laptop, Day and Night: the Lap chart between the Classification and Pit wall; point at a line and the readout names the driver; click to keep him; Escape lets go.
+  2. On a phone: tap a line, then the same line again; a swipe over the chart scrolls the page.
+  3. Pit wall under it: its lap 30 under the chart's lap 30; its notes column wider.
+  4. Miami (round 4): Leclerc's line ends sixth, a dotted red step leads to "8†"; the key's † line.
+  5. Britain (round 9): Sainz's line runs to lap 52 in 13th and steps to "17†"; the safety car shaded from lap 48 to the flag.
+  6. A round's Overview: "Lap chart →" beside "All 22 on the race's page" opens the chart.
+  7. "Places as a table" opens the places.
+  8. Monaco (round 6): Antonelli's dots on laps 37 and 61, none for the whole field's pass on lap 66; tap his line and the readout says "stops on laps 37 and 61".
+  9. Singapore's Pit wall (round 17): Hadjar's stint changes after lap 33 to "Tyre not recorded", where it changed after lap 1 before; the key names "Tyre not recorded" and credits Jolpica.
+  10. Monza's Pit wall (round 13): Russell on Medium for laps 1 to 3 and Hard from lap 4, "1 stop", while the chart has no dot for him.
+- **Known issues, not failures:** Red Bull Racing's navy and Audi's dark green lines are dark in Night (the codes and the highlight tell them apart, as drafted); the first fill takes about four publish runs, each dispatched by hand as every recent run was, so a race page shows its chart, and its Overview the link, once its laps are in; two lapped cars at Monaco (Hülkenberg, Bortoleto) keep a dot on their lap 58 for a pass made a lap before race control's message, and the drive-through penalties (Pérez on lap 9, Russell on lap 72) are dots, as penalties served in the pit lane are.
+
+## #1188 · 1.0.300 · O31 (the Calendar's session times, checked against each series' official timetable) · opened 2026-10-25 into `next` on the operator's "Push o31-timetables and open the PR into next.", Task 1.d, planned in plan mode and approved; the review and the merge on the word
+**The Calendar's timetables.** Task 1.b found curated timetables copied from a template and never checked, live on /calendar/. Every 2026 round of GT World, WorldSBK, DTM, MotoGP, WEC, IMSA, NLS and the ADAC 24h is now checked against its series' own timetable, converted by script from track time with the venue's zone and diffed to empty; NASCAR's five old race names and NLS's dead official site are fixed. Content files only.
+- **Readers see:** nothing yet; the site is in Coming Soon. After one publish run of /calendar/: the corrected times in the month pages February to November 2026 and on /calendar/ (October); 14 fewer phantom sessions (DTM's six third practices, NLS's eight race-morning practices) and nine more GT World sessions (its five rebuilt rounds).
+- **Editors get:** nothing.
+- **Files (16):**
+  - `content/series/motogp/sessions.json` · 20 rows: R2 Sprint and Practice end, R3 Warm Up and race, R12's Friday and Saturday (six), R16's Warm Up (moved during the event; the review's find), R20 Qatar (eight), R21's race.
+  - `content/series/gt-world/sessions.json` · R3, R6, R7, R9, R10 rebuilt from their own timetables; R4's Night Practice and Superpole end.
+  - `content/series/gt-world/rounds.json` · R10 ends 17 Oct (the race moved to the Saturday).
+  - `content/series/wsbk/sessions.json` · 38 rows across all 12 rounds.
+  - `content/series/dtm/sessions.json` · 35 rows corrected, Free Practice 3 removed at R2, R3 and R5–R8 (the Norisring never carried one).
+  - `content/series/wec/sessions.json` · 13 rows: R4 São Paulo (eight), R6 Fuji's Saturday (five).
+  - `content/series/imsa/sessions.json` · 11 rows across R5, R6, R8, R9, R10, R11.
+  - `content/series/nls/sessions.json` · NLS4 and NLS5 corrected (five rows), eight race-morning "Free Training" rows removed.
+  - `content/series/nls/meta.json` · `officialSite` to https://www.nuerburgring-langstrecken-serie.de/.
+  - `content/series/nascar-cup/rounds.json`, `sessions.json` · R2, R3, R4, R25, R33's names.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json`, `docs/pull-requests.md` · 1.0.300, above #1187's 1.0.299 (merged into this branch from `next`, both entries kept). #1189 (the lap chart) also carries 1.0.300: whichever of the two merges second takes 1.0.301.
+- **Answered:** the check on the Calendar (plan mode): the dry run run twice, as stored and against a local copy of paddock-data with the nine calendar files rebuilt from this branch.
+- **Rule for a past round:** the latest timetable the series published, a change it published during the event included (Barcelona's Race 2, Brazil's MotoGP Sprint, Monza's race-day versions); a start that only slipped on the day keeps its timetable time; a session called off keeps its timetable time.
+- **Sources** (each round checked; local times converted with the venue's zone):
+  - MotoGP: motogp.com event Schedule, https://api.pulselive.motogp.com/motogp/v1/events/<id> (the widget on https://www.motogp.com/en/calendar/2026/event/<slug>/<id>), and the "Time schedule" articles' graphics: R2 https://www.motogp.com/en/news/2026/03/16/time-schedule-brazilian-gp/1005703, R3 …/2026/03/25/time-schedule-usa-gp/1013131, R8 …/2026/06/03/time-schedule-grand-prix-of-hungary/1070230, R12 …/2026/08/03/time-schedule-qatar-airways-grand-prix-of-great-britain/1079065, R16 …/2026/09/28/time-schedule-motul-grand-prix-of-japan/1092197, R17 …/2026/10/07/time-schedule-pertamina-grand-prix-of-indonesia/1171110, R18 …/2026/10/19/time-schedule-red-bull-grand-prix-of-australia/1177541; R20 Qatar /event/qatar/3f3d3f5e-851c-42d2-887a-8ce8b41fa908, R21 Portugal /event/portugal/c7f7626b-807f-4a6f-813e-7ad2c68302a3, R19 and R22 their event Schedules. The other rounds: their event Schedules, the stored times confirmed.
+  - GT World: https://www.gt-world-challenge-europe.com/event/<246…255>/ and each round's latest timetable PDF (R1 V1, R2 v2, R3 v4–v6, R4 v1 and v2, R5 v3, R6 v1, R7 "2", R8 v1, R9 v2, R10 v1); https://www.gt-world-challenge-europe.com/news/3334/barcelona-event-update; …/news/3284/season-closing-race-at-portimao-to-run-on-saturday-evening.
+  - WorldSBK: https://api.wsbk.pulselive.com/wsbk-events/v1/seasons/2026/rounds/<AUS, POR, NED, HUN, CZE, ARA, ITA, GBR, FRA, CRE, EST, JER>/sessions.
+  - DTM: https://www.dtm.com/en/events/red-bull-ring-2026, zandvoort-2026, lausitzring-2026, norisring-2026, oschersleben-2026, nuerburgring-2026, sachsenring-2026, hockenheim-finale-2026 (their timetables through https://api.dtm.com/data?query=eventDetails&slug=<event>&lang=en; new to the repository: no robots.txt there, dtm.com's allows all).
+  - WEC: https://www.fiawec.com/en/race/6-hours-of-imola-2026, totalenergies-6-hours-of-spa-francorchamps-2026, 24-hours-of-le-mans-2026, rolex-6-hours-of-sao-paulo-2026, lone-star-le-mans-2026, 6-hours-of-fuji-2026, 6-hours-of-barcelona-2026, 6-hours-of-monza-2026; the previews /en/news/…/13204, 13262, 13588, 13675, 13750, 13808, 13867.
+  - IMSA: https://imsa.results.alkamelcloud.com/Results/26_2026/<event>/01_IMSA%20WeatherTech%20SportsCar%20Championship/ for 02_Daytona, 06_Sebring, 07_Long Beach, 09_Laguna Seca, 11_Detroit, 14_Watkins Glen, 15_Canadian Tire Motorsport Park, 16_Road America, 18_VIRginia, 20_Indianapolis, 21_Road Atlanta.
+  - NLS: https://www.nuerburgring-langstrecken-serie.de/language/de/<2026-71-adac-westfalenfahrt, 2026-58-adac-barbarossapreis, 2026-57-adenauer-adac-rundstrecken-trophy, 2026-1-adac-eifel-trophy, 2026-kw-6h-adac-ruhr-pokal-rennen, 2026-65-adac-reinoldus-langstreckenrennen, 2026-66-adac-acas-cup, 2026-2-nls-sportwarte-rennen>/ and …/termine-adac-ravenol-nuerburgring-langstrecken-serie-2026/; NLS4/5 https://www.24h-rennen.de/zeitplanq/ (Q24h-Zeitplan-2026_V2_251111_.pdf).
+  - ADAC 24h: https://www.24h-rennen.de/zeitplan/ (24h-Zeitplan-2026_V2_260428.pdf).
+  - NASCAR: https://www.nascar.com/nascar-cup-series/2026/schedule/.
+  - Hosts new to the repository, probed first: api.pulselive.motogp.com (robots.txt and sitemap.xml 404), api.dtm.com (robots.txt 404), dtm.com (robots.txt allows all; sitemap.txt and sitemap.xml read). gpone.com (where the review read Japan's notice) bars AI agents in its robots.txt and answers 403: not used.
+- **Verified,** after the fold, with #1187 merged in:
+  - `npx tsc --noEmit` exit 0; `npm run lint` 0 errors, the 2 known `_encoding` warnings; `npm test` 282 files, 2,935 tests. A first run beside two dry runs timed out on two designer tests at 5 s (`components/designer/PageDesigner.test.tsx`, untouched here); the file alone passed 57 of 57 and the quiet full run passed;
+  - the scripted diff of every series against its source, empty after the edits (Long Beach's IMSA qualifying end, a minute apart between two official figures, left on purpose); Japan's Warm Up equals motogp.com's event Schedule;
+  - the Calendar's dry run (`--from-ref … --dry-run --only /calendar/`, UTC), as stored at origin/paddock-data and against a local commit of it with the nine calendar files rebuilt from this branch by `calendarEntries(loadSeries(slug))`: both 15 pages, exit 0, 42 feeds OK; February to November 2026 and /calendar/ differ by exactly the corrections (MotoGP's 20 rows among them), December 2025, January, December 2026 and January 2027 byte-identical; the unchanged 24 Hours rebuilt identical to the stored file.
+- **Listed for the desk, not changed:**
+  - MotoGP's Australian Grand Prix (25 Oct) cancelled for poor visibility and NLS1 (14 Mar) called off for snow: kept at their scheduled times.
+  - Sessions the files never carried, at their published local times:
+    - WEC R7 Barcelona (CEST): FP1 Fri 16 Oct 11:30, FP2 16:30; Sat 17 Oct LMGT3 FP3 08:50, LMGT3 Qualifying 11:50, LMGT3 Hyperpole 12:10, Hypercar FP3 12:40, Hypercar Qualifying 15:40, Hypercar Hyperpole 16:00; race Sun 18 Oct 12:00.
+    - WEC R8 Monza, to come (CET): FP1 Fri 6 Nov 10:30, FP2 14:30; Sat 7 Nov FP3 10:30, LMGT3 Qualifying 14:20, LMGT3 Hyperpole 14:40, Hypercar Qualifying 15:00, Hypercar Hyperpole 15:20; race Sun 8 Nov 11:00.
+    - IMSA (the timing archive): Sebring Practice 2 Thu 19 Mar 16:00, Practice 3 19:45 EDT; Detroit Practice 3 Sat 30 May 11:10 EDT; Road America Practice 1 Fri 31 Jul 11:25, Practice 2 Sat 1 Aug 09:50 CDT; VIR Practice 1 Fri 21 Aug 15:10, Practice 2 Sat 22 Aug 10:30 EDT; Indianapolis Practice 1 Fri 18 Sep 15:25 EDT; Petit Le Mans Practice 1 Thu 1 Oct 10:40, Practice 2 15:20, Practice 3 19:30 EDT.
+    - NLS5's qualifying for race 2: Sun 19 Apr 08:15–09:45 CEST.
+    - GT World's official (paid) test sessions: no round carries them.
+  - NASCAR's race times, outside the scope, differ from nascar.com (ET): the Clash Wed 4 Feb 6:00 PM (stored Sun 1 Feb 8:00 PM); the Duels, two races, 7:00 and 8:45 PM (stored one); the Daytona 500 1:30 PM (stored 2:30); the All-Star Race 1:00 PM (stored 3:00); Pocono 1:00 PM (stored 3:00); New Hampshire 2:00 PM (stored 3:00). R27's name is shortened ("Southern 500"; nascar.com: "Cook Out Southern 500").
+  - `scripts/scaffold-series.mjs` still writes NLS's dead address (code); MotoGP R18's block anchor (25 Oct) lies three days from its FP1 (22 Oct UTC), outside the feed's ±2-day window (unchanged here; no ghost row today).
+- **Reviewed** on the operator's "My 5-hour usage is under 60%: run the fresh-context Sonnet review of #1188.": one fresh-context Sonnet reader, 577,936 tokens, 185 tool calls, about 51 minutes; mergeable after fixes, 1 blocker, 2 should-fix, 7 nits. It re-read every changed row from the sources and converted them on its own: all matched.
+- **Folded:** the conflict with #1187 (merged `next`, both entries kept); Japan's Warm Up moved during the event (09:35–09:55 JST, motogp.com's event Schedule); the listed sessions' times written above; "R2–R8" and the two Race 2 times worded right; the new hosts' probes stated. Accepted, with reasons: R36's name stands ("NASCAR Cup Series Championship Race" on nascar.com); the scaffold script, R27's name, R18's anchor and the paid tests listed, not changed (outside the slot).
+- **Test after the publish run:**
+  1. `/calendar/2026-10/`: GTWC Barcelona's Sprint Race 2 on Sunday 4 Oct at 16:20 UTC; Portimão's race on Saturday 17 Oct at 16:00 UTC; no "Free Practice 3" in DTM's Hockenheim weekend, its Race 2 at 14:30 UTC; WSBK Jerez's Race 2 at 13:30 UTC; IMSA Petit Le Mans' qualifying at 18:20 UTC.
+  2. `/calendar/2026-11/`: MotoGP Qatar's race on Sunday 8 Nov at 17:00 UTC, Portugal's on 22 Nov at 13:00 UTC.
+  3. `/calendar/2026-08/`: GTWC Magny-Cours' Free Practice 1 on Friday 31 Jul; no NLS "Free Training" on 1 Aug.
+- **After the merge:** one publish run, `--only /calendar/` (the desk's).
+
+## #1187 · 1.0.299 · O29 (Formula 1's 2025 title race) · opened 2026-10-25 into `next` on the operator's "Push claude/o29-title-race and open the PR into next.", built in Task 1.c on "ok so lets build the page then", side by side with O28, the plan approved in plan mode; the merge on the word
+**The champion's button gets its page.** The reigning card's "2026 title race →" now reads "2025 title race →" and opens `/series/f1/2025/`, the page drafted on Paddock 2025 Title Race and answered on 25 Oct. Its band names the page and leads with the champion, then the margin.
+- **Readers see:** nothing yet; the site is in Coming Soon. After the upload of 0.1.21 and a publish run of `/series/f1/`:
+  - `/series/f1/2025/` with the band (Lando Norris, by 2 points), the final three, the chart with its switch and readout, six turning points, the decider and More Formula 1;
+  - on `/series/f1/champions/`, the champion's button opening it.
+- **Editors get:** nothing. The page's words are edited by hand in `content/series/f1/title-race-2025.json`; its numbers come from `npx tsx scripts/fetch-title-race.mts <season>`, by the four steps in its header.
+- **Files (18):**
+  - `lib/wp/series.ts` · `seriesTitleRace`, `titleRacesOf` (no page for the current season), the reigning card's button, `seriesFamily`.
+  - `lib/wp/render.ts` · `SeriesData.titleRaces`.
+  - `lib/series-content.ts` · `TitleRaceFile` and `loadTitleRaces` (by name, whole files only).
+  - `scripts/wp-publish.mts` · loads the title races beside the Champions data.
+  - `scripts/fetch-title-race.mts` (new) · writes a season's numbers from Jolpica and keeps the words; prints the totals to check.
+  - `content/series/f1/title-race-2025.json` (new) · 24 rounds and the top three's totals, the band's line, six turning points and the decider, with sources.
+  - `wp-theme/paddock/style.css` · 0.1.21: the title race block.
+  - `wp-theme/paddock/assets/js/paddock.js` · the chart, drawn from `data-pd-race`.
+  - `wp-theme/preview/f1-2025.html` (new), `wp-theme/preview/blueprint.json`, `wp-theme/preview/f1-champions.html` · the preview's page and the new button.
+  - `lib/wp/series.test.ts`, `lib/series-content.test.ts` · the page's nine tests, the file's shape and sources, the loader.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json`, `docs/pull-requests.md` · 1.0.299.
+- **Verified:**
+  - **The data:** `npx tsx scripts/fetch-title-race.mts 2025`, 28 calls. Its 72 totals and 24 days match formula1.com's 2025 race results and the three drivers' season pages, with 0 mismatches. A rerun keeps every word.
+  - **The theme preview** (Playground on 9402, 0.1.21), at 1,440, 1,024, 768, 390 and 320 px, Day and Night:
+    - no sideways scroll;
+    - the switch, the hover readout, a tap to pin, the arrow keys and Escape;
+    - Red Bull's line at 3.57:1 in Night;
+    - the Champions button by a real click to `/series/f1/2025/`;
+    - 0 script errors (the harness's own parent-theme stylesheet 404s).
+  - At 768 px the first look found the band and the final three squeezed; fixed below 1,100 px.
+  - `npx tsc --noEmit -p .` exit 0; `npm run lint` 0 errors, the 2 known `_encoding` warnings; `npm test` 282 files, 2,935 tests (after the review's fixes).
+  - `MSYS_NO_PATHCONV=1 npx tsx scripts/wp-publish.mts --from-ref origin/paddock-data --dry-run --out <scratch>/wp-out-o29 --only /series/f1/` exit 0: 145 of 214 pages, `/series/f1/2025/` among them. The preview's two pages come from it.
+  - `npm run cf:build` exit 0; `npx wrangler deploy --dry-run` Total Upload 41,013.75 KiB (gzip 8,963.42 KiB), 62.6% of the 64 MiB ceiling, under the 80% alarm (the new content file rides in the content bundle).
+  - The numbers 1.0.299 and 0.1.21 are provisional (the desk, 25 Oct): O28 holds 1.0.298 and 0.1.20, and whichever merges second takes the next free numbers.
+- **Test after upload:**
+  1. `/series/f1/champions/` on a laptop: the champion's button reads "2025 title race →" and opens the new page.
+  2. `/series/f1/2025/` on a laptop, Day and Night:
+     - Lando Norris largest in the black panel, "by 2 points" under him;
+     - the final three with "2 points behind";
+     - the chart: point at a round to read it, switch to Points and back;
+     - Verstappen's line visible in Night.
+  3. The same page on a phone: the band stacked, the chart's labels clear ("2 behind" under VER), the turning points and the decider one box a row.
+- **After the merge:** the upload of 0.1.21 and one publish run, `--only /series/f1/`.
+- **Review:** one fresh-context Sonnet reader, 339,907 tokens, started at 33% of the 5-hour window (correction: before the desk's word to wait for the operator's go-ahead had arrived).
+  - No must-fix.
+  - Its eight should-fix are folded:
+    - RELEASES in the house form;
+    - totals joined by commas against half points;
+    - the decider only from a file that has one;
+    - touch pins on a click, with pinch-zoom kept;
+    - escaping pinned for names, separators and the decider;
+    - an empty round stops the script;
+    - the loader checks every field;
+    - this entry's dry-run line.
+  - The nits on "his" and the credit line stay: that wording was approved, and the page is Formula 1's.
+
 ## #1186 · 1.0.297 · O17, a follow-up (the champion's button clears the big year) · opened 2026-10-25 into `next` on the operator's "Push o17/button and open the PR into next.", planned with O28 in plan mode and approved; the review and the merge on the word
 **The button over the year.** The operator's test of 0.1.18 at 1,440 px found the reigning card's "2026 title race →" button over the big "2025": it had no fill, so the year ran through its words. It now takes the card's own colour. The records of #1185's merge, upload, publish run and check ride in from the local o17/records, with O28's plan and its answers, and the rule change for parallel sessions.
 - **Readers see:** nothing yet; the site is in Coming Soon. After the upload of 0.1.19, on `/series/f1/champions/`: the button on the champion's card reads clearly, the year passing under it, on hover too.

@@ -96,7 +96,7 @@
       "matchDate": "2026-05-30",
       "round": 5,
       "sessions": [
-        { "title": "IMSA - Chevrolet Detroit Sports Car Classic (Race)", "start": "2026-05-30T20:00:00Z", "end": "2026-05-30T22:00:00Z", "location": "Detroit Street Circuit" }
+        { "title": "IMSA - Chevrolet Detroit Sports Car Classic (Race)", "start": "2026-05-30T20:10:00Z", "end": "2026-05-30T21:50:00Z", "location": "Detroit Street Circuit" }
       ]
     },
     {
@@ -110,8 +110,8 @@
       "matchDate": "2026-06-27",
       "round": 6,
       "sessions": [
-        { "title": "IMSA - Practice 2", "start": "2026-06-27T17:05:00Z", "end": "2026-06-27T19:05:00Z", "location": "Watkins Glen International" },
-        { "title": "IMSA - Qualifying", "start": "2026-06-27T21:15:00Z", "end": "2026-06-27T22:05:00Z", "location": "Watkins Glen International" }
+        { "title": "IMSA - Practice 2", "start": "2026-06-27T14:05:00Z", "end": "2026-06-27T15:50:00Z", "location": "Watkins Glen International" },
+        { "title": "IMSA - Qualifying", "start": "2026-06-27T22:20:00Z", "end": "2026-06-27T23:35:00Z", "location": "Watkins Glen International" }
       ]
     },
     {
@@ -147,36 +147,36 @@
       "matchDate": "2026-08-01",
       "round": 8,
       "sessions": [
-        { "title": "IMSA - Qualifying", "start": "2026-08-01T22:55:00Z", "end": "2026-08-01T23:50:00Z", "location": "Road America" }
+        { "title": "IMSA - Qualifying", "start": "2026-08-01T20:25:00Z", "end": "2026-08-01T21:00:00Z", "location": "Road America" }
       ]
     },
     {
       "matchDate": "2026-08-02",
       "round": 8,
       "sessions": [
-        { "title": "IMSA - Motul SportsCar Endurance Grand Prix (Race)", "start": "2026-08-02T15:35:00Z", "end": "2026-08-02T21:35:00Z", "location": "Road America" }
+        { "title": "IMSA - Motul SportsCar Endurance Grand Prix (Race)", "start": "2026-08-02T15:40:00Z", "end": "2026-08-02T21:40:00Z", "location": "Road America" }
       ]
     },
     {
       "matchDate": "2026-08-22",
       "round": 9,
       "sessions": [
-        { "title": "IMSA - Qualifying", "start": "2026-08-22T20:45:00Z", "end": "2026-08-22T21:25:00Z", "location": "Virginia International Raceway" }
+        { "title": "IMSA - Qualifying", "start": "2026-08-22T20:50:00Z", "end": "2026-08-22T21:05:00Z", "location": "Virginia International Raceway" }
       ]
     },
     {
       "matchDate": "2026-08-23",
       "round": 9,
       "sessions": [
-        { "title": "IMSA - Michelin GT Challenge at VIR (Race)", "start": "2026-08-23T16:00:00Z", "end": "2026-08-23T19:00:00Z", "location": "Virginia International Raceway" }
+        { "title": "IMSA - Michelin GT Challenge at VIR (Race)", "start": "2026-08-23T16:10:00Z", "end": "2026-08-23T18:50:00Z", "location": "Virginia International Raceway" }
       ]
     },
     {
       "matchDate": "2026-09-19",
       "round": 10,
       "sessions": [
-        { "title": "IMSA - Practice 2", "start": "2026-09-19T16:35:00Z", "end": "2026-09-19T17:15:00Z", "location": "Indianapolis Motor Speedway" },
-        { "title": "IMSA - Qualifying", "start": "2026-09-19T21:05:00Z", "end": "2026-09-19T22:20:00Z", "location": "Indianapolis Motor Speedway" }
+        { "title": "IMSA - Practice 2", "start": "2026-09-19T14:45:00Z", "end": "2026-09-19T16:15:00Z", "location": "Indianapolis Motor Speedway" },
+        { "title": "IMSA - Qualifying", "start": "2026-09-19T21:45:00Z", "end": "2026-09-19T22:21:00Z", "location": "Indianapolis Motor Speedway" }
       ]
     },
     {
@@ -190,14 +190,14 @@
       "matchDate": "2026-10-02",
       "round": 11,
       "sessions": [
-        { "title": "IMSA - Qualifying", "start": "2026-10-02T19:50:00Z", "end": "2026-10-02T20:35:00Z", "location": "Michelin Raceway Road Atlanta" }
+        { "title": "IMSA - Qualifying", "start": "2026-10-02T18:20:00Z", "end": "2026-10-02T19:35:00Z", "location": "Michelin Raceway Road Atlanta" }
       ]
     },
     {
       "matchDate": "2026-10-03",
       "round": 11,
       "sessions": [
-        { "title": "IMSA - Motul Petit Le Mans (Race)", "start": "2026-10-03T16:05:00Z", "end": "2026-10-04T02:10:00Z", "location": "Michelin Raceway Road Atlanta", "significance": { "tier": "marquee", "note": "Petit Le Mans — Road Atlanta 10-hour endurance season finale" } }
+        { "title": "IMSA - Motul Petit Le Mans (Race)", "start": "2026-10-03T16:10:00Z", "end": "2026-10-04T02:10:00Z", "location": "Michelin Raceway Road Atlanta", "significance": { "tier": "marquee", "note": "Petit Le Mans — Road Atlanta 10-hour endurance season finale" } }
       ]
     }
   ]
