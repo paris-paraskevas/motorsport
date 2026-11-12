@@ -8,6 +8,10 @@ Paddock is out of early access. Fifteen championships in one place, every sessio
 
 Behind the scenes: the calendar now carries IndyCar's last race weekends in full, Portland to Laguna Seca with Milwaukee's practice and qualifying, and every NASCAR Cup race's practice and qualifying through the season, each at the time the series published; the Daytona 500, Pocono and New Hampshire races now start when NASCAR's own schedule says. IndyCar's season finale goes by its own name, the Mission Foods Grand Prix of Monterey, and the Daytona Duels by theirs. Nothing changes for readers yet.
 
+## 1.0.305 — 2026-11-12
+
+Behind the scenes: the endurance and GT championships, the FIA World Endurance Championship, IMSA and GT World Challenge Europe, now keep every session of a race weekend, practice and qualifying as well as the race, with each car's crew as it raced that weekend and every driver and team written as they write themselves. The WEC's last two rounds, Barcelona and Monza, and IMSA's last six rounds join their results, and the WEC's two called-off rounds, Qatar and Bahrain, are recorded for the season page. Nothing changes for readers yet.
+
 ## 1.0.304 — 2026-11-12
 
 Behind the scenes: the groundwork for the other fourteen championships' pages. Each championship now says in its own settings which of its pages are built; the parts every weekend page shares, from the band and the bar of sessions to the cards and the side column, now fit every kind of weekend, from a two-race weekend to a rally; and a results table with tabs, a race, a class or a day at a time, is ready for the weekends that run more than one race or class. Weather forecasts are now kept for every championship's circuits, and the publisher waits and tries again when the site asks it to slow down. Nothing changes for readers yet.
