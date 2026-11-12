@@ -1,9 +1,30 @@
 import { describe, expect, it, vi } from 'vitest';
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
 import type { VenueForecast } from '@/lib/met-norway';
 import type { CircuitMap, DriverStints, SessionExtras } from '@/lib/openf1/weekend';
-import type { CalendarEntry, RaceLaps, ResultRound, SeriesData, Table } from './render';
+import { escapeHtml, type CalendarEntry, type CalendarRound, type RaceLaps, type ResultRound, type SeriesData, type Table } from './render';
 import { weekendPoints } from './series';
-import { lapChartNotes, weekendPages } from './weekend';
+import {
+  aside,
+  bar,
+  championship,
+  classTable,
+  cols,
+  lapChartNotes,
+  nextRound,
+  nothingUsed,
+  resultTabs,
+  seasonPage,
+  section,
+  sessionBand,
+  sessionCard,
+  strip,
+  tableOf,
+  weekendBand,
+  weekendOf,
+  weekendPages,
+} from './weekend';
 
 const at = (round: number, session: string, start: string, dateOnly = false): CalendarEntry => ({
   start,
@@ -128,6 +149,8 @@ const f1: SeriesData = {
   slug: 'f1',
   name: 'Formula 1',
   season: 2026,
+  // As content/series/f1/meta.json sets it (O33): every page built.
+  sites: { f1: { family: 'F1', pages: ['results', 'standings', 'champions', 'weekends'] } },
   standings: null,
   teams: [
     { name: 'Red Bull Racing', colour: '#1E3A8A', drivers: [{ name: VER, code: 'VER', number: 3 }] },
@@ -941,5 +964,220 @@ describe('found in review', () => {
     const practice1 = { label: 'Practice 1', tables: [table(['Pos', 'Driver', 'Team', 'Time', 'Gap', 'Laps'], [['1', HAM, 'Mercedes', '1:32.100', '', '20']])] };
     const swapped = weekendPages({ ...f1, results: [r1, { ...r2, others: [practice1, ...r2.others!.slice(1)] }] });
     expect(pageOf(`${R}2/practice-1/`, swapped)).toContain('<td class="d"><i class="pd-tc" style="--t:#DC0000"></i><b>HAM</b><span>Lewis Hamilton</span></td><td class="tm">Ferrari</td>');
+  });
+});
+
+// ── The groundwork (O33): the parts every family shares, from the saved document ──
+
+/** What the publisher stored for three rounds (paddock-data 3a1aac6f), cut to a few rows a table, and their rounds. */
+type Saved = { round: CalendarRound; result: ResultRound };
+const saved = JSON.parse(readFileSync(path.join(process.cwd(), 'tests/fixtures/result-tabs.json'), 'utf8')) as Record<'f2' | 'wsbk' | 'gt-world', Saved>;
+const seriesOf = (slug: 'f2' | 'wsbk' | 'gt-world', name: string, extra: Partial<SeriesData> = {}): SeriesData => ({
+  slug,
+  name,
+  season: 2026,
+  standings: null,
+  results: [saved[slug].result],
+  calendar: null,
+  rounds: [saved[slug].round],
+  ...extra,
+});
+// Formula 2's Madrid timetable as f2/calendar.json stored it at the same commit.
+const madrid = [at(11, 'Practice', '2026-09-11T09:05:00.000Z'), at(11, 'Qualifying', '2026-09-11T13:00:00.000Z'), at(11, 'Sprint Race', '2026-09-12T12:15:00.000Z'), at(11, 'Feature Race', '2026-09-13T09:25:00.000Z')];
+const f2Madrid = seriesOf('f2', 'Formula 2', { calendar: madrid });
+const w11 = weekendOf(f2Madrid, 2026, saved.f2.round);
+
+describe('the results table with tabs (O33), from the saved document', () => {
+  it("A1: Formula 2's Madrid, the weekend first, then a race a tab", () => {
+    const html = resultTabs([
+      { tab: ['Both races'], body: '<p>The weekend’s points</p>' },
+      { tab: ['Sprint Race'], body: classTable(w11, tableOf(w11, 'Sprint')!) },
+      { tab: ['Feature Race'], body: classTable(w11, tableOf(w11, 'Feature')!) },
+    ]);
+    expect(html.match(/data-pd-tab="[^"]+"/g)).toEqual(['data-pd-tab="Both races"', 'data-pd-tab="Sprint Race"', 'data-pd-tab="Feature Race"']);
+    expect(html.startsWith('<div class="pd-rt"><section class="pd-rt-p" data-pd-tab="Both races"><h3 class="pd-rt-h">Both races</h3><p>The weekend’s points</p></section>')).toBe(true);
+    expect(html).toContain('<section class="pd-rt-p" data-pd-tab="Sprint Race"><h3 class="pd-rt-h">Sprint Race</h3><div class="pd-wk-scroll"><table class="pd-wk-tbl"><thead><tr><th class="p">Pos</th><th class="d">Driver</th>');
+    expect(html).toContain('<td class="d"><i class="pd-tc" style="--t:#9aa3b2"></i><b>MIY</b><span>Ritomo Miyata</span></td><td class="tm">Hitech</td><td class="t">47:21.330</td><td class="pt">11</td>');
+    expect(html).toContain('<b>BEG</b><span>Dino Beganovic</span>');
+    expect(html.endsWith('</section></div>')).toBe(true);
+  });
+
+  it("A1: WorldSBK's Jerez, its riders, opening on the tab it names", () => {
+    const d = seriesOf('wsbk', 'WorldSBK');
+    const w = weekendOf(d, 2026, saved.wsbk.round);
+    const races = ['Race 1', 'Superpole Race', 'Race 2'];
+    const html = resultTabs([{ tab: ['All three'], body: '<p>The weekend’s points</p>' }, ...races.map(r => ({ tab: [r], body: classTable(w, tableOf(w, r)!) }))], { open: ['Race 2'] });
+    expect(html.startsWith('<div class="pd-rt" data-pd-open="Race 2"><section class="pd-rt-p" data-pd-tab="All three">')).toBe(true);
+    expect(html.match(/<th class="d">Rider<\/th>/g)).toHaveLength(3);
+    expect(html).toContain('<b>BUL</b><span>Nicolo Bulega</span></td><td class="tm">Aruba.it Racing - Ducati</td><td class="t">27:01.253</td><td class="pt">12</td>');
+  });
+
+  it("C4: GT World's Zandvoort, a race and then a class over one table", () => {
+    const list = (rows: string[][]) => `<ol>${rows.map(r => `<li>#${escapeHtml(r[1])} ${escapeHtml(r[2])}</li>`).join('')}</ol>`;
+    const panels = saved['gt-world'].result.sessions.flatMap(s => {
+      const t = s.tables[0];
+      const cup = t.columns.indexOf('Cup');
+      const race = s.label === 'Race 1' ? 'Race 1 · Sat' : 'Race 2 · Sun';
+      const classes = ['Pro Cup', 'Gold Cup', 'Silver Cup', 'Bronze Cup'].filter(c => t.rows.some(r => r[cup] === c));
+      return [{ tab: [race, 'Overall'], body: list(t.rows) }, ...classes.map(c => ({ tab: [race, c.replace(' Cup', '')], body: list(t.rows.filter(r => r[cup] === c)) }))];
+    });
+    const html = resultTabs(panels, { rows: ['Race', 'Class'], open: ['Race 2 · Sun', 'Overall'] });
+    expect(
+      html.startsWith(
+        '<div class="pd-rt" data-pd-rt="Race|Class" data-pd-open="Race 2 · Sun|Overall"><section class="pd-rt-p" data-pd-tab="Race 1 · Sat|Overall"><h3 class="pd-rt-h">Race 1 · Sat · Overall</h3><ol><li>#58 Thomas Fleming, Louis Prette</li>',
+      ),
+    ).toBe(true);
+    expect(html.match(/data-pd-tab="[^"]+"/g)).toHaveLength(10);
+    expect(html).toContain('<section class="pd-rt-p" data-pd-tab="Race 1 · Sat|Gold"><h3 class="pd-rt-h">Race 1 · Sat · Gold</h3><ol><li>#58 Thomas Fleming, Louis Prette</li><li>#51 ');
+    expect(html).toContain('<section class="pd-rt-p" data-pd-tab="Race 2 · Sun|Overall"><h3 class="pd-rt-h">Race 2 · Sun · Overall</h3><ol><li>#69 Thierry Vermeulen, Ben Green</li>');
+  });
+
+  it('escapes its names and keeps the rows apart', () => {
+    expect(resultTabs([{ tab: ['A <b>&</b> "B"|C'], title: 'T <i>', body: '<p>x</p>' }])).toBe(
+      '<div class="pd-rt"><section class="pd-rt-p" data-pd-tab="A &lt;b&gt;&amp;&lt;/b&gt; &quot;B&quot;/C"><h3 class="pd-rt-h">T &lt;i&gt;</h3><p>x</p></section></div>',
+    );
+    expect(resultTabs([{ tab: ['R|1', 'X'], body: '' }], { rows: ['Race|s', 'Class'], open: ['R|1', 'X'] })).toBe(
+      '<div class="pd-rt" data-pd-rt="Race/s|Class" data-pd-open="R/1|X"><section class="pd-rt-p" data-pd-tab="R/1|X"><h3 class="pd-rt-h">R/1 · X</h3></section></div>',
+    );
+  });
+
+  it('draws nothing without panels and refuses panels that do not make rows', () => {
+    expect(resultTabs([])).toBe('');
+    expect(() => resultTabs([{ tab: ['A'], body: '' }, { tab: ['A', 'B'], body: '' }])).toThrow('every panel names one tab, or one in each of two rows');
+    expect(() => resultTabs([{ tab: ['A', 'B', 'C'], body: '' }])).toThrow('every panel names one tab');
+    expect(() => resultTabs([{ tab: [], body: '' }])).toThrow('every panel names one tab');
+    expect(() => resultTabs([{ tab: ['A'], body: '' }, { tab: ['A '], body: '' }])).toThrow('two panels named A');
+    expect(() => resultTabs([{ tab: ['A'], body: '' }, { tab: [' '], body: '' }])).toThrow('a tab without a name');
+    expect(() => resultTabs([{ tab: ['Race 1', ''], body: '' }])).toThrow('a tab without a name');
+  });
+
+  it("escapes a section's id", () => {
+    expect(section('Lap chart', '', '<p>x</p>', 'lap-chart')).toBe('<section class="pd-wk-sec" id="lap-chart"><div class="pd-wk-sh"><h2>Lap chart</h2></div><p>x</p></section>');
+    expect(section('T', '', '', 'a"b')).toContain('<section class="pd-wk-sec" id="a&quot;b">');
+  });
+});
+
+describe("the shared parts' options (O33), Formula 1's by default", () => {
+  it('bar: a page, a session without one, one called off, a divider, one still to run', () => {
+    expect(
+      bar(w11, [
+        { label: 'Overview', note: 'the weekend', href: w11.path, current: true },
+        { label: 'Free Practice', note: 'Fri · not stored', state: 'off' },
+        { label: 'Qualifying', note: 'Sat · called off', state: 'x' },
+        { divider: 'Round <15>' },
+        { label: 'Race <1>', note: 'Sun', href: `${w11.path}race/`, state: 'up' },
+      ]),
+    ).toBe(
+      '<nav class="pd-wb" aria-label="Spanish Grand Prix (Madrid): its pages"><a href="/series/f2/2026/round-11/" aria-current="page">Overview<small>the weekend</small></a>' +
+        '<span class="is-off">Free Practice<small>Fri · not stored</small></span><span class="is-x">Qualifying<small>Sat · called off</small></span>' +
+        '<span class="pd-wb-div">Round &lt;15&gt;</span><a href="/series/f2/2026/round-11/race/" class="is-up">Race &lt;1&gt;<small>Sun</small></a></nav>',
+    );
+  });
+
+  it('weekendBand: the crumb, the season, tags, words after the dates, the number', () => {
+    expect(weekendBand(w11)).toBe(
+      '<section class="pd-wk-band"><div class="pd-wk-band-in"><p class="pd-wk-crumb"><a href="/series/f2/">Formula 2</a> › <a href="/series/f2/2026/">2026 season</a> › Round 11 of 1</p>' +
+        '<h1>Spanish Grand Prix (Madrid)</h1><p class="pd-wk-where"><span class="pd-wk-dt">11–13 September</span></p><span class="pd-wk-num" aria-hidden="true">11</span></div></section>',
+    );
+    const odd = weekendBand(w11, { crumb: 'Race 2 of 10', season: 'Season 12 · 2025–26', tags: ['Two qualifying sessions & two Feature Races'], after: '4 hours', num: '24' });
+    expect(odd).toContain('<a href="/series/f2/2026/">Season 12 · 2025–26</a> › Race 2 of 10</p>');
+    expect(odd).toContain(
+      '<span class="pd-wk-dt">11–13 September</span> · 4 hours</p><em class="pd-wk-tag">Two qualifying sessions &amp; two Feature Races</em><span class="pd-wk-num" aria-hidden="true">24</span>',
+    );
+    expect(weekendBand(w11, { crumb: null })).toContain('<a href="/series/f2/2026/">2026 season</a></p>');
+  });
+
+  it("strip: the family's own Final line, or the next session", () => {
+    expect(strip(w11, '<b>Dino Beganovic</b> won the Feature Race')).toBe(
+      '<div class="pd-wk-strip"><div class="pd-wk-strip-in"><em class="pd-wk-pill is-fin">Final</em><span class="pd-wk-sum"><b>Dino Beganovic</b> won the Feature Race</span>' +
+        '<span class="pd-wk-acts"><button type="button" class="pd-wk-btn" data-pd-follow="f2" data-off="Follow Formula 2" data-on="Following Formula 2 ✓" hidden>Follow Formula 2</button></span></div></div>',
+    );
+    expect(strip(w11, null)).toContain(
+      '<em class="pd-wk-pill is-next">Next</em><span class="pd-wk-sum"><b class="pd-sr-ses">Practice · <span class="pd-t" data-utc="2026-09-11T09:05:00.000Z" data-f="wt">Fri 09:05 UTC</span></b></span>',
+    );
+  });
+
+  it('sessionCard: no page and nothing stored, or a table stored under another name', () => {
+    const used = nothingUsed();
+    expect(sessionCard(w11, w11.sessions[0], used, { page: false, empty: 'Not stored yet: FOM’s API answers it.' })).toBe(
+      '<article class="pd-sc is-sm is-off"><header><div><h3>Practice</h3><p><span class="pd-t" data-utc="2026-09-11T09:05:00.000Z" data-f="wt">Fri 09:05 UTC</span> your time · Fri 09:05 at the track</p></div></header>' +
+        '<p class="pd-sc-empty">Not stored yet: FOM’s API answers it.</p><span class="pd-sc-go is-off">No page yet</span></article>',
+    );
+    const sprint = sessionCard(w11, w11.sessions[2], used, { table: tableOf(w11, 'Sprint'), rows: 3 });
+    expect(sprint.match(/<li>/g)).toHaveLength(3);
+    expect(sprint).toContain(
+      '<li><span class="p">1</span><i class="pd-tc" style="--t:#9aa3b2"></i><b>MIY</b><span class="nm">Ritomo Miyata</span><span class="tt">47:21.330</span><span class="pp">11</span></li>',
+    );
+    expect(sprint).toContain('<a class="pd-sc-go" href="/series/f2/2026/round-11/sprint-race/">All 5 on its page →</a></article>');
+  });
+
+  it('aside: a box before the rest, no championship or one of its own, its own title and facts', () => {
+    expect(
+      aside(w11, true, {
+        before: '<section class="pd-wk-box"><h3>The twin round</h3></section>',
+        champ: null,
+        title: 'The rally',
+        facts: [
+          ['Stages', '17'],
+          ['Crews', 'driver & co-driver'],
+        ],
+        unit: 'Race',
+      }),
+    ).toBe(
+      '<aside class="pd-wk-aside"><section class="pd-wk-box"><h3>The twin round</h3></section><section class="pd-wk-box"><h3>The rally</h3><dl><dt>Stages</dt><dd>17</dd><dt>Crews</dt><dd>driver &amp; co-driver</dd></dl></section></aside>',
+    );
+    const chase = aside(w11, true, {
+      champ: {
+        title: 'The Chase after race 33',
+        rows: [
+          { name: 'Kyle Larson', team: 'Hendrick Motorsports', pts: 2370 },
+          { name: 'Christopher Bell', team: 'Joe Gibbs Racing', pts: 2365 },
+        ],
+      },
+    });
+    expect(chase).toContain(
+      '<section class="pd-wk-box pd-wk-champ"><h3>The Chase after race 33</h3><ol><li><span class="p">1</span><i class="pd-tc" style="--t:#9aa3b2"></i><span class="d"><b>Kyle Larson</b><small>Hendrick Motorsports</small></span><span class="g">Leader</span><b class="pt">2370</b></li>',
+    );
+    expect(chase).toContain('<span class="g">−5</span><b class="pt">2365</b></li></ol><span class="pd-wk-more is-off">Full standings →</span></section>');
+    expect(chase).toContain('<dt>Format</dt><dd>Sprint weekend</dd>');
+    // The drafts' rally and Nordschleife boxes hold their facts alone.
+    const madring = { ...w11, tz: 'Europe/Madrid', r: { ...w11.r, venue: 'Madring', country: 'Spain', tz: 'Europe/Madrid' } };
+    expect(aside(madring, true, { champ: null, facts: [['Race', '4 hours']] })).toContain('<dl><dt>Circuit</dt><dd>Madring</dd><dt>Country</dt><dd>Spain</dd><dt>Track time</dt><dd>UTC+2');
+    expect(aside(madring, true, { champ: null, place: false, facts: [['Race', '4 hours']] })).toContain('<dl><dt>Race</dt><dd>4 hours</dd></dl>');
+  });
+
+  const three = seriesOf('f2', 'Formula 2', {
+    calendar: madrid,
+    rounds: [
+      { ...saved.f2.round, round: 10, name: 'Hungarian Grand Prix' },
+      saved.f2.round,
+      { ...saved.f2.round, round: 12, name: 'Azerbaijan Grand Prix', startDate: '2026-09-24', endDate: '2026-09-26' },
+    ],
+  });
+
+  it('nextRound and sessionBand: the word for a round', () => {
+    const w = weekendOf(three, 2026, saved.f2.round);
+    expect(nextRound(w, 'Race')).toBe(
+      '<a class="pd-wk-next" href="/series/f2/2026/round-12/"><small>Next race · 12</small><b>Azerbaijan Grand Prix</b><span>24–26 September</span></a><a class="pd-wk-prev" href="/series/f2/2026/round-10/">‹ Race 10 · Hungarian Grand Prix</a>',
+    );
+    expect(nextRound(w)).toContain('<small>Next round · 12</small>');
+    expect(sessionBand(w, w.sessions[0], 'Race')).toContain(
+      '<a href="/series/f2/2026/round-11/">Race 11 · Spanish Grand Prix (Madrid)</a></p><h1>Practice</h1><p class="pd-ss-sub">Friday 11 September · 09:05 at the track, <span class="pd-t" data-utc="2026-09-11T09:05:00.000Z" data-f="wt">Fri 09:05 UTC</span> your time</p>',
+    );
+  });
+
+  it("seasonPage: its title, a round's word and a called-off round's line", () => {
+    const off = { round: 7, name: 'Qatar <1812> km', from: '2026-10-22', to: '2026-10-24', reason: 'the situation' };
+    const body = seasonPage({ ...three, cancelled: [off] }, 2026, { unit: 'Race', title: 'Season 12 · 2025–26', offLine: c => `First set for 26–28 March; called off on 28 July (${c.round})` }).body;
+    expect(body).toContain('<h2>Season 12 · 2025–26</h2><p>3 races · 1 run</p>');
+    expect(body).toContain('<small>Race 11 · 11–13 Sep</small><b>Spanish Grand Prix (Madrid)</b>');
+    expect(body).toContain('<span class="pd-sn-t is-off"><small>Called off · was 22–24 Oct</small><b>Qatar &lt;1812&gt; km</b><span>First set for 26–28 March; called off on 28 July (7)</span></span>');
+    expect(seasonPage({ ...three, cancelled: [off] }, 2026).body).toContain('<b>Qatar &lt;1812&gt; km</b><span>the situation</span>');
+  });
+
+  it("reads a motorcycle series' riders", () => {
+    expect(cols(saved.wsbk.result.sessions[0].tables[0])).toEqual({ pos: 0, name: 1, team: 2, time: 3, pts: 4 });
+    const riders = seriesOf('wsbk', 'WorldSBK', { standings: [{ title: 'Riders', columns: ['Pos', 'Rider', 'Team', 'Pts'], rows: [['1', 'Nicolo Bulega', 'Aruba.it Racing - Ducati', '600']] }] });
+    expect(championship(riders, 12)).toEqual([{ name: 'Nicolo Bulega', team: 'Aruba.it Racing - Ducati', pts: 600 }]);
   });
 });
