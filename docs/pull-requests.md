@@ -14,6 +14,28 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1195 · 1.0.305 (provisional) · O33 (Task 2.b: the groundwork every family's pages build on) · opened 2026-11-12 into `next` on the operator's "Push and open PR", built in a parallel session on the plan approved in plan mode on 28 Oct (the new fixture's word with it), resumed on "Resume here" after the session froze on 29 Oct; `next` at d1a14854 (#1191) merged in; the review on the operator's 5-hour figure, the merge on the word
+**The groundwork.** O18 brings the other fourteen series onto the series pages a family at a time, three sessions at once; this PR lays the parts they share, so each family builds on one set of parts instead of rewriting Formula 1's code its own way. Designed against all five family drafts. No reader change.
+- **Readers see:** nothing; every page of the dry run is byte-identical with next's.
+- **Editors get:** a series' pages are switched on in its own `meta.json` (`site: { family, pages }`); a wrong value stops the publish run before anything is written.
+- **Files (16):**
+  - `content/series/f1/meta.json` · Formula 1's setting: family F1, its four pages built.
+  - `lib/wp/render.ts` · `FAMILIES`, `SITE_PAGES`, `SeriesSite`, `siteOf`, `built`, `FamilyKit`, `SeriesData.sites`; `WEEKEND_PAGES` out, the Calendar's weekend card asks `built`; the 429's `retryAfterMs`, `retryWait`, `headerLine`, `sendWithRetry`.
+  - `lib/wp/render.test.ts` · 9 new tests: every meta.json's setting, `built`, the retry.
+  - `lib/wp/series.ts` · `ROUND2_SERIES` and `BUILT` out, every link and page asks `built`; `seriesFamily(d, kit)` and `seriesResults(d, fold)`.
+  - `lib/wp/series.test.ts` · the Formula 1 fixtures carry Formula 1's setting, their expectations unchanged; Formula 1's meta.json read.
+  - `lib/wp/weekend.ts` · the shared parts exported with their options (`weekendBand`, `bar`, `strip`, `sessionBand`, `sessionCard`, `aside`, `nextRound`, `seasonPage`, `forecastBox` and the data and time helpers; `cols` and `championship` read riders); `resultTabs`.
+  - `lib/wp/weekend.test.ts` · 13 new tests: the tabs from the saved document, every part's options; the fixture carries Formula 1's setting.
+  - `scripts/wp-publish.mts` · the settings read and checked with the chips, `KITS`, `seriesForecasts` for every series, OpenF1's and Jolpica's data read for the Formula 1 family only, `sendWithRetry` in every REST call and the retries in the tally.
+  - `tests/fixtures/result-tabs.json` · new: what paddock-data 3a1aac6f stored for Formula 2's Madrid, WorldSBK's Jerez and GT World's Zandvoort, a few rows a table, and their rounds.
+  - `wp-theme/paddock/style.css` · 0.1.23 (provisional): the marked block, `.pd-rt*`, the bar's spans, `.is-off`, `.is-x`, `.pd-wb-div`, a session card's `.is-off` and `.pd-sc-empty`.
+  - `wp-theme/paddock/assets/js/paddock.js` · the marked block: the tabs.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json`, `docs/pull-requests.md` · 1.0.305, provisional (#1193 and #1194 claim 1.0.303 and 1.0.304).
+- **Verified:** `npx tsc --noEmit` exit 0; `npm run lint` 0 errors, the 2 known `_encoding` warnings; `npm test` 282 files, 2,989 tests passed. The `--from-ref` dry run on paddock-data 77402397 with next's code (d1a14854) and with this branch: 214 pages each, 3,631,117 bytes, `diff -r` empty, Formula 1's 144 pages (2,162,193 bytes) among them. A fetching dry run into a copy of paddock-data (`--openf1-max 0`): 42 feeds OK, forecasts for f1 (Las Vegas, kept) and motogp (Portimão, one new request). The tabs in WordPress Playground with this branch's theme on a page rendered from the saved document: every tab by a real click, the keyboard, a greyed tab skipped, 300 to 2,560 px with no sideways scroll, Day and Night, and without the script.
+- **Found in the build:** `Date.parse` reads "1.5" and "-5" as days in 2001, so a Retry-After counts as a date only when it starts with its day's name.
+- **Test after upload (0.1.23):** nothing new to see until families A, B and C publish; if uploaded before, Formula 1's round 17 page and the Calendar as before, on a laptop and a phone, Day and Night.
+- **Review:** waits for the operator's 5-hour figure.
+
 ## #1191 · 1.0.302 · O32 (Formula 3's rounds on the Calendar, numbered and dated as Formula 3 gives them) · opened 2026-10-28 into `next` on the operator's "Push o32/f3-rounds and open its PR into next.", the desk's Task 2.a on Task 2's plan approved in plan mode (session 72); reviewed on "My 5-hour usage is under 60%: run the fresh-context Sonnet review of #1191."; the merge and the publish run on the word
 **Formula 3's round numbers.** Planning O18 found the Calendar naming Formula 3's rounds 3 to 10 where the series numbers them 1 to 9: its Sakhir round (10–12 April) was called off on 14 March and Formula 3 renumbered the rest, while `rounds.json` kept the gap. Rule 11 puts a wrong fact on the site first. Content only.
 - **Readers see:** nothing yet; the public site is in Coming Soon. Signed in, and through the REST API, after one publish run of /calendar/: June, July and September name Formula 3's rounds 2 to 9 (Monaco 2 to Madrid 9), and Monaco's band starts on its Thursday practice, 4 June.
