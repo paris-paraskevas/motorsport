@@ -4,6 +4,19 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.309 — 2026-11-12
+
+### O34 (Task 2.c), the shared fix before family C's pages: a car's win read from a Crew column, and a family's own Overview standings
+
+Family C's pages (Task 2.c's second PR) were planned in plan mode and approved on 12 Nov with three answers: Standings and Champions are drawn first and built in a PR of their own; this shared fix is a small PR of its own first, announced at the desk (the batch plan's rule for a change to the groundwork); the missing timetables are curated from the official sites. Turning family C's pages on runs them through series.ts's Overview and Results and weekend.ts's season page, which found a winner only in a Driver or Rider column (series.ts `raceWins`). Family C's races classify cars that crews share (C2's Pos, No., Crew, Team, #1194), so every family C round would have read as not run: "8 rounds · 0 run", no winner on a tile, a Results row or the Last race card. Readers see no change: no series with a Crew table has its pages turned on yet, so with the stored data, and with family C's refilled data swapped in, `next` and this branch render the same 214 pages byte for byte.
+
+- **lib/wp/series.ts:** `raceWins` also reads a Crew column, the crew as the winner and the car's number kept (`RoundWin.car`, from "No."), from the race's first table (family C stores a table a class, the top class first); `winnerName` names a car's win "#8"; the Overview's tiles and Last race card and a Results row show it beside the team, a driver's win as before; `seriesOverview` takes the family's standings block (`FamilyKit.overviewStandings`), Formula 1's drivers and constructors without it, and `seriesFamily` passes it. Family C's standings are kept by class (WEC four tables, IMSA eleven, GT World six), which Formula 1's two tables do not fit.
+- **lib/wp/weekend.ts:** `seasonPage`'s tile names a car's win with its team ("#8 TOYOTA RACING"), as the Endurance Weekend Drafts' S draws it.
+- **lib/wp/render.ts:** `FamilyKit.overviewStandings`, optional.
+- **Tests:** a Crew race's winner, team and car, and a driver's race with no car; the round counted as run and the car named on the Overview's tiles and Last race card, a Results row and the season page's tile; the family's Overview block, or none, Formula 1's by default.
+- **Found, not changed:** two tests of the old app's designer (components/designer/PageDesigner.test.tsx, P2.2 and P2.24 A) time out at 5 s in the full suite run four workers wide, and pass alone (57 tests); P2.2 times out on `next` (b6ff1c6d) too, without this change.
+- **Version:** 1.0.309, provisional: after #1197's 1.0.307 and #1198's 1.0.308, both open; taken at merge.
+
 ## 1.0.306 — 2026-11-12
 
 ### Records: sessions 71 and 72 (the desk)

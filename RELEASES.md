@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.309 — 2026-11-12
+
+Behind the scenes: the series pages learn to name a win by the car and its team, for the endurance and GT championships, where a crew shares each car. Nothing changes for readers yet.
+
 ## 1.0.306 — 2026-11-12
 
 Behind the scenes: the project's own records brought up to date.
