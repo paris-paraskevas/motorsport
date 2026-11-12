@@ -6,7 +6,37 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-10-27 (LATEST, session 71, the desk: batch Task 1 done and live — the lap chart (O28), the 2025 title race (O29), the other series' timetables (O31), the fourteen series researched (O20); theme 0.1.22 on the site; the operator's tests passed; next: Task 2, O18's plan)
+## ⚡ Next session pickup — 2026-11-12 (LATEST, session 72, the desk: Task 2 planned and running; Formula 3's rounds on the Calendar done (O32); Formula 1 published after rounds 19 and 20; #1193 merged; #1194 and #1195 in review)
+
+### 🔴 Start here — the handoff prompt for the next DESK session (copy it whole)
+
+```
+Session 73, the desk session. Never touch the learning worktree C:\Dev\Personal\Motorsport-learn.
+Before any tool call beyond reading, read in order: CLAUDE.md · docs/plan/rules.md · docs/plan/ledger.json (O32 done; O18's families O33, O34, O35 started, O36 and O37 planned) · docs/HANDOFF.md LATEST (12 Nov) · IDEAS.md's lines of 28 Oct to 12 Nov · the memory feedback-paddock-* files (every check comes with numbered steps and links).
+Then run `git status` and `git log --oneline -5` on the local branch desk/records, and list the linked Task 2 sessions.
+Task 2 runs in three sessions: 2.b (#1195, the groundwork), 2.c (#1194, family C's data), 2.d (#1193 merged; family B's data next).
+First: the Calendar's publish for #1193 (a GitHub run that fetches, then the publish from my computer), then Formula 1's Pit wall and weather for rounds 19 and 20.
+Not without my word: any push, merge, publish run, theme upload, the old Next.js code, DNS, any prod write.
+```
+
+1. **Task 2 planned and approved** (28 Oct) in plan mode (`C:/Users/ppara/.claude/plans/zippy-enchanting-lighthouse.md`), the order "A, C and B now": O18 split into O32 (Formula 3's rounds, the desk), O33 (family A and the groundwork, Task 2.b), O34 (family C, 2.c), O35 (family B, 2.d), O36 (WRC, Task 3.a) and O37 (NLS and the 24 Hours, Task 3.b).
+2. **O32 done:** #1191 (1.0.302) reviewed (mergeable after fixes; the publish run's STALE check folded), merged 12 Nov as d1a14854, published from the operator's computer and checked through the REST API; the operator's own check passed the same day (seven screenshots, Night, laptop).
+3. **Formula 1 published after rounds 19 and 20** (12 Nov, 25 pages updated): results, standings after round 20, both lap charts. OpenF1 refused the tyres, weather and race control's marks for rounds 19 and 20 with 429; the publisher asks again after 13 Nov 12:22Z, then a publish of /series/f1/ adds their Pit wall.
+4. **Task 2's sessions:** 2.d's #1193 (the Indianapolis 500's first week under its own round, 1.0.303) merged 12 Nov as 0e3a12d1; its /calendar/ publish waits for the word (its checks are in 2.d's hand-over note). 2.c's #1194 (family C's data, 1.0.304) and 2.b's #1195 (the groundwork, 1.0.305) are in their Sonnet reviews. 2.b froze on 29 Oct during a file read and resumed on 12 Nov. The groundwork's interface for 2.c and 2.d goes to the desk's notes folder, `C:\Users\ppara\AppData\Roaming\Claude\side-session-notes\local_92694ba7-0a14-4887-8fad-ddec58926619\`.
+5. **The sidebar organised** on the operator's choice (12 Nov): ten finished sessions archived (Task 1.a to 1.d, Build session 70 and five older ones; Task 1.a's and 1.d's worktrees went with them, after `git status` showed 0 uncommitted files), the desk pinned; Build session 71 kept, as its notes folder holds Task 1's hand-over notes that Task 2's briefs point to.
+6. **A standing rule** (the operator, 12 Nov): every page check handed over comes as numbered steps: how to sign in, a direct link to each page, what to click, and exactly what to see in the operator's own time (memory `feedback-paddock-check-instructions`).
+7. **Records:** sessions 71's and 72's ledger, IDEAS and handoff commits go up in one records PR, `next` merged in first.
+
+**Landmines met in session 72:**
+- **Git Bash rewrites an argument that starts with `/` into a Windows path:** `gh workflow run … -f only=/calendar/` reached the workflow as `C:/Program Files/Git/calendar/` (run 43216747954 failed on it). Prefix `MSYS_NO_PATHCONV=1` to `gh workflow run`, to the publisher's `--only`, and to `git show <ref>:.github/…`.
+- **WordPress.com refuses GitHub's signed-in publish runs with 429 again** (12 Nov; issue #1192, opened by the run itself, closes itself on the next successful GitHub run). What works: dispatch the GitHub run, which fetches every feed and commits the data to paddock-data before failing at WordPress; then publish from the operator's computer from that stored data, this checkout on next and the content bundled, a dry run first: `MSYS_NO_PATHCONV=1 npx tsx --env-file=.env.wp scripts/wp-publish.mts --from-ref origin/paddock-data --only <paths>`.
+- **A change to a series' rounds needs freshly fetched data before a stored-data publish:** the stored `<slug>/calendar.json` keeps the old round numbers until a run fetches, and a stored-data publish then mismatches the cards and their bands. A fetching run keeps the old data as STALE when the feed fails, and still exits 0: read its `calendar <slug> OK` line.
+- **Archiving a session removes its worktree folder:** run `git status --short` there first.
+- **A scratch worktree is still registered:** `C:/Users/ppara/AppData/Local/Temp/claude/C--Dev-Personal-Motorsport/84d6365a-41a9-4488-b903-3fd5991ef5ea/scratchpad/pd-data`, a detached copy of paddock-data from 28 Oct's dry runs. It holds nothing worth keeping and goes on the operator's word.
+
+---
+
+## ⚡ Next session pickup — 2026-10-27 (session 71, the desk: batch Task 1 done and live — the lap chart (O28), the 2025 title race (O29), the other series' timetables (O31), the fourteen series researched (O20); theme 0.1.22 on the site; the operator's tests passed; next: Task 2, O18's plan)
 
 ### 🔴 Start here — the handoff prompt for the next DESK session (copy it whole)
 

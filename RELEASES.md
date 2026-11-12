@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.306 — 2026-11-12
+
+Behind the scenes: the project's own records brought up to date.
+
 ## 1.0.303 — 2026-11-12
 
 Behind the scenes: on the calendar's May page, the Indianapolis 500's first week of practice and qualifying now sits with the 500 itself, no longer with the road course race at the Brickyard the weekend before. Nothing changes for readers yet.

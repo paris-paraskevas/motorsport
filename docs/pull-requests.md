@@ -14,6 +14,18 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1196 · 1.0.306 · records (sessions 71 and 72, the desk) · opened 2026-11-12 into `next` on the operator's "do it" for the records PR; `next` merged in first (0e3a12d1); 1.0.306 provisional behind the open #1194 and #1195; the merge on the word
+**The desk's records.** The ledger, the handoff and IDEAS as sessions 71 and 72 kept them on the local branch desk/records since 25 October. No code, content or page changes.
+- **Readers see:** nothing.
+- **Editors get:** nothing.
+- **Files (9):**
+  - `docs/plan/ledger.json`, `docs/plan/components-programme.md` · session 71's evidence (O17, O28, O29, O31, O20 done; the tests of 28 Oct; O10's 429 outage) and session 72's (O18 split into O32 to O37 with its dated changes line; O32 done; O33 to O35 started; O10's Formula 1 publish after rounds 19 and 20).
+  - `docs/HANDOFF.md` · session 71's sections and session 72's (12 Nov), with its landmines.
+  - `IDEAS.md` · eight findings of 25 Oct to 12 Nov.
+  - `docs/pull-requests.md` · #1186's entry completed; this entry.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json` · 1.0.306.
+- **Review:** none; records only, no code or content.
+
 ## #1193 · 1.0.303 · O35 (the Indianapolis 500's first week under its own round on the Calendar) · opened 2026-11-12 into `next` on the operator's "Push and open PR", Task 2.d's first PR (rule 11), built 29 Oct on the plan approved in plan mode; `next` merged in after #1191, whose 1.0.302 came first, and the checks run again before the push; reviewed on "Under 60%: review" (12 Nov), its nits folded; the merge on the word
 **The Indianapolis 500's first week on the Calendar.** The May Calendar's IndyCar round 6 card (Sonsio Grand Prix at the Brickyard, 8–9 May) listed the 500's practice and qualifying of 12–17 May: the weekend grouping joins sessions four days apart or less, so the race of 9 May and the 500's first practice of 12 May formed one weekend that only round 6's dates cover. The publisher now keeps every session in the round its sessions.json block names (B3, 25 Oct); only those eight sessions move. lib/group.ts, which the old code shares, is unchanged.
 - **Readers see:** nothing yet; the site is in Coming Soon. After the desk's publish run of /calendar/ once this is merged into `next`: on /calendar/2026-05/ the Sonsio Grand Prix's card with its four sessions and the Indianapolis 500's with its eleven, Practice 1 on 12 May to the race on 24 May, in the 22–24 May weekend; the month grid unchanged.
