@@ -207,17 +207,18 @@ function lastCard(d: SeriesData, w: RoundWin, r: CalendarRound | undefined): str
 }
 
 /** A round's tile: its weekend page where the series has them (O19); else a finished round opens its line on the
- *  Results page, and a round to come its month on the Calendar. */
+ *  Results page when the series has that page built, and any other round its month on the Calendar. */
 function tile(d: SeriesData, r: CalendarRound, w: RoundWin | undefined, current: CalendarRound | undefined): string {
   const head = `<small>R${r.round}</small><b>${escapeHtml(r.place ?? r.name)}</b>${outline(r.outline)}`;
   const page = weekendOf(d, r.round);
+  const month = `${calendarMonthPath(r.startDate.slice(0, 7))}#${escapeHtml(d.slug)}`;
   if (w) {
     const won = `<span class="pd-sr-win" style="--t:${colourOf(d, w.team)}"><b>${escapeHtml(codeOf(d, w.winner))}</b>${w.date ? dayLabel(w.date) : ''}</span>`;
-    return `<a class="pd-sr-tile" href="${page ?? `${seriesPath(d.slug, 'results')}#r${r.round}`}">${head}${won}</a>`;
+    return `<a class="pd-sr-tile" href="${page ?? (built(d, 'results') ? `${seriesPath(d.slug, 'results')}#r${r.round}` : month)}">${head}${won}</a>`;
   }
   const when = dates(r.startDate, r.endDate);
   const label = r === current ? wk(r, `Next · ${when}`, `This weekend · ${when}`) : escapeHtml(when);
-  return `<a class="pd-sr-tile ${r === current ? 'is-now' : 'is-ahead'}" href="${page ?? `${calendarMonthPath(r.startDate.slice(0, 7))}#${escapeHtml(d.slug)}`}">${head}<span class="pd-sr-when">${label}</span></a>`;
+  return `<a class="pd-sr-tile ${r === current ? 'is-now' : 'is-ahead'}" href="${page ?? month}">${head}<span class="pd-sr-when">${label}</span></a>`;
 }
 
 /** The top of a standings table with points bars sized against the leader; the driver's wins, races only. */

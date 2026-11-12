@@ -831,8 +831,11 @@ export function nextRound(w: Weekend, unit = 'Round'): string {
 export interface AsideOptions {
   /** The track box's title: "At the track" by default ("The rally"). */
   title?: string;
+  /** false: the box leaves out its Circuit, Country and Track time rows and holds the facts alone (the drafts' rally
+   *  and Nordschleife boxes). */
+  place?: boolean;
   /** Its rows after Circuit, Country and Track time: by default Formula 1's Format, a sprint or a standard weekend. */
-  facts?: [string, string][];
+  facts?: readonly (readonly [string, string])[];
   /** The championship box, its title and rows: by default Formula 1's before or after the round; null for none. */
   champ?: { title: string; rows: Standing[] } | null;
   /** The next round's word (nextRound). */
@@ -870,15 +873,16 @@ export function aside(w: Weekend, raced: boolean, o: AsideOptions = {}): string 
   const facts = o.facts
     ? o.facts.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')
     : `<dt>Format</dt><dd>${sprintWeekend(w.d, w.r.round, w.result) ? 'Sprint weekend' : 'Standard weekend'}</dd>`;
-  const track =
-    `<section class="pd-wk-box"><h3>${esc(o.title ?? 'At the track')}</h3><dl>${w.r.venue ? `<dt>Circuit</dt><dd>${esc(w.r.venue)}</dd>` : ''}${w.r.country ? `<dt>Country</dt><dd>${esc(w.r.country)}</dd>` : ''}` +
-    `${zone}${facts}</dl></section>`;
+  const place =
+    o.place === false ? '' : `${w.r.venue ? `<dt>Circuit</dt><dd>${esc(w.r.venue)}</dd>` : ''}${w.r.country ? `<dt>Country</dt><dd>${esc(w.r.country)}</dd>` : ''}${zone}`;
+  const track = `<section class="pd-wk-box"><h3>${esc(o.title ?? 'At the track')}</h3><dl>${place}${facts}</dl></section>`;
   return `<aside class="pd-wk-aside">${o.before ?? ''}${champ}${track}${nextRound(w, o.unit)}</aside>`;
 }
 
-/** A section of a weekend page: its heading, a hint beside it, its body (markup; the title and hint too, as written). */
+/** A section of a weekend page: its heading, a hint beside it, its body (markup: the title and hint too, as written);
+ *  its id is escaped. */
 export const section = (title: string, hint: string, body: string, id?: string): string =>
-  `<section class="pd-wk-sec"${id ? ` id="${id}"` : ''}><div class="pd-wk-sh"><h2>${title}</h2>${hint ? `<p class="pd-wk-hint">${hint}</p>` : ''}</div>${body}</section>`;
+  `<section class="pd-wk-sec"${id ? ` id="${esc(id)}"` : ''}><div class="pd-wk-sh"><h2>${title}</h2>${hint ? `<p class="pd-wk-hint">${hint}</p>` : ''}</div>${body}</section>`;
 
 // ── The results table with tabs (O33) ────────────────────────────────────────
 
@@ -901,6 +905,7 @@ export function resultTabs(panels: readonly TabPanel[], o: { rows?: readonly str
   // "|" separates the rows' names in the data attributes.
   const name = (s: string): string => s.replace(/\|/g, '/').trim();
   const key = (names: readonly string[]): string => names.map(name).join('|');
+  if (panels.some(p => p.tab.some(t => !name(t)))) throw new Error('resultTabs: a tab without a name');
   const keys = panels.map(p => key(p.tab));
   const twice = keys.find((k, i) => keys.indexOf(k) !== i);
   if (twice !== undefined) throw new Error(`resultTabs: two panels named ${twice}`);

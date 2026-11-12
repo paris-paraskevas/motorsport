@@ -16,6 +16,7 @@ import {
   nothingUsed,
   resultTabs,
   seasonPage,
+  section,
   sessionBand,
   sessionCard,
   strip,
@@ -1046,6 +1047,13 @@ describe('the results table with tabs (O33), from the saved document', () => {
     expect(() => resultTabs([{ tab: ['A', 'B', 'C'], body: '' }])).toThrow('every panel names one tab');
     expect(() => resultTabs([{ tab: [], body: '' }])).toThrow('every panel names one tab');
     expect(() => resultTabs([{ tab: ['A'], body: '' }, { tab: ['A '], body: '' }])).toThrow('two panels named A');
+    expect(() => resultTabs([{ tab: ['A'], body: '' }, { tab: [' '], body: '' }])).toThrow('a tab without a name');
+    expect(() => resultTabs([{ tab: ['Race 1', ''], body: '' }])).toThrow('a tab without a name');
+  });
+
+  it("escapes a section's id", () => {
+    expect(section('Lap chart', '', '<p>x</p>', 'lap-chart')).toBe('<section class="pd-wk-sec" id="lap-chart"><div class="pd-wk-sh"><h2>Lap chart</h2></div><p>x</p></section>');
+    expect(section('T', '', '', 'a"b')).toContain('<section class="pd-wk-sec" id="a&quot;b">');
   });
 });
 
@@ -1132,6 +1140,10 @@ describe("the shared parts' options (O33), Formula 1's by default", () => {
     );
     expect(chase).toContain('<span class="g">−5</span><b class="pt">2365</b></li></ol><span class="pd-wk-more is-off">Full standings →</span></section>');
     expect(chase).toContain('<dt>Format</dt><dd>Sprint weekend</dd>');
+    // The drafts' rally and Nordschleife boxes hold their facts alone.
+    const madring = { ...w11, tz: 'Europe/Madrid', r: { ...w11.r, venue: 'Madring', country: 'Spain', tz: 'Europe/Madrid' } };
+    expect(aside(madring, true, { champ: null, facts: [['Race', '4 hours']] })).toContain('<dl><dt>Circuit</dt><dd>Madring</dd><dt>Country</dt><dd>Spain</dd><dt>Track time</dt><dd>UTC+2');
+    expect(aside(madring, true, { champ: null, place: false, facts: [['Race', '4 hours']] })).toContain('<dl><dt>Race</dt><dd>4 hours</dd></dl>');
   });
 
   const three = seriesOf('f2', 'Formula 2', {

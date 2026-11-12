@@ -897,6 +897,8 @@ export function siteOf(slug: string, raw: unknown): SeriesSite | null {
   if (typeof family !== 'string' || !(FAMILIES as readonly string[]).includes(family)) {
     throw new Error(`${at}: site.family ${JSON.stringify(family)} is not one of ${FAMILIES.join(', ')}`);
   }
+  // Formula 1's family reads stores kept for Formula 1 alone (OpenF1's sessions and maps, Jolpica's laps).
+  if (family === 'F1' && slug !== 'f1') throw new Error(`${at}: site.family "F1" is Formula 1's own; another series takes A to E`);
   if (!Array.isArray(raw.pages)) throw new Error(`${at}: site.pages must be a list, such as ["results", "standings"]`);
   const wrong = raw.pages.find(p => typeof p !== 'string' || !(SITE_PAGES as readonly string[]).includes(p));
   if (wrong !== undefined) throw new Error(`${at}: site.pages holds ${JSON.stringify(wrong)}, not one of ${SITE_PAGES.join(', ')}`);
@@ -1401,6 +1403,8 @@ export function planSync(desired: Page[], existing: WpPageRow[]): SyncStep[] {
 export const RETRY_TRIES = 5;
 const RETRY_DEFAULT_MS = 30_000;
 const RETRY_MAX_MS = 120_000;
+/** A Retry-After of 0 or a date already past still waits this long, so the tries are not sent back to back. */
+const RETRY_MIN_MS = 1_000;
 
 /** Retry-After in milliseconds from now, from delta-seconds or an HTTP-date; null when absent or unreadable. */
 export function retryAfterMs(value: string | null, now: number): number | null {
@@ -1416,7 +1420,7 @@ export function retryWait(value: string | null, attempt: number, now: number): n
   if (attempt >= RETRY_TRIES) return null;
   const asked = retryAfterMs(value, now);
   if (asked !== null && asked > RETRY_MAX_MS) return null;
-  return asked ?? RETRY_DEFAULT_MS;
+  return asked === null ? RETRY_DEFAULT_MS : Math.max(RETRY_MIN_MS, asked);
 }
 
 /** An answer's headers for the log, sorted by name, its cookies left out. */

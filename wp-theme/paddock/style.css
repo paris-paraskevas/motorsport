@@ -1420,12 +1420,12 @@ a.pd-sn-t:hover { border-color: var(--pd-ink); border-top-color: var(--t, var(--
    The markup is the publisher's (lib/wp/weekend.ts resultTabs, bar, sessionCard); paddock.js draws the tabs. Without
    the script every panel of a results table stands under its own heading. */
 .pd-rt { display: grid; gap: 10px; }
-.pd-rt-row { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 8px; align-items: center; }
+.pd-rt-row { display: grid; grid-template-columns: minmax(56px, max-content) minmax(0, 1fr); gap: 8px; align-items: center; }
 .pd-rt-row.is-bare { grid-template-columns: minmax(0, 1fr); }
 .pd-rt-lbl { font-size: .72rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--pd-muted); }
 .pd-rt-tabs { display: flex; flex-wrap: wrap; gap: 6px; }
 .pd-rt-tabs button { padding: 6px 12px; border: 1.5px solid var(--pd-line-strong); border-radius: 0; background: var(--pd-surface); color: var(--pd-ink); font: inherit; font-size: .84rem; font-weight: 800; line-height: 1.25; cursor: pointer; }
-.pd-rt-tabs button:hover { border-color: var(--pd-ink); }
+.pd-rt-tabs button:not([aria-disabled="true"]):hover { border-color: var(--pd-ink); }
 .pd-rt-tabs button[aria-selected="true"] { border-color: var(--pd-ink); background: var(--pd-ink); color: var(--pd-ground); }
 .pd-rt-tabs button[aria-disabled="true"] { border-style: dotted; background: var(--pd-surface); color: var(--pd-muted); opacity: .62; cursor: default; }
 .pd-rt-p { min-width: 0; }
@@ -1437,6 +1437,7 @@ a.pd-sn-t:hover { border-color: var(--pd-ink); border-top-color: var(--t, var(--
 .pd-wb > span small { font-size: .7rem; font-weight: 600; color: var(--pd-muted); }
 .pd-wb > .is-off { border-style: dotted; color: var(--pd-muted); opacity: .62; }
 .pd-wb > .is-x { border-style: dashed; color: var(--pd-muted); text-decoration: line-through; text-decoration-thickness: 1.5px; }
+.pd-wb > .is-up { border-style: dashed; }
 .pd-wb > .pd-wb-div { display: block; align-self: center; padding: 0 4px 0 8px; border: 0; font-size: .7rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--pd-muted); }
 /* A session card with nothing stored, or with no page of its own. */
 .pd-sc.is-off { border-top-style: dotted; background: repeating-linear-gradient(135deg, var(--pd-surface) 0 12px, var(--pd-sunken) 12px 24px); }

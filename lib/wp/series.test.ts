@@ -1101,3 +1101,34 @@ describe('categorySlug', () => {
     expect(categorySlug('ADAC Ravenol 24h Nürburgring')).toBe('adac-ravenol-24h-nurburgring');
   });
 });
+
+describe("a series' setting: only the pages it lists (O33)", () => {
+  // Formula 1's data under another slug, with its Standings built and nothing else.
+  const f2: SeriesData = { ...f1, slug: 'f2', name: 'Formula 2', sites: { ...SITES, f2: { family: 'A', pages: ['standings'] } } };
+
+  it('builds only the pages listed', () => {
+    expect(seriesFamily(f2).map(p => p.path)).toEqual(['/series/f2/', '/series/f2/standings/']);
+  });
+
+  it('greys the tabs it does not build and never links to them', () => {
+    const b = seriesOverview(f2).body;
+    expect(b).toContain('<a href="/series/f2/standings/">Standings</a><span class="is-off">Results</span><span class="is-off">Champions</span>');
+    expect(b).toContain('<a href="/series/f2/standings/">All 12 →</a>');
+    expect(b).not.toContain('/series/f2/results/');
+    expect(b).not.toContain('/series/f2/2026/');
+    // A finished round without a weekend page or a Results page opens its month on the Calendar.
+    expect(b).toContain('<a class="pd-sr-tile" href="/calendar/2026-09/#f2"><small>R1</small><b>Singapore</b>');
+    const list = seriesList([{ ...f2, category: 'formula', colour: '#38bdf8' }], new Date('2026-10-20T00:00:00Z')).body;
+    expect(list).toContain('<b><a href="/series/f2/">Formula 2</a></b>');
+    expect(list).toContain('<a href="/series/f2/standings/">Standings</a><span class="is-off">Results</span><span class="is-off">Champions</span>');
+  });
+
+  it("folds each round as its family counts the weekend's points, Formula 1's by default", () => {
+    const listed: SeriesData = { ...f2, sites: { f2: { family: 'A', pages: ['results'] } } };
+    const kit = { weekendPages: () => [], resultsFold: (d: SeriesData, r: ResultRound) => `<p class="fold">${d.slug} round ${r.round}</p>` };
+    const folded = seriesFamily(listed, kit).find(p => p.path === '/series/f2/results/')?.body ?? '';
+    expect(folded).toContain('<div class="pd-rs-fold"><p class="fold">f2 round 1</p></div>');
+    expect(folded).not.toContain('pd-wk-pts');
+    expect(seriesResults(listed).body).toContain('<div class="pd-rs-fold"><table class="pd-wk-tbl pd-wk-pts">');
+  });
+});

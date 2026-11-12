@@ -17,9 +17,10 @@
 //   add --only /calendar/ to any of these                                        one family of pages, the others left as they are
 //   add --only /calendar/,/series/f1/                                            several families
 //
-// Formula 1's weekend pages (O19) also keep f1/sessions.json (OpenF1's weather, race control and tyres per session),
-// f1/forecast.json (MET Norway, the circuits racing within ten days) and f1/maps.json (each circuit's pole-lap map);
-// its race pages' lap charts (O28) keep f1/laps.json (Jolpica's places lap by lap and pit stops, asked once a race).
+// Formula 1's weekend pages (O19) also keep f1/sessions.json (OpenF1's weather, race control and tyres per session) and
+// f1/maps.json (each circuit's pole-lap map); its race pages' lap charts (O28) keep f1/laps.json (Jolpica's places lap by
+// lap and pit stops, asked once a race). Every series keeps <slug>/forecast.json (MET Norway, its circuits racing within
+// ten days, O33).
 //
 // Publishing needs WP_SITE_URL (an https origin), WP_USER and WP_APP_PASSWORD (an
 // application password; never printed). Every log line starts with the run's
@@ -167,6 +168,9 @@ interface WpRestPage {
   content?: { raw?: string };
 }
 
+/** WordPress still answered 429 when a request's tries ended: the run sends nothing more, and the next run carries on. */
+class SlowedDown extends Error {}
+
 function wordpress() {
   const site = (process.env.WP_SITE_URL ?? '').trim().replace(/\/+$/, '');
   const user = (process.env.WP_USER ?? '').trim();
@@ -175,8 +179,10 @@ function wordpress() {
   if (!/^https:\/\/[^/\s]+$/.test(site)) throw new Error('WP_SITE_URL must be an https origin with no path, e.g. https://example.com');
   const auth = `Basic ${Buffer.from(`${user}:${password}`).toString('base64')}`;
   let retries = 0;
+  let slowed = '';
 
   async function call(method: 'GET' | 'POST', path: string, body?: unknown): Promise<{ json: unknown; totalPages: number }> {
+    if (slowed) throw new SlowedDown(slowed);
     // A 429 is waited out and tried again as its Retry-After says (sendWithRetry, lib/wp/render.ts), each one logged.
     const res = await sendWithRetry(
       () =>
@@ -197,6 +203,10 @@ function wordpress() {
       },
     );
     const text = await res.text();
+    if (res.status === 429) {
+      slowed = `${method} /wp-json/wp/v2/${path.split('?')[0]} still answered HTTP 429 when its tries ended`;
+      throw new SlowedDown(slowed);
+    }
     if (!res.ok) throw new Error(`${method} /wp-json/wp/v2/${path.split('?')[0]} answered HTTP ${res.status}: ${text.slice(0, 200)}`);
     return { json: text ? (JSON.parse(text) as unknown) : null, totalPages: Number(res.headers.get('x-wp-totalpages') ?? '1') };
   }
@@ -650,9 +660,10 @@ async function seriesForecasts(slugs: readonly string[], out: Fetched, rally: (s
   for (const slug of slugs) {
     kept.set(slug, readStored<Record<string, VenueForecast>>(forecastFile(slug)) ?? {});
     const calendar = out.calendar.get(slug)?.data ?? [];
+    // No calendar this run (its loader failed): its stored forecasts stay as they are, never emptied.
+    if (!calendar.length) continue;
     const keys = new Set<string>();
     soon.set(slug, keys);
-    if (!calendar.length) continue;
     const roundOf = new Map((await calendarRounds(roundsFile(slug).rounds, calendar, rally(slug), outlines)).map(r => [r.round, r]));
     for (const e of calendar) {
       const key = e.round === null ? null : roundOf.get(e.round)?.circuit;
@@ -670,7 +681,7 @@ async function seriesForecasts(slugs: readonly string[], out: Fetched, rally: (s
     log('F', `forecast ${key} ${got.status}${got.value ? ` ${got.value.steps.length} steps` : ''} for ${who.join(', ')}`);
   }
   let changed = 0;
-  for (const slug of slugs) {
+  for (const slug of soon.keys()) {
     const forecasts: Record<string, VenueForecast> = {};
     for (const key of soon.get(slug) ?? []) {
       const v = answers.get(key);
@@ -1056,7 +1067,7 @@ async function publish(pages: Page[]): Promise<boolean> {
     log('P', 'WP_SITE_URL, WP_USER and WP_APP_PASSWORD are not all set: nothing published');
     return false;
   }
-  const tally = { create: 0, update: 0, same: 0, conflict: 0, moved: 0, failed: 0 };
+  const tally = { create: 0, update: 0, same: 0, conflict: 0, moved: 0, failed: 0, left: 0 };
   const moved = (path: string, at: string) => {
     tally.moved++;
     log('P', `MOVED ${path} lives at ${at}: WordPress gave it another slug, as a page or file of the same name holds that one; free the name and the next run keeps writing it where it is`);
@@ -1065,7 +1076,8 @@ async function publish(pages: Page[]): Promise<boolean> {
     const existing = await wp.listPages();
     const ids = new Map<string, number>();
     for (const [path, row] of wpPaths(existing)) ids.set(path, row.id);
-    for (const step of planSync(pages, existing)) {
+    const steps = planSync(pages, existing);
+    for (const [i, step] of steps.entries()) {
       const { path, title } = step.page;
       if (step.kind === 'conflict') {
         tally.conflict++;
@@ -1103,6 +1115,12 @@ async function publish(pages: Page[]): Promise<boolean> {
       } catch (err) {
         tally.failed++;
         log('P', `FAILED ${step.kind} ${path}: ${errorText(err)}`);
+        // Past its tries WordPress still asks the run to slow down: the rest waits for the next run, not a 429 each.
+        if (err instanceof SlowedDown) {
+          tally.left = steps.slice(i + 1).filter(s => s.kind === 'create' || s.kind === 'update').length;
+          log('P', `STOPPED: WordPress answered 429 past five tries; ${tally.left} pages to create or update are left for the next run`);
+          break;
+        }
       }
     }
   } catch (err) {
@@ -1111,23 +1129,24 @@ async function publish(pages: Page[]): Promise<boolean> {
   }
   log(
     'P',
-    `${wp.host}: ${tally.create} created, ${tally.update} updated, ${tally.same} unchanged, ${tally.conflict} conflicts, ${tally.moved} moved, ${tally.failed} failed, ${wp.retries()} retries after a 429`,
+    `${wp.host}: ${tally.create} created, ${tally.update} updated, ${tally.same} unchanged, ${tally.conflict} conflicts, ${tally.moved} moved, ${tally.failed} failed, ` +
+      `${wp.retries()} retries after a 429${tally.left ? `, ${tally.left} left for the next run` : ''}`,
   );
   return tally.failed === 0 && tally.conflict === 0 && tally.moved === 0;
 }
 
 async function main(): Promise<number> {
   const now = new Date();
-  let built: { pages: Page[]; health: FeedHealth[] };
+  let made: { pages: Page[]; health: FeedHealth[] };
   try {
-    built = await build(now);
+    made = await build(now);
   } catch (err) {
     log('=', `FAILED before publishing: ${errorText(err)}`);
     return 1;
   }
-  const { health } = built;
-  const pages = ONLY ? onlyFamily(built.pages, ONLY) : built.pages;
-  if (ONLY) log('R', `--only ${ONLY}: ${pages.length} of ${built.pages.length} pages (${pages.map(p => p.path).join(' ')})`);
+  const { health } = made;
+  const pages = ONLY ? onlyFamily(made.pages, ONLY) : made.pages;
+  if (ONLY) log('R', `--only ${ONLY}: ${pages.length} of ${made.pages.length} pages (${pages.map(p => p.path).join(' ')})`);
   const unmatched = ONLY ? ONLY.split(',').filter(x => !pages.some(p => p.path.startsWith(x))) : [];
   if (unmatched.length) {
     log('=', `FAILED: --only ${unmatched.join(',')} matches no page`);

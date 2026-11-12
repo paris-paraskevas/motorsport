@@ -1085,6 +1085,8 @@ describe("a series' setting (O33)", () => {
     expect(() => siteOf('dtm', { family: 'G', pages: [] })).toThrow('content/series/dtm/meta.json: site.family "G" is not one of F1, A, B, C, D, E');
     expect(() => siteOf('dtm', { family: 'A' })).toThrow('site.pages must be a list');
     expect(() => siteOf('dtm', { family: 'A', pages: ['results', 'calendar'] })).toThrow('site.pages holds "calendar", not one of results, standings, champions, weekends');
+    // Formula 1's family reads Formula 1's own stores (OpenF1's pole laps and weather, Jolpica's laps).
+    expect(() => siteOf('f2', { family: 'F1', pages: ['weekends'] })).toThrow('content/series/f2/meta.json: site.family "F1" is Formula 1\'s own');
   });
 
   it("answers for the series' own pages and for another series' by its slug", () => {
@@ -1118,6 +1120,9 @@ describe("WordPress's 429 (O33)", () => {
     expect(retryWait('120', 4, now)).toBe(120_000);
     expect(retryWait('121', 1, now)).toBeNull();
     expect(retryWait('10', RETRY_TRIES, now)).toBeNull();
+    // A wait of nothing, or a date already past, still waits a second rather than sending the tries back to back.
+    expect(retryWait('0', 1, now)).toBe(1_000);
+    expect(retryWait('Thu, 12 Nov 2026 11:59:00 GMT', 1, now)).toBe(1_000);
   });
 
   it('names the headers it was sent, its cookies left out', () => {
