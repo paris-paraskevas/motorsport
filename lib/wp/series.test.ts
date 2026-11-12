@@ -10,6 +10,7 @@ import {
   ordinal,
   pointsLeft,
   prose,
+  raceWins,
   recordLists,
   seriesChampions,
   seriesFamily,
@@ -1130,5 +1131,55 @@ describe("a series' setting: only the pages it lists (O33)", () => {
     expect(folded).toContain('<div class="pd-rs-fold"><p class="fold">f2 round 1</p></div>');
     expect(folded).not.toContain('pd-wk-pts');
     expect(seriesResults(listed).body).toContain('<div class="pd-rs-fold"><table class="pd-wk-tbl pd-wk-pts">');
+  });
+
+  it("draws the Overview's standings block as its family does, Formula 1's by default", () => {
+    const kit = { weekendPages: () => [], overviewStandings: (d: SeriesData) => `<section class="by-class">${d.slug}</section>` };
+    const own = seriesFamily(f2, kit)[0].body;
+    expect(own).toContain('<section class="by-class">f2</section>');
+    expect(own).not.toContain('pd-sr-two');
+    expect(seriesFamily(f2, { ...kit, overviewStandings: () => '' })[0].body).not.toContain('pd-sr-two');
+    expect(seriesFamily(f2)[0].body).toContain('<section class="pd-sr-sec pd-sr-two">');
+  });
+});
+
+// ── A race that classifies cars (family C, O34) ──────────────────────────────
+
+describe('a race that classifies cars, a crew to a car (O34)', () => {
+  // WEC's Fuji as the publisher stores it (paddock-data, 12 Nov): a table a class, the top class first, C2's columns.
+  const crewRace: ResultRound = {
+    round: 1,
+    name: '6 Hours of Fuji',
+    date: '2026-09-27',
+    sessions: [
+      {
+        label: 'Race',
+        tables: [
+          {
+            title: 'Hypercar',
+            columns: ['Pos', 'No.', 'Crew', 'Team', 'Laps', 'Time', 'Gap'],
+            rows: [
+              ['1', '8', 'Brendon Hartley, Ryo Hirakawa, Sébastien Buemi', 'TOYOTA RACING', '200', '6:00:51.302', ''],
+              ['2', '36', 'Jules Gounon, Victor Martins', 'Alpine Endurance Team', '200', '6:00:51.893', '0.591'],
+            ],
+          },
+          { title: 'LMGT3', columns: ['Pos', 'No.', 'Crew', 'Team', 'Laps', 'Time', 'Gap'], rows: [['1', '32', 'Darren Leung, Sean Gelael, Augusto Farfus', 'Team WRT', '180', '6:01:10.000', '']] },
+        ],
+      },
+    ],
+  };
+  const wec: SeriesData = { ...f1, slug: 'wec', name: 'FIA WEC', results: [crewRace], sites: { wec: { family: 'C', pages: ['results', 'weekends'] } } };
+
+  it('names the crew, the team and the car of the top class, a driver race no car', () => {
+    expect(raceWins(wec).get(1)).toEqual({ round: 1, title: '6 Hours of Fuji', date: '2026-09-27', winner: 'Brendon Hartley, Ryo Hirakawa, Sébastien Buemi', team: 'TOYOTA RACING', margin: '', car: '8' });
+    expect(raceWins(f1).get(1)).not.toHaveProperty('car');
+  });
+
+  it('counts the round as run and names the car, not the crew, wherever a winner is shown', () => {
+    const o = seriesOverview(wec).body;
+    expect(o).toContain('<p>2026 season · 3 rounds · 1 run · ');
+    expect(o).toContain('<span class="pd-sr-win" style="--t:#9aa3b2"><b>#8</b></span> <span class="pd-mut">TOYOTA RACING</span>');
+    expect(o).toContain('<span class="pd-sr-win" style="--t:#9aa3b2"><b>#8</b>27 Sep</span>');
+    expect(seriesResults(wec).body).toContain('<span class="pd-rs-win"><i class="pd-tc" style="--t:#9aa3b2"></i><b>#8</b><small>TOYOTA RACING</small></span>');
   });
 });

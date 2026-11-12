@@ -112,20 +112,26 @@ export interface RoundWin {
   team: string;
   /** The winner's margin over second in seconds ("7.335"), or "" when second was lapped or out. */
   margin: string;
+  /** The winning car's number where the race classifies cars that crews share (a Crew column, family C, O34): a line
+   *  then names the car and its team, not the crew. */
+  car?: string;
 }
 
 /** Each round's race, the last session in its running order that is not a sprint: the winner, the team and the
- *  margin. Sprints are not wins, and a sprint weekend's Saturday, when the round holds its Sprint alone, has no race. */
+ *  margin. Sprints are not wins, and a sprint weekend's Saturday, when the round holds its Sprint alone, has no race.
+ *  A race that classifies cars names its crew and keeps the car's number, from its first table (family C stores a
+ *  table a class, the top class first). */
 export function raceWins(d: SeriesData): Map<number, RoundWin> {
   const out = new Map<number, RoundWin>();
   for (const r of d.results ?? []) {
     if (r.round === null) continue;
     const race = r.sessions.find(s => s.label === 'Race') ?? [...r.sessions].reverse().find(s => !/^sprint/i.test(s.label));
     const t = race?.tables[0];
-    const nameAt = t ? col(t.columns, 'Driver', 'Rider') : -1;
+    const nameAt = t ? col(t.columns, 'Driver', 'Rider', 'Crew') : -1;
     if (!t || t.rows.length === 0 || nameAt < 0) continue;
     const teamAt = col(t.columns, 'Team');
     const timeAt = col(t.columns, 'Time');
+    const carAt = t.columns[nameAt] === 'Crew' ? col(t.columns, 'No.') : -1;
     const second = timeAt >= 0 ? (t.rows[1]?.[timeAt] ?? '') : '';
     out.set(r.round, {
       round: r.round,
@@ -134,6 +140,7 @@ export function raceWins(d: SeriesData): Map<number, RoundWin> {
       winner: t.rows[0][nameAt],
       team: teamAt >= 0 ? t.rows[0][teamAt] : '',
       margin: /^\+\d[\d:.]*$/.test(second) ? second.slice(1) : '',
+      ...(carAt >= 0 && t.rows[0][carAt] ? { car: t.rows[0][carAt] } : {}),
     });
   }
   return out;
@@ -142,6 +149,8 @@ export function raceWins(d: SeriesData): Map<number, RoundWin> {
 const driverWins = (wins: Map<number, RoundWin>, name: string): number => [...wins.values()].filter(w => w.winner === name).length;
 const teamWins = (wins: Map<number, RoundWin>, team: string): number => [...wins.values()].filter(w => plain(w.team) === plain(team)).length;
 const winsLabel = (n: number): string => `${n} win${n === 1 ? '' : 's'}`;
+/** A winner as a line names it: the car ("#8") where the race classifies cars, else the driver. */
+const winnerName = (w: RoundWin): string => (w.car ? `#${w.car}` : w.winner);
 
 // ── The frame: the band and the tabs ─────────────────────────────────────────
 
@@ -201,7 +210,7 @@ function lastCard(d: SeriesData, w: RoundWin, r: CalendarRound | undefined): str
   const name = escapeHtml(r?.name ?? w.title);
   return (
     `<article class="pd-sr-card"><div class="pd-sr-card-in"><p class="pd-sr-lab">Last race · Round ${w.round}</p><h2>${page ? `<a href="${page}">${name}</a>` : name}</h2><p class="pd-mut">${where}</p>` +
-    `<p class="pd-sr-line"><span class="pd-sr-win" style="--t:${colourOf(d, w.team)}"><b>${escapeHtml(w.winner)}</b></span> <span class="pd-mut">${how}</span></p></div>` +
+    `<p class="pd-sr-line"><span class="pd-sr-win" style="--t:${colourOf(d, w.team)}"><b>${escapeHtml(winnerName(w))}</b></span> <span class="pd-mut">${how}</span></p></div>` +
     `${outline(r?.outline, ' pd-ol-big')}</article>`
   );
 }
@@ -213,7 +222,7 @@ function tile(d: SeriesData, r: CalendarRound, w: RoundWin | undefined, current:
   const page = weekendOf(d, r.round);
   const month = `${calendarMonthPath(r.startDate.slice(0, 7))}#${escapeHtml(d.slug)}`;
   if (w) {
-    const won = `<span class="pd-sr-win" style="--t:${colourOf(d, w.team)}"><b>${escapeHtml(codeOf(d, w.winner))}</b>${w.date ? dayLabel(w.date) : ''}</span>`;
+    const won = `<span class="pd-sr-win" style="--t:${colourOf(d, w.team)}"><b>${escapeHtml(w.car ? winnerName(w) : codeOf(d, w.winner))}</b>${w.date ? dayLabel(w.date) : ''}</span>`;
     return `<a class="pd-sr-tile" href="${page ?? (built(d, 'results') ? `${seriesPath(d.slug, 'results')}#r${r.round}` : month)}">${head}${won}</a>`;
   }
   const when = dates(r.startDate, r.endDate);
@@ -279,9 +288,10 @@ export function categorySlug(name: string): string {
     .replace(/^-|-$/g, '');
 }
 
-/** /series/<slug>/: the round on now or next and the last race, the season a tile a round, the standings' top,
- *  the series' newest posts (the theme's [pd_series_posts], nothing when the category has none) and About. */
-export function seriesOverview(d: SeriesData): Page {
+/** /series/<slug>/: the round on now or next and the last race, the season a tile a round, the standings' top (the
+ *  family's block where its kit draws one, FamilyKit.overviewStandings), the series' newest posts (the theme's
+ *  [pd_series_posts], nothing when the category has none) and About. */
+export function seriesOverview(d: SeriesData, standingsBlock?: FamilyKit['overviewStandings']): Page {
   const wins = raceWins(d);
   const rounds = d.rounds ?? [];
   const current = rounds.find(r => !wins.has(r.round));
@@ -297,7 +307,7 @@ export function seriesOverview(d: SeriesData): Page {
     : '';
   const main =
     `<div class="pd-sr pd-s-${escapeHtml(d.slug)}">${band(d, wins, current)}${tabs(d, 'overview')}` +
-    `<div class="pd-sr-main">${cards ? `<div class="pd-sr-cards">${cards}</div>` : ''}${season}${standings(d, wins)}</div></div>`;
+    `<div class="pd-sr-main">${cards ? `<div class="pd-sr-cards">${cards}</div>` : ''}${season}${standingsBlock ? standingsBlock(d) : standings(d, wins)}</div></div>`;
   const posts = `<!-- wp:shortcode -->\n[pd_series_posts category="${categorySlug(d.name)}" title="${escapeHtml(d.name)}" series="${escapeHtml(d.slug)}"]\n<!-- /wp:shortcode -->`;
   const about = d.about?.trim()
     ? htmlBlock(`<section class="pd-sr-sec pd-sr-about"><div class="pd-sh"><h2>About ${escapeHtml(d.name)}</h2></div><div class="pd-sr-prose">${prose(d.about)}</div></section>`)
@@ -376,7 +386,7 @@ function resultRow(d: SeriesData, r: ResultRound & { round: number }, race: Resu
   const page = weekendOf(d, r.round);
   const also = sprintWin && w ? (sprintWin === w.winner ? ' · won the sprint too' : ` · sprint: ${escapeHtml(sprintWin)}`) : '';
   const winner = w
-    ? `<span class="pd-rs-win">${tick(d, w.team)}<b>${escapeHtml(w.winner)}</b><small>${escapeHtml(teamLabel(w.team))}${also}</small></span>`
+    ? `<span class="pd-rs-win">${tick(d, w.team)}<b>${escapeHtml(winnerName(w))}</b><small>${escapeHtml(teamLabel(w.team))}${also}</small></span>`
     : '<span class="pd-rs-win"></span>';
   const summary =
     `<summary><span class="pd-rs-n">${r.round}</span><span class="pd-rs-name"><b>${escapeHtml(name)}</b><small>${where}${sprint ? ' · <em>Sprint</em>' : ''}</small></span>` +
@@ -1363,10 +1373,11 @@ export function seriesList(all: SeriesData[], now: Date): Page {
 }
 
 /** A series' pages in round 2's design: the Overview, and Results, Standings and Champions as its setting lists them, the
- *  Results fold its family's (the weekend pages are the family's own, FamilyKit.weekendPages). */
+ *  Overview's standings block and the Results fold its family's where its kit draws them (the weekend pages are the
+ *  family's own, FamilyKit.weekendPages). */
 export function seriesFamily(d: SeriesData, kit?: FamilyKit): Page[] {
   return [
-    seriesOverview(d),
+    seriesOverview(d, kit?.overviewStandings),
     ...(built(d, 'results') ? [seriesResults(d, kit?.resultsFold)] : []),
     ...(built(d, 'standings') ? [seriesStandings(d)] : []),
     ...(built(d, 'champions') ? [seriesChampions(d)] : []),

@@ -1033,8 +1033,9 @@ export function seasonPage(d: SeriesData, season: number, o: SeasonOptions = {})
   for (const r of rounds) {
     const w = wins.get(r.round);
     const page = weekendPath(d.slug, season, r.round);
+    // A car's win names the car and its team ("#8 TOYOTA RACING"), a driver's the driver.
     const state = w
-      ? `<span>${tick(d, w.team)}${esc(w.winner)}</span>`
+      ? `<span>${tick(d, w.team)}${esc(w.car ? `#${w.car} ${teamLabel(w.team)}` : w.winner)}</span>`
       : r === current
         ? `<span class="pd-sn-next">${wk(r, 'Next', 'This weekend')}</span>`
         : '<span></span>';
