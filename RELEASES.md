@@ -8,6 +8,10 @@ Paddock is out of early access. Fifteen championships in one place, every sessio
 
 Behind the scenes: the groundwork for the other fourteen championships' pages. Each championship now says in its own settings which of its pages are built; the parts every weekend page shares, from the band and the bar of sessions to the cards and the side column, now fit every kind of weekend, from a two-race weekend to a rally; and a results table with tabs, a race, a class or a day at a time, is ready for the weekends that run more than one race or class. Weather forecasts are now kept for every championship's circuits, and the publisher waits and tries again when the site asks it to slow down. Nothing changes for readers yet.
 
+## 1.0.302 — 2026-10-28
+
+Behind the scenes: Formula 3's rounds on the calendar now carry Formula 3's own numbers. Its round in Sakhir was called off in March and the series renumbered its season, so Monaco is round 2 and the Madrid finale round 9; Monaco's weekend also starts on its Thursday practice.
+
 ## 1.0.301 — 2026-10-27
 
 Behind the scenes: every Formula 1 race page gets a lap chart. Each driver's place at the end of every lap, from the grid to the flag, with the pit stops, the safety car laps and the cars that retired, and a mark where the official result differs from the order at the line. Point at a line, or tap it, to follow one driver; the same places are there as a table too. The pit stops follow the FIA's official record, on the chart and in Pit wall below it. Nothing changes for readers yet.
