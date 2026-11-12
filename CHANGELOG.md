@@ -4,6 +4,18 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.302 — 2026-10-28
+
+### O32: Formula 3's rounds on the Calendar, numbered and dated as Formula 3 gives them
+
+Found while planning O18 (28 Oct, session 72): the Calendar's June, July and September pages named Formula 3's rounds 3 to 10, where fiaformula3.com numbers 2026's rounds 1 to 9. Sakhir, round 2 on the original calendar (10–12 April), was called off on 14 March and Formula 3 renumbered the rest; `rounds.json` kept the gap. Rule 11 puts a wrong fact on the site first: the desk's Task 2.a, on Task 2's plan approved in plan mode.
+
+- `content/series/f3/rounds.json`: rounds 3 to 10 renumbered 2 to 9 (Monaco 2, Barcelona-Catalunya 3, Austria 4, Britain 5, Belgium 6, Hungary 7, Italy 8, Madrid 9); Monaco starts on Thursday 4 June, the day of its practice (fiaformula3.com's calendar and the FIA's give 4–7 June); `cancelledRounds` gains Sakhir (the Bahrain Grand Prix, `originalRound` 2, 10–12 April as the FIA's 2026 Formula 3 calendar lists it, "Called Off"), its reason in fiaformula3.com's words ("Round in Sakhir will not take place in April": "the ongoing situation in the Middle East region"). The Calendar draws no called-off round; the tile waits for Formula 3's season page (O33, answer A5).
+- `content/series/f3/sessions.json`: the eight overrides from Monaco on take the same numbers; no time changed.
+- **Publish with a run that fetches.** The stored `f3/calendar.json` on paddock-data carries each session's round as numbered when it was fetched. A run from stored data (`--from-ref`) labels the cards 2 to 9 while each card and band still looks up its sessions by the old number: in that dry run Monaco's card had no sessions and rounds 3 to 9 each took the previous round's sessions, race time and circuit. A run that fetches rebuilds the timetable from the content first, as the GitHub workflow's dispatch does, but only when Formula 3's calendar feed answers: on a failed feed `decideFeed` (lib/wp/health.ts) keeps the stored calendar as STALE and the run still exits 0. So the run's log must read `calendar f3 OK`; a `calendar f3 STALE` is run again.
+- **Reviewed:** one fresh-context Sonnet reader, 383,217 tokens, 114 tool calls; mergeable after fixes, 0 blockers, 1 should-fix (the STALE check above), 6 nits (the sources' current addresses, the stored-data damage in full, the records' provenance; stale comments in `lib/betting/series-sources.ts` and `lib/results/fom-api.ts`, `content/series/f3/history.md`'s "ten rounds", and an F3 guard in `lib/rounds-calendar.test.ts`, listed for later).
+- **Verified:** `npx tsc --noEmit` exit 0; `npm run lint` 0 errors, the 2 known `_encoding` warnings; `npm test` 282 files, 2,967 tests. Two fetching dry runs of `/calendar/` against a scratch worktree of paddock-data (3a1aac6f), `next`'s content then this branch's: 15 pages each, exit 0, 42 feeds OK; only June, July and September differ, by Formula 3's cards (Round 2 to Round 9) and Monaco's band from 4 June; every race time the same.
+
 ## 1.0.301 — 2026-10-27
 
 ### O28: Formula 1's lap chart

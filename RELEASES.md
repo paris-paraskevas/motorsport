@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.302 — 2026-10-28
+
+Behind the scenes: Formula 3's rounds on the calendar now carry Formula 3's own numbers. Its round in Sakhir was called off in March and the series renumbered its season, so Monaco is round 2 and the Madrid finale round 9; Monaco's weekend also starts on its Thursday practice.
+
 ## 1.0.301 — 2026-10-27
 
 Behind the scenes: every Formula 1 race page gets a lap chart. Each driver's place at the end of every lap, from the grid to the flag, with the pit stops, the safety car laps and the cars that retired, and a mark where the official result differs from the order at the line. Point at a line, or tap it, to follow one driver; the same places are there as a table too. The pit stops follow the FIA's official record, on the chart and in Pit wall below it. Nothing changes for readers yet.
