@@ -14,6 +14,25 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
+## #1199 · 1.0.309 · O34 (the shared fix before family C's pages: a car's win read from a Crew column, and a family's own Overview standings) · opened 2026-11-12 into `next` on the operator's "Push and open PR", Task 2.c's PR 2a, on PR 2's plan approved in plan mode on 12 Nov with three answers ("Draw first, build in PR 3", "A small PR first", "Curate from official sites"); announced at the desk before the build; 1.0.309 provisional, after the open #1197 (1.0.307) and #1198 (1.0.308); the review and the merge on the word
+**A car's win.** `raceWins` found a winner only in a Driver or Rider column. Family C's races classify cars (C2's Crew column), so its rounds would have read as not run once its pages are turned on. It now reads Crew too and keeps the car, named "#8" beside its team wherever a winner is shown. A family can also draw its own Overview standings block.
+- **Readers see:** nothing. No series with a Crew table has its pages turned on; `next` and this branch render the same 214 pages, with the stored data and with family C's refilled data.
+- **Editors get:** nothing.
+- **Files (10):**
+  - `lib/wp/series.ts` · `raceWins` reads a Crew column and keeps `RoundWin.car` (from "No."); `winnerName` ("#8"); the Overview's tiles and Last race card and a Results row name a car's win beside its team; `seriesOverview` takes `FamilyKit.overviewStandings`, and `seriesFamily` passes it.
+  - `lib/wp/weekend.ts` · `seasonPage`'s tile names a car's win with its team ("#8 TOYOTA RACING").
+  - `lib/wp/render.ts` · `FamilyKit.overviewStandings`, optional.
+  - `lib/wp/series.test.ts` · 3 new tests: a Crew race's winner, team and car (a driver's race has none); the round counted and the car named on the Overview and a Results row; the family's Overview block or none, Formula 1's by default.
+  - `lib/wp/weekend.test.ts` · 1 new test: the season page's tile for a car's win.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json`, `docs/pull-requests.md` · 1.0.309, provisional; taken at merge.
+- **Verified,** on 54298dfe (the code) and 38600439 (the records):
+  - `npx tsc --noEmit` exit 0; `npm run lint` 0 errors, the 2 known `_encoding` warnings;
+  - `npm test` 3,035 of 3,037: the 2 failures are components/designer/PageDesigner.test.tsx's P2.2 and P2.24 A, "Test timed out in 5000ms." in two full runs four workers wide. Both pass alone (57 tests), and P2.2 times out on `next` (b6ff1c6d) too, without this change (1 of 3,033). Not changed.
+  - on 38600439, the five log-reading test files with series' and weekend's: 213 passed;
+  - the dry run `--from-ref` paddock-data 41519f91 with `next`'s code (b6ff1c6d) and this branch's: 214 pages, 3,631,068 bytes both, `diff -r` empty, Formula 1's 144 pages (2,162,193 bytes) identical. With family C's refilled files swapped in (a commit object, 4307f9d7, no ref): 214 pages both, `diff -r` empty.
+- **Reviewed:** the fresh-context Sonnet review waits for the operator's 5-hour figure.
+- **After the merge:** nothing to publish. Family C's pages (PR 2) build on it.
+
 ## #1196 · 1.0.306 · records (sessions 71 and 72, the desk) · opened 2026-11-12 into `next` on the operator's "do it" for the records PR; `next` merged in first (0e3a12d1) and again after #1195 (f09001b3), the records files union-resolved; 1.0.306 provisional, after #1195 (1.0.304) and #1194 (1.0.305); the merge on the word
 **The desk's records.** The ledger, the handoff and IDEAS as sessions 71 and 72 kept them on the local branch desk/records since 25 October. No code, content or page changes.
 - **Readers see:** nothing.
