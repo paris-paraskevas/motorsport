@@ -6,7 +6,119 @@ This replaces the per-user memory handoff that lived at `~/.claude/projects/C--D
 
 ---
 
-## ⚡ Next session pickup — 2026-10-23 (LATEST, session 70 handed off at ~23:45Z on the 22nd for a fresh context: O16, Formula 1's Standings, done and live with theme 0.1.17; the operator's question of a lap-by-lap race position chart is the next session's first item)
+## ⚡ Next session pickup — 2026-11-12 (LATEST, session 72, the desk: Task 2 planned and running; Formula 3's rounds on the Calendar done (O32); Formula 1 published after rounds 19 and 20; #1193 merged; #1194 and #1195 in review)
+
+### 🔴 Start here — the handoff prompt for the next DESK session (copy it whole)
+
+```
+Session 73, the desk session. Never touch the learning worktree C:\Dev\Personal\Motorsport-learn.
+Before any tool call beyond reading, read in order: CLAUDE.md · docs/plan/rules.md · docs/plan/ledger.json (O32 done; O18's families O33, O34, O35 started, O36 and O37 planned) · docs/HANDOFF.md LATEST (12 Nov) · IDEAS.md's lines of 28 Oct to 12 Nov · the memory feedback-paddock-* files (every check comes with numbered steps and links).
+Then run `git status` and `git log --oneline -5` on the local branch desk/records, and list the linked Task 2 sessions.
+Task 2 runs in three sessions: 2.b (#1195, the groundwork), 2.c (#1194, family C's data), 2.d (#1193 merged; family B's data next).
+First: the Calendar's publish for #1193 (a GitHub run that fetches, then the publish from my computer), then Formula 1's Pit wall and weather for rounds 19 and 20.
+Not without my word: any push, merge, publish run, theme upload, the old Next.js code, DNS, any prod write.
+```
+
+1. **Task 2 planned and approved** (28 Oct) in plan mode (`C:/Users/ppara/.claude/plans/zippy-enchanting-lighthouse.md`), the order "A, C and B now": O18 split into O32 (Formula 3's rounds, the desk), O33 (family A and the groundwork, Task 2.b), O34 (family C, 2.c), O35 (family B, 2.d), O36 (WRC, Task 3.a) and O37 (NLS and the 24 Hours, Task 3.b).
+2. **O32 done:** #1191 (1.0.302) reviewed (mergeable after fixes; the publish run's STALE check folded), merged 12 Nov as d1a14854, published from the operator's computer and checked through the REST API; the operator's own check passed the same day (seven screenshots, Night, laptop).
+3. **Formula 1 published after rounds 19 and 20** (12 Nov, 25 pages updated): results, standings after round 20, both lap charts. OpenF1 refused the tyres, weather and race control's marks for rounds 19 and 20 with 429; the publisher asks again after 13 Nov 12:22Z, then a publish of /series/f1/ adds their Pit wall.
+4. **Task 2's sessions:** 2.d's #1193 (the Indianapolis 500's first week under its own round, 1.0.303) merged 12 Nov as 0e3a12d1; its /calendar/ publish waits for the word (its checks are in 2.d's hand-over note). 2.b's #1195 (the groundwork) was reviewed, folded and merged 12 Nov as f09001b3, taking 1.0.304; 2.c's #1194 (family C's data) was reviewed and folded, and moves to 1.0.305 with next merged in before its merge (the operator's "Merge #1194"). 2.b froze on 29 Oct during a file read and resumed on 12 Nov. The groundwork's interface for 2.c and 2.d goes to the desk's notes folder, `C:\Users\ppara\AppData\Roaming\Claude\side-session-notes\local_92694ba7-0a14-4887-8fad-ddec58926619\`.
+5. **The sidebar organised** on the operator's choice (12 Nov): ten finished sessions archived (Task 1.a to 1.d, Build session 70 and five older ones; Task 1.a's and 1.d's worktrees went with them, after `git status` showed 0 uncommitted files), the desk pinned; Build session 71 kept, as its notes folder holds Task 1's hand-over notes that Task 2's briefs point to.
+6. **A standing rule** (the operator, 12 Nov): every page check handed over comes as numbered steps: how to sign in, a direct link to each page, what to click, and exactly what to see in the operator's own time (memory `feedback-paddock-check-instructions`).
+7. **Records:** sessions 71's and 72's ledger, IDEAS and handoff commits go up in one records PR, `next` merged in first.
+
+**Landmines met in session 72:**
+- **Git Bash rewrites an argument that starts with `/` into a Windows path:** `gh workflow run … -f only=/calendar/` reached the workflow as `C:/Program Files/Git/calendar/` (run 43216747954 failed on it). Prefix `MSYS_NO_PATHCONV=1` to `gh workflow run`, to the publisher's `--only`, and to `git show <ref>:.github/…`.
+- **WordPress.com refuses GitHub's signed-in publish runs with 429 again** (12 Nov; issue #1192, opened by the run itself, closes itself on the next successful GitHub run). What works: dispatch the GitHub run, which fetches every feed and commits the data to paddock-data before failing at WordPress; then publish from the operator's computer from that stored data, this checkout on next and the content bundled, a dry run first: `MSYS_NO_PATHCONV=1 npx tsx --env-file=.env.wp scripts/wp-publish.mts --from-ref origin/paddock-data --only <paths>`.
+- **A change to a series' rounds needs freshly fetched data before a stored-data publish:** the stored `<slug>/calendar.json` keeps the old round numbers until a run fetches, and a stored-data publish then mismatches the cards and their bands. A fetching run keeps the old data as STALE when the feed fails, and still exits 0: read its `calendar <slug> OK` line.
+- **Archiving a session removes its worktree folder:** run `git status --short` there first.
+- **A scratch worktree is still registered:** `C:/Users/ppara/AppData/Local/Temp/claude/C--Dev-Personal-Motorsport/84d6365a-41a9-4488-b903-3fd5991ef5ea/scratchpad/pd-data`, a detached copy of paddock-data from 28 Oct's dry runs. It holds nothing worth keeping and goes on the operator's word.
+
+---
+
+## ⚡ Next session pickup — 2026-10-27 (session 71, the desk: batch Task 1 done and live — the lap chart (O28), the 2025 title race (O29), the other series' timetables (O31), the fourteen series researched (O20); theme 0.1.22 on the site; the operator's tests passed; next: Task 2, O18's plan)
+
+### 🔴 Start here — the handoff prompt for the next DESK session (copy it whole)
+
+```
+Session 72, the desk session. Never touch the learning worktree C:\Dev\Personal\Motorsport-learn.
+Before any tool call beyond reading, read in order: CLAUDE.md · docs/plan/rules.md · docs/plan/ledger.json (O17, O20, O28, O29, O31 done; O18 next) · docs/HANDOFF.md LATEST (27 Oct) · IDEAS.md's lines of 24 to 27 Oct · the memory feedback-paddock-* files (task numbering; small batches of questions).
+Then run `git status` and `git log --oneline -5` on the local branch desk/records (twelve records commits, not on GitHub).
+My tests of 0.1.22, 0.1.21 and 0.1.19 passed (recorded 28 Oct); nothing waits to upload.
+First, Task 2: O18's plan in plan mode (the other fourteen series, on O20's answers), deciding the split by family; build sessions a family each, at most three at once besides the desk.
+Not without my word: any push, merge, publish run, theme upload, the old Next.js code, DNS, any prod write.
+```
+
+1. **Batch Task 1 is done** (25 to 27 Oct), four parallel sessions, every slot checked on the site:
+   - **1.a, the lap chart (O28):** #1189 merged into next as c5189d66 (1.0.301, theme 0.1.22) after two Sonnet reviews. The laps came in over five runs from the operator's computer, rounds 14–18, 10–13, 6–9, 2–5, then 1, with the data pushed to paddock-data each time (ending at 61f15908). All 18 race pages carry the chart and all 18 Overviews the link.
+   - **1.b, the other fourteen series (O20):** every question answered on the six draft pages; their links are in O20's evidence.
+   - **1.c, the 2025 title race (O29):** #1187 merged as 2845f4ea (1.0.299, theme 0.1.21) and published. O30, 2026's page, is planned for after Abu Dhabi (4–6 Dec).
+   - **1.d, the timetables (O31):** #1188 merged as 6588a8a6 (1.0.300) and published on the Calendar.
+   - The four sessions are finished; they can be archived on the operator's word.
+2. **Theme 0.1.22 is on the site,** so nothing waits to upload. The operator's tests passed (reported 28 Oct: “all test complete, everything A OK”): 0.1.22's ten checks with the resize on a real screen, 0.1.21's three and 0.1.19's three.
+3. **Records not yet on GitHub:** the local desk/records, from next at 05d9ca5f, holds twelve records commits (a7afa7d5 … this handoff's), the tests recorded among them. They go up as a records PR on the operator's word. next has moved since (2845f4ea, 6588a8a6, c5189d66), so merge next in first and union-resolve docs/pull-requests.md.
+4. **WordPress.com refused GitHub's signed-in publish runs with 429 on 27 Oct,** from 07:55Z to at least 08:25Z. It had lifted by 14:50Z: run 40525083231 went through and closed outage issue #1190 itself.
+   - Meanwhile the desk published from the operator's computer, with a second application password in the gitignored `.env.wp`. WP_USER there is the site's own username, not the WordPress.com account's.
+   - Stored data: `npx tsx --env-file=.env.wp scripts/wp-publish.mts --from-ref origin/paddock-data --only <paths>`.
+   - To fetch: the same with `--data <a detached worktree of origin/paddock-data>`, then commit in that worktree and `git push origin HEAD:paddock-data`.
+   - IDEAS has the retry-on-429 fix and a runbook line.
+5. **The pages left** (Where Paddock Stands, https://claude.ai/code/artifact/d9d9ceea-1155-4324-9494-786dd72689fe):
+   - Task 2: the fourteen series by family (O18).
+   - December: 2026's title race (O30).
+   - After every championship: the control room (O26) and the Studio (O25).
+   - Not yet slots: Learn, News, and Formula 1's drivers, teams and circuits.
+6. **Living pages:** The Paddock Ledger (version 87), Paddock Theme Log (version 21), both marking the tests passed; Where Paddock Stands (version 1, as of 27 Oct).
+
+**Landmines met in session 71 (26 and 27 Oct):**
+- **Dispatching the publish workflow in the same second it is enabled** leaves a run that never gets a job: GitHub never queues it, and it can't be cancelled. Wait about 30 s after `gh workflow enable` before `gh workflow run`, and disable only once the run is in_progress with a job. Two such ghosts remain, inert: 39836276374 (22 Oct) and 40467974346 (27 Oct).
+- **A local publisher run** needs this checkout on next (`git fetch origin next:next`, `git switch next`) and `npx tsx scripts/bundle-content.mts`; switch back afterwards.
+- **Jolpica throttles after 66 to 77 calls a run** (500 an hour). A new race's laps need about 14 calls; space fill runs about 15 minutes apart.
+- **The browser pane, when hidden, runs no animation frames,** so the lap chart doesn't redraw on a resize there. Measure after a fresh load, and test resizing on a real screen.
+- **wp-admin's login** is "Log in with WordPress.com" with the Paddock WordPress.com account (not the pagon account).
+
+---
+
+## ⚡ Next session pickup — 2026-10-25 (session 71 is the desk: O17 done and its button fixed live (theme 0.1.19); the lap chart planned and approved; the programme moved to parallel sessions, batch Task 1 running: 1.a the lap chart build, 1.b the fourteen series' research, 1.c the 2025 title race draft)
+
+### 🔴 Start here — the handoff prompt for the next DESK session (copy it whole)
+
+```
+Session 72, the desk session. Never touch the learning worktree C:\Dev\Personal\Motorsport-learn.
+Before any tool call beyond reading, read in order: CLAUDE.md · docs/plan/rules.md (rules 7 and 11 changed on 25 Oct for parallel sessions) · docs/plan/ledger.json (O17 done; O28 and O20 started) · docs/HANDOFF.md LATEST (25 Oct) · the memory feedback-paddock-* files (feedback-paddock-task-numbering: a batch of parallel work is Task N, its sub-tasks N.a, N.b, N.c).
+Then run `git status` and `git log --oneline -5` on the local branch desk/records, and list the linked sessions of batch Task 1 (1.a the lap chart build, 1.b the fourteen series' research, 1.c the 2025 title race draft).
+The desk builds nothing: it keeps the ledger, the handoff, IDEAS and the ledger page, builds each theme zip with its test list, and runs publish runs on my word.
+Not without my word: any push, merge, publish run, theme upload, the old Next.js code, DNS, any prod write.
+```
+
+1. **O17 is DONE, and its button fixed.** #1185 (the Champions page, 1.0.296) merged as b0a9bac8, theme 0.1.18 uploaded, published in run 40089754745, checked signed in at 1,440 and 390 px.
+   - The operator's test at 1,440 px (24 Oct): "no great visibility due to overlap of 2026 title race button on 1440px on bottom right above 2025 background", and the button should lead to a 2025 title race page.
+   - Answers: the button masks the year; a 2025 page is drafted for answers (Task 1.c, IDEAS).
+   - #1186 (1.0.297, theme 0.1.19): the button takes the card's colour. Merged by the operator into next as 05d9ca5f at 03:39Z on the 25th, without its Sonnet review (merged before the 5-hour figure). 0.1.19 uploaded by the operator. Checked on the site, signed in, at 1,440 px: the live stylesheet's Version 0.1.19; the button rgb(255, 128, 0) equal to the card's and the topmost element at its centre.
+2. **The lap chart (O28) is planned and approved**, at the top of the O28 section in C:\Users\ppara\.claude\plans\humble-pondering-spring.md.
+   - Answers in plan mode: a dotted step to the result's place, marked †; the six differing races of 2026 checked against their reports in the build, then the mark from the data alone; Pit wall's note column widened on the race page (58 → 94 px, 40 → 68 on a phone).
+   - Its defaults changed by a dated ledger line. f1/laps.json's name and shape approved with the plan.
+3. **Parallel sessions (rules 7 and 11, 25 Oct, the operator's word in plan mode):**
+   - Building is done by a session the operator starts for its task, never by a subagent; at most three sessions at once besides the desk.
+   - The desk owns the ledger, the handoff, IDEAS, the ledger page, theme zips and publish runs. Every session runs on Opus; reviews stay Sonnet agents, one at a time across sessions.
+   - The plan is at the top of humble-pondering-spring.md.
+4. **Batch Task 1, started 25 Oct ~03:00Z:**
+   - **1.a, the lap chart build** (O28): session local_30071940-3b3c-443d-8242-affe06c291db, its own worktree cut from o17/button, its theme preview on port 9401. Its PR carries 1.0.298 and theme 0.1.20. It stops for the operator's word before a push and before its review.
+   - **1.b, the fourteen series' research** (O20): session local_f893814b-fe8d-4bca-b842-01d16502c100, read only. Inventories and a draft per family, as artifacts for answers.
+   - **1.c, the 2025 title race draft:** session local_9d4e06db-f1b8-4ff2-901c-1e3147058d28, read only, artifact only.
+   - **Next:** Task 2, O18 by family, once 1.b's drafts are answered and 1.a is merged.
+5. **Records not yet on GitHub:** the local branch desk/records (from next at 05d9ca5f) holds the desk's records commits. They go up as a records PR (a docs(handoff) merge) on the operator's word, never into a build session's branch.
+6. **Usage:** the weekly limit reset on 24 Oct at 21:00Z. Estimates: batch Task 1 about 1M tokens (1.a about 600k with its review, 1.b about 250k, 1.c about 150k), all on Opus.
+
+**Landmines met in session 71:**
+- docs/plan/ledger.json is indented with one space: write it with `JSON.stringify(L, null, 1)`, or every line changes.
+- Message a session by its `local_…` id; its name does not reach it.
+- A Google sign-in popup open in the browser pane pauses its navigation for every tab: leave it to the operator, and use Playwright for the preview meanwhile. Playwright writes its console logs to .playwright-mcp/, which is gitignored.
+- The theme preview takes about a minute to boot: a 502 "WordPress is not ready yet" comes first.
+- On the live site the theme's stylesheet carries ?m=<mtime>, not ?ver=: read the Version line from the file itself.
+
+---
+
+## ⚡ Next session pickup — 2026-10-23 (session 70 handed off at ~23:45Z on the 22nd for a fresh context: O16, Formula 1's Standings, done and live with theme 0.1.17; the operator's question of a lap-by-lap race position chart is the next session's first item)
 
 ### 🔴 Start here — the handoff prompt for the next BUILD session (copy it whole)
 
