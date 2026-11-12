@@ -1,0 +1,169 @@
+{
+  "about": "The results table with tabs (O33), rendered from results as the publisher stored them: paddock-data 3a1aac6f (28 Oct 2026), each table cut to its first five rows (GT World: each cup's first two cars), the rounds from rounds.json.",
+  "f2": {
+    "round": {
+      "round": 11,
+      "name": "Spanish Grand Prix (Madrid)",
+      "startDate": "2026-09-11",
+      "endDate": "2026-09-13",
+      "venue": null
+    },
+    "result": {
+      "round": 11,
+      "name": "Spain",
+      "date": "2026-09-13",
+      "sessions": [
+        {
+          "label": "Sprint",
+          "tables": [
+            {
+              "title": "Sprint",
+              "columns": ["Pos", "Driver", "Team", "Time", "Pts"],
+              "rows": [
+                ["1", "Ritomo Miyata", "Hitech", "47:21.330", "11"],
+                ["2", "Emerson Fittipaldi", "AIX Racing", "+2.678s", "8"],
+                ["3", "Laurens van Hoepen", "TRIDENT", "+3.227s", "6"],
+                ["4", "Noel Leon", "Campos Racing", "+5.242s", "5"],
+                ["5", "Martinius Stenshorne", "Rodin Motorsport", "+5.776s", "4"]
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Feature",
+          "tables": [
+            {
+              "title": "Feature",
+              "columns": ["Pos", "Driver", "Team", "Time", "Pts"],
+              "rows": [
+                ["1", "Dino Beganovic", "DAMS Lucas Oil", "1:3:29.190", "27"],
+                ["2", "Alexander Dunne", "Rodin Motorsport", "+7.320s", "19"],
+                ["3", "Ritomo Miyata", "Hitech", "+14.015s", "15"],
+                ["4", "Joshua Dürksen", "Invicta Racing", "+16.691s", "12"],
+                ["5", "Emerson Fittipaldi", "AIX Racing", "+19.630s", "10"]
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "wsbk": {
+    "round": {
+      "round": 12,
+      "name": "Jerez Round",
+      "startDate": "2026-10-16",
+      "endDate": "2026-10-18",
+      "venue": null
+    },
+    "result": {
+      "round": 12,
+      "name": "Pirelli Spanish Round",
+      "date": "2026-10-16",
+      "sessions": [
+        {
+          "label": "Race 1",
+          "tables": [
+            {
+              "title": "Race 1",
+              "columns": ["Pos", "Rider", "Team", "Time", "Pts"],
+              "rows": [
+                ["1", "Nicolo Bulega", "Aruba.it Racing - Ducati", "55:09.762", "25"],
+                ["2", "Sam Lowes", "ELF Marc VDS Racing Team", "+1.657s", "20"],
+                ["3", "Iker Lecuona", "Aruba.it Racing - Ducati", "+2.853s", "16"],
+                ["4", "Alvaro Bautista", "Barni Spark Racing Team", "+5.328s", "13"],
+                ["5", "Yari Montella", "Barni Spark Racing Team", "+6.615s", "11"]
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Superpole Race",
+          "tables": [
+            {
+              "title": "Superpole Race",
+              "columns": ["Pos", "Rider", "Team", "Time", "Pts"],
+              "rows": [
+                ["1", "Nicolo Bulega", "Aruba.it Racing - Ducati", "27:01.253", "12"],
+                ["2", "Iker Lecuona", "Aruba.it Racing - Ducati", "+0.797s", "9"],
+                ["3", "Sam Lowes", "ELF Marc VDS Racing Team", "+4.740s", "7"],
+                ["4", "Yari Montella", "Barni Spark Racing Team", "+8.350s", "6"],
+                ["5", "Alex Lowes", "bimota by Kawasaki Racing Team", "+9.292s", "5"]
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Race 2",
+          "tables": [
+            {
+              "title": "Race 2",
+              "columns": ["Pos", "Rider", "Team", "Time", "Pts"],
+              "rows": [
+                ["1", "Nicolo Bulega", "Aruba.it Racing - Ducati", "54:16.372", "25"],
+                ["2", "Iker Lecuona", "Aruba.it Racing - Ducati", "+44.696s", "20"],
+                ["3", "Sam Lowes", "ELF Marc VDS Racing Team", "+53.349s", "16"],
+                ["4", "Alvaro Bautista", "Barni Spark Racing Team", "+54.928s", "13"],
+                ["5", "Yari Montella", "Barni Spark Racing Team", "+57.192s", "11"]
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "gt-world": {
+    "round": {
+      "round": 8,
+      "name": "Zandvoort Sprint",
+      "startDate": "2026-09-18",
+      "endDate": "2026-09-20",
+      "venue": null
+    },
+    "result": {
+      "round": 8,
+      "name": "Zandvoort",
+      "date": "2026-09-20",
+      "sessions": [
+        {
+          "label": "Race 1",
+          "tables": [
+            {
+              "title": "Race 1",
+              "columns": ["Pos", "#", "Drivers", "Team", "Cup"],
+              "rows": [
+                ["1", "58", "Thomas Fleming, Louis Prette", "Garage 59", "Gold Cup"],
+                ["2", "2", "Morris Schuring, Dorian Boccolacci", "Boutsen VDS", "Pro Cup"],
+                ["3", "69", "Thierry Vermeulen, Ben Green", "Emil Frey Racing", "Pro Cup"],
+                ["7", "51", "Tommaso Mosca, Matias Zagazeta", "AF Corse", "Gold Cup"],
+                ["8", "30", "Matisse Lismont, Ignacio Montenegro", "Team WRT", "Silver Cup"],
+                ["15", "66", "Ariel Levi, Andrea Frassineti", "Tresor Attempto Racing", "Silver Cup"],
+                ["17", "93", "Eddie Cheever, Peter Dempsey", "Ziggo Sport Tempesta Racing", "Bronze Cup"],
+                ["18", "991", "Augusto Farfus, Darren Leung", "Paradine Competition", "Bronze Cup"]
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Race 2",
+          "tables": [
+            {
+              "title": "Race 2",
+              "columns": ["Pos", "#", "Drivers", "Team", "Cup"],
+              "rows": [
+                ["1", "69", "Thierry Vermeulen, Ben Green", "Emil Frey Racing", "Pro Cup"],
+                ["2", "80", "Bastian Buus, Ricardo Feller", "Lionspeed GP", "Pro Cup"],
+                ["6", "51", "Tommaso Mosca, Matias Zagazeta", "AF Corse", "Gold Cup"],
+                ["10", "10", "Robin Knutsson, Gilles Magnus", "Boutsen VDS", "Gold Cup"],
+                ["12", "21", "Arthur Dorison, Oliver Söderström", "Comtoyou Racing", "Silver Cup"],
+                ["16", "30", "Matisse Lismont, Ignacio Montenegro", "Team WRT", "Silver Cup"],
+                ["21", "93", "Eddie Cheever, Peter Dempsey", "Ziggo Sport Tempesta Racing", "Bronze Cup"],
+                ["23", "222", "Kiern Jewiss, Charles Dawson", "2Seas Motorsport", "Bronze Cup"]
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
