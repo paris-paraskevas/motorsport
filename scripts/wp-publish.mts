@@ -104,6 +104,7 @@ import { buildSessionClassification } from '../lib/results/motogp';
 import { MOTOGP_API_BASE, MOTOGP_CATEGORY_UUID_EXPORT, resolveMotoGPSeasonUuid } from '../lib/standings/motogp';
 import { parseSessionClassification } from '../lib/results/wsbk';
 import { fomQualifyingLabel, fomTable, sessionsWanted, timedTable } from '../lib/wp/multi-race';
+import { calledOffOf } from '../lib/wp/render';
 
 const argv = process.argv.slice(2);
 // An unknown argument, or a flag missing its value, stops the run: "--only" with nothing after it would publish every page.
@@ -1076,6 +1077,7 @@ async function calendarRounds(list: Partial<SeriesRoundEntry>[], calendar: Calen
       ...(typeof r.rescheduleNote === 'string'
         ? { moved: { note: r.rescheduleNote, ...(typeof r.previousStartDate === 'string' && typeof r.previousEndDate === 'string' ? { from: r.previousStartDate, to: r.previousEndDate } : {}) } }
         : {}),
+      ...(calledOffOf((r as { calledOff?: unknown }).calledOff).length ? { calledOff: calledOffOf((r as { calledOff?: unknown }).calledOff) } : {}),
     });
   }
   return out;

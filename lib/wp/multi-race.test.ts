@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { FomResultRow } from '../results/fom-api';
 import { fomQualifyingLabel, fomTable, sessionsWanted, timedTable } from './multi-race';
-import { padHour, type CalendarEntry, type ResultRound } from './render';
+import { calledOffOf, padHour, type CalendarEntry, type ResultRound } from './render';
 
 // Rows as FOM's API wrote them for Formula 2's 2026 sessions (probed 12 Nov 2026): a placed driver, a "666" with
 // "NC" and a slow lap (Boya, Melbourne qualifying), a "666" with "NC" and no time (Varrone, Madrid qualifying), and a
@@ -83,6 +83,25 @@ describe('family A: the sessions a run asks for (O33)', () => {
     expect(sessionsWanted(rounds, calendar, names, now, 20).map(e => `${e.round} ${e.session}`)).toEqual(['17 Q2']);
     expect(sessionsWanted(rounds, calendar, names, new Date('2026-10-12T13:00:00Z'), 20).map(e => `${e.round} ${e.session}`)).toEqual(['18 FP1', '17 Q2']);
     expect(sessionsWanted(rounds, calendar, names, new Date('2026-10-12T13:00:00Z'), 1)).toHaveLength(1);
+  });
+});
+
+describe("a round's called-off sessions, from rounds.json (O33)", () => {
+  const source = 'https://www.motogp.com/en/news/2026/10/24/latest-motogp-phillip-island-track-activity-delayed/1180939';
+
+  it('keeps each whole entry with an https source and leaves out the rest', () => {
+    const note = 'The Grand Prix was called off: poor visibility for the medical helicopter.';
+    expect(calledOffOf([{ session: 'Race', note, source }])).toEqual([{ session: 'Race', note, source }]);
+    expect(calledOffOf([{ session: 'Race', note }, { session: 'Race', note, source: 'motogp.com' }, 'Race', null])).toEqual([]);
+    expect(calledOffOf(undefined)).toEqual([]);
+  });
+
+  it("is in MotoGP's rounds.json for round 18 alone", async () => {
+    const { readFileSync } = await import('node:fs');
+    const file = JSON.parse(readFileSync('content/series/motogp/rounds.json', 'utf8')) as { rounds: { round: number; calledOff?: unknown }[] };
+    const off = file.rounds.filter(r => calledOffOf(r.calledOff).length);
+    expect(off.map(r => r.round)).toEqual([18]);
+    expect(calledOffOf(off[0].calledOff)[0]).toMatchObject({ session: 'Race', source });
   });
 });
 

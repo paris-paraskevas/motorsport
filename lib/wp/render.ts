@@ -1010,6 +1010,7 @@ function resultsPage(d: SeriesData, rounds: ResultRound[]): Page {
     if (!r.sessions.length) continue;
     parts.push(heading(roundTitle(r)));
     if (r.date) parts.push(paragraph(formatDay(r.date)));
+    for (const c of d.rounds?.find(x => x.round === r.round)?.calledOff ?? []) parts.push(paragraph(c.note));
     for (const s of r.sessions) {
       if (r.sessions.length > 1) parts.push(heading(s.label, 3));
       for (const t of s.tables) {
@@ -1069,6 +1070,25 @@ export interface CalendarRound {
   country?: string;
   /** A round moved from its first dates (rounds.json rescheduleNote, previousStartDate, previousEndDate). */
   moved?: { note: string; from?: string; to?: string };
+  /** Its sessions called off once the calendar was set (rounds.json calledOff, O33): MotoGP's Australian race. */
+  calledOff?: CalledOff[];
+}
+
+/** A session called off: the timetable's name for it, the sentence readers see, and the page that says so. */
+export interface CalledOff {
+  session: string;
+  note: string;
+  source: string;
+}
+
+/** rounds.json's `calledOff` for a round: each entry whole, with an https source, or left out. */
+export function calledOffOf(raw: unknown): CalledOff[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.flatMap(c =>
+    isObj(c) && typeof c.session === 'string' && typeof c.note === 'string' && typeof c.source === 'string' && /^https:\/\/\S+$/.test(c.source)
+      ? [{ session: c.session, note: c.note, source: c.source }]
+      : [],
+  );
 }
 
 /** How far the calendar reaches either side of the current month. */
