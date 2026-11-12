@@ -660,10 +660,12 @@ async function f1Laps(out: Fetched, now: Date, season: number): Promise<void> {
 // Every session of a round (the operator's All 3), each car's crew from its own race with every name spelled as the
 // series' drivers.json spells it (C2), the teams as they write themselves (team-names.json). A round is fetched while it
 // runs and for a week after, or until it is stored in this shape, then kept and never asked again, though spelled again
-// every run, so an edit to drivers.json or team-names.json reaches it; what a run decides lives in lib/wp/endurance.ts
-// (roundsDue, mergeRounds, respell, withWecCrews), where it is tested. WEC's tables name no driver:
-// each car's crew comes from its car page for that race, kept in wec/crews.json with each driver's name, asked once.
-// The three share one deadline inside the run's twenty minutes; what is left waits for the next run.
+// every run, so an edit to drivers.json or team-names.json reaches it. A round is kept only from a whole fetch: a request
+// unanswered, or the run's time running out, leaves the stored round as it was, asked again next run. What a run decides
+// lives in lib/wp/endurance.ts (roundsDue, fetchedRound, mergeRounds, respell, withWecCrews, wecCarsDue), where it is
+// tested. WEC's tables name no driver: each car's crew comes from its car page for that race, kept in wec/crews.json with
+// each driver's name, read once more after the race when first read before it. The three share one deadline inside the
+// run's twenty minutes; what is left waits for the next run.
 
 const FAMILY_C_MS = 4 * 60_000;
 /** Family C asks nothing once the run is this old, whatever its own deadline says: the job has twenty minutes in all. */
@@ -745,16 +747,19 @@ async function imsaRounds(entries: SeriesRoundEntry[], stored: ResultRound[] | n
       continue;
     }
     const sessions: (ResultSession & { race: boolean })[] = [];
+    const missed: string[] = [];
     for (const s of [...(listed.sessions ?? []), { label: 'Race', url: listed.url }]) {
       const raw = await politeText(s.url, 300);
+      if (raw === null) missed.push(s.label);
       const session = raw ? alkamelSession(raw, s.label, s.label === 'Race', spell, team) : null;
       if (session) sessions.push({ ...session, race: s.label === 'Race' });
       else log('F', `results imsa R${round} ${s.label} ${raw ? 'EMPTY' : 'NOT FOUND'} ${s.url}`);
     }
-    if (sessions.length) fresh.push(fetchedRound(entry, sessions));
-    log('F', `results imsa R${round} ${sessions.length} of ${(listed.sessions?.length ?? 0) + 1} sessions`);
+    const got = fetchedRound(entry, sessions, missed);
+    if (got) fresh.push(got);
+    log('F', `results imsa R${round} ${sessions.length} of ${(listed.sessions?.length ?? 0) + 1} sessions${missed.length ? `; ${missed.join(', ')} unanswered: kept as stored, asked again next run` : ''}`);
   }
-  const rounds = respell(mergeRounds(fresh, stored), spell, team);
+  const rounds = respell(mergeRounds(fresh, stored, season), spell, team);
   if (unlisted.size) log('F', `results imsa teams with no line in team-names.json: ${[...unlisted].join(', ')}`);
   return { rounds, due: due.length, got: fresh.length };
 }
@@ -779,18 +784,24 @@ async function gtWorldRounds(entries: SeriesRoundEntry[], stored: ResultRound[] 
     }
     const page = await politeText(`https://www.gt-world-challenge-europe.com/results/${season}/${encodeURI(event.eventSlug)}`, 1000);
     const sessions: (ResultSession & { race: boolean })[] = [];
+    const missed: string[] = page === null ? ['the event page'] : [];
     for (const o of page ? gtSessionOptions(page) : []) {
-      if (Date.now() > deadline) break;
+      if (Date.now() > deadline) {
+        missed.push(`${o.label} on (out of time)`);
+        break;
+      }
       const html = await politeText(buildEventResultsUrl({ year: season, eventSlug: event.eventSlug, raceId: o.id }), 1000);
-      const table = html ? gtTable(html, o.label, spell) : null;
+      if (html === null) missed.push(o.label);
+      const table = html ? gtTable(html, o.label, o.race, spell) : null;
       if (table) sessions.push({ label: o.label, tables: [table], race: o.race });
       else log('F', `results gt-world R${round} ${o.label} ${html ? 'EMPTY' : 'NOT FOUND'}`);
     }
-    if (sessions.length) fresh.push(fetchedRound(entry, sessions));
-    log('F', `results gt-world R${round} ${event.eventSlug} ${sessions.length} sessions`);
+    const got = fetchedRound(entry, sessions, missed);
+    if (got) fresh.push(got);
+    log('F', `results gt-world R${round} ${event.eventSlug} ${sessions.length} sessions${missed.length ? `; ${missed.join(', ')} unanswered: kept as stored, asked again next run` : ''}`);
   }
   // GT World writes its teams as the teams do: no team-names.json, the names only.
-  return { rounds: respell(mergeRounds(fresh, stored), spell, name => name), due: due.length, got: fresh.length };
+  return { rounds: respell(mergeRounds(fresh, stored, season), spell, name => name), due: due.length, got: fresh.length };
 }
 
 /** fiawec.com's results component, replayed as its page does (lib/results/wec.ts:13-28): the last props, one change. */
@@ -819,23 +830,30 @@ async function wecRound(
   categories: Partial<Record<WecClass, number>>,
   team: (name: string) => string,
   deadline: number,
-): Promise<{ round: ResultRound | null; props: Record<string, unknown> }> {
+): Promise<{ round: ResultRound | null; missed: string[]; props: Record<string, unknown> }> {
   const raceHtml = await wecPost(props, { raceId });
-  if (!raceHtml) return { round: null, props };
+  if (!raceHtml) return { round: null, missed: ['the race'], props };
   let p = extractLiveProps(raceHtml) ?? props;
   const listed = parseSelectOptions(raceHtml, 'sessionChanged').reverse();
   const classOf = (id: unknown): WecClass | undefined => WEC_CLASSES.find(c => categories[c] === id);
   const byLabel = new Map<string, ResultSession & { race: boolean }>();
+  const missed: string[] = [];
   let raced: WecClass[] = [];
   for (const o of [...listed.filter(x => /^race$/i.test(x.label)), ...listed.filter(x => !/^race$/i.test(x.label))]) {
-    if (Date.now() > deadline) break;
+    if (Date.now() > deadline) {
+      missed.push(`${o.label} on (out of time)`);
+      break;
+    }
     const s = wecSession(o.label);
     if (!s) {
       log('F', `results wec R${entry.round} ${o.label}: no classification`);
       continue;
     }
     const html = await wecPost(p, { sessionId: o.id });
-    if (!html) continue;
+    if (!html) {
+      missed.push(o.label);
+      continue;
+    }
     p = extractLiveProps(html) ?? p;
     const want = s.classes ?? (raced.length ? raced : [...WEC_CLASSES]);
     const tables: Table[] = [];
@@ -848,7 +866,10 @@ async function wecRound(
       const id = categories[cls];
       if (cls === shown || id === undefined) continue;
       const catHtml = await wecPost(p, { categoryId: id });
-      if (!catHtml) continue;
+      if (!catHtml) {
+        missed.push(`${o.label} ${cls}`);
+        continue;
+      }
       p = extractLiveProps(catHtml) ?? p;
       const t = wecTable(catHtml, cls, s.race, team);
       if (t) tables.push(t);
@@ -863,7 +884,7 @@ async function wecRound(
     .filter(s => s.tables.length > 0)
     .map(s => ({ ...s, tables: [...s.tables].sort((a, b) => WEC_CLASSES.indexOf(a.title as WecClass) - WEC_CLASSES.indexOf(b.title as WecClass)) }))
     .sort((a, b) => order.indexOf(a.label) - order.indexOf(b.label));
-  return { round: sessions.length ? fetchedRound(entry, sessions) : null, props: p };
+  return { round: fetchedRound(entry, sessions, missed), missed, props: p };
 }
 
 /** WEC: the due rounds' sessions from the results component, then the crews still missing from the car pages and the
@@ -886,13 +907,14 @@ async function wecRounds(entries: SeriesRoundEntry[], stored: ResultRound[] | nu
     const got = await wecRound(props, raceId, entry, manifest?.categories ?? {}, team, deadline);
     props = got.props;
     if (got.round) fresh.push(got.round);
-    log('F', `results wec R${round} race ${raceId}: ${got.round ? [...got.round.sessions, ...(got.round.others ?? [])].map(s => s.label).join(', ') : 'NOTHING'}`);
+    const kept = got.missed.length ? `; ${got.missed.join(', ')} unanswered: kept as stored, asked again next run` : '';
+    log('F', `results wec R${round} race ${raceId}: ${got.round ? [...got.round.sessions, ...(got.round.others ?? [])].map(s => s.label).join(', ') : 'NOTHING'}${kept}`);
   }
-  const rounds = respell(mergeRounds(fresh, stored), spell, team);
+  const rounds = respell(mergeRounds(fresh, stored, season), spell, team);
 
   const crews = readStored<WecCrews>(WEC_CREWS) ?? emptyCrews();
   let pages = 0;
-  for (const { raceId, car } of wecCarsDue(rounds, raceIds, crews)) {
+  for (const { raceId, car, afterRace } of wecCarsDue(rounds, raceIds, crews)) {
     if (Date.now() > deadline) {
       log('F', 'crews wec out of time: the rest for the next run');
       break;
@@ -906,6 +928,11 @@ async function wecRounds(entries: SeriesRoundEntry[], stored: ResultRound[] | nu
     }
     (crews.races[String(raceId)] ??= {})[car] = crew.map(d => d.id);
     for (const d of crew) crews.drivers[d.id] = { ...crews.drivers[d.id], card: d.card };
+    // Read with the race classified: the crew it raced with, not read again.
+    if (afterRace) {
+      const after = ((crews.afterRace ??= {})[String(raceId)] ??= []);
+      if (!after.includes(car)) after.push(car);
+    }
   }
   for (const id of wecDriversDue(crews, spell)) {
     if (Date.now() > deadline) break;

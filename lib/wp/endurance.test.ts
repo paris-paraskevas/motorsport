@@ -124,10 +124,11 @@ describe('IMSA: Al Kamel class results', () => {
     expect(s!.tables.find(t => t.title === 'LMP2')!.rows[0][1]).toBe('04');
   });
 
-  it("shows a car's status where its gap would be when Al Kamel gives one", () => {
+  it("shows a car's status where its gap would be when it was not classified, never the gap Al Kamel also gives it", () => {
     const s = alkamelSession(fixture('imsa-results-sebring-2026.json'), 'Race', true, none, same);
     const dns = s!.tables.find(t => t.title === 'LMP2')!.rows.find(r => r[1] === '79');
-    expect(dns?.[6]).toBe('338 Laps');
+    expect(dns?.[6]).toBe('Not Started');
+    expect(s!.tables.find(t => t.title === 'LMP2')!.rows[1][6]).toMatch(/^\+|Laps?$/);
   });
 
   it('gives nothing for a file it cannot read or a class IMSA does not race', () => {
@@ -204,9 +205,22 @@ describe('WEC: fiawec.com', () => {
   });
 
   it('asks for the car pages it lacks, the newest round first, and the driver pages drivers.json cannot spell', () => {
-    expect(wecCarsDue([old, fuji], raceIds, crews)).toEqual([{ raceId: 4954, car: '8' }]);
     expect(wecCarsDue([fuji], raceIds, emptyCrews()).map(c => c.car)).toEqual(['8', '36', '43']);
     expect(wecDriversDue(crews, spell)).toEqual(['8790']);
+  });
+
+  it('reads a crew read before its race once more after it, then never again', () => {
+    // Fuji's race is classified: #36 and #43 were read, but not with the race classified, so they are read again.
+    expect(wecCarsDue([old, fuji], raceIds, crews)).toEqual([
+      { raceId: 4954, car: '8', afterRace: true },
+      { raceId: 4954, car: '36', afterRace: true },
+      { raceId: 4954, car: '43', afterRace: true },
+    ]);
+    expect(wecCarsDue([fuji], raceIds, { ...crews, afterRace: { '4954': ['36', '43'] } })).toEqual([{ raceId: 4954, car: '8', afterRace: true }]);
+    // Before the race has a classification, a crew read once is kept.
+    const weekend: ResultRound = { ...fuji, sessions: [] };
+    expect(wecCarsDue([weekend], raceIds, crews)).toEqual([]);
+    expect(wecCarsDue([weekend], raceIds, emptyCrews())).toEqual([{ raceId: 4954, car: '43', afterRace: false }]);
   });
 });
 
@@ -225,7 +239,7 @@ describe('GT World: event pages and session tables', () => {
   });
 
   it("reads an endurance round's combined qualifying, its average as Time and each driver's time beside it", () => {
-    const t = gtTable(fixture('gtw-qualifying-portimao-2026.html'), 'Qualifying Combined', nameSpeller(['Maximilian Götz']));
+    const t = gtTable(fixture('gtw-qualifying-portimao-2026.html'), 'Qualifying Combined', false, nameSpeller(['Maximilian Götz']));
     expect(t?.columns).toEqual(['Pos', 'No.', CREW, 'Team', 'Cup', 'Time', 'Time 1', 'Time 2', 'Time 3']);
     expect(t?.rows[0]).toEqual(['1', '2', 'Morris Schuring, Dorian Boccolacci, Alessio Picariello', 'Boutsen VDS', 'Pro Cup', '1:42.071', '1:42.445', '1:41.856', '1:41.912']);
     expect(t?.rows[1][2]).toBe('Ralf Aron, Maximilian Götz, Fabian Schiller');
@@ -241,13 +255,15 @@ describe('GT World: event pages and session tables', () => {
       row('1', '17', 'Pro Cup', 'Ralf Aron', 'Mercedes-AMG Team GetSpeed', 'Mercedes', '1:44.190', '94', '') +
       row('', '99', 'Pro Cup', 'Nobody', 'None', 'None', '', '', '') +
       '</tbody></table>';
-    expect(gtTable(html, 'Main Race', none)?.rows.map(r => `${r[0]}#${r[1]}`)).toEqual(['1#17', '2#80', 'DSQ#58', 'NC#54']);
+    expect(gtTable(html, 'Main Race', true, none)?.rows.map(r => `${r[0]}#${r[1]}`)).toEqual(['1#17', '2#80', 'DSQ#58', 'NC#54']);
   });
 
-  it('reads a sprint race with its cup, time, laps and gap', () => {
-    const t = gtTable(fixture('gtw-race-brandshatch-r1-2026.html'), 'Race 1', none);
-    expect(t?.columns).toEqual(['Pos', 'No.', CREW, 'Team', 'Cup', 'Time', 'Laps', 'Gap']);
+  it("reads a sprint race with its cup, each car's best lap (GT World gives a race no total time), laps and gap", () => {
+    const t = gtTable(fixture('gtw-race-brandshatch-r1-2026.html'), 'Race 1', true, none);
+    expect(t?.columns).toEqual(['Pos', 'No.', CREW, 'Team', 'Cup', 'Best lap', 'Laps', 'Gap']);
     expect(t?.rows[0]).toEqual(['1', '50', 'Arthur Leclerc, Thomas Neubauer', 'AF Corse', 'Pro Cup', '1:24.132', '39', '']);
+    // Second, with a faster lap than the winner's: a best lap, not a race time.
+    expect([t?.rows[1][1], t?.rows[1][5]]).toEqual(['2', '1:24.020']);
   });
 });
 
@@ -258,18 +274,27 @@ describe('what a run fetches and keeps', () => {
     { round: 7, startDate: '2026-10-16', endDate: '2026-10-18', name: 'Barcelona' },
     { round: 8, startDate: '2026-11-06', endDate: '2026-11-08', name: 'Monza' },
   ];
-  const shaped = (round: number): ResultRound => ({ round, name: '', date: null, sessions: [{ label: 'Race', tables: [{ title: 'Hypercar', columns: ['Pos', 'No.', CREW], rows: [] }] }] });
+  // A stored round as fetchedRound writes it: dated with its round's last day.
+  const shaped = (round: number, date: string): ResultRound => ({ round, name: '', date, sessions: [{ label: 'Race', tables: [{ title: 'Hypercar', columns: ['Pos', 'No.', CREW], rows: [] }] }] });
+  const stored2026 = [shaped(1, '2026-04-19'), shaped(6, '2026-09-27'), shaped(7, '2026-10-18')];
   const now = new Date('2026-10-23T12:00:00Z');
 
   it('fetches a round still settling and one not yet in this shape, the newest first, and never one not started', () => {
-    expect(roundsDue(rounds, [shaped(1), shaped(6), shaped(7)], now, 5)).toEqual([7]);
-    expect(roundsDue(rounds, [shaped(1)], now, 5)).toEqual([7, 6]);
+    expect(roundsDue(rounds, stored2026, now, 5)).toEqual([7]);
+    expect(roundsDue(rounds, [shaped(1, '2026-04-19')], now, 5)).toEqual([7, 6]);
     expect(roundsDue(rounds, null, now, 2)).toEqual([7, 6]);
-    expect(roundsDue(rounds, [shaped(1), shaped(6), shaped(7)], new Date('2026-10-26T00:00:00Z'), 5)).toEqual([]);
+    expect(roundsDue(rounds, stored2026, new Date('2026-10-26T00:00:00Z'), 5)).toEqual([]);
+  });
+
+  it("never counts last season's round of the same number as this season's", () => {
+    const rounds2027 = [{ round: 2, startDate: '2027-03-18', endDate: '2027-03-20', name: 'Sebring' }];
+    // 2027's round 2 is past its week; the stored round 2 is 2026's, so 2027's is still due.
+    expect(roundsDue(rounds2027, [shaped(2, '2026-03-21')], new Date('2027-04-15T00:00:00Z'), 5)).toEqual([2]);
+    expect(roundsDue(rounds2027, [shaped(2, '2027-03-20')], new Date('2027-04-15T00:00:00Z'), 5)).toEqual([]);
   });
 
   it('tells a round of this shape from one stored before it', () => {
-    expect(inShape(shaped(1))).toBe(true);
+    expect(inShape(shaped(1, '2026-04-19'))).toBe(true);
     expect(inShape({ round: 1, name: '', date: null, sessions: [{ label: 'Race', tables: [{ title: 'GTP', columns: ['Pos', '#', 'Drivers'], rows: [] }] }] })).toBe(false);
     expect(inShape(undefined)).toBe(false);
   });
@@ -284,18 +309,69 @@ describe('what a run fetches and keeps', () => {
     expect(r).toEqual({ round: 11, name: 'Motul Petit Le Mans', date: '2026-10-03', sessions: [{ label: 'Race', tables: [table] }], others: [{ label: 'Practice 1', tables: [table] }, { label: 'Qualifying', tables: [table] }] });
   });
 
+  it('keeps no round from a fetch that was not whole: a request unanswered or the time run out', () => {
+    const table = { title: 'Hypercar', columns: [CREW], rows: [] };
+    const entry = { round: 6, name: '6 Hours of Fuji', endDate: '2026-09-27' };
+    const race = { label: 'Race', tables: [table], race: true };
+    const practice = { label: 'Free Practice 1', tables: [table], race: false };
+    expect(fetchedRound(entry, [race, practice], ['Free Practice 2 on (out of time)'])).toBeNull();
+    expect(fetchedRound(entry, [race], ['Free Practice 1 LMGT3'])).toBeNull();
+    expect(fetchedRound(entry, [])).toBeNull();
+    expect(fetchedRound(entry, [race, practice])?.others?.map(s => s.label)).toEqual(['Free Practice 1']);
+  });
+
+  const t = (title: string, shape = true) => ({ title, columns: shape ? ['Pos', 'No.', CREW] : ['Pos', '#', 'Drivers'], rows: [] });
+
   it('keeps a stored session a fetch did not bring back, and every round it did not fetch', () => {
-    const t = (title: string) => ({ title, columns: [CREW], rows: [] });
+    // One class's table, marked by its row: the stored version and the fetched one.
+    const v = (version: string) => ({ title: 'Hypercar', columns: ['Pos', 'No.', CREW], rows: [[version]] });
     const stored: ResultRound[] = [
-      { round: 1, name: 'Imola', date: '2026-04-19', sessions: [{ label: 'Race', tables: [t('old')] }] },
-      { round: 6, name: 'Fuji', date: '2026-09-27', sessions: [{ label: 'Race', tables: [t('old')] }], others: [{ label: 'Free Practice 1', tables: [t('old')] }] },
+      { round: 1, name: 'Imola', date: '2026-04-19', sessions: [{ label: 'Race', tables: [v('stored')] }] },
+      { round: 6, name: 'Fuji', date: '2026-09-27', sessions: [{ label: 'Race', tables: [v('stored')] }], others: [{ label: 'Free Practice 1', tables: [v('stored')] }] },
     ];
-    const fresh: ResultRound[] = [{ round: 6, name: '6 Hours of Fuji', date: '2026-09-27', sessions: [], others: [{ label: 'Free Practice 1', tables: [t('new')] }] }];
-    const out = mergeRounds(fresh, stored);
+    const fresh: ResultRound[] = [{ round: 6, name: '6 Hours of Fuji', date: '2026-09-27', sessions: [], others: [{ label: 'Free Practice 1', tables: [v('fetched')] }] }];
+    const out = mergeRounds(fresh, stored, 2026);
     expect(out.map(r => r.round)).toEqual([1, 6]);
     expect(out[1].name).toBe('6 Hours of Fuji');
-    expect(out[1].sessions[0].tables[0].title).toBe('old');
-    expect(out[1].others?.[0].tables[0].title).toBe('new');
+    expect(out[1].sessions[0].tables.map(x => x.rows[0][0])).toEqual(['stored']);
+    expect(out[1].others?.[0].tables.map(x => x.rows[0][0])).toEqual(['fetched']);
     expect(out[0]).toBe(stored[0]);
+  });
+
+  it("keeps a stored class table the fetched session lacks, and the sessions' running order", () => {
+    const stored: ResultRound[] = [
+      {
+        round: 6,
+        name: 'Fuji',
+        date: '2026-09-27',
+        sessions: [{ label: 'Race', tables: [t('Hypercar'), t('LMGT3')] }],
+        others: [{ label: 'Free Practice 1', tables: [t('Hypercar')] }, { label: 'Free Practice 2', tables: [t('Hypercar')] }, { label: 'Qualifying', tables: [t('Hypercar')] }],
+      },
+    ];
+    const fresh: ResultRound[] = [
+      { round: 6, name: 'Fuji', date: '2026-09-27', sessions: [{ label: 'Race', tables: [t('Hypercar')] }], others: [{ label: 'Free Practice 2', tables: [t('Hypercar')] }, { label: 'Qualifying', tables: [t('Hypercar')] }] },
+    ];
+    const [round] = mergeRounds(fresh, stored, 2026);
+    expect(round.sessions[0].tables.map(x => x.title)).toEqual(['Hypercar', 'LMGT3']);
+    expect(round.others?.map(s => s.label)).toEqual(['Free Practice 1', 'Free Practice 2', 'Qualifying']);
+  });
+
+  it('drops what was stored in the old shape beside a fetched round', () => {
+    const stored: ResultRound[] = [{ round: 6, name: 'Fuji', date: '2026-09-27', sessions: [{ label: 'Race', tables: [t('Hypercar', false), t('LMP2', false)] }, { label: 'Main Race after 6 hours', tables: [t('Overall', false)] }] }];
+    const fresh: ResultRound[] = [{ round: 6, name: 'Fuji', date: '2026-09-27', sessions: [{ label: 'Race', tables: [t('Hypercar')] }] }];
+    const [round] = mergeRounds(fresh, stored, 2026);
+    expect(round.sessions.map(s => s.label)).toEqual(['Race']);
+    expect(round.sessions[0].tables.map(x => x.title)).toEqual(['Hypercar']);
+    expect(inShape(round)).toBe(true);
+  });
+
+  it("keeps the season's rounds only, never mixing last season's into this one's", () => {
+    const stored: ResultRound[] = [
+      { round: 1, name: 'Daytona', date: '2026-01-25', sessions: [{ label: 'Race', tables: [t('GTP')] }] },
+      { round: 2, name: 'Sebring', date: '2026-03-21', sessions: [{ label: 'Race', tables: [t('GTP')] }] },
+    ];
+    const fresh: ResultRound[] = [{ round: 1, name: 'Daytona', date: '2027-01-24', sessions: [{ label: 'Race', tables: [t('GTP')] }] }];
+    expect(mergeRounds(fresh, stored, 2027).map(r => `${r.round} ${r.date}`)).toEqual(['1 2027-01-24']);
+    expect(mergeRounds([], stored, 2026)).toEqual(stored);
   });
 });

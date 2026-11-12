@@ -5,8 +5,9 @@
 // that read them join this file in O34's second PR.
 //
 // Every table keeps C2's columns: Pos, No. (the car number without its "#"), Crew (the drivers joined by ", "), Team,
-// then the session's own (a race's Laps, Time and Gap; a timed session's best lap as Time, then Laps and Gap; GT World's
-// Cup after the team). The Crew column also tells a round stored in this shape from one stored before it (inShape).
+// then the session's own: a race's Laps, Time (its total) and Gap; a timed session's best lap as Time, then Laps and Gap;
+// GT World's Cup after the team, then its columns as it writes them, a race's best lap as "Best lap" (GT World gives no
+// total time). The Crew column also tells a round stored in this shape from one stored before it (inShape).
 
 import * as cheerio from 'cheerio';
 import type { SeriesRoundEntry } from '@/lib/types';
@@ -145,7 +146,8 @@ export function alkamelSession(raw: string, label: string, race: boolean, spell:
       .map(e => {
         const crew = crewCell((e.drivers ?? []).map(d => `${clean(d.firstname)} ${clean(d.surname)}`), spell);
         const status = clean(e.status);
-        const gap = clean(e.gap_first) || (status && !/^classified$/i.test(status) ? status : '');
+        // A car not classified shows its status, never the gap Al Kamel also gives it (Sebring's #79 "Not Started", not "338 Laps").
+        const gap = status && !/^classified$/i.test(status) ? status : clean(e.gap_first);
         const head = [String(e.position), clean(e.number), crew, team(clean(e.team))];
         return race ? [...head, clean(e.laps), clean(e.elapsed_time), gap] : [...head, clean(e.time), clean(e.laps), gap];
       });
@@ -256,13 +258,15 @@ export function wecDriverName(html: string): string | null {
 
 /** wec/crews.json on the data branch: each race's crews by car, as the car pages list them, and each driver's name as
  *  the cards write it, with the name in reading order once the driver's own page was read (only for a name drivers.json
- *  cannot spell). Asked once; kept. */
+ *  cannot spell). A car's crew is read once, and once more after its race if it was first read before (`afterRace`: the
+ *  cars read with the race classified), so a driver changed during the weekend is caught; then kept. */
 export interface WecCrews {
   races: Record<string, Record<string, string[]>>;
   drivers: Record<string, { card: string; name?: string }>;
+  afterRace?: Record<string, string[]>;
 }
 
-export const emptyCrews = (): WecCrews => ({ races: {}, drivers: {} });
+export const emptyCrews = (): WecCrews => ({ races: {}, drivers: {}, afterRace: {} });
 
 /** A car's crew in a race, every driver named; null while a car page or a driver's name is still to be read. */
 export function wecCrewNames(crews: WecCrews, raceId: number, car: string, spell: (name: string) => string | null): string[] | null {
@@ -295,22 +299,26 @@ export function withWecCrews(rounds: ResultRound[], raceIds: ReadonlyMap<number,
   });
 }
 
-/** The car pages a run reads: every car in a stored round's tables whose crew for that race is not yet kept, the newest
- *  round first. */
-export function wecCarsDue(rounds: readonly ResultRound[], raceIds: ReadonlyMap<number, number>, crews: WecCrews): { raceId: number; car: string }[] {
-  const out: { raceId: number; car: string }[] = [];
+/** The car pages a run reads, the newest round first: every car in a stored round's tables whose crew for that race is
+ *  not yet kept, and, once the race has a classification, every car whose crew was read before it (`afterRace` true:
+ *  the read that settles it). */
+export function wecCarsDue(rounds: readonly ResultRound[], raceIds: ReadonlyMap<number, number>, crews: WecCrews): { raceId: number; car: string; afterRace: boolean }[] {
+  const out: { raceId: number; car: string; afterRace: boolean }[] = [];
   const seen = new Set<string>();
   for (const r of [...rounds].sort((a, b) => (b.round ?? 0) - (a.round ?? 0))) {
     const raceId = raceIdOf(raceIds, r);
     if (raceId === undefined) continue;
+    const ran = r.sessions.some(s => s.tables.some(t => t.columns.includes(CREW) && t.rows.length > 0));
+    const after = new Set(crews.afterRace?.[String(raceId)] ?? []);
     for (const t of [...r.sessions, ...(r.others ?? [])].flatMap(s => s.tables)) {
       const car = t.columns.indexOf('No.');
       if (car < 0 || !t.columns.includes(CREW)) continue;
       for (const row of t.rows) {
         const key = `${raceId}|${row[car]}`;
-        if (!row[car] || seen.has(key) || crews.races[String(raceId)]?.[row[car]]) continue;
+        if (!row[car] || seen.has(key)) continue;
+        if (crews.races[String(raceId)]?.[row[car]] && (!ran || after.has(row[car]))) continue;
         seen.add(key);
-        out.push({ raceId, car: row[car] });
+        out.push({ raceId, car: row[car], afterRace: ran });
       }
     }
   }
@@ -351,9 +359,10 @@ const GT_COLUMN: Record<string, string> = { pos: 'Pos', 'car #': 'No.', class: '
  * A GT World session's classification, every cup in one table, read by its headings: Pos, No., Crew, Team, Cup, then
  * the session's own columns as the site writes them (Time, Laps, Gap; an endurance round's combined qualifying its
  * average as Time, then Time 1 to 4), a column left out when no row fills it; the cars it lists unclassified ("NC",
- * "DSQ") after the classified places, marked so in Pos. Null when the session has no row.
+ * "DSQ") after the classified places, marked so in Pos. A race's "Time" is each car's best lap (Brands Hatch's Race 1:
+ * the winner 1:24.132, second 1:24.020), so a race keeps it as "Best lap". Null when the session has no row.
  */
-export function gtTable(html: string, title: string, spell: (name: string) => string | null): Table | null {
+export function gtTable(html: string, title: string, race: boolean, spell: (name: string) => string | null): Table | null {
   const $ = cheerio.load(html);
   const heads = headings($);
   const iPos = heads.indexOf('pos');
@@ -372,7 +381,7 @@ export function gtTable(html: string, title: string, spell: (name: string) => st
       const line = new Map<string, string>();
       heads.forEach((h, i) => {
         if (h === 'car') return;
-        const name = GT_COLUMN[h] ?? h.replace(/(^|\s)(\p{Ll})/gu, (_m, sep: string, ch: string) => sep + ch.toUpperCase());
+        const name = race && h === 'time' ? 'Best lap' : (GT_COLUMN[h] ?? h.replace(/(^|\s)(\p{Ll})/gu, (_m, sep: string, ch: string) => sep + ch.toUpperCase()));
         const value = cells[i] ?? '';
         line.set(name, name === CREW ? crewCell(value.split(','), spell) : name === 'Pos' ? pos : value);
       });
@@ -399,41 +408,82 @@ const dayAfter = (day: string, n: number): string => new Date(Date.parse(`${day}
 /**
  * The rounds a run fetches, the newest first, at most `max`: those under way or over, and either still settling (over
  * less than `settleDays` ago, when classifications are amended and late sessions filed) or not yet stored in this
- * file's shape. A round settled and stored is never asked again.
+ * file's shape. A stored round stands for a round of rounds.json only when its date lies within that round's dates, so
+ * last season's round of the same number never does. A round settled and stored is never asked again.
  */
 export function roundsDue(rounds: readonly Pick<SeriesRoundEntry, 'round' | 'startDate' | 'endDate'>[], stored: readonly ResultRound[] | null, now: Date, max: number, settleDays = 7): number[] {
   const today = now.toISOString().slice(0, 10);
-  const kept = new Map((stored ?? []).filter(r => r.round !== null).map(r => [r.round as number, r]));
+  const keptFor = (e: Pick<SeriesRoundEntry, 'round' | 'startDate' | 'endDate'>): ResultRound | undefined =>
+    (stored ?? []).find(r => r.round === e.round && r.date !== null && r.date >= e.startDate && r.date <= e.endDate);
   return rounds
-    .filter(r => r.startDate <= today && (dayAfter(r.endDate, settleDays) >= today || !inShape(kept.get(r.round))))
+    .filter(r => r.startDate <= today && (dayAfter(r.endDate, settleDays) >= today || !inShape(keptFor(r))))
     .sort((a, b) => (a.startDate < b.startDate ? 1 : a.startDate > b.startDate ? -1 : 0))
     .slice(0, Math.max(0, max))
     .map(r => r.round);
 }
 
-/** A fetched round from its sessions in running order: the races its `sessions`, the rest its `others`; named and dated
- *  as rounds.json names and dates it, as the Calendar does. */
-export function fetchedRound(entry: Pick<SeriesRoundEntry, 'round' | 'name' | 'endDate'>, sessions: readonly (ResultSession & { race: boolean })[]): ResultRound {
+/**
+ * A round as one run fetched it, or null when that fetch was not whole: a request went unanswered or the run's time ran
+ * out (`missed` names what), so the stored round stays as it was and the round stays due for the next run. A session
+ * the source lists without a classification (a class that did not run it, a session called off) is no miss. The races
+ * are its `sessions`, the rest its `others`, in running order; named and dated as rounds.json names and dates it.
+ */
+export function fetchedRound(
+  entry: Pick<SeriesRoundEntry, 'round' | 'name' | 'endDate'>,
+  sessions: readonly (ResultSession & { race: boolean })[],
+  missed: readonly string[] = [],
+): ResultRound | null {
+  if (missed.length > 0 || sessions.length === 0) return null;
   const strip = ({ label, tables }: ResultSession): ResultSession => ({ label, tables });
   const races = sessions.filter(s => s.race).map(strip);
   const others = sessions.filter(s => !s.race).map(strip);
   return { round: entry.round, name: entry.name, date: entry.endDate, sessions: races, ...(others.length ? { others } : {}) };
 }
 
-/** The fetched rounds over the stored ones, oldest first: a fetched session replaces the stored session of its label, a
- *  stored session the fetch did not bring back is kept (a failed request never loses a table), and every other round
- *  stays as stored. */
-export function mergeRounds(fresh: readonly ResultRound[], stored: readonly ResultRound[] | null): ResultRound[] {
-  const key = (r: ResultRound): string => (r.round !== null ? `r${r.round}` : `e${r.name}`);
-  const out = new Map((stored ?? []).map(r => [key(r), r]));
-  const over = (a: readonly ResultSession[] | undefined, b: readonly ResultSession[] | undefined): ResultSession[] => {
-    const labels = new Set((b ?? []).map(s => s.label));
-    return [...(b ?? []), ...(a ?? []).filter(s => !labels.has(s.label))];
+/** `fresh` in its own order, each item combined with the stored item of its key, and the stored items `fresh` lacks kept
+ *  where they stood, before the next item both lists hold. */
+function mergeInOrder<T>(fresh: readonly T[], stored: readonly T[], key: (x: T) => string, combine: (f: T, s: T) => T): T[] {
+  const inFresh = new Set(fresh.map(key));
+  const storedBy = new Map(stored.map(x => [key(x), x]));
+  const out: T[] = [];
+  const done = new Set<string>();
+  let i = 0;
+  const take = (f: T): void => {
+    const s = storedBy.get(key(f));
+    out.push(s ? combine(f, s) : f);
+    done.add(key(f));
   };
+  for (const s of stored) {
+    if (!inFresh.has(key(s))) out.push(s);
+    else while (i < fresh.length && !done.has(key(s))) take(fresh[i++]);
+  }
+  while (i < fresh.length) take(fresh[i++]);
+  return out;
+}
+
+const shaped = (t: Table): boolean => t.columns.includes(CREW);
+
+/**
+ * The fetched rounds over the stored ones, oldest first, the season's only: a stored round of another season is
+ * dropped, as Formula 1's stored file keeps one season. A fetched round (whole, fetchedRound) replaces the stored round
+ * of its number session by session in the fetch's running order, and inside a session table by table; a stored session
+ * or class table the fetch did not bring back stays in its place, and one of the shape stored before this file's is
+ * dropped. Every other round stays as stored.
+ */
+export function mergeRounds(fresh: readonly ResultRound[], stored: readonly ResultRound[] | null, season: number): ResultRound[] {
+  const out = new Map((stored ?? []).filter(r => r.round !== null && r.date?.slice(0, 4) === String(season)).map(r => [r.round as number, r]));
+  const session = (f: ResultSession, s: ResultSession): ResultSession => ({ ...f, tables: mergeInOrder(f.tables, s.tables.filter(shaped), t => t.title, t => t) });
+  const sessions = (f: readonly ResultSession[], s: readonly ResultSession[]): ResultSession[] =>
+    mergeInOrder(f, s.filter(x => x.tables.length > 0 && x.tables.every(shaped)), x => x.label, session);
   for (const f of fresh) {
-    const s = out.get(key(f));
-    const others = over(s?.others, f.others);
-    out.set(key(f), { ...f, sessions: over(s?.sessions, f.sessions), ...(others.length ? { others } : {}) });
+    if (f.round === null) continue;
+    const s = out.get(f.round);
+    if (!s) {
+      out.set(f.round, f);
+      continue;
+    }
+    const others = sessions(f.others ?? [], s.others ?? []);
+    out.set(f.round, { ...f, sessions: sessions(f.sessions, s.sessions), ...(others.length ? { others } : {}) });
   }
   return [...out.values()].sort((a, b) => (a.date ?? '').localeCompare(b.date ?? '') || (a.round ?? 0) - (b.round ?? 0));
 }
