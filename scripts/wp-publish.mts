@@ -31,6 +31,7 @@ import { dirname, join } from 'node:path';
 import { runStandingsHealth, HEALTH_SEASON } from '../lib/standings-health';
 import { runResultsHealth } from '../lib/results-health';
 import { listSeriesSlugs, loadSeries, loadSeriesMeta } from '../lib/series';
+import { loadSessionsOverrides } from '../lib/sessions-overrides';
 import { loadChampionNotes, loadCuratedChampions, loadCuratedDrivers, loadHistoricTeamColors, loadRecordNotes, loadStandingsNotes, loadTeamNames, loadTitleRaces, officialTeamName } from '../lib/series-content';
 import { fetchUpstream } from '../lib/fetch-upstream';
 import { fetchF1SeasonSprints } from '../lib/results/f1';
@@ -695,7 +696,8 @@ async function fetchEverything(slugs: string[], now: Date): Promise<Fetched> {
         log('F', `calendar ${slug} ERROR ${t.error ?? ''} ${t.ms}ms`);
         return;
       }
-      const entries = calendarEntries(t.value, now);
+      // Each session in the round its sessions.json block names, where the weekend grouping would put it in another.
+      const entries = calendarEntries(t.value, now, await loadSessionsOverrides(join(process.cwd(), 'content', 'series', slug)));
       // A series with no feed (the ADAC 24h) is curated only, and always current.
       const failed = t.value.configured && t.value.stale;
       out.calendar.set(slug, { data: entries.length ? entries : null, partial: failed, error: failed ? 'calendar feed did not answer' : undefined });
