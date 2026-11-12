@@ -8,6 +8,10 @@ Paddock is out of early access. Fifteen championships in one place, every sessio
 
 Behind the scenes: the project's own records brought up to date.
 
+## 1.0.304 — 2026-11-12
+
+Behind the scenes: the groundwork for the other fourteen championships' pages. Each championship now says in its own settings which of its pages are built; the parts every weekend page shares, from the band and the bar of sessions to the cards and the side column, now fit every kind of weekend, from a two-race weekend to a rally; and a results table with tabs, a race, a class or a day at a time, is ready for the weekends that run more than one race or class. Weather forecasts are now kept for every championship's circuits, and the publisher waits and tries again when the site asks it to slow down. Nothing changes for readers yet.
+
 ## 1.0.303 — 2026-11-12
 
 Behind the scenes: on the calendar's May page, the Indianapolis 500's first week of practice and qualifying now sits with the 500 itself, no longer with the road course race at the Brickyard the weekend before. Nothing changes for readers yet.

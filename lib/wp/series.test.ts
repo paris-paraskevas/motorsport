@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import type { TitleRaceFile } from '../series-content';
-import type { ResultRound, SeriesData } from './render';
+import { siteOf, type ResultRound, type SeriesData, type SeriesSite } from './render';
 import {
   categorySlug,
   championColour,
@@ -11,7 +11,6 @@ import {
   pointsLeft,
   prose,
   recordLists,
-  ROUND2_SERIES,
   seriesChampions,
   seriesFamily,
   seriesList,
@@ -25,6 +24,10 @@ import {
   teamTallies,
   titleCounts,
 } from './series';
+
+/** Formula 1's setting as content/series/f1/meta.json writes it: every page built (O33). */
+const F1_SITE: SeriesSite = { family: 'F1', pages: ['results', 'standings', 'champions', 'weekends'] };
+const SITES = { f1: F1_SITE };
 
 const race = (round: number, name: string, date: string, rows: string[][]): ResultRound => ({
   round,
@@ -44,6 +47,7 @@ const f1: SeriesData = {
   slug: 'f1',
   name: 'Formula 1',
   season: 2026,
+  sites: SITES,
   standings: [
     { title: 'Drivers', columns: ['Pos', 'Driver', 'Team', 'Pts'], rows: drivers },
     { title: 'Constructors', columns: ['Pos', 'Constructor', 'Pts'], rows: [['1', 'Red Bull Racing', '40'], ['2', 'Ferrari', '30'], ['3', 'Haas F1 Team', '9']] },
@@ -76,7 +80,9 @@ describe('seriesOverview', () => {
   it('is the series address on the Wide template', () => {
     expect(page).toMatchObject({ path: '/series/f1/', title: 'Formula 1', template: 'page-wide' });
     expect(seriesFamily(f1).map(p => p.path)).toEqual(['/series/f1/', '/series/f1/results/', '/series/f1/standings/', '/series/f1/champions/']);
-    expect(ROUND2_SERIES.has('f1')).toBe(true);
+    // Formula 1 is drawn in round 2's design with every page built: its meta.json says so (O33).
+    const meta = JSON.parse(readFileSync(path.join(process.cwd(), 'content/series/f1/meta.json'), 'utf8')) as { site?: unknown };
+    expect(siteOf('f1', meta.site)).toEqual(F1_SITE);
   });
 
   it('carries the five tabs at their own addresses, the Calendar showing only this series, a page not yet built greyed', () => {
@@ -304,6 +310,7 @@ describe('seriesStandings', () => {
     slug: 'f1',
     name: 'Formula 1',
     season: 2026,
+    sites: SITES,
     standings: [
       {
         title: 'Drivers',
@@ -573,6 +580,7 @@ describe('seriesChampions', () => {
     name: 'Formula 1',
     short: 'F1',
     season: 2026,
+    sites: SITES,
     standings: [{ title: 'Drivers', columns: ['Pos', 'Driver', 'Team', 'Pts'], rows: [['1', 'Kimi Antonelli', 'Mercedes', '300'], ['2', 'Max Verstappen', 'Red Bull Racing', '198']] }],
     results: null,
     calendar: null,
@@ -752,6 +760,7 @@ describe('seriesTitleRace', () => {
     name: 'Formula 1',
     short: 'F1',
     season: 2026,
+    sites: SITES,
     standings: [{ title: 'Drivers', columns: ['Pos', 'Driver', 'Team', 'Pts'], rows: [['1', 'Kimi Antonelli', 'Mercedes', '300'], ['2', 'Max Verstappen', 'Red Bull Racing', '198']] }],
     results: null,
     calendar: null,
@@ -932,7 +941,8 @@ describe('seriesList', () => {
   const rounds = (n: number, month = '05') =>
     Array.from({ length: n }, (_, i) => ({ round: i + 1, name: `Round ${i + 1} Grand Prix`, startDate: `2026-${month}-${String(i * 7 + 1).padStart(2, '0')}`, endDate: `2026-${month}-${String(i * 7 + 3).padStart(2, '0')}`, venue: null }));
   const raced = (...ns: number[]) => ns.map(n => race(n, `Round ${n}`, `2026-05-0${n}`, [['1', 'Winner', 'Team', '1:00:00.000', '25']]));
-  const base = { standings: null, calendar: null, season: 2026 } as const;
+  // Every series carries every series' setting, as the publisher passes it; only Formula 1 has one.
+  const base = { standings: null, calendar: null, season: 2026, sites: SITES } as const;
   const all: SeriesData[] = [
     { ...base, slug: 'wrc', name: 'WRC', category: 'rally', colour: '#eab308', order: 9, rounds: rounds(2), results: [] },
     // Seasons over by 5 May: a result never closes a round before its dates have come.
@@ -1089,5 +1099,36 @@ describe('categorySlug', () => {
     expect(categorySlug('Formula 1')).toBe('formula-1');
     expect(categorySlug('MotoGP')).toBe('motogp');
     expect(categorySlug('ADAC Ravenol 24h Nürburgring')).toBe('adac-ravenol-24h-nurburgring');
+  });
+});
+
+describe("a series' setting: only the pages it lists (O33)", () => {
+  // Formula 1's data under another slug, with its Standings built and nothing else.
+  const f2: SeriesData = { ...f1, slug: 'f2', name: 'Formula 2', sites: { ...SITES, f2: { family: 'A', pages: ['standings'] } } };
+
+  it('builds only the pages listed', () => {
+    expect(seriesFamily(f2).map(p => p.path)).toEqual(['/series/f2/', '/series/f2/standings/']);
+  });
+
+  it('greys the tabs it does not build and never links to them', () => {
+    const b = seriesOverview(f2).body;
+    expect(b).toContain('<a href="/series/f2/standings/">Standings</a><span class="is-off">Results</span><span class="is-off">Champions</span>');
+    expect(b).toContain('<a href="/series/f2/standings/">All 12 →</a>');
+    expect(b).not.toContain('/series/f2/results/');
+    expect(b).not.toContain('/series/f2/2026/');
+    // A finished round without a weekend page or a Results page opens its month on the Calendar.
+    expect(b).toContain('<a class="pd-sr-tile" href="/calendar/2026-09/#f2"><small>R1</small><b>Singapore</b>');
+    const list = seriesList([{ ...f2, category: 'formula', colour: '#38bdf8' }], new Date('2026-10-20T00:00:00Z')).body;
+    expect(list).toContain('<b><a href="/series/f2/">Formula 2</a></b>');
+    expect(list).toContain('<a href="/series/f2/standings/">Standings</a><span class="is-off">Results</span><span class="is-off">Champions</span>');
+  });
+
+  it("folds each round as its family counts the weekend's points, Formula 1's by default", () => {
+    const listed: SeriesData = { ...f2, sites: { f2: { family: 'A', pages: ['results'] } } };
+    const kit = { weekendPages: () => [], resultsFold: (d: SeriesData, r: ResultRound) => `<p class="fold">${d.slug} round ${r.round}</p>` };
+    const folded = seriesFamily(listed, kit).find(p => p.path === '/series/f2/results/')?.body ?? '';
+    expect(folded).toContain('<div class="pd-rs-fold"><p class="fold">f2 round 1</p></div>');
+    expect(folded).not.toContain('pd-wk-pts');
+    expect(seriesResults(listed).body).toContain('<div class="pd-rs-fold"><table class="pd-wk-tbl pd-wk-pts">');
   });
 });

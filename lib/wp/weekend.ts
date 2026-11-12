@@ -6,11 +6,16 @@
 // data, never the hour it is written (a session with a result has run), so a page changes only when its data does.
 // WordPress keeps no inline SVG and no inline style but width and custom properties: the Pit wall places its stints
 // with --l and --w, and the theme's script (wp-theme/paddock/assets/js/paddock.js) draws the circuit from data-pd-map.
+//
+// The parts every family's weekend shares are exported (O33): the data and the times, the forecast, the band, the bar,
+// the strip, the cards, the side column, the season page and the results table with tabs. Each family draws its own
+// Overview and session pages from them in a file of its own (lib/wp/family-<letter>.ts); Formula 1's stay here. Every
+// option a part takes defaults to Formula 1's markup.
 
 import { stepFor, symbolLabel, type ForecastStep } from '@/lib/met-norway';
 import { isMap, trackDay as trackDate, trackTimeToUtc, type DriverStints, type SessionExtras } from '@/lib/openf1/weekend';
-import { escapeHtml, isRaceLaps, seasonPath, seriesPath, sessionSlug, WEEKEND_PAGES, weekendPath, type CalendarEntry, type CalendarRound, type Page, type ResultRound, type SeriesData, type Table } from './render';
-import { band, built, codeOf, col, colourOf, dates, htmlBlock, numberOf, outline, pointsTable, raceWins, sameDriver, seatOf, sprintWeekend, tabs, teamLabel, tick, weekendPoints, wk } from './series';
+import { built, escapeHtml, isRaceLaps, seasonPath, seriesPath, sessionSlug, weekendPath, type CalendarEntry, type CalendarRound, type Page, type ResultRound, type SeriesData, type Table } from './render';
+import { band, codeOf, col, colourOf, dates, htmlBlock, numberOf, outline, pointsTable, raceWins, sameDriver, seatOf, sprintWeekend, tabs, teamLabel, tick, weekendPoints, wk } from './series';
 
 /** The rows a session's card leads with (the operator, 22 Oct): three in practice, ten in qualifying and sprint
  *  qualifying, the eight who score in a sprint; the race's ten lead its own section. */
@@ -47,7 +52,7 @@ function form(tz: string, kind: 'hm' | 'day' | 'wd' | 'off'): Intl.DateTimeForma
 }
 
 /** The reader's own time of an instant: the theme's script writes it in their zone; without the script, UTC stands. */
-function yours(iso: string, f: 't' | 'wt'): string {
+export function yours(iso: string, f: 't' | 'wt'): string {
   return `<span class="pd-t" data-utc="${esc(iso)}" data-f="${f}">${(f === 't' ? UTC_T : UTC_WT).format(new Date(iso))} UTC</span>`;
 }
 
@@ -64,7 +69,7 @@ function utcLabel(min: number): string {
 }
 
 /** "9–11 October", or "30 October – 1 November" across two months. */
-function longDates(from: string, to: string): string {
+export function longDates(from: string, to: string): string {
   const a = new Date(`${from}T12:00:00Z`);
   const b = new Date(`${to}T12:00:00Z`);
   if (from === to) return `${b.getUTCDate()} ${MONTH.format(b)}`;
@@ -79,7 +84,7 @@ function lapLabel(s: number): string {
 
 // ── A weekend and its data ───────────────────────────────────────────────────
 
-interface Weekend {
+export interface Weekend {
   d: SeriesData;
   season: number;
   r: CalendarRound;
@@ -96,16 +101,16 @@ interface Weekend {
 
 /** What a page drew from each source, for its credit line: from OpenF1 the weather, race control's marks, the tyres and
  *  a circuit's pole lap; MET Norway's forecast. */
-interface Used {
+export interface Used {
   weather: boolean;
   marks: boolean;
   tyres: boolean;
   map: boolean;
   met: boolean;
 }
-const nothingUsed = (): Used => ({ weather: false, marks: false, tyres: false, map: false, met: false });
+export const nothingUsed = (): Used => ({ weather: false, marks: false, tyres: false, map: false, met: false });
 
-function weekendOf(d: SeriesData, season: number, r: CalendarRound): Weekend {
+export function weekendOf(d: SeriesData, season: number, r: CalendarRound): Weekend {
   const seen = new Set<string>();
   const sessions = (d.calendar ?? [])
     .filter(e => e.round === r.round && !e.dateOnly)
@@ -135,37 +140,37 @@ function weekendOf(d: SeriesData, season: number, r: CalendarRound): Weekend {
   return { d, season, r, result, sessions, tz, path: weekendPath(d.slug, season, r.round), teams };
 }
 
-const sessionPath = (w: Weekend, label: string): string => `${w.path}${sessionSlug(label)}/`;
+export const sessionPath = (w: Weekend, label: string): string => `${w.path}${sessionSlug(label)}/`;
 
 /** A session's classification once it has one row; null before it has run. */
-function tableOf(w: Weekend, label: string): Table | null {
+export function tableOf(w: Weekend, label: string): Table | null {
   const s = [...(w.result?.sessions ?? []), ...(w.result?.others ?? [])].find(x => x.label === label);
   const t = s?.tables[0];
   return t && t.rows.length ? t : null;
 }
 
-const extrasOf = (w: Weekend, label: string): SessionExtras | undefined => w.d.weekend?.sessions?.[String(w.season)]?.[String(w.r.round)]?.[label];
+export const extrasOf = (w: Weekend, label: string): SessionExtras | undefined => w.d.weekend?.sessions?.[String(w.season)]?.[String(w.r.round)]?.[label];
 
-/** The columns a classification is read by. */
-function cols(t: Table): { pos: number; name: number; team: number; time: number; pts: number } {
-  return { pos: col(t.columns, 'Pos'), name: col(t.columns, 'Driver'), team: col(t.columns, 'Team'), time: col(t.columns, 'Time'), pts: col(t.columns, 'Pts', 'Points') };
+/** The columns a classification is read by; a motorcycle series' feed names its riders Rider. */
+export function cols(t: Table): { pos: number; name: number; team: number; time: number; pts: number } {
+  return { pos: col(t.columns, 'Pos'), name: col(t.columns, 'Driver', 'Rider'), team: col(t.columns, 'Team'), time: col(t.columns, 'Time'), pts: col(t.columns, 'Pts', 'Points') };
 }
 
 /** A row's team as the round's race, sprint or qualifying (Jolpica's) gives it: OpenF1's practices and sprint
  *  qualifying carry the roster's, wrong for a driver who swapped seats (Lawson at Red Bull in rounds 12 to 14). */
-const teamAt = (w: Weekend, row: string[], c: { name: number; team: number }): string => w.teams.get(row[c.name] ?? '') ?? row[c.team] ?? '';
+export const teamAt = (w: Weekend, row: string[], c: { name: number; team: number }): string => w.teams.get(row[c.name] ?? '') ?? row[c.team] ?? '';
 
 /** A row's best time: qualifying's last part a driver reached, else the time. */
-function bestTime(t: Table, row: string[]): string {
+export function bestTime(t: Table, row: string[]): string {
   const parts = t.columns.map((c, i) => (/^S?Q\d$/.test(c) ? i : -1)).filter(i => i >= 0);
   if (parts.length) return [...parts].reverse().map(i => row[i]).find(Boolean) ?? '';
   const at = col(t.columns, 'Time');
   return at >= 0 ? (row[at] ?? '') : '';
 }
 
-const trackTime = (w: Weekend, iso: string): string => form(w.tz, 'hm').format(new Date(iso));
-const trackWeekday = (w: Weekend, iso: string): string => form(w.tz, 'wd').format(new Date(iso));
-const trackDay = (w: Weekend, iso: string): string => form(w.tz, 'day').format(new Date(iso));
+export const trackTime = (w: Weekend, iso: string): string => form(w.tz, 'hm').format(new Date(iso));
+export const trackWeekday = (w: Weekend, iso: string): string => form(w.tz, 'wd').format(new Date(iso));
+export const trackDay = (w: Weekend, iso: string): string => form(w.tz, 'day').format(new Date(iso));
 
 // ── Weather and marks ────────────────────────────────────────────────────────
 
@@ -178,14 +183,14 @@ function measured(x: SessionExtras | undefined, used: Used): string {
 }
 
 /** MET Norway's forecast for a session's start (stepFor), while the publisher holds one for its circuit. */
-function forecastStep(w: Weekend, iso: string): ForecastStep | null {
+export function forecastStep(w: Weekend, iso: string): ForecastStep | null {
   const f = w.r.circuit ? w.d.weekend?.forecast?.[w.r.circuit] : undefined;
   return f ? stepFor(f.steps, iso) : null;
 }
 
 /** The forecast as a line: the air, the sky, and the rain over the hour a session starts in, or over the six hours it
  *  starts in further out. */
-function forecast(w: Weekend, iso: string, used: Used): string {
+export function forecast(w: Weekend, iso: string, used: Used): string {
   const s = forecastStep(w, iso);
   if (!s) return '';
   used.met = true;
@@ -210,45 +215,85 @@ function marks(w: Weekend, label: string, used: Used): string {
 
 // ── The parts every page of a weekend shares ─────────────────────────────────
 
-function weekendBand(w: Weekend): string {
+/** A weekend band's options; each left out draws Formula 1's. */
+export interface BandOptions {
+  /** The crumb's last part: "Round 17 of 23" by default ("Race 2 of 10" for the NLS); null for none, a one-event page. */
+  crumb?: string | null;
+  /** The crumb's season link: "2026 season" by default (Formula E's "Season 12 · 2025–26"). */
+  season?: string;
+  /** Tags under the place line, after a moved round's own: an odd weekend's, a double-header's. */
+  tags?: string[];
+  /** Words after the dates on the place line ("4 hours"). */
+  after?: string;
+  /** The big number: the round's by default. */
+  num?: string;
+}
+
+/** The band every page of a weekend opens with: the crumb, the round's name, its place and dates, its tags. */
+export function weekendBand(w: Weekend, o: BandOptions = {}): string {
   const { d, r } = w;
   const where = [r.venue ?? '', r.country ?? ''].filter(Boolean).map(esc).join(', ');
   const note = r.moved?.note ? r.moved.note.charAt(0).toUpperCase() + r.moved.note.slice(1) : '';
   const moved = note ? `<em class="pd-wk-tag">${esc(note)}${r.moved?.from && r.moved.to ? `, first set for ${longDates(r.moved.from, r.moved.to)}` : ''}</em>` : '';
+  const crumb = o.crumb === undefined ? `Round ${r.round} of ${(d.rounds ?? []).length}` : o.crumb;
+  const tags = (o.tags ?? []).map(t => `<em class="pd-wk-tag">${esc(t)}</em>`).join('');
   return (
-    `<section class="pd-wk-band"><div class="pd-wk-band-in"><p class="pd-wk-crumb"><a href="${seriesPath(d.slug)}">${esc(d.name)}</a> › <a href="${seasonPath(d.slug, w.season)}">${w.season} season</a> › Round ${r.round} of ${(d.rounds ?? []).length}</p>` +
-    `<h1>${esc(r.name)}</h1><p class="pd-wk-where">${where}${where ? ' · ' : ''}<span class="pd-wk-dt">${longDates(r.startDate, r.endDate)}</span></p>${moved}<span class="pd-wk-num" aria-hidden="true">${r.round}</span></div></section>`
+    `<section class="pd-wk-band"><div class="pd-wk-band-in"><p class="pd-wk-crumb"><a href="${seriesPath(d.slug)}">${esc(d.name)}</a> › <a href="${seasonPath(d.slug, w.season)}">${o.season === undefined ? `${w.season} season` : esc(o.season)}</a>${crumb === null ? '' : ` › ${esc(crumb)}`}</p>` +
+    `<h1>${esc(r.name)}</h1><p class="pd-wk-where">${where}${where ? ' · ' : ''}<span class="pd-wk-dt">${longDates(r.startDate, r.endDate)}</span>${o.after ? ` · ${esc(o.after)}` : ''}</p>` +
+    `${moved}${tags}<span class="pd-wk-num" aria-hidden="true">${o.num === undefined ? r.round : esc(o.num)}</span></div></section>`
   );
 }
 
-/** One bar for every page of a weekend: its Overview, then each session's page with its time (its real start when it
- *  ran late) and its winner once run, the page you are on lit, a session still to run dashed and said so. */
+/** One item of a weekend's bar: a page (with href), or a session without one, drawn as a span. `note` is markup, its
+ *  text escaped by the caller. `up` a session still to run, `off` one with no classification and no page, `x` one
+ *  called off; a divider names what follows it (a double-header's second round, a week of the Indianapolis 500). */
+export type BarEntry = { label: string; note: string; href?: string; current?: boolean; state?: 'up' | 'off' | 'x' } | { divider: string };
+
+/** One bar for every page of a weekend, its entries in order, the page you are on lit. */
+export function bar(w: Weekend, entries: readonly BarEntry[]): string {
+  const items = entries.map(e => {
+    if ('divider' in e) return `<span class="pd-wb-div">${esc(e.divider)}</span>`;
+    const cls = e.state ? ` class="is-${e.state}"` : '';
+    const inner = `${esc(e.label)}<small>${e.note}</small>`;
+    return e.href ? `<a href="${esc(e.href)}"${e.current ? ' aria-current="page"' : ''}${cls}>${inner}</a>` : `<span${cls}>${inner}</span>`;
+  });
+  return `<nav class="pd-wb" aria-label="${esc(`${w.r.name}: its pages`)}">${items.join('')}</nav>`;
+}
+
+/** Formula 1's bar: its Overview, then each session's page with its time (its real start when it ran late) and its
+ *  winner once run, a session still to run dashed and said so. */
 function weekendBar(w: Weekend, current: string | null): string {
-  const here = (on: boolean) => (on ? ' aria-current="page"' : '');
-  const items = [`<a href="${w.path}"${here(current === null)}>Overview<small>the weekend</small></a>`];
+  const entries: BarEntry[] = [{ label: 'Overview', note: 'the weekend', href: w.path, current: current === null }];
   for (const e of w.sessions) {
     const t = tableOf(w, e.session);
     const who = t ? ` · ${esc(codeOf(w.d, t.rows[0][cols(t).name] ?? ''))}` : '<span class="pd-vh"> · still to run</span>';
     const at = extrasOf(w, e.session)?.marks?.late?.started ?? e.start;
-    items.push(`<a href="${sessionPath(w, e.session)}"${here(e.session === current)}${t ? '' : ' class="is-up"'}>${esc(e.session)}<small>${yours(at, 'wt')}${who}</small></a>`);
+    entries.push({ label: e.session, note: `${yours(at, 'wt')}${who}`, href: sessionPath(w, e.session), current: e.session === current, ...(t ? {} : { state: 'up' as const }) });
   }
-  return `<nav class="pd-wb" aria-label="${esc(`${w.r.name}: its pages`)}">${items.join('')}</nav>`;
+  return bar(w, entries);
 }
 
-/** The strip under the band: Final with who won, once the race has a result; else the session on now or next (the
- *  theme's script, from the weekend's timetable) with its countdown, Session emails and Follow. */
-function strip(w: Weekend): string {
-  const follow = `<button type="button" class="pd-wk-btn" data-pd-follow="${esc(w.d.slug)}" data-off="${esc(`Follow ${w.d.name}`)}" data-on="${esc(`Following ${w.d.name} ✓`)}" hidden>Follow ${esc(w.d.name)}</button>`;
+/** Formula 1's Final line: who won the race, from pole, and the sprint; null until the race has a result. */
+function f1Final(w: Weekend): string | null {
   const race = tableOf(w, 'Race');
-  if (race) {
-    const at = cols(race).name;
-    const win = race.rows[0][at];
-    const pole = tableOf(w, 'Qualifying')?.rows[0];
-    const sprint = tableOf(w, 'Sprint')?.rows[0];
-    const sprintName = sprint ? sprint[col(tableOf(w, 'Sprint')?.columns ?? [], 'Driver')] : '';
-    const fromPole = pole && pole[col(tableOf(w, 'Qualifying')?.columns ?? [], 'Driver')] === win ? ' from pole' : '';
-    const also = sprint ? `, and the sprint ${sprintName === win ? 'too' : `went to ${esc(sprintName)}`}` : '';
-    return `<div class="pd-wk-strip"><div class="pd-wk-strip-in"><em class="pd-wk-pill is-fin">Final</em><span class="pd-wk-sum"><b>${esc(win)}</b> won${fromPole}${also}</span><span class="pd-wk-acts">${follow}</span></div></div>`;
+  if (!race) return null;
+  const at = cols(race).name;
+  const win = race.rows[0][at];
+  const pole = tableOf(w, 'Qualifying')?.rows[0];
+  const sprint = tableOf(w, 'Sprint')?.rows[0];
+  const sprintName = sprint ? sprint[col(tableOf(w, 'Sprint')?.columns ?? [], 'Driver')] : '';
+  const fromPole = pole && pole[col(tableOf(w, 'Qualifying')?.columns ?? [], 'Driver')] === win ? ' from pole' : '';
+  const also = sprint ? `, and the sprint ${sprintName === win ? 'too' : `went to ${esc(sprintName)}`}` : '';
+  return `<b>${esc(win)}</b> won${fromPole}${also}`;
+}
+
+/** The strip under the band: Final with the family's line (markup, names escaped) once its racing is done; else (null)
+ *  the session on now or next (the theme's script, from the weekend's timetable) with its countdown, Session emails
+ *  and Follow. */
+export function strip(w: Weekend, final: string | null): string {
+  const follow = `<button type="button" class="pd-wk-btn" data-pd-follow="${esc(w.d.slug)}" data-off="${esc(`Follow ${w.d.name}`)}" data-on="${esc(`Following ${w.d.name} ✓`)}" hidden>Follow ${esc(w.d.name)}</button>`;
+  if (final !== null) {
+    return `<div class="pd-wk-strip"><div class="pd-wk-strip-in"><em class="pd-wk-pill is-fin">Final</em><span class="pd-wk-sum">${final}</span><span class="pd-wk-acts">${follow}</span></div></div>`;
   }
   const emails = '<a class="pd-wk-btn" href="/subscribe/">Session emails</a>';
   if (!w.sessions.length) {
@@ -291,7 +336,7 @@ function driverByNumber(d: SeriesData, n: number): string | null {
 
 /** The sources a page drew on, as their terms ask, naming only what it shows: OpenF1 (CC BY-NC-SA 4.0), MET Norway
  *  (CC BY 4.0). */
-function credit(used: Used): string {
+export function credit(used: Used): string {
   const from = [used.weather ? 'the weather' : '', used.marks ? 'race control’s marks' : '', used.tyres ? 'the tyres' : '', used.map ? 'the circuit’s pole lap' : ''].filter(Boolean);
   const listed = from.length > 1 ? `${from.slice(0, -1).join(', ')} and ${from[from.length - 1]}` : (from[0] ?? '');
   const parts = [
@@ -303,7 +348,7 @@ function credit(used: Used): string {
 
 // ── The Overview's parts ─────────────────────────────────────────────────────
 
-function podium(w: Weekend, t: Table): string {
+export function podium(w: Weekend, t: Table): string {
   const c = cols(t);
   const items = t.rows.slice(0, 3).map(
     row =>
@@ -313,13 +358,14 @@ function podium(w: Weekend, t: Table): string {
   return `<ol class="pd-wk-podium">${items.join('')}</ol>`;
 }
 
-/** A classification as a table: every column after the team; qualifying's parts but the last are hidden on a phone. */
-function classTable(w: Weekend, t: Table, limit = Infinity): string {
+/** A classification as a table: every column after the team; qualifying's parts but the last are hidden on a phone. The
+ *  name column's header is the table's own (Driver, Rider). */
+export function classTable(w: Weekend, t: Table, limit = Infinity): string {
   const c = cols(t);
   const figures = t.columns.map((_, i) => i).filter(i => i !== c.pos && i !== c.name && i !== c.team);
   const parts = figures.filter(i => /^S?Q\d$/.test(t.columns[i]));
   const kind = (i: number): string => (t.columns[i] === 'Pts' || t.columns[i] === 'Points' ? 'pt' : parts.length && parts.includes(i) && i !== parts[parts.length - 1] ? 't q' : t.columns[i] === 'Laps' ? 'n' : 't');
-  const head = `<tr><th class="p">Pos</th><th class="d">Driver</th><th class="tm">Team</th>${figures.map(i => `<th class="${kind(i)}">${esc(t.columns[i])}</th>`).join('')}</tr>`;
+  const head = `<tr><th class="p">Pos</th><th class="d">${esc(t.columns[c.name] ?? 'Driver')}</th><th class="tm">Team</th>${figures.map(i => `<th class="${kind(i)}">${esc(t.columns[i])}</th>`).join('')}</tr>`;
   const body = t.rows
     .slice(0, limit)
     .map(
@@ -646,7 +692,7 @@ function lapChart(w: Weekend, used: Used): string {
  *  classification does not hold. */
 export function lapChartNotes(d: SeriesData): { round: number; differs: string[]; unjoined: string[] }[] {
   const season = d.season;
-  if (!WEEKEND_PAGES.has(d.slug) || !season) return [];
+  if (!built(d, 'weekends') || !season) return [];
   return (d.rounds ?? []).flatMap(r => {
     const chart = lapLines(weekendOf(d, season, r));
     const differs = (chart?.lines ?? []).filter(placedDifferently).map(l => `${l.code} P${flagPlace(l)}→P${l.fin}`);
@@ -654,11 +700,24 @@ export function lapChartNotes(d: SeriesData): { round: number; differs: string[]
   });
 }
 
+/** A session card's options; each left out draws Formula 1's. */
+export interface CardOptions {
+  /** The rows it leads with: by default Formula 1's for the session's name (3 in practice, 10 in qualifying, 8 in a
+   *  sprint). */
+  rows?: number;
+  /** Its classification: by default the round's stored session of the same name. */
+  table?: Table | null;
+  /** false: the session has no page of its own, and the card says so instead of linking one. */
+  page?: boolean;
+  /** The line the card shows without a classification ("Not stored yet: …"). */
+  empty?: string;
+}
+
 /** A session's card: its time (yours and the track's), its weather, any mark, its leading results, a way to its page. */
-function sessionCard(w: Weekend, e: CalendarEntry, used: Used): string {
-  const t = tableOf(w, e.session);
+export function sessionCard(w: Weekend, e: CalendarEntry, used: Used, o: CardOptions = {}): string {
+  const t = o.table !== undefined ? o.table : tableOf(w, e.session);
   const x = extrasOf(w, e.session);
-  const n = CARD_ROWS[e.session] ?? 3;
+  const n = o.rows ?? CARD_ROWS[e.session] ?? 3;
   const at = x?.marks?.late?.started ?? e.start;
   const c = t ? cols(t) : null;
   const rows =
@@ -673,14 +732,16 @@ function sessionCard(w: Weekend, e: CalendarEntry, used: Used): string {
           .join('')
       : '';
   const wx = t ? measured(x, used) : forecast(w, e.start, used);
+  const empty = !t && o.empty ? `<p class="pd-sc-empty">${esc(o.empty)}</p>` : '';
+  const go = o.page === false ? '<span class="pd-sc-go is-off">No page yet</span>' : `<a class="pd-sc-go" href="${sessionPath(w, e.session)}">${t ? `All ${t.rows.length} on its page` : 'Its page'} →</a>`;
   return (
-    `<article class="pd-sc${n === 3 ? ' is-sm' : ''}"><header><div><h3>${esc(e.session)}</h3><p>${yours(at, 'wt')} your time · ${trackWeekday(w, at)} ${trackTime(w, at)} at the track</p>${marks(w, e.session, used)}</div>${wx}</header>` +
-    `${rows ? `<ol class="pd-sc-rows">${rows}</ol>` : ''}<a class="pd-sc-go" href="${sessionPath(w, e.session)}">${t ? `All ${t.rows.length} on its page` : 'Its page'} →</a></article>`
+    `<article class="pd-sc${n === 3 ? ' is-sm' : ''}${o.page === false ? ' is-off' : ''}"><header><div><h3>${esc(e.session)}</h3><p>${yours(at, 'wt')} your time · ${trackWeekday(w, at)} ${trackTime(w, at)} at the track</p>${marks(w, e.session, used)}</div>${wx}</header>` +
+    `${rows ? `<ol class="pd-sc-rows">${rows}</ol>` : ''}${empty}${go}</article>`
   );
 }
 
 /** Sessions still to run, by the track's day: your time and the track's, the forecast, a way to each page. */
-function weekendRows(w: Weekend, list: CalendarEntry[], used: Used): string {
+export function weekendRows(w: Weekend, list: CalendarEntry[], used: Used): string {
   const days = new Map<string, CalendarEntry[]>();
   for (const e of list) {
     const day = trackDay(w, e.start);
@@ -702,7 +763,7 @@ function weekendRows(w: Weekend, list: CalendarEntry[], used: Used): string {
     .join('');
 }
 
-interface Standing {
+export interface Standing {
   name: string;
   team: string;
   pts: number;
@@ -711,11 +772,11 @@ interface Standing {
 /** The drivers' championship after a round: the official table after the latest round raced (it carries any
  *  penalty), else the points summed from the stored races and sprints, drivers level on points split on their Grand
  *  Prix finishes (countback; sprints not counted). */
-function championship(d: SeriesData, after: number): Standing[] {
+export function championship(d: SeriesData, after: number): Standing[] {
   const raced = [...raceWins(d).keys()];
   const official = d.standings?.[0];
   if (official && raced.length && after >= Math.max(...raced)) {
-    const name = col(official.columns, 'Driver');
+    const name = col(official.columns, 'Driver', 'Rider');
     const team = col(official.columns, 'Team');
     const pts = col(official.columns, 'Pts', 'Points');
     if (name >= 0 && pts >= 0) return official.rows.map(row => ({ name: row[name], team: team >= 0 ? row[team] : '', pts: Number.parseFloat(row[pts]) || 0 }));
@@ -754,28 +815,50 @@ function championship(d: SeriesData, after: number): Standing[] {
   return [...pts.entries()].map(([name, p]) => ({ name, team: team.get(name) ?? '', pts: p })).sort((a, b) => b.pts - a.pts || countback(a.name, b.name));
 }
 
-function nextRound(w: Weekend): string {
+/** The next round's card and the way back to the one before; `unit` names them ("Round", the NLS's "Race"). */
+export function nextRound(w: Weekend, unit = 'Round'): string {
   const rounds = w.d.rounds ?? [];
   const next = rounds.find(x => x.round === w.r.round + 1);
   const prev = rounds.find(x => x.round === w.r.round - 1);
   const card = next
-    ? `<a class="pd-wk-next" href="${weekendPath(w.d.slug, w.season, next.round)}"><small>Next round · ${next.round}</small><b>${esc(next.name)}</b><span>${next.place ? `${esc(next.place)} · ` : ''}${longDates(next.startDate, next.endDate)}</span>${outline(next.outline, ' pd-wk-ol')}</a>`
+    ? `<a class="pd-wk-next" href="${weekendPath(w.d.slug, w.season, next.round)}"><small>Next ${esc(unit.toLowerCase())} · ${next.round}</small><b>${esc(next.name)}</b><span>${next.place ? `${esc(next.place)} · ` : ''}${longDates(next.startDate, next.endDate)}</span>${outline(next.outline, ' pd-wk-ol')}</a>`
     : '';
-  const back = prev ? `<a class="pd-wk-prev" href="${weekendPath(w.d.slug, w.season, prev.round)}">‹ Round ${prev.round} · ${esc(prev.name)}</a>` : '';
+  const back = prev ? `<a class="pd-wk-prev" href="${weekendPath(w.d.slug, w.season, prev.round)}">‹ ${esc(unit)} ${prev.round} · ${esc(prev.name)}</a>` : '';
   return card + back;
 }
 
+/** The side column's options; each left out draws Formula 1's. */
+export interface AsideOptions {
+  /** The track box's title: "At the track" by default ("The rally"). */
+  title?: string;
+  /** false: the box leaves out its Circuit, Country and Track time rows and holds the facts alone (the drafts' rally
+   *  and Nordschleife boxes). */
+  place?: boolean;
+  /** Its rows after Circuit, Country and Track time: by default Formula 1's Format, a sprint or a standard weekend. */
+  facts?: readonly (readonly [string, string])[];
+  /** The championship box, its title and rows: by default Formula 1's before or after the round; null for none. */
+  champ?: { title: string; rows: Standing[] } | null;
+  /** The next round's word (nextRound). */
+  unit?: string;
+  /** Boxes before the championship, markup with its text escaped by the caller: a double-header's twin round (B1). */
+  before?: string;
+}
+
 /** The side: the championship before or after the round, the track (its zone beside the reader's), the next round. */
-function aside(w: Weekend, raced: boolean): string {
-  // A round further off than the next shows the table as it stands, after the latest round raced.
-  const latest = Math.max(0, ...raceWins(w.d).keys());
-  const after = raced ? w.r.round : Math.min(w.r.round - 1, latest);
-  const title = raced || after < w.r.round - 1 ? `after round ${after}` : `before round ${w.r.round}`;
-  const top = after > 0 ? championship(w.d, after).slice(0, 5) : [];
+export function aside(w: Weekend, raced: boolean, o: AsideOptions = {}): string {
+  let box = o.champ;
+  if (box === undefined) {
+    // A round further off than the next shows the table as it stands, after the latest round raced.
+    const latest = Math.max(0, ...raceWins(w.d).keys());
+    const after = raced ? w.r.round : Math.min(w.r.round - 1, latest);
+    const title = raced || after < w.r.round - 1 ? `after round ${after}` : `before round ${w.r.round}`;
+    box = { title: `Championship ${title}`, rows: after > 0 ? championship(w.d, after).slice(0, 5) : [] };
+  }
+  const top = box?.rows ?? [];
   const lead = top[0]?.pts ?? 0;
-  const more = built(w.d.slug, 'standings') ? `<a class="pd-wk-more" href="${seriesPath(w.d.slug, 'standings')}">Full standings →</a>` : '<span class="pd-wk-more is-off">Full standings →</span>';
-  const champ = top.length
-    ? `<section class="pd-wk-box pd-wk-champ"><h3>Championship ${title}</h3><ol>${top
+  const more = built(w.d, 'standings') ? `<a class="pd-wk-more" href="${seriesPath(w.d.slug, 'standings')}">Full standings →</a>` : '<span class="pd-wk-more is-off">Full standings →</span>';
+  const champ = box && top.length
+    ? `<section class="pd-wk-box pd-wk-champ"><h3>${esc(box.title)}</h3><ol>${top
         .map(
           (s, i) =>
             `<li><span class="p">${i + 1}</span>${tick(w.d, s.team)}<span class="d"><b>${esc(s.name)}</b><small>${esc(teamLabel(s.team))}</small></span><span class="g">${i ? `−${Math.round((lead - s.pts) * 10) / 10}` : 'Leader'}</span><b class="pt">${s.pts}</b></li>`,
@@ -787,14 +870,50 @@ function aside(w: Weekend, raced: boolean): string {
   const at = w.sessions[0]?.start ?? `${w.r.startDate}T12:00:00Z`;
   const off = offsetOf(w.tz, at);
   const zone = w.tz === 'UTC' && !w.r.tz ? '' : `<dt>Track time</dt><dd>${utcLabel(off)}<span class="pd-wk-ahead" data-pd-ahead="${off}" data-pd-at="${esc(at)}"></span></dd>`;
-  const track =
-    `<section class="pd-wk-box"><h3>At the track</h3><dl>${w.r.venue ? `<dt>Circuit</dt><dd>${esc(w.r.venue)}</dd>` : ''}${w.r.country ? `<dt>Country</dt><dd>${esc(w.r.country)}</dd>` : ''}` +
-    `${zone}<dt>Format</dt><dd>${sprintWeekend(w.d, w.r.round, w.result) ? 'Sprint weekend' : 'Standard weekend'}</dd></dl></section>`;
-  return `<aside class="pd-wk-aside">${champ}${track}${nextRound(w)}</aside>`;
+  const facts = o.facts
+    ? o.facts.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')
+    : `<dt>Format</dt><dd>${sprintWeekend(w.d, w.r.round, w.result) ? 'Sprint weekend' : 'Standard weekend'}</dd>`;
+  const place =
+    o.place === false ? '' : `${w.r.venue ? `<dt>Circuit</dt><dd>${esc(w.r.venue)}</dd>` : ''}${w.r.country ? `<dt>Country</dt><dd>${esc(w.r.country)}</dd>` : ''}${zone}`;
+  const track = `<section class="pd-wk-box"><h3>${esc(o.title ?? 'At the track')}</h3><dl>${place}${facts}</dl></section>`;
+  return `<aside class="pd-wk-aside">${o.before ?? ''}${champ}${track}${nextRound(w, o.unit)}</aside>`;
 }
 
-const section = (title: string, hint: string, body: string, id?: string): string =>
-  `<section class="pd-wk-sec"${id ? ` id="${id}"` : ''}><div class="pd-wk-sh"><h2>${title}</h2>${hint ? `<p class="pd-wk-hint">${hint}</p>` : ''}</div>${body}</section>`;
+/** A section of a weekend page: its heading, a hint beside it, its body (markup: the title and hint too, as written);
+ *  its id is escaped. */
+export const section = (title: string, hint: string, body: string, id?: string): string =>
+  `<section class="pd-wk-sec"${id ? ` id="${esc(id)}"` : ''}><div class="pd-wk-sh"><h2>${title}</h2>${hint ? `<p class="pd-wk-hint">${hint}</p>` : ''}</div>${body}</section>`;
+
+// ── The results table with tabs (O33) ────────────────────────────────────────
+
+/** A panel of the results table with tabs: its name in each row of tabs, its heading without the script (by default
+ *  the names joined with " · "), and its body, the component's one raw-markup input (its text escaped by the caller). */
+export interface TabPanel {
+  tab: readonly string[];
+  title?: string;
+  body: string;
+}
+
+/** The results table with tabs, as answered for A1, C1, C3, C4 and E2 (25 Oct): one or two rows of tabs over one table
+ *  at a time, each row's first tab open unless `open` names another (C4 opens on Race 2), `rows` naming the rows
+ *  (Race, Class). The theme's script draws the tabs from each panel's names in the order they first appear and greys a
+ *  pair no panel holds; without the script every panel stands under its own heading. */
+export function resultTabs(panels: readonly TabPanel[], o: { rows?: readonly string[]; open?: readonly string[] } = {}): string {
+  if (!panels.length) return '';
+  const depth = panels[0].tab.length;
+  if (depth < 1 || depth > 2 || panels.some(p => p.tab.length !== depth)) throw new Error('resultTabs: every panel names one tab, or one in each of two rows');
+  // "|" separates the rows' names in the data attributes.
+  const name = (s: string): string => s.replace(/\|/g, '/').trim();
+  const key = (names: readonly string[]): string => names.map(name).join('|');
+  if (panels.some(p => p.tab.some(t => !name(t)))) throw new Error('resultTabs: a tab without a name');
+  const keys = panels.map(p => key(p.tab));
+  const twice = keys.find((k, i) => keys.indexOf(k) !== i);
+  if (twice !== undefined) throw new Error(`resultTabs: two panels named ${twice}`);
+  const rows = o.rows?.length ? ` data-pd-rt="${esc(key(o.rows))}"` : '';
+  const open = o.open?.length ? ` data-pd-open="${esc(key(o.open))}"` : '';
+  const items = panels.map((p, i) => `<section class="pd-rt-p" data-pd-tab="${esc(keys[i])}"><h3 class="pd-rt-h">${esc(p.title ?? p.tab.map(name).join(' · '))}</h3>${p.body}</section>`);
+  return `<div class="pd-rt"${rows}${open}>${items.join('')}</div>`;
+}
 
 // ── The pages ────────────────────────────────────────────────────────────────
 
@@ -834,9 +953,26 @@ function overviewPage(w: Weekend): Page {
     if (!w.sessions.length) parts.push(section('The weekend', '', '<p class="pd-wk-empty">The weekend’s session times are not published yet; they appear here as soon as they are.</p>'));
   }
   const body =
-    `<div class="pd-wkp pd-s-${esc(w.d.slug)}">${weekendBand(w)}${strip(w)}${weekendBar(w, null)}` +
+    `<div class="pd-wkp pd-s-${esc(w.d.slug)}">${weekendBand(w)}${strip(w, f1Final(w))}${weekendBar(w, null)}` +
     `<div class="pd-wk-main"><div class="pd-wk-col">${parts.join('')}</div>${aside(w, Boolean(race))}</div>${circuit(w, used)}${credit(used)}</div>`;
   return { path: w.path, title: `${w.r.name} ${w.season}`, body: htmlBlock(body), template: 'page-wide' };
+}
+
+/** A session page's band: the crumb back to its weekend (`unit` names the round: "Round", the NLS's "Race"), the
+ *  session's name, its day and time at the track and yours, its real start when race control marked it late. */
+export function sessionBand(w: Weekend, e: CalendarEntry, unit = 'Round'): string {
+  const at = extrasOf(w, e.session)?.marks?.late?.started ?? e.start;
+  return (
+    `<section class="pd-ss-band"><div class="pd-ss-band-in"><p class="pd-wk-crumb"><a href="${seriesPath(w.d.slug)}">${esc(w.d.name)}</a> › <a href="${seasonPath(w.d.slug, w.season)}">${w.season}</a> › ` +
+    `<a href="${w.path}">${esc(unit)} ${w.r.round} · ${esc(w.r.name)}</a></p><h1>${esc(e.session)}</h1><p class="pd-ss-sub">${esc(trackDay(w, at))} · ${trackTime(w, at)} at the track, ${yours(at, 'wt')} your time</p></div></section>`
+  );
+}
+
+/** The side box of a session still to run: MET Norway's forecast for its start; '' while the publisher holds none. */
+export function forecastBox(w: Weekend, e: CalendarEntry, used: Used): string {
+  const f = forecast(w, e.start, used);
+  const src = forecastStep(w, e.start)?.hours === 6 ? 'The sky and rain over the six hours it starts in' : 'For the hour it starts';
+  return f ? `<section class="pd-wk-box"><h3>Forecast for its start</h3><div class="pd-wk-fc">${f}</div><p class="pd-wk-src">${src}</p></section>` : '';
 }
 
 /** A session's own page: its classification (every driver, every part), race control's marks, Pit wall for a race or
@@ -845,10 +981,7 @@ function sessionPage(w: Weekend, e: CalendarEntry): Page {
   const used = nothingUsed();
   const t = tableOf(w, e.session);
   const x = extrasOf(w, e.session);
-  const at = x?.marks?.late?.started ?? e.start;
-  const band =
-    `<section class="pd-ss-band"><div class="pd-ss-band-in"><p class="pd-wk-crumb"><a href="${seriesPath(w.d.slug)}">${esc(w.d.name)}</a> › <a href="${seasonPath(w.d.slug, w.season)}">${w.season}</a> › ` +
-    `<a href="${w.path}">Round ${w.r.round} · ${esc(w.r.name)}</a></p><h1>${esc(e.session)}</h1><p class="pd-ss-sub">${esc(trackDay(w, at))} · ${trackTime(w, at)} at the track, ${yours(at, 'wt')} your time</p></div></section>`;
+  const band = sessionBand(w, e);
   const parts: string[] = [];
   if (t) {
     const hint = /^S?Q\d$/.test(t.columns[t.columns.length - 1] ?? '') ? `All ${t.rows.length}, as classified; each driver’s best time in each part` : `All ${t.rows.length}, as classified`;
@@ -870,9 +1003,7 @@ function sessionPage(w: Weekend, e: CalendarEntry): Page {
       `<section class="pd-wk-box"><h3>Weather at the track</h3><dl><dt>Air</dt><dd>${wx.air[0]}–${wx.air[2]} °C</dd>${wx.track ? `<dt>Track</dt><dd>${wx.track[0]}–${wx.track[2]} °C</dd>` : ''}` +
       `${wx.humidity ? `<dt>Humidity</dt><dd>${wx.humidity[0]}–${wx.humidity[1]} %</dd>` : ''}<dt>Rain</dt><dd>${wx.rain ? 'Yes' : 'None'}</dd></dl><p class="pd-wk-src">Measured through the session</p></section>`;
   } else if (!t) {
-    const f = forecast(w, e.start, used);
-    const src = forecastStep(w, e.start)?.hours === 6 ? 'The sky and rain over the six hours it starts in' : 'For the hour it starts';
-    if (f) weather = `<section class="pd-wk-box"><h3>Forecast for its start</h3><div class="pd-wk-fc">${f}</div><p class="pd-wk-src">${src}</p></section>`;
+    weather = forecastBox(w, e, used);
   }
   const body =
     `<div class="pd-wkp pd-s-${esc(w.d.slug)}">${band}${weekendBar(w, e.session)}` +
@@ -880,9 +1011,21 @@ function sessionPage(w: Weekend, e: CalendarEntry): Page {
   return { path: sessionPath(w, e.session), title: `${w.r.name} ${w.season}: ${e.session}`, body: htmlBlock(body), template: 'page-wide' };
 }
 
+/** The season page's options; each left out draws Formula 1's. */
+export interface SeasonOptions {
+  /** A round's word on its tile: "Round" by default (the NLS's "Race"). */
+  unit?: string;
+  /** The heading: "The 2026 season" by default (Formula E's "Season 12 · 2025–26"). */
+  title?: string;
+  /** A called-off round's line on its tile, as text: its reason by default (WEC's "First set for 26–28 March; called
+   *  off on 28 July", C5). */
+  offLine?: (c: NonNullable<SeriesData['cancelled']>[number]) => string;
+}
+
 /** The season: a tile a weekend in date order, each opening its weekend page; a moved round also where it was first
  *  set, and a round called off, struck through. */
-function seasonPage(d: SeriesData, season: number): Page {
+export function seasonPage(d: SeriesData, season: number, o: SeasonOptions = {}): Page {
+  const unit = o.unit ?? 'Round';
   const wins = raceWins(d);
   const rounds = d.rounds ?? [];
   const current = rounds.find(r => !wins.has(r.round));
@@ -897,32 +1040,32 @@ function seasonPage(d: SeriesData, season: number): Page {
         : '<span></span>';
     tiles.push({
       at: r.startDate,
-      html: `<a class="pd-sn-t${r === current ? ' is-now' : ''}" href="${page}"${w ? ` style="--t:${colourOf(d, w.team)}"` : ''}><small>Round ${r.round} · ${dates(r.startDate, r.endDate)}</small><b>${esc(r.name)}</b>${state}${outline(r.outline)}</a>`,
+      html: `<a class="pd-sn-t${r === current ? ' is-now' : ''}" href="${page}"${w ? ` style="--t:${colourOf(d, w.team)}"` : ''}><small>${esc(unit)} ${r.round} · ${dates(r.startDate, r.endDate)}</small><b>${esc(r.name)}</b>${state}${outline(r.outline)}</a>`,
     });
     if (r.moved?.from && r.moved.to) {
       tiles.push({
         at: r.moved.from,
-        html: `<a class="pd-sn-t is-moved" href="${page}"><small>Was ${dates(r.moved.from, r.moved.to)}</small><b>${esc(r.name)}</b><span>Moved to round ${r.round}${r.place ? `: ${esc(r.place)}` : ''}, ${dates(r.startDate, r.endDate)}</span></a>`,
+        html: `<a class="pd-sn-t is-moved" href="${page}"><small>Was ${dates(r.moved.from, r.moved.to)}</small><b>${esc(r.name)}</b><span>Moved to ${esc(unit.toLowerCase())} ${r.round}${r.place ? `: ${esc(r.place)}` : ''}, ${dates(r.startDate, r.endDate)}</span></a>`,
       });
     }
   }
   for (const c of d.cancelled ?? []) {
     tiles.push({
       at: c.from ?? '',
-      html: `<span class="pd-sn-t is-off"><small>Called off${c.from && c.to ? ` · was ${dates(c.from, c.to)}` : ''}</small><b>${esc(c.name)}</b><span>${esc(c.reason ?? `Round ${c.round}`)}</span></span>`,
+      html: `<span class="pd-sn-t is-off"><small>Called off${c.from && c.to ? ` · was ${dates(c.from, c.to)}` : ''}</small><b>${esc(c.name)}</b><span>${esc(o.offLine ? o.offLine(c) : (c.reason ?? `${unit} ${c.round}`))}</span></span>`,
     });
   }
   tiles.sort((a, b) => (a.at < b.at ? -1 : a.at > b.at ? 1 : 0));
   const main =
     `<div class="pd-sr pd-s-${esc(d.slug)}">${band(d, wins, current)}${tabs(d, null)}<div class="pd-sr-main"><section class="pd-sr-sec">` +
-    `<div class="pd-sh"><h2>The ${season} season</h2><p>${rounds.length} rounds · ${wins.size} run</p></div><div class="pd-sn">${tiles.map(t => t.html).join('')}</div></section></div></div>`;
+    `<div class="pd-sh"><h2>${esc(o.title ?? `The ${season} season`)}</h2><p>${rounds.length} ${esc(unit.toLowerCase())}s · ${wins.size} run</p></div><div class="pd-sn">${tiles.map(t => t.html).join('')}</div></section></div></div>`;
   return { path: seasonPath(d.slug, season), title: `${d.name} ${season}`, body: htmlBlock(main), template: 'page-wide' };
 }
 
-/** A series' weekend pages (O19): its season, each round's Overview and each timed session's page; none for a series
- *  without them or without a season. */
+/** Formula 1's weekend pages (O19), its family kit's: its season, each round's Overview and each timed session's page;
+ *  none for a series without them built or without a season. */
 export function weekendPages(d: SeriesData): Page[] {
-  if (!WEEKEND_PAGES.has(d.slug) || !d.season || !d.rounds?.length) return [];
+  if (!built(d, 'weekends') || !d.season || !d.rounds?.length) return [];
   const pages: Page[] = [seasonPage(d, d.season)];
   for (const r of d.rounds) {
     const w = weekendOf(d, d.season, r);

@@ -1347,3 +1347,117 @@
 		if ( path === here || ( path !== '/' && here.indexOf( path ) === 0 ) ) { a.setAttribute( 'aria-current', 'page' ); }
 	} );
 }() );
+
+// ── Task 2.b (O33): the results table with tabs ──────────────────────────────────────────────────────────────────
+// The publisher writes every panel of a results table under its own heading, its names in data-pd-tab, "|" between
+// two rows of tabs (lib/wp/weekend.ts resultTabs). This draws a row of tabs a row, in the order the names first appear,
+// shows one panel and hides the headings. The first row always switches; a later row keeps its tab where a panel holds
+// the pair, else takes its first that does, and greys the tabs no panel holds beside the first row's. The roles and
+// states are set here: WordPress keeps no aria-selected or aria-controls in a saved page.
+( function () {
+	document.querySelectorAll( '.pd-rt' ).forEach( function ( rt, n ) {
+		var panels = Array.prototype.filter.call( rt.children, function ( el ) { return el.classList.contains( 'pd-rt-p' ); } );
+		var keys = panels.map( function ( p ) { return ( p.getAttribute( 'data-pd-tab' ) || '' ).split( '|' ); } );
+		var depth = keys.length ? keys[ 0 ].length : 0;
+		if ( panels.length < 2 || depth < 1 || depth > 2 || keys.some( function ( k ) { return k.length !== depth; } ) ) { return; }
+		var labels = ( rt.getAttribute( 'data-pd-rt' ) || '' ).split( '|' );
+		var open = ( rt.getAttribute( 'data-pd-open' ) || '' ).split( '|' );
+		var index = function ( pick ) { return keys.findIndex( function ( k ) { return k.every( function ( x, i ) { return x === pick[ i ]; } ); } ); };
+		var names = keys[ 0 ].map( function ( _, i ) {
+			var list = [];
+			keys.forEach( function ( k ) { if ( list.indexOf( k[ i ] ) < 0 ) { list.push( k[ i ] ); } } );
+			return list;
+		} );
+		// Where a row's tab leaves no panel, each later row takes its first tab that gives one.
+		var settle = function ( pick, from ) {
+			for ( var j = from + 1; j < depth && index( pick ) < 0; j++ ) {
+				var row = j;
+				pick[ row ] = names[ row ].filter( function ( x ) { var p = pick.slice(); p[ row ] = x; return index( p ) >= 0; } )[ 0 ] || pick[ row ];
+			}
+			return pick;
+		};
+		var sel = settle( names.map( function ( list, i ) { return list.indexOf( open[ i ] ) >= 0 ? open[ i ] : list[ 0 ]; } ), 0 );
+		if ( index( sel ) < 0 ) { sel = keys[ 0 ].slice(); }
+		var usable = function ( i, name ) { var p = sel.slice(); p[ i ] = name; return i === 0 || index( p ) >= 0; };
+		var rows;
+		var draw = function () {
+			var at = index( sel );
+			panels.forEach( function ( p, k ) { p.hidden = k !== at; } );
+			rows.forEach( function ( r, i ) {
+				r.buttons.forEach( function ( b, j ) {
+					var on = names[ i ][ j ] === sel[ i ];
+					b.setAttribute( 'aria-selected', String( on ) );
+					b.setAttribute( 'aria-controls', panels[ at ].id );
+					b.tabIndex = on ? 0 : -1;
+					if ( usable( i, names[ i ][ j ] ) ) { b.removeAttribute( 'aria-disabled' ); } else { b.setAttribute( 'aria-disabled', 'true' ); }
+				} );
+			} );
+			panels[ at ].setAttribute( 'aria-labelledby', rows.map( function ( r, i ) { return r.buttons[ names[ i ].indexOf( sel[ i ] ) ].id; } ).join( ' ' ) );
+		};
+		var choose = function ( i, name, focus ) {
+			if ( ! usable( i, name ) ) { return; }
+			sel[ i ] = name;
+			settle( sel, i );
+			draw();
+			if ( focus ) { rows[ i ].buttons[ names[ i ].indexOf( name ) ].focus(); }
+		};
+		// Arrows move along a row to its next tab that shows a panel, Home and End to its first and last.
+		var move = function ( e, i, j ) {
+			var list = names[ i ];
+			var ok = function ( k ) { return usable( i, list[ k ] ); };
+			var to = -1;
+			if ( e.key === 'ArrowRight' || e.key === 'ArrowLeft' ) {
+				var step = e.key === 'ArrowRight' ? 1 : -1;
+				for ( var s = 1; s < list.length && to < 0; s++ ) {
+					var k = ( ( j + step * s ) % list.length + list.length ) % list.length;
+					if ( ok( k ) ) { to = k; }
+				}
+			} else if ( e.key === 'Home' || e.key === 'End' ) {
+				var order = list.map( function ( _, k ) { return k; } ).filter( ok );
+				to = order.length ? order[ e.key === 'Home' ? 0 : order.length - 1 ] : -1;
+			} else {
+				return;
+			}
+			e.preventDefault();
+			if ( to >= 0 ) { choose( i, list[ to ], true ); }
+		};
+		rows = names.map( function ( list, i ) {
+			var row = document.createElement( 'div' );
+			var tablist = document.createElement( 'div' );
+			row.className = 'pd-rt-row';
+			tablist.className = 'pd-rt-tabs';
+			tablist.setAttribute( 'role', 'tablist' );
+			if ( labels[ i ] ) {
+				var label = document.createElement( 'span' );
+				label.className = 'pd-rt-lbl';
+				label.id = 'pd-rt-' + n + '-row-' + i;
+				label.textContent = labels[ i ];
+				row.appendChild( label );
+				tablist.setAttribute( 'aria-labelledby', label.id );
+			} else {
+				row.classList.add( 'is-bare' );
+			}
+			var buttons = list.map( function ( name, j ) {
+				var b = document.createElement( 'button' );
+				b.type = 'button';
+				b.id = 'pd-rt-' + n + '-tab-' + i + '-' + j;
+				b.setAttribute( 'role', 'tab' );
+				b.textContent = name;
+				b.addEventListener( 'click', function () { choose( i, name, false ); } );
+				b.addEventListener( 'keydown', function ( e ) { move( e, i, j ); } );
+				tablist.appendChild( b );
+				return b;
+			} );
+			row.appendChild( tablist );
+			rt.insertBefore( row, panels[ 0 ] );
+			return { buttons: buttons };
+		} );
+		panels.forEach( function ( p, k ) {
+			if ( ! p.id ) { p.id = 'pd-rt-' + n + '-panel-' + k; }
+			p.setAttribute( 'role', 'tabpanel' );
+			p.tabIndex = 0;
+		} );
+		rt.classList.add( 'is-on' );
+		draw();
+	} );
+}() );
