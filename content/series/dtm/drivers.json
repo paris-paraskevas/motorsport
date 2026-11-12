@@ -77,7 +77,8 @@
       "color": "#3DAE2B",
       "drivers": [
         { "name": "Mirko Bortolotti", "number": 63 },
-        { "name": "Maximilian Paul", "number": 19 }
+        { "name": "Maximilian Paul", "number": 19, "also": ["P. Maximilian"] },
+        { "name": "Christian Engelhart" }
       ]
     },
     {
@@ -85,6 +86,12 @@
       "color": "#97D700",
       "drivers": [
         { "name": "Bastian Buus", "number": 29 }
+      ]
+    },
+    {
+      "name": "Seyffarth Motorsport",
+      "drivers": [
+        { "name": "Simon Connor Primm" }
       ]
     }
   ]

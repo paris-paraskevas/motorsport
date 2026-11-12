@@ -4,7 +4,7 @@
     { "round": 1, "startDate": "2026-03-06", "endDate": "2026-03-08", "name": "Australian Grand Prix" },
     { "round": 2, "startDate": "2026-05-01", "endDate": "2026-05-03", "name": "Miami Grand Prix" },
     { "round": 3, "startDate": "2026-05-22", "endDate": "2026-05-24", "name": "Canadian Grand Prix" },
-    { "round": 4, "startDate": "2026-06-05", "endDate": "2026-06-07", "name": "Monaco Grand Prix" },
+    { "round": 4, "startDate": "2026-06-04", "endDate": "2026-06-07", "name": "Monaco Grand Prix" },
     { "round": 5, "startDate": "2026-06-12", "endDate": "2026-06-14", "name": "Barcelona-Catalunya Grand Prix" },
     { "round": 6, "startDate": "2026-06-26", "endDate": "2026-06-28", "name": "Austrian Grand Prix" },
     { "round": 7, "startDate": "2026-07-03", "endDate": "2026-07-05", "name": "British Grand Prix" },

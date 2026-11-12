@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.307 — 2026-11-12
+
+Facts put right on the Formula 2, Formula 3, MotoGP, WorldSBK and DTM pages: DTM's results carry each race weekend's real dates, every driver's full name and race times written the usual way; Oschersleben's second race shows its winner's own time; WorldSBK's points match the official standings, Magny-Cours' restarted first race counted as it finished; Formula 2 and 3 race times read as an hour should; Formula 2's Monaco and Baku timetables are complete; and MotoGP's Australian Grand Prix shows as called off. Behind the scenes, every practice and qualifying session of these five championships is now kept, ready for their new pages.
+
 ## 1.0.306 — 2026-11-12
 
 Behind the scenes: the project's own records brought up to date.
