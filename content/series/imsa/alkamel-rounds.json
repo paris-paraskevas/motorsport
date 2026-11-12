@@ -3,23 +3,106 @@
   "rounds": [
     {
       "round": 1,
-      "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/02_Daytona%20International%20Speedway/01_IMSA%20WeatherTech%20SportsCar%20Championship/202601241340_Race/24_Hour%2024/05_Results%20by%20Class_Race_Official.JSON"
+      "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/02_Daytona%20International%20Speedway/01_IMSA%20WeatherTech%20SportsCar%20Championship/202601241340_Race/24_Hour%2024/05_Results%20by%20Class_Race_Official.JSON",
+      "sessions": [
+        { "label": "Practice 1", "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/02_Daytona%20International%20Speedway/01_IMSA%20WeatherTech%20SportsCar%20Championship/202601221005_Practice%201/05_Results%20by%20Class_Practice%201.JSON" },
+        { "label": "Qualifying", "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/02_Daytona%20International%20Speedway/01_IMSA%20WeatherTech%20SportsCar%20Championship/202601221410_Qualifying/05_Results%20by%20Class_Qualifying.JSON" },
+        { "label": "Practice 2", "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/02_Daytona%20International%20Speedway/01_IMSA%20WeatherTech%20SportsCar%20Championship/202601221815_Practice%202/05_Results%20by%20Class_Practice%202.JSON" },
+        { "label": "Practice 3", "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/02_Daytona%20International%20Speedway/01_IMSA%20WeatherTech%20SportsCar%20Championship/202601231105_Practice%203/05_Results%20by%20Class_Practice%203.JSON" }
+      ]
     },
     {
       "round": 2,
-      "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/06_Sebring%20International%20Raceway/01_IMSA%20WeatherTech%20SportsCar%20Championship/202603211010_Race/12_Hour%2012/05_Results%20by%20Class_Race_Official.JSON"
+      "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/06_Sebring%20International%20Raceway/01_IMSA%20WeatherTech%20SportsCar%20Championship/202603211010_Race/12_Hour%2012/05_Results%20by%20Class_Race_Official.JSON",
+      "sessions": [
+        { "label": "Practice 1", "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/06_Sebring%20International%20Raceway/01_IMSA%20WeatherTech%20SportsCar%20Championship/202603191005_Practice%201/05_Results%20by%20Class_Practice%201.JSON" },
+        { "label": "Practice 2", "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/06_Sebring%20International%20Raceway/01_IMSA%20WeatherTech%20SportsCar%20Championship/202603191600_Practice%202/05_Results%20by%20Class_Practice%202.JSON" },
+        { "label": "Practice 3", "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/06_Sebring%20International%20Raceway/01_IMSA%20WeatherTech%20SportsCar%20Championship/202603191945_Practice%203/05_Results%20by%20Class_Practice%203.JSON" },
+        { "label": "Qualifying", "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/06_Sebring%20International%20Raceway/01_IMSA%20WeatherTech%20SportsCar%20Championship/202603201125_Qualifying/05_Results%20by%20Class_Qualifying_Unofficial.JSON" }
+      ]
     },
     {
       "round": 3,
-      "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/07_Long%20Beach%20Street%20Circuit/01_IMSA%20WeatherTech%20SportsCar%20Championship/202604181305_Race/05_Results%20by%20Class_Race_Official.JSON"
+      "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/07_Long%20Beach%20Street%20Circuit/01_IMSA%20WeatherTech%20SportsCar%20Championship/202604181305_Race/05_Results%20by%20Class_Race_Official.JSON",
+      "sessions": [
+        { "label": "Practice 1", "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/07_Long%20Beach%20Street%20Circuit/01_IMSA%20WeatherTech%20SportsCar%20Championship/202604170900_Practice%201/05_Results%20by%20Class_Practice%201.JSON" },
+        { "label": "Practice 2", "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/07_Long%20Beach%20Street%20Circuit/01_IMSA%20WeatherTech%20SportsCar%20Championship/202604171310_Practice%202/05_Results%20by%20Class_Practice%202.JSON" },
+        { "label": "Qualifying", "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/07_Long%20Beach%20Street%20Circuit/01_IMSA%20WeatherTech%20SportsCar%20Championship/202604171725_Qualifying/05_Results%20by%20Class_Qualifying_Unofficial.JSON" }
+      ]
     },
     {
       "round": 4,
-      "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/09_Weathertech%20Raceway%20Laguna%20Seca/01_IMSA%20WeatherTech%20SportsCar%20Championship/202605031310_Race/05_Results%20by%20Class_Race_Official.JSON"
+      "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/09_Weathertech%20Raceway%20Laguna%20Seca/01_IMSA%20WeatherTech%20SportsCar%20Championship/202605031310_Race/05_Results%20by%20Class_Race_Official.JSON",
+      "sessions": [
+        { "label": "Practice 1", "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/09_Weathertech%20Raceway%20Laguna%20Seca/01_IMSA%20WeatherTech%20SportsCar%20Championship/202605011520_Practice%201/05_Results%20by%20Class_Practice%201.JSON" },
+        { "label": "Practice 2", "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/09_Weathertech%20Raceway%20Laguna%20Seca/01_IMSA%20WeatherTech%20SportsCar%20Championship/202605020955_Practice%202/05_Results%20by%20Class_Practice%202.JSON" },
+        { "label": "Qualifying", "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/09_Weathertech%20Raceway%20Laguna%20Seca/01_IMSA%20WeatherTech%20SportsCar%20Championship/202605021515_Qualifying/05_Results%20by%20Class_Qualifying_Unofficial.JSON" }
+      ]
     },
     {
       "round": 5,
-      "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/11_Detroit%20Street%20Course/01_IMSA%20WeatherTech%20SportsCar%20Championship/202605301610_Race/05_Results%20by%20Class_Race_Official.JSON"
+      "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/11_Detroit%20Street%20Course/01_IMSA%20WeatherTech%20SportsCar%20Championship/202605301610_Race/05_Results%20by%20Class_Race_Official.JSON",
+      "sessions": [
+        { "label": "Practice 1", "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/11_Detroit%20Street%20Course/01_IMSA%20WeatherTech%20SportsCar%20Championship/202605290800_Practice%201/05_Results%20by%20Class_Practice%201.JSON" },
+        { "label": "Practice 2", "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/11_Detroit%20Street%20Course/01_IMSA%20WeatherTech%20SportsCar%20Championship/202605291130_Practice%202/05_Results%20by%20Class_Practice%202.JSON" },
+        { "label": "Qualifying", "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/11_Detroit%20Street%20Course/01_IMSA%20WeatherTech%20SportsCar%20Championship/202605291650_Qualifying/05_Results%20by%20Class_Qualifying_Unofficial.JSON" },
+        { "label": "Practice 3", "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/11_Detroit%20Street%20Course/01_IMSA%20WeatherTech%20SportsCar%20Championship/202605301110_Practice%203/05_Results%20by%20Class_Practice%203.JSON" }
+      ]
+    },
+    {
+      "round": 6,
+      "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/14_Watkins%20Glen%20International/01_IMSA%20WeatherTech%20SportsCar%20Championship/202606281210_Race/06_Hour%206/05_Results%20by%20Class_Race_Official.JSON",
+      "sessions": [
+        { "label": "Practice 1", "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/14_Watkins%20Glen%20International/01_IMSA%20WeatherTech%20SportsCar%20Championship/202606261125_Practice%201/05_Results%20by%20Class_Practice%201.JSON" },
+        { "label": "Practice 2", "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/14_Watkins%20Glen%20International/01_IMSA%20WeatherTech%20SportsCar%20Championship/202606271005_Practice%202/05_Results%20by%20Class_Practice%202.JSON" },
+        { "label": "Qualifying", "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/14_Watkins%20Glen%20International/01_IMSA%20WeatherTech%20SportsCar%20Championship/202606271820_Qualifying/05_Results%20by%20Class_Qualifying_Unofficial.JSON" }
+      ]
+    },
+    {
+      "round": 7,
+      "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/15_Canadian%20Tire%20Motorsport%20Park/01_IMSA%20WeatherTech%20SportsCar%20Championship/202607121405_Race/05_Results%20by%20Class_Race_Official.JSON",
+      "sessions": [
+        { "label": "Practice 1", "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/15_Canadian%20Tire%20Motorsport%20Park/01_IMSA%20WeatherTech%20SportsCar%20Championship/202607101355_Practice%201/05_Results%20by%20Class_Practice%201.JSON" },
+        { "label": "Practice 2", "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/15_Canadian%20Tire%20Motorsport%20Park/01_IMSA%20WeatherTech%20SportsCar%20Championship/202607111035_Practice%202/05_Results%20by%20Class_Practice%202.JSON" },
+        { "label": "Qualifying", "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/15_Canadian%20Tire%20Motorsport%20Park/01_IMSA%20WeatherTech%20SportsCar%20Championship/202607111600_Qualifying/05_Results%20by%20Class_Qualifying_Unofficial.JSON" }
+      ]
+    },
+    {
+      "round": 8,
+      "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/16_Road%20America/01_IMSA%20WeatherTech%20SportsCar%20Championship/202608021040_Race/06_Hour%206/05_Results%20by%20Class_Race_Official.JSON",
+      "sessions": [
+        { "label": "Practice 1", "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/16_Road%20America/01_IMSA%20WeatherTech%20SportsCar%20Championship/202607311125_Practice%201/05_Results%20by%20Class_Practice%201.JSON" },
+        { "label": "Practice 2", "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/16_Road%20America/01_IMSA%20WeatherTech%20SportsCar%20Championship/202608010950_Practice%202/05_Results%20by%20Class_Practice%202.JSON" },
+        { "label": "Qualifying", "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/16_Road%20America/01_IMSA%20WeatherTech%20SportsCar%20Championship/202608011525_Qualifying/05_Results%20by%20Class_Qualifying_Unofficial.JSON" }
+      ]
+    },
+    {
+      "round": 9,
+      "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/18_VIRginia%20International%20Raceway/01_IMSA%20WeatherTech%20SportsCar%20Championship/202608231210_Race/05_Results%20by%20Class_Race_Official.JSON",
+      "sessions": [
+        { "label": "Practice 1", "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/18_VIRginia%20International%20Raceway/01_IMSA%20WeatherTech%20SportsCar%20Championship/202608211510_Practice%201/05_Results%20by%20Class_Practice%201.JSON" },
+        { "label": "Practice 2", "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/18_VIRginia%20International%20Raceway/01_IMSA%20WeatherTech%20SportsCar%20Championship/202608221030_Practice%202/05_Results%20by%20Class_Practice%202.JSON" },
+        { "label": "Qualifying", "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/18_VIRginia%20International%20Raceway/01_IMSA%20WeatherTech%20SportsCar%20Championship/202608221650_Qualifying/05_Results%20by%20Class_Qualifying_Unofficial.JSON" }
+      ]
+    },
+    {
+      "round": 10,
+      "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/20_Indianapolis%20Motor%20Speedway%20RC/01_IMSA%20WeatherTech%20SportsCar%20Championship/202609201510_Race/05_Results%20by%20Class_Race_Official.JSON",
+      "sessions": [
+        { "label": "Practice 1", "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/20_Indianapolis%20Motor%20Speedway%20RC/01_IMSA%20WeatherTech%20SportsCar%20Championship/202609181525_Practice%201/05_Results%20by%20Class_Practice%201.JSON" },
+        { "label": "Practice 2", "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/20_Indianapolis%20Motor%20Speedway%20RC/01_IMSA%20WeatherTech%20SportsCar%20Championship/202609191045_Practice%202/05_Results%20by%20Class_Practice%202.JSON" },
+        { "label": "Qualifying", "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/20_Indianapolis%20Motor%20Speedway%20RC/01_IMSA%20WeatherTech%20SportsCar%20Championship/202609191745_Qualifying/05_Results%20by%20Class_Qualifying_Unofficial.JSON" }
+      ]
+    },
+    {
+      "round": 11,
+      "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/21_Road%20Atlanta/01_IMSA%20WeatherTech%20SportsCar%20Championship/202610031210_Race/10_Hour%2010/05_Results%20by%20Class_Race_Official.JSON",
+      "sessions": [
+        { "label": "Practice 1", "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/21_Road%20Atlanta/01_IMSA%20WeatherTech%20SportsCar%20Championship/202610011040_Practice%201/05_Results%20by%20Class_Practice%201.JSON" },
+        { "label": "Practice 2", "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/21_Road%20Atlanta/01_IMSA%20WeatherTech%20SportsCar%20Championship/202610011520_Practice%202/05_Results%20by%20Class_Practice%202_Official.JSON" },
+        { "label": "Practice 3", "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/21_Road%20Atlanta/01_IMSA%20WeatherTech%20SportsCar%20Championship/202610011930_Practice%203/05_Results%20by%20Class_Practice%203.JSON" },
+        { "label": "Qualifying", "url": "https://imsa.results.alkamelcloud.com/Results/26_2026/21_Road%20Atlanta/01_IMSA%20WeatherTech%20SportsCar%20Championship/202610021420_Qualifying/05_Results%20by%20Class_Qualifying_Unofficial.JSON" }
+      ]
     }
   ]
 }
