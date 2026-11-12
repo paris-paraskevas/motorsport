@@ -1,0 +1,11 @@
+{
+  "_comment": "Al Kamel's team name → the name imsa.com prints, per season (the operator's answer of 28 Oct 2026, \"Teams' own spelling\"; O34). Al Kamel's session files write these six differently from one file to the next. Checked on 12 Nov 2026 against imsa.com's own news, team and results pages: \"Aston Martin THOR Team\", \"CrowdStrike Racing by APR\", \"Manthey 1st Phorm\", \"RS1\" and \"Winward Racing\" as printed there; AF Corse's American entry imsa.com prints both \"AF Corse USA\" and \"Af Corse USA\", and the team writes itself AF Corse. The first version of this comment named IMSA's team standings, which Paddock reads from Wikipedia. A name with no line passes through unchanged.",
+  "2026": {
+    "ASTON MARTIN THOR Team": "Aston Martin THOR Team",
+    "Af Corse Usa": "AF Corse USA",
+    "Crowdstrike Racing by APR": "CrowdStrike Racing by APR",
+    "Manthey 1St Phorm": "Manthey 1st Phorm",
+    "Rs1": "RS1",
+    "WINWARD RACING": "Winward Racing"
+  }
+}
