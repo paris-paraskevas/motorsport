@@ -8,6 +8,10 @@ Paddock is out of early access. Fifteen championships in one place, every sessio
 
 Behind the scenes: the endurance and GT championships, the FIA World Endurance Championship, IMSA and GT World Challenge Europe, now keep every session of a race weekend, practice and qualifying as well as the race, with each car's crew as it raced that weekend and every driver and team written as they write themselves. The WEC's last two rounds, Barcelona and Monza, and IMSA's last six rounds join their results, and the WEC's two called-off rounds, Qatar and Bahrain, are recorded for the season page. Nothing changes for readers yet.
 
+## 1.0.303 — 2026-11-12
+
+Behind the scenes: on the calendar's May page, the Indianapolis 500's first week of practice and qualifying now sits with the 500 itself, no longer with the road course race at the Brickyard the weekend before. Nothing changes for readers yet.
+
 ## 1.0.302 — 2026-10-28
 
 Behind the scenes: Formula 3's rounds on the calendar now carry Formula 3's own numbers. Its round in Sakhir was called off in March and the series renumbered its season, so Monaco is round 2 and the Madrid finale round 9; Monaco's weekend also starts on its Thursday practice.
