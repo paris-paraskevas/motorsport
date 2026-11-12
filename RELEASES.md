@@ -6,7 +6,7 @@ Paddock is out of early access. Fifteen championships in one place, every sessio
 
 ## 1.0.307 — 2026-11-12
 
-Behind the scenes: the calendar now carries IndyCar's last race weekends in full, Portland to Laguna Seca with Milwaukee's practice and qualifying, and every NASCAR Cup race's practice and qualifying through the season, each at the time the series published. IndyCar's season finale goes by its own name, the Mission Foods Grand Prix of Monterey, and the Daytona Duels by theirs. Nothing changes for readers yet.
+Behind the scenes: the calendar now carries IndyCar's last race weekends in full, Portland to Laguna Seca with Milwaukee's practice and qualifying, and every NASCAR Cup race's practice and qualifying through the season, each at the time the series published; the Daytona 500, Pocono and New Hampshire races now start when NASCAR's own schedule says. IndyCar's season finale goes by its own name, the Mission Foods Grand Prix of Monterey, and the Daytona Duels by theirs. Nothing changes for readers yet.
 
 ## 1.0.304 — 2026-11-12
 
