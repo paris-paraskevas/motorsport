@@ -546,11 +546,11 @@ export function inShape(r: ResultRound | undefined): boolean {
 const dayAfter = (iso: string, days: number): string => new Date(Date.parse(`${iso}T00:00:00Z`) + days * 86_400_000).toISOString().slice(0, 10);
 
 /** The rounds a run asks for, the newest first, at most `max`: each started round while it runs and for `settleDays`
- *  after (a penalty, a disqualification), and any not yet stored in this shape. */
-export function roundsDue(rounds: readonly Pick<SeriesRoundEntry, 'round' | 'startDate' | 'endDate'>[], stored: readonly ResultRound[] | null, now: Date, max: number, settleDays = 7): number[] {
+ *  after (a penalty, a disqualification), and any not yet stored in this shape; never one rounds.json calls off. */
+export function roundsDue(rounds: readonly Pick<SeriesRoundEntry, 'round' | 'startDate' | 'endDate' | 'cancelled'>[], stored: readonly ResultRound[] | null, now: Date, max: number, settleDays = 7): number[] {
   const today = now.toISOString().slice(0, 10);
   return rounds
-    .filter(r => r.startDate <= today && (dayAfter(r.endDate, settleDays) >= today || !inShape(keptFor(stored, r))))
+    .filter(r => !r.cancelled && r.startDate <= today && (dayAfter(r.endDate, settleDays) >= today || !inShape(keptFor(stored, r))))
     .sort((a, b) => b.startDate.localeCompare(a.startDate))
     .slice(0, Math.max(0, max))
     .map(r => r.round);

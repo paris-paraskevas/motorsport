@@ -348,6 +348,11 @@ describe('what a run fetches, and what it keeps', () => {
     expect(roundsDue(rounds, [shaped(1, '2026-03-01'), shaped(2, '2026-03-08')], new Date('2026-03-30T00:00:00Z'), 10)).toEqual([4, 3]);
   });
 
+  it('never asks for a round rounds.json calls off, which has no result to store', () => {
+    const now = new Date('2026-03-18T12:00:00Z');
+    expect(roundsDue([...rounds.slice(0, 2), { ...rounds[2], cancelled: true }], null, now, 10)).toEqual([2, 1]);
+  });
+
   it('puts the fresh rounds in the stored ones’ place, by date, last season’s dropped', () => {
     const merged = mergeRounds([shaped(2, '2026-03-08')], [old(2, '2026-03-08'), old(1, '2026-03-01'), old(9, '2025-09-01'), old(3, '2025-03-16')], rounds);
     expect(merged.map(r => `${r.round} ${inShape(r)}`)).toEqual(['1 false', '2 true']);
