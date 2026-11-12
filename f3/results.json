@@ -447,7 +447,7 @@
     ]
   },
   {
-    "round": 3,
+    "round": 2,
     "name": "Monaco",
     "date": "2026-06-07",
     "sessions": [
@@ -894,7 +894,7 @@
     ]
   },
   {
-    "round": 4,
+    "round": 3,
     "name": "Barcelona-Catalunya",
     "date": "2026-06-14",
     "sessions": [
@@ -1355,7 +1355,7 @@
     ]
   },
   {
-    "round": 5,
+    "round": 4,
     "name": "Austria",
     "date": "2026-06-28",
     "sessions": [
@@ -1809,7 +1809,7 @@
     ]
   },
   {
-    "round": 6,
+    "round": 5,
     "name": "Great Britain",
     "date": "2026-07-05",
     "sessions": [
@@ -2263,7 +2263,7 @@
     ]
   },
   {
-    "round": 7,
+    "round": 6,
     "name": "Belgium",
     "date": "2026-07-19",
     "sessions": [
@@ -2724,7 +2724,7 @@
     ]
   },
   {
-    "round": 8,
+    "round": 7,
     "name": "Hungary",
     "date": "2026-07-26",
     "sessions": [
@@ -3185,7 +3185,7 @@
     ]
   },
   {
-    "round": 9,
+    "round": 8,
     "name": "Italy",
     "date": "2026-09-06",
     "sessions": [
@@ -3646,7 +3646,7 @@
     ]
   },
   {
-    "round": 10,
+    "round": 9,
     "name": "Spain",
     "date": "2026-09-13",
     "sessions": [

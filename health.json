@@ -37,7 +37,7 @@
     "kind": "standings",
     "status": "OK",
     "note": "",
-    "since": "2026-10-27"
+    "since": "2026-11-12"
   },
   {
     "slug": "f1",
@@ -45,7 +45,7 @@
     "kind": "results",
     "status": "OK",
     "note": "",
-    "since": "2026-10-27"
+    "since": "2026-11-12"
   },
   {
     "slug": "f1",
@@ -93,7 +93,7 @@
     "kind": "results",
     "status": "OK",
     "note": "",
-    "since": "2026-10-21"
+    "since": "2026-11-12"
   },
   {
     "slug": "f3",
@@ -101,7 +101,7 @@
     "kind": "calendar",
     "status": "OK",
     "note": "",
-    "since": "2026-10-27"
+    "since": "2026-11-12"
   },
   {
     "slug": "formula-e",
@@ -205,7 +205,7 @@
     "kind": "standings",
     "status": "OK",
     "note": "",
-    "since": "2026-10-24"
+    "since": "2026-11-12"
   },
   {
     "slug": "motogp",
@@ -213,7 +213,7 @@
     "kind": "results",
     "status": "OK",
     "note": "",
-    "since": "2026-10-24"
+    "since": "2026-11-12"
   },
   {
     "slug": "motogp",
@@ -229,7 +229,7 @@
     "kind": "standings",
     "status": "OK",
     "note": "",
-    "since": "2026-10-27"
+    "since": "2026-11-12"
   },
   {
     "slug": "nascar-cup",
@@ -237,7 +237,7 @@
     "kind": "results",
     "status": "OK",
     "note": "",
-    "since": "2026-10-27"
+    "since": "2026-11-12"
   },
   {
     "slug": "nascar-cup",
@@ -269,14 +269,14 @@
     "kind": "standings",
     "status": "OK",
     "note": "",
-    "since": "2026-10-20"
+    "since": "2026-11-12"
   },
   {
     "slug": "wec",
     "name": "FIA WEC",
     "kind": "results",
-    "status": "OK",
-    "note": "",
+    "status": "STALE",
+    "note": "fewer races than stored",
     "since": "2026-10-27"
   },
   {

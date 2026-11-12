@@ -5143,5 +5143,535 @@
         ]
       }
     ]
+  },
+  {
+    "round": 19,
+    "name": "Grand Prix Of Malaysia",
+    "date": "2026-11-01",
+    "sessions": [
+      {
+        "label": "Sprint",
+        "tables": [
+          {
+            "title": "Sprint",
+            "columns": [
+              "Pos",
+              "Rider",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Pedro Acosta",
+                "Red Bull KTM Factory Racing",
+                "20:04.098",
+                "12"
+              ],
+              [
+                "2",
+                "Marc Marquez",
+                "Ducati Lenovo Team",
+                "+0.578",
+                "9"
+              ],
+              [
+                "3",
+                "Marco Bezzecchi",
+                "Aprilia Racing",
+                "+1.310",
+                "7"
+              ],
+              [
+                "4",
+                "Ai Ogura",
+                "SuperFile Trackhouse MotoGP Team",
+                "+1.793",
+                "6"
+              ],
+              [
+                "5",
+                "Fabio Di Giannantonio",
+                "Pertamina Enduro VR46 Racing Team",
+                "+5.053",
+                "5"
+              ],
+              [
+                "6",
+                "Francesco Bagnaia",
+                "Ducati Lenovo Team",
+                "+8.330",
+                "4"
+              ],
+              [
+                "7",
+                "Brad Binder",
+                "Red Bull KTM Factory Racing",
+                "+8.484",
+                "3"
+              ],
+              [
+                "8",
+                "Diogo Moreira",
+                "Pro Honda LCR",
+                "+9.001",
+                "2"
+              ],
+              [
+                "9",
+                "Enea Bastianini",
+                "Red Bull KTM Tech3",
+                "+9.101",
+                "1"
+              ],
+              [
+                "10",
+                "Johann Zarco",
+                "Castrol Honda LCR",
+                "+9.545",
+                "0"
+              ],
+              [
+                "11",
+                "Fabio Quartararo",
+                "Monster Energy Yamaha MotoGP Team",
+                "+10.076",
+                "0"
+              ],
+              [
+                "12",
+                "Alex Rins",
+                "Monster Energy Yamaha MotoGP Team",
+                "+12.250",
+                "0"
+              ],
+              [
+                "13",
+                "Luca Marini",
+                "Honda HRC Castrol",
+                "+12.715",
+                "0"
+              ],
+              [
+                "14",
+                "Augusto Fernandez",
+                "Prima Pramac Yamaha MotoGP",
+                "+14.878",
+                "0"
+              ],
+              [
+                "15",
+                "Maverick Viñales",
+                "Red Bull KTM Tech3",
+                "+102.843",
+                "0"
+              ],
+              [
+                "16",
+                "Joan Mir",
+                "Honda HRC Castrol",
+                "+103.826",
+                "0"
+              ],
+              [
+                "17",
+                "Franco Morbidelli",
+                "Pertamina Enduro VR46 Racing Team",
+                "+105.065",
+                "0"
+              ],
+              [
+                "18",
+                "Iker Lecuona",
+                "BK8 Gresini Racing MotoGP",
+                "+116.425",
+                "0"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Grand Prix",
+        "tables": [
+          {
+            "title": "Grand Prix",
+            "columns": [
+              "Pos",
+              "Rider",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Marc Marquez",
+                "Ducati Lenovo Team",
+                "40:14.236",
+                "25"
+              ],
+              [
+                "2",
+                "Pedro Acosta",
+                "Red Bull KTM Factory Racing",
+                "+4.172",
+                "20"
+              ],
+              [
+                "3",
+                "Alex Marquez",
+                "BK8 Gresini Racing MotoGP",
+                "+5.955",
+                "16"
+              ],
+              [
+                "4",
+                "Ai Ogura",
+                "SuperFile Trackhouse MotoGP Team",
+                "+6.759",
+                "13"
+              ],
+              [
+                "5",
+                "Enea Bastianini",
+                "Red Bull KTM Tech3",
+                "+10.896",
+                "11"
+              ],
+              [
+                "6",
+                "Marco Bezzecchi",
+                "Aprilia Racing",
+                "+11.259",
+                "10"
+              ],
+              [
+                "7",
+                "Luca Marini",
+                "Honda HRC Castrol",
+                "+17.724",
+                "9"
+              ],
+              [
+                "8",
+                "Fabio Di Giannantonio",
+                "Pertamina Enduro VR46 Racing Team",
+                "+17.790",
+                "8"
+              ],
+              [
+                "9",
+                "Brad Binder",
+                "Red Bull KTM Factory Racing",
+                "+23.729",
+                "7"
+              ],
+              [
+                "10",
+                "Franco Morbidelli",
+                "Pertamina Enduro VR46 Racing Team",
+                "+25.097",
+                "6"
+              ],
+              [
+                "11",
+                "Fabio Quartararo",
+                "Monster Energy Yamaha MotoGP Team",
+                "+25.826",
+                "5"
+              ],
+              [
+                "12",
+                "Alex Rins",
+                "Monster Energy Yamaha MotoGP Team",
+                "+27.063",
+                "4"
+              ],
+              [
+                "13",
+                "Francesco Bagnaia",
+                "Ducati Lenovo Team",
+                "+32.960",
+                "3"
+              ],
+              [
+                "14",
+                "Maverick Viñales",
+                "Red Bull KTM Tech3",
+                "+34.597",
+                "2"
+              ],
+              [
+                "15",
+                "Iker Lecuona",
+                "BK8 Gresini Racing MotoGP",
+                "+38.446",
+                "1"
+              ],
+              [
+                "16",
+                "Jack Miller",
+                "Prima Pramac Yamaha MotoGP",
+                "+43.327",
+                "0"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 20,
+    "name": "Grand Prix Of Qatar",
+    "date": "2026-11-08",
+    "sessions": [
+      {
+        "label": "Sprint",
+        "tables": [
+          {
+            "title": "Sprint",
+            "columns": [
+              "Pos",
+              "Rider",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Marc Marquez",
+                "Ducati Lenovo Team",
+                "18:46.450",
+                "12"
+              ],
+              [
+                "2",
+                "Fabio Di Giannantonio",
+                "Pertamina Enduro VR46 Racing Team",
+                "+0.862",
+                "9"
+              ],
+              [
+                "3",
+                "Jorge Martin",
+                "Aprilia Racing",
+                "+1.519",
+                "7"
+              ],
+              [
+                "4",
+                "Raul Fernandez",
+                "SuperFile Trackhouse MotoGP Team",
+                "+2.700",
+                "6"
+              ],
+              [
+                "5",
+                "Johann Zarco",
+                "Castrol Honda LCR",
+                "+3.720",
+                "5"
+              ],
+              [
+                "6",
+                "Pedro Acosta",
+                "Red Bull KTM Factory Racing",
+                "+4.664",
+                "4"
+              ],
+              [
+                "7",
+                "Ai Ogura",
+                "SuperFile Trackhouse MotoGP Team",
+                "+4.858",
+                "3"
+              ],
+              [
+                "8",
+                "Enea Bastianini",
+                "Red Bull KTM Tech3",
+                "+5.582",
+                "2"
+              ],
+              [
+                "9",
+                "Iker Lecuona",
+                "BK8 Gresini Racing MotoGP",
+                "+8.082",
+                "1"
+              ],
+              [
+                "10",
+                "Diogo Moreira",
+                "Pro Honda LCR",
+                "+9.220",
+                "0"
+              ],
+              [
+                "11",
+                "Fermin Aldeguer",
+                "BK8 Gresini Racing MotoGP",
+                "+9.429",
+                "0"
+              ],
+              [
+                "12",
+                "Brad Binder",
+                "Red Bull KTM Factory Racing",
+                "+9.483",
+                "0"
+              ],
+              [
+                "13",
+                "Luca Marini",
+                "Honda HRC Castrol",
+                "+12.727",
+                "0"
+              ],
+              [
+                "14",
+                "Franco Morbidelli",
+                "Pertamina Enduro VR46 Racing Team",
+                "+12.874",
+                "0"
+              ],
+              [
+                "15",
+                "Maverick Viñales",
+                "Red Bull KTM Tech3",
+                "+13.483",
+                "0"
+              ],
+              [
+                "16",
+                "Jake Dixon",
+                "Honda HRC Castrol",
+                "+19.373",
+                "0"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Grand Prix",
+        "tables": [
+          {
+            "title": "Grand Prix",
+            "columns": [
+              "Pos",
+              "Rider",
+              "Team",
+              "Time",
+              "Pts"
+            ],
+            "rows": [
+              [
+                "1",
+                "Marco Bezzecchi",
+                "Aprilia Racing",
+                "41:29.173",
+                "25"
+              ],
+              [
+                "2",
+                "Marc Marquez",
+                "Ducati Lenovo Team",
+                "+3.083",
+                "20"
+              ],
+              [
+                "3",
+                "Raul Fernandez",
+                "SuperFile Trackhouse MotoGP Team",
+                "+3.614",
+                "16"
+              ],
+              [
+                "4",
+                "Ai Ogura",
+                "SuperFile Trackhouse MotoGP Team",
+                "+4.885",
+                "13"
+              ],
+              [
+                "5",
+                "Enea Bastianini",
+                "Red Bull KTM Tech3",
+                "+6.948",
+                "11"
+              ],
+              [
+                "6",
+                "Pedro Acosta",
+                "Red Bull KTM Factory Racing",
+                "+7.413",
+                "10"
+              ],
+              [
+                "7",
+                "Jorge Martin",
+                "Aprilia Racing",
+                "+14.023",
+                "9"
+              ],
+              [
+                "8",
+                "Fabio Di Giannantonio",
+                "Pertamina Enduro VR46 Racing Team",
+                "+15.517",
+                "8"
+              ],
+              [
+                "9",
+                "Johann Zarco",
+                "Castrol Honda LCR",
+                "+16.257",
+                "7"
+              ],
+              [
+                "10",
+                "Iker Lecuona",
+                "BK8 Gresini Racing MotoGP",
+                "+17.958",
+                "6"
+              ],
+              [
+                "11",
+                "Franco Morbidelli",
+                "Pertamina Enduro VR46 Racing Team",
+                "+20.275",
+                "5"
+              ],
+              [
+                "12",
+                "Fermin Aldeguer",
+                "BK8 Gresini Racing MotoGP",
+                "+20.576",
+                "4"
+              ],
+              [
+                "13",
+                "Maverick Viñales",
+                "Red Bull KTM Tech3",
+                "+21.095",
+                "3"
+              ],
+              [
+                "14",
+                "Jake Dixon",
+                "Honda HRC Castrol",
+                "+28.734",
+                "2"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
   }
 ]

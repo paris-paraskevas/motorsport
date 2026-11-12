@@ -12,55 +12,55 @@
         "1",
         "Andrea Kimi Antonelli",
         "Mercedes",
-        "365"
+        "390"
       ],
       [
         "2",
-        "George Russell",
-        "Mercedes",
-        "242"
+        "Max Verstappen",
+        "Red Bull Racing",
+        "279"
       ],
       [
         "3",
-        "Lewis Hamilton",
-        "Ferrari",
-        "241"
+        "George Russell",
+        "Mercedes",
+        "262"
       ],
       [
         "4",
-        "Max Verstappen",
-        "Red Bull Racing",
-        "236"
+        "Lewis Hamilton",
+        "Ferrari",
+        "261"
       ],
       [
         "5",
         "Charles Leclerc",
         "Ferrari",
-        "233"
+        "249"
       ],
       [
         "6",
         "Lando Norris",
         "McLaren",
-        "211"
+        "246"
       ],
       [
         "7",
         "Oscar Piastri",
         "McLaren",
-        "144"
+        "152"
       ],
       [
         "8",
         "Isack Hadjar",
         "Red Bull Racing",
-        "105"
+        "122"
       ],
       [
         "9",
         "Liam Lawson",
         "Racing Bulls",
-        "77"
+        "89"
       ],
       [
         "10",
@@ -88,15 +88,15 @@
       ],
       [
         "14",
-        "Nico Hülkenberg",
+        "Gabriel Bortoleto",
         "Audi",
-        "13"
+        "14"
       ],
       [
         "15",
-        "Gabriel Bortoleto",
+        "Nico Hülkenberg",
         "Audi",
-        "10"
+        "14"
       ],
       [
         "16",
@@ -130,20 +130,32 @@
       ],
       [
         "21",
+        "Ryo Hirakawa",
+        "Haas F1 Team",
+        "1"
+      ],
+      [
+        "22",
         "Lance Stroll",
         "Aston Martin",
         "0"
       ],
       [
-        "22",
+        "23",
         "Valtteri Bottas",
         "Cadillac",
         "0"
       ],
       [
-        "23",
+        "24",
         "Sergio Pérez",
         "Cadillac",
+        "0"
+      ],
+      [
+        "25",
+        "Rafael Camara",
+        "Haas F1 Team",
         "0"
       ]
     ]
@@ -159,27 +171,27 @@
       [
         "1",
         "Mercedes",
-        "607"
+        "652"
       ],
       [
         "2",
         "Ferrari",
-        "474"
+        "510"
       ],
       [
         "3",
         "Red Bull Racing",
-        "355"
+        "415"
       ],
       [
         "4",
         "McLaren",
-        "355"
+        "398"
       ],
       [
         "5",
         "Racing Bulls",
-        "102"
+        "114"
       ],
       [
         "6",
@@ -189,12 +201,12 @@
       [
         "7",
         "Haas F1 Team",
-        "30"
+        "31"
       ],
       [
         "8",
         "Audi",
-        "23"
+        "28"
       ],
       [
         "9",
