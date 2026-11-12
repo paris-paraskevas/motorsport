@@ -1,14 +1,18 @@
 import { describe, it, expect } from 'vitest';
+import { readdirSync, readFileSync } from 'node:fs';
+import path from 'node:path';
 import type { Series, Session } from '../types';
 import type { CircuitMap, MapsStore, SessionExtras, SessionsStore, SessionWeather } from '../openf1/weekend';
 import {
   askableAt,
   bandLabel,
+  built,
   calendarEntries,
   calendarMonthPages,
   carrySessions,
   escapeHtml,
   hashOf,
+  headerLine,
   isRaceLaps,
   lapsDue,
   onlyFamily,
@@ -22,6 +26,11 @@ import {
   planSync,
   raceLaps,
   resultRounds,
+  retryAfterMs,
+  retryWait,
+  RETRY_TRIES,
+  sendWithRetry,
+  siteOf,
   withSession,
   seriesPages,
   sessionKind,
@@ -736,6 +745,8 @@ describe('calendarMonthPages', () => {
     name: 'Formula 1',
     short: 'F1',
     order: 1,
+    // Formula 1's weekends have pages: content/series/f1/meta.json's site (O33).
+    sites: { f1: { family: 'F1', pages: ['results', 'standings', 'champions', 'weekends'] } },
     standings: null,
     results: null,
     calendar: [
@@ -951,5 +962,111 @@ describe('wpPaths', () => {
       { id: 3, slug: 'orphan', parent: 99, status: 'publish', content: '' },
     ]);
     expect([...paths.keys()]).toEqual(['/series/', '/series/f1/']);
+  });
+});
+
+describe("a series' setting (O33)", () => {
+  it('reads every meta.json, Formula 1 with every page built', () => {
+    const dir = path.join(process.cwd(), 'content', 'series');
+    const slugs = readdirSync(dir, { withFileTypes: true }).filter(e => e.isDirectory()).map(e => e.name);
+    expect(slugs.length).toBeGreaterThanOrEqual(15);
+    for (const slug of slugs) {
+      const meta = JSON.parse(readFileSync(path.join(dir, slug, 'meta.json'), 'utf8')) as { site?: unknown };
+      expect(() => siteOf(slug, meta.site)).not.toThrow();
+    }
+    const f1 = JSON.parse(readFileSync(path.join(dir, 'f1', 'meta.json'), 'utf8')) as { site?: unknown };
+    expect(siteOf('f1', f1.site)).toEqual({ family: 'F1', pages: ['results', 'standings', 'champions', 'weekends'] });
+  });
+
+  it('keeps the plain pages without a setting, and stops on a wrong one, naming the file', () => {
+    expect(siteOf('dtm', undefined)).toBeNull();
+    expect(siteOf('dtm', null)).toBeNull();
+    expect(siteOf('dtm', { family: 'A', pages: ['results', 'results', 'weekends'] })).toEqual({ family: 'A', pages: ['results', 'weekends'] });
+    expect(() => siteOf('dtm', 'A')).toThrow('content/series/dtm/meta.json: site must be an object');
+    expect(() => siteOf('dtm', { family: 'G', pages: [] })).toThrow('content/series/dtm/meta.json: site.family "G" is not one of F1, A, B, C, D, E');
+    expect(() => siteOf('dtm', { family: 'A' })).toThrow('site.pages must be a list');
+    expect(() => siteOf('dtm', { family: 'A', pages: ['results', 'calendar'] })).toThrow('site.pages holds "calendar", not one of results, standings, champions, weekends');
+  });
+
+  it("answers for the series' own pages and for another series' by its slug", () => {
+    const d = { slug: 'f1', sites: { f1: { family: 'F1' as const, pages: ['results' as const, 'weekends' as const] } } };
+    expect(built(d, 'results')).toBe(true);
+    expect(built(d, 'standings')).toBe(false);
+    expect(built(d, 'results', 'f2')).toBe(false);
+    expect(built({ ...d, slug: 'f2' }, 'weekends', 'f1')).toBe(true);
+    expect(built({ slug: 'f1' }, 'results')).toBe(false);
+  });
+});
+
+describe("WordPress's 429 (O33)", () => {
+  const now = Date.parse('2026-11-12T12:00:00Z');
+
+  it('reads Retry-After as seconds or as an HTTP-date, and nothing else', () => {
+    expect(retryAfterMs('120', now)).toBe(120_000);
+    expect(retryAfterMs(' 30 ', now)).toBe(30_000);
+    expect(retryAfterMs('Thu, 12 Nov 2026 12:00:30 GMT', now)).toBe(30_000);
+    expect(retryAfterMs('Thu, 12 Nov 2026 11:59:00 GMT', now)).toBe(0);
+    // Date.parse alone reads both of these as days in 2001.
+    expect(retryAfterMs('1.5', now)).toBeNull();
+    expect(retryAfterMs('-5', now)).toBeNull();
+    expect(retryAfterMs('soon', now)).toBeNull();
+    expect(retryAfterMs(null, now)).toBeNull();
+  });
+
+  it('waits as asked, 30 s when not, and stops after five tries or when asked to wait over two minutes', () => {
+    expect(retryWait('10', 1, now)).toBe(10_000);
+    expect(retryWait(null, 1, now)).toBe(30_000);
+    expect(retryWait('120', 4, now)).toBe(120_000);
+    expect(retryWait('121', 1, now)).toBeNull();
+    expect(retryWait('10', RETRY_TRIES, now)).toBeNull();
+  });
+
+  it('names the headers it was sent, its cookies left out', () => {
+    expect(headerLine(new Headers({ 'Retry-After': '30', 'Set-Cookie': 'session=secret', 'X-Ac': 'HIT' }))).toBe('retry-after=30; x-ac=HIT');
+  });
+
+  const run = async (answers: Response[]) => {
+    const waits: number[] = [];
+    const lines: [string, boolean][] = [];
+    let sent = 0;
+    const res = await sendWithRetry(async () => answers[sent++], {
+      what: 'POST /wp-json/wp/v2/pages on example.com',
+      sleep: async ms => {
+        waits.push(ms);
+      },
+      log: (line, waited) => lines.push([line, waited]),
+      now: () => now,
+    });
+    return { res, waits, lines, sent };
+  };
+
+  it('waits out a 429 and sends again', async () => {
+    const got = await run([new Response('Too Many Requests', { status: 429, headers: { 'Retry-After': '1', 'Set-Cookie': 'a=b', 'X-Ac': 'HIT' } }), new Response('{}', { status: 200 })]);
+    expect(got.res.status).toBe(200);
+    expect(got.sent).toBe(2);
+    expect(got.waits).toEqual([1000]);
+    expect(got.lines).toHaveLength(1);
+    expect(got.lines[0][1]).toBe(true);
+    expect(got.lines[0][0]).toBe(
+      '429 POST /wp-json/wp/v2/pages on example.com (try 1 of 5): Retry-After 1, waiting 1 s; headers content-type=text/plain;charset=UTF-8; retry-after=1; x-ac=HIT; body "Too Many Requests"',
+    );
+  });
+
+  it('gives up after five tries, the last answer still readable', async () => {
+    const got = await run(Array.from({ length: 6 }, () => new Response('<html>busy</html>', { status: 429 })));
+    expect(got.res.status).toBe(429);
+    expect(got.sent).toBe(RETRY_TRIES);
+    expect(got.waits).toEqual([30_000, 30_000, 30_000, 30_000]);
+    expect(got.lines.map(l => l[1])).toEqual([true, true, true, true, false]);
+    expect(got.lines[4][0]).toContain('(try 5 of 5): Retry-After not sent, no more tries;');
+    expect(await got.res.text()).toBe('<html>busy</html>');
+  });
+
+  it('does not wait when asked to wait longer than two minutes', async () => {
+    const got = await run([new Response('', { status: 429, headers: { 'Retry-After': '600' } }), new Response('{}', { status: 200 })]);
+    expect(got.res.status).toBe(429);
+    expect(got.sent).toBe(1);
+    expect(got.waits).toEqual([]);
+    expect(got.lines[0][0]).toContain('Retry-After 600, no more tries; headers content-type=text/plain;charset=UTF-8; retry-after=600; body ""');
   });
 });

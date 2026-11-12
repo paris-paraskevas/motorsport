@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import type { TitleRaceFile } from '../series-content';
-import type { ResultRound, SeriesData } from './render';
+import { siteOf, type ResultRound, type SeriesData, type SeriesSite } from './render';
 import {
   categorySlug,
   championColour,
@@ -11,7 +11,6 @@ import {
   pointsLeft,
   prose,
   recordLists,
-  ROUND2_SERIES,
   seriesChampions,
   seriesFamily,
   seriesList,
@@ -25,6 +24,10 @@ import {
   teamTallies,
   titleCounts,
 } from './series';
+
+/** Formula 1's setting as content/series/f1/meta.json writes it: every page built (O33). */
+const F1_SITE: SeriesSite = { family: 'F1', pages: ['results', 'standings', 'champions', 'weekends'] };
+const SITES = { f1: F1_SITE };
 
 const race = (round: number, name: string, date: string, rows: string[][]): ResultRound => ({
   round,
@@ -44,6 +47,7 @@ const f1: SeriesData = {
   slug: 'f1',
   name: 'Formula 1',
   season: 2026,
+  sites: SITES,
   standings: [
     { title: 'Drivers', columns: ['Pos', 'Driver', 'Team', 'Pts'], rows: drivers },
     { title: 'Constructors', columns: ['Pos', 'Constructor', 'Pts'], rows: [['1', 'Red Bull Racing', '40'], ['2', 'Ferrari', '30'], ['3', 'Haas F1 Team', '9']] },
@@ -76,7 +80,9 @@ describe('seriesOverview', () => {
   it('is the series address on the Wide template', () => {
     expect(page).toMatchObject({ path: '/series/f1/', title: 'Formula 1', template: 'page-wide' });
     expect(seriesFamily(f1).map(p => p.path)).toEqual(['/series/f1/', '/series/f1/results/', '/series/f1/standings/', '/series/f1/champions/']);
-    expect(ROUND2_SERIES.has('f1')).toBe(true);
+    // Formula 1 is drawn in round 2's design with every page built: its meta.json says so (O33).
+    const meta = JSON.parse(readFileSync(path.join(process.cwd(), 'content/series/f1/meta.json'), 'utf8')) as { site?: unknown };
+    expect(siteOf('f1', meta.site)).toEqual(F1_SITE);
   });
 
   it('carries the five tabs at their own addresses, the Calendar showing only this series, a page not yet built greyed', () => {
@@ -304,6 +310,7 @@ describe('seriesStandings', () => {
     slug: 'f1',
     name: 'Formula 1',
     season: 2026,
+    sites: SITES,
     standings: [
       {
         title: 'Drivers',
@@ -573,6 +580,7 @@ describe('seriesChampions', () => {
     name: 'Formula 1',
     short: 'F1',
     season: 2026,
+    sites: SITES,
     standings: [{ title: 'Drivers', columns: ['Pos', 'Driver', 'Team', 'Pts'], rows: [['1', 'Kimi Antonelli', 'Mercedes', '300'], ['2', 'Max Verstappen', 'Red Bull Racing', '198']] }],
     results: null,
     calendar: null,
@@ -752,6 +760,7 @@ describe('seriesTitleRace', () => {
     name: 'Formula 1',
     short: 'F1',
     season: 2026,
+    sites: SITES,
     standings: [{ title: 'Drivers', columns: ['Pos', 'Driver', 'Team', 'Pts'], rows: [['1', 'Kimi Antonelli', 'Mercedes', '300'], ['2', 'Max Verstappen', 'Red Bull Racing', '198']] }],
     results: null,
     calendar: null,
@@ -932,7 +941,8 @@ describe('seriesList', () => {
   const rounds = (n: number, month = '05') =>
     Array.from({ length: n }, (_, i) => ({ round: i + 1, name: `Round ${i + 1} Grand Prix`, startDate: `2026-${month}-${String(i * 7 + 1).padStart(2, '0')}`, endDate: `2026-${month}-${String(i * 7 + 3).padStart(2, '0')}`, venue: null }));
   const raced = (...ns: number[]) => ns.map(n => race(n, `Round ${n}`, `2026-05-0${n}`, [['1', 'Winner', 'Team', '1:00:00.000', '25']]));
-  const base = { standings: null, calendar: null, season: 2026 } as const;
+  // Every series carries every series' setting, as the publisher passes it; only Formula 1 has one.
+  const base = { standings: null, calendar: null, season: 2026, sites: SITES } as const;
   const all: SeriesData[] = [
     { ...base, slug: 'wrc', name: 'WRC', category: 'rally', colour: '#eab308', order: 9, rounds: rounds(2), results: [] },
     // Seasons over by 5 May: a result never closes a round before its dates have come.

@@ -50,9 +50,10 @@ import { fetchIndyCarSeasonResults } from '../lib/results/indycar';
 import { loadCircuits, matchCircuitEntry, normalise, venueCandidates } from '../lib/circuits';
 import contentFs from '../lib/content-fs';
 import type { CancelledRoundEntry, Series, SeriesRoundEntry } from '../lib/types';
-import { ROUND2_SERIES, seriesFamily, seriesList } from '../lib/wp/series';
+import { seriesFamily, seriesList } from '../lib/wp/series';
 import { lapChartNotes, weekendPages } from '../lib/wp/weekend';
 import {
+  built,
   calendarEntries,
   calendarMonthPages,
   carrySessions,
@@ -73,6 +74,8 @@ import {
   planSync,
   raceLaps,
   resultRounds,
+  sendWithRetry,
+  siteOf,
   withSession,
   seriesPages,
   standingsTables,
@@ -80,13 +83,15 @@ import {
   withMarker,
   wpPaths,
   MARKER,
-  WEEKEND_PAGES,
   type CalendarEntry,
   type CalendarRound,
+  type Family,
+  type FamilyKit,
   type LapsStore,
   type Page,
   type ResultRound,
   type SeriesData,
+  type SeriesSite,
   type Table,
   type WpPageRow,
 } from '../lib/wp/render';
@@ -168,14 +173,28 @@ function wordpress() {
   if (!site || !user || !password) return null;
   if (!/^https:\/\/[^/\s]+$/.test(site)) throw new Error('WP_SITE_URL must be an https origin with no path, e.g. https://example.com');
   const auth = `Basic ${Buffer.from(`${user}:${password}`).toString('base64')}`;
+  let retries = 0;
 
   async function call(method: 'GET' | 'POST', path: string, body?: unknown): Promise<{ json: unknown; totalPages: number }> {
-    const res = await fetch(`${site}/wp-json/wp/v2/${path}`, {
-      method,
-      headers: { Authorization: auth, Accept: 'application/json', ...(body === undefined ? {} : { 'Content-Type': 'application/json' }) },
-      body: body === undefined ? undefined : JSON.stringify(body),
-      signal: AbortSignal.timeout(30_000),
-    });
+    // A 429 is waited out and tried again as its Retry-After says (sendWithRetry, lib/wp/render.ts), each one logged.
+    const res = await sendWithRetry(
+      () =>
+        fetch(`${site}/wp-json/wp/v2/${path}`, {
+          method,
+          headers: { Authorization: auth, Accept: 'application/json', ...(body === undefined ? {} : { 'Content-Type': 'application/json' }) },
+          body: body === undefined ? undefined : JSON.stringify(body),
+          signal: AbortSignal.timeout(30_000),
+        }),
+      {
+        what: `${method} /wp-json/wp/v2/${path.split('?')[0]} on ${new URL(site).host}`,
+        sleep: ms => new Promise(resolve => setTimeout(resolve, ms)),
+        log: (line, waited) => {
+          if (waited) retries++;
+          log('P', line);
+        },
+        now: () => Date.now(),
+      },
+    );
     const text = await res.text();
     if (!res.ok) throw new Error(`${method} /wp-json/wp/v2/${path.split('?')[0]} answered HTTP ${res.status}: ${text.slice(0, 200)}`);
     return { json: text ? (JSON.parse(text) as unknown) : null, totalPages: Number(res.headers.get('x-wp-totalpages') ?? '1') };
@@ -185,6 +204,8 @@ function wordpress() {
 
   return {
     host: new URL(site).host,
+    /** The tries waited out after a 429 so far this run. */
+    retries: (): number => retries,
     async listPages(): Promise<WpPageRow[]> {
       const rows: WpPageRow[] = [];
       for (let page = 1, total = 1; page <= total && page <= 50; page++) {
@@ -434,14 +455,13 @@ async function f1OpenF1Sessions(out: Fetched, now: Date, season: number, endOf: 
   out.results.set('f1', { ...fresh, data: rounds });
 }
 
-/** Formula 1's weekend pages (slot O19) keep three files beside its results: each circuit's map from its latest pole
- *  lap (f1/maps.json), the forecast for each circuit racing within ten days from MET Norway (f1/forecast.json), and
- *  each finished session's weather, race control's marks and tyres from OpenF1 (f1/sessions.json). What to ask for is
- *  decided in lib/wp/render.ts (mapsDue, weekendDue, nextAsk), where it is tested; this fetches and keeps. A part
- *  OpenF1 did not give is asked for again within the hour while the session is less than a day over, then daily.
- *  `--openf1-max 0` asks OpenF1 nothing. */
+/** Formula 1's weekend pages (slot O19) keep two files beside its results from OpenF1: each circuit's map from its
+ *  latest pole lap (f1/maps.json), and each finished session's weather, race control's marks and tyres
+ *  (f1/sessions.json); the forecasts are every series' (seriesForecasts). What to ask for is decided in
+ *  lib/wp/render.ts (mapsDue, weekendDue, nextAsk), where it is tested; this fetches and keeps. A part OpenF1 did not
+ *  give is asked for again within the hour while the session is less than a day over, then daily. `--openf1-max 0`
+ *  asks OpenF1 nothing. */
 const F1_SESSIONS = 'f1/sessions.json';
-const F1_FORECAST = 'f1/forecast.json';
 const F1_MAPS = 'f1/maps.json';
 /** Maps a run draws (about three calls each), and the minutes the weekend data may take of the run's twenty. */
 const MAPS_A_RUN = 6;
@@ -465,31 +485,12 @@ async function f1Weekend(out: Fetched, now: Date, season: number): Promise<void>
   if (calendar.length === 0) return;
   const rounds = await calendarRounds(roundsFile('f1').rounds, calendar, false, themeOutlines());
   const roundOf = new Map(rounds.map(r => [r.round, r]));
-  const circuits = await loadCircuits();
   const t = now.getTime();
   const deadline = Date.now() + WEEKEND_MS;
   let changed = 0;
 
-  // MET Norway: every circuit with a session not yet over in the next ten days; the others drop out of the file.
-  const keptForecasts = readStored<Record<string, VenueForecast>>(F1_FORECAST) ?? {};
-  const soon = new Set<string>();
-  for (const e of calendar) {
-    const key = e.round === null ? null : roundOf.get(e.round)?.circuit;
-    if (key && !e.dateOnly && Date.parse(e.end) > t && Date.parse(e.start) < t + 10 * DAY_MS) soon.add(key);
-  }
-  const forecasts: Record<string, VenueForecast> = {};
-  for (const key of soon) {
-    const c = circuits[key];
-    if (!c) continue;
-    const got = await venueForecast(c.lat, c.lon, keptForecasts[key] ?? null, now);
-    if (got.value) forecasts[key] = got.value;
-    log('F', `forecast f1 ${key} ${got.status}${got.value ? ` ${got.value.steps.length} steps` : ''}`);
-  }
-  if (writeStored(F1_FORECAST, forecasts)) changed++;
-
   if (OPENF1_MAX === 0) {
     log('F', 'weekend f1 OpenF1 not asked (--openf1-max 0)');
-    log('W', `weekend f1 ${changed} files changed`);
     return;
   }
   const listed = await timed(() => spaced(() => fetchOpenF1WeekendSessions(new Date(Date.UTC(season, 0, 1)), new Date(Date.UTC(season, 11, 31)))), 60_000);
@@ -550,7 +551,7 @@ async function f1Weekend(out: Fetched, now: Date, season: number): Promise<void>
     log('F', `weekend f1 R${round} ${e.session} weather ${weather ? 'OK' : 'NONE'} marks ${marks ? JSON.stringify(marks) : 'NONE'}${racing ? ` tyres ${stints?.length ?? 0}` : ''}${extras.next ? `; again after ${extras.next.slice(0, 16)}Z` : ''}`);
   }
   if (writeStored(F1_SESSIONS, store)) changed++;
-  log('W', `weekend f1 ${asked} sessions asked; ${changed} of 3 files changed`);
+  log('W', `weekend f1 ${asked} sessions asked; ${changed} of 2 files changed`);
 }
 
 /** Formula 1's lap chart (slot O28) keeps f1/laps.json: each race's places lap by lap and its pit stops from Jolpica,
@@ -633,6 +634,53 @@ async function f1Laps(out: Fetched, now: Date, season: number): Promise<void> {
   log('W', `laps f1 ${asked} of ${due.length} races asked, ${calls} calls; ${F1_LAPS} ${changed ? 'changed' : 'unchanged'}`);
 }
 
+/** MET Norway's forecasts for every series (O33, All 4): each circuit holding a session within ten days, asked once a
+ *  run whichever series race there, from the newest answer any series' file keeps (venueForecast keeps or revalidates
+ *  it), and kept in each such series' <slug>/forecast.json, Formula 1's f1/forecast.json as before. A series racing
+ *  nowhere within ten days writes no file, or empties the one it had. */
+const forecastFile = (slug: string): string => `${slug}/forecast.json`;
+
+async function seriesForecasts(slugs: readonly string[], out: Fetched, rally: (slug: string) => boolean, now: Date): Promise<void> {
+  const circuits = await loadCircuits();
+  const outlines = themeOutlines();
+  const t = now.getTime();
+  const kept = new Map<string, Record<string, VenueForecast>>();
+  const soon = new Map<string, Set<string>>();
+  for (const slug of slugs) {
+    kept.set(slug, readStored<Record<string, VenueForecast>>(forecastFile(slug)) ?? {});
+    const calendar = out.calendar.get(slug)?.data ?? [];
+    const keys = new Set<string>();
+    soon.set(slug, keys);
+    if (!calendar.length) continue;
+    const roundOf = new Map((await calendarRounds(roundsFile(slug).rounds, calendar, rally(slug), outlines)).map(r => [r.round, r]));
+    for (const e of calendar) {
+      const key = e.round === null ? null : roundOf.get(e.round)?.circuit;
+      if (key && !e.dateOnly && Date.parse(e.end) > t && Date.parse(e.start) < t + 10 * DAY_MS) keys.add(key);
+    }
+  }
+  const answers = new Map<string, VenueForecast>();
+  for (const key of new Set([...soon.values()].flatMap(s => [...s]))) {
+    const c = circuits[key];
+    if (!c) continue;
+    const held = [...kept.values()].flatMap(f => (f[key] ? [f[key]] : [])).sort((a, b) => (a.fetched < b.fetched ? 1 : a.fetched > b.fetched ? -1 : 0))[0] ?? null;
+    const got = await venueForecast(c.lat, c.lon, held, now);
+    if (got.value) answers.set(key, got.value);
+    const who = [...soon].filter(([, s]) => s.has(key)).map(([slug]) => slug);
+    log('F', `forecast ${key} ${got.status}${got.value ? ` ${got.value.steps.length} steps` : ''} for ${who.join(', ')}`);
+  }
+  let changed = 0;
+  for (const slug of slugs) {
+    const forecasts: Record<string, VenueForecast> = {};
+    for (const key of soon.get(slug) ?? []) {
+      const v = answers.get(key);
+      if (v) forecasts[key] = v;
+    }
+    const had = readStored<unknown>(forecastFile(slug)) !== null;
+    if ((Object.keys(forecasts).length > 0 || had) && writeStored(forecastFile(slug), forecasts)) changed++;
+  }
+  log('W', `forecasts ${answers.size} circuits for ${[...soon.values()].filter(s => s.size > 0).length} series; ${changed} files changed`);
+}
+
 async function fetchEverything(slugs: string[], now: Date): Promise<Fetched> {
   const out: Fetched = { standings: new Map(), results: new Map(), calendar: new Map() };
 
@@ -656,6 +704,13 @@ async function fetchEverything(slugs: string[], now: Date): Promise<Fetched> {
   );
   const roundsOf = (slug: string) => series.get(slug)?.rounds?.rounds ?? [];
   const seasonOf = (slug: string) => series.get(slug)?.meta.season ?? HEALTH_SEASON;
+
+  // The forecasts never stop the run either: on an error the stored files stay as they were.
+  try {
+    await seriesForecasts(slugs, out, slug => series.get(slug)?.meta.category === 'rally', now);
+  } catch (err) {
+    log('F', `forecasts ERROR ${errorText(err)}: the stored forecast files stay as they were`);
+  }
 
   // Standings: the health registry (13 series in parallel, 30 s each, lib/health-core.ts).
   for (const r of await runStandingsHealth()) {
@@ -726,6 +781,14 @@ async function fetchEverything(slugs: string[], now: Date): Promise<Fetched> {
 
   return out;
 }
+
+// ── The families' pages (O33) ────────────────────────────────────────────────
+
+/** What each family draws itself: a series' meta.json names its family (site.family), and its kit draws the series'
+ *  weekends and its Results fold. Each family adds its import above and its one line here. */
+const KITS: Partial<Record<Family, FamilyKit>> = {
+  F1: { weekendPages },
+};
 
 // ── Main ─────────────────────────────────────────────────────────────────────
 
@@ -831,10 +894,16 @@ async function build(now: Date): Promise<{ pages: Page[]; health: FeedHealth[] }
   if (slugs.length === 0) throw new Error('no series found under content/series');
   const names = new Map<string, string>();
   const chips = new Map<string, { short?: string; order?: number; rally: boolean; season?: number; category?: string; colour?: string }>();
+  // Each series' setting (meta.json site, O33): its family and the pages built. A wrong value throws here, before
+  // anything is fetched or published; a family without its kit too.
+  const sites: Record<string, SeriesSite> = {};
   for (const slug of slugs) {
     const meta = await loadSeriesMeta(slug);
     names.set(slug, meta.name);
     chips.set(slug, { short: meta.shortName, order: meta.order, rally: meta.category === 'rally', season: meta.season, category: meta.category, colour: meta.color });
+    const site = siteOf(slug, (meta as { site?: unknown }).site);
+    if (site && !KITS[site.family]) throw new Error(`content/series/${slug}/meta.json: family ${site.family} has no pages yet (KITS in scripts/wp-publish.mts)`);
+    if (site) sites[slug] = site;
   }
   const outlines = themeOutlines();
 
@@ -849,7 +918,7 @@ async function build(now: Date): Promise<{ pages: Page[]; health: FeedHealth[] }
   const all: SeriesData[] = [];
   let dataChanged = 0;
   for (const slug of slugs) {
-    const d: SeriesData = { slug, name: names.get(slug) ?? slug, standings: null, results: null, calendar: null };
+    const d: SeriesData = { slug, name: names.get(slug) ?? slug, standings: null, results: null, calendar: null, sites };
     const chip = chips.get(slug);
     if (chip?.short) d.short = chip.short;
     if (chip?.order !== undefined) d.order = chip.order;
@@ -886,7 +955,8 @@ async function build(now: Date): Promise<{ pages: Page[]; health: FeedHealth[] }
     }
     const file = roundsFile(slug);
     d.rounds = await calendarRounds(file.rounds, d.calendar, chip?.rally === true, outlines);
-    if (ROUND2_SERIES.has(slug)) {
+    const site = sites[slug];
+    if (site) {
       d.about = aboutText(slug);
       d.teams = ((await loadCuratedDrivers(slug))?.teams ?? []).map(t => ({
         name: t.name,
@@ -915,17 +985,19 @@ async function build(now: Date): Promise<{ pages: Page[]; health: FeedHealth[] }
         d.titleRaces = await loadTitleRaces(slug, seasons.map(s => s.year));
       }
     }
-    // The weekend pages' data (O19), as f1Weekend and f1Laps keep it: fetched this run, or stored at --from-ref.
-    if (WEEKEND_PAGES.has(slug)) {
+    // The weekend pages' data (O19), as seriesForecasts, f1Weekend and f1Laps keep it: fetched this run, or stored at
+    // --from-ref. OpenF1's weather, marks, tyres, maps and Jolpica's laps are Formula 1's alone.
+    if (built(d, 'weekends')) {
+      const f1 = site?.family === 'F1';
       d.weekend = {
-        sessions: readStored<SessionsStore>(F1_SESSIONS) ?? {},
-        maps: readStored<MapsStore>(F1_MAPS) ?? {},
-        forecast: readStored<Record<string, VenueForecast>>(F1_FORECAST) ?? {},
-        laps: readStored<LapsStore>(F1_LAPS) ?? {},
+        sessions: f1 ? (readStored<SessionsStore>(F1_SESSIONS) ?? {}) : {},
+        maps: f1 ? (readStored<MapsStore>(F1_MAPS) ?? {}) : {},
+        forecast: readStored<Record<string, VenueForecast>>(forecastFile(slug)) ?? {},
+        laps: f1 ? (readStored<LapsStore>(F1_LAPS) ?? {}) : {},
       };
       // The answer B of 25 Oct: from Austin on, a result that differs from the order at the flag is marked from the two
       // tables alone, and the log names each race that has one.
-      for (const n of lapChartNotes(d)) {
+      for (const n of f1 ? lapChartNotes(d) : []) {
         const parts = [n.differs.length ? `placed differently in the result than at the flag: ${n.differs.join(', ')}` : '', n.unjoined.length ? `not in the classification, drawn without a finish: ${n.unjoined.join(', ')}` : ''];
         log('R', `laps ${slug} R${n.round} ${parts.filter(Boolean).join('; ')}`);
       }
@@ -940,7 +1012,10 @@ async function build(now: Date): Promise<{ pages: Page[]; health: FeedHealth[] }
     seriesList(all, now),
     ...calendarMonthPages(all, now),
     statusPage(health, checkedAt),
-    ...all.flatMap(d => (ROUND2_SERIES.has(d.slug) ? [...seriesFamily(d), ...weekendPages(d)] : seriesPages(d, now))),
+    ...all.flatMap(d => {
+      const kit = sites[d.slug] ? KITS[sites[d.slug].family] : undefined;
+      return kit ? [...seriesFamily(d, kit), ...(built(d, 'weekends') ? kit.weekendPages(d) : [])] : seriesPages(d, now);
+    }),
   ];
   log('R', `${pages.length} pages`);
   return { pages, health };
@@ -1034,7 +1109,7 @@ async function publish(pages: Page[]): Promise<boolean> {
   }
   log(
     'P',
-    `${wp.host}: ${tally.create} created, ${tally.update} updated, ${tally.same} unchanged, ${tally.conflict} conflicts, ${tally.moved} moved, ${tally.failed} failed`,
+    `${wp.host}: ${tally.create} created, ${tally.update} updated, ${tally.same} unchanged, ${tally.conflict} conflicts, ${tally.moved} moved, ${tally.failed} failed, ${wp.retries()} retries after a 429`,
   );
   return tally.failed === 0 && tally.conflict === 0 && tally.moved === 0;
 }
