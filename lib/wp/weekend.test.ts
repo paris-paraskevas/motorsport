@@ -1180,11 +1180,14 @@ describe("the shared parts' options (O33), Formula 1's by default", () => {
       round: 11,
       name: '6 Hours of Fuji',
       date: '2026-09-13',
-      sessions: [{ label: 'Race', tables: [{ title: 'Hypercar', columns: ['Pos', 'No.', 'Crew', 'Team', 'Laps', 'Time', 'Gap'], rows: [['1', '8', 'Brendon Hartley, Ryo Hirakawa, Sébastien Buemi', 'TOYOTA <RACING>', '200', '6:00:51.302', '']] }] }],
+      sessions: [{ label: 'Race', tables: [{ title: 'Hypercar', columns: ['Pos', 'No.', 'Crew', 'Team', 'Laps', 'Time', 'Gap'], rows: [['1', '8', 'Brendon Hartley, Ryo Hirakawa, Sébastien Buemi', 'TOYOTA <RACING>', '203', '6:01:01.299', '']] }] }],
     };
     const body = seasonPage({ ...three, results: [fuji] }, 2026).body;
     expect(body).toContain('<span><i class="pd-tc" style="--t:#9aa3b2"></i>#8 TOYOTA &lt;RACING&gt;</span>');
     expect(body).not.toContain('Brendon Hartley');
+    // A car without its team: the car alone.
+    const teamless: ResultRound = { ...fuji, sessions: [{ label: 'Race', tables: [{ ...fuji.sessions[0].tables[0], rows: [['1', '8', 'Brendon Hartley, Ryo Hirakawa, Sébastien Buemi', '', '203', '6:01:01.299', '']] }] }] };
+    expect(seasonPage({ ...three, results: [teamless] }, 2026).body).toContain('<span><i class="pd-tc" style="--t:#9aa3b2"></i>#8</span>');
   });
 
   it("reads a motorcycle series' riders", () => {

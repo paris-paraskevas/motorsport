@@ -15,7 +15,7 @@
 import { stepFor, symbolLabel, type ForecastStep } from '@/lib/met-norway';
 import { isMap, trackDay as trackDate, trackTimeToUtc, type DriverStints, type SessionExtras } from '@/lib/openf1/weekend';
 import { built, escapeHtml, isRaceLaps, seasonPath, seriesPath, sessionSlug, weekendPath, type CalendarEntry, type CalendarRound, type Page, type ResultRound, type SeriesData, type Table } from './render';
-import { band, codeOf, col, colourOf, dates, htmlBlock, numberOf, outline, pointsTable, raceWins, sameDriver, seatOf, sprintWeekend, tabs, teamLabel, tick, weekendPoints, wk } from './series';
+import { band, codeOf, col, colourOf, dates, htmlBlock, numberOf, outline, pointsTable, raceWins, sameDriver, seatOf, sprintWeekend, tabs, teamLabel, tick, weekendPoints, winnerLine, wk } from './series';
 
 /** The rows a session's card leads with (the operator, 22 Oct): three in practice, ten in qualifying and sprint
  *  qualifying, the eight who score in a sprint; the race's ten lead its own section. */
@@ -1033,9 +1033,8 @@ export function seasonPage(d: SeriesData, season: number, o: SeasonOptions = {})
   for (const r of rounds) {
     const w = wins.get(r.round);
     const page = weekendPath(d.slug, season, r.round);
-    // A car's win names the car and its team ("#8 TOYOTA RACING"), a driver's the driver.
     const state = w
-      ? `<span>${tick(d, w.team)}${esc(w.car ? `#${w.car} ${teamLabel(w.team)}` : w.winner)}</span>`
+      ? `<span>${tick(d, w.team)}${esc(winnerLine(w))}</span>`
       : r === current
         ? `<span class="pd-sn-next">${wk(r, 'Next', 'This weekend')}</span>`
         : '<span></span>';

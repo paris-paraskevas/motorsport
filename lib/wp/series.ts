@@ -119,8 +119,8 @@ export interface RoundWin {
 
 /** Each round's race, the last session in its running order that is not a sprint: the winner, the team and the
  *  margin. Sprints are not wins, and a sprint weekend's Saturday, when the round holds its Sprint alone, has no race.
- *  A race that classifies cars names its crew and keeps the car's number, from its first table (family C stores a
- *  table a class, the top class first). */
+ *  A race that classifies cars names its crew and keeps the car's number, from its first table: WEC and IMSA store a
+ *  table a class, the top class first; GT World one table, every cup in overall order. */
 export function raceWins(d: SeriesData): Map<number, RoundWin> {
   const out = new Map<number, RoundWin>();
   for (const r of d.results ?? []) {
@@ -149,8 +149,10 @@ export function raceWins(d: SeriesData): Map<number, RoundWin> {
 const driverWins = (wins: Map<number, RoundWin>, name: string): number => [...wins.values()].filter(w => w.winner === name).length;
 const teamWins = (wins: Map<number, RoundWin>, team: string): number => [...wins.values()].filter(w => plain(w.team) === plain(team)).length;
 const winsLabel = (n: number): string => `${n} win${n === 1 ? '' : 's'}`;
-/** A winner as a line names it: the car ("#8") where the race classifies cars, else the driver. */
+/** A winner as a line names it beside the team: the car ("#8") where the race classifies cars, else the driver. */
 const winnerName = (w: RoundWin): string => (w.car ? `#${w.car}` : w.winner);
+/** A winner as a tile names it on its own: the car with its team ("#8 TOYOTA RACING"), else the driver. */
+export const winnerLine = (w: RoundWin): string => (w.car ? [`#${w.car}`, teamLabel(w.team)].filter(Boolean).join(' ') : w.winner);
 
 // ── The frame: the band and the tabs ─────────────────────────────────────────
 
@@ -222,7 +224,7 @@ function tile(d: SeriesData, r: CalendarRound, w: RoundWin | undefined, current:
   const page = weekendOf(d, r.round);
   const month = `${calendarMonthPath(r.startDate.slice(0, 7))}#${escapeHtml(d.slug)}`;
   if (w) {
-    const won = `<span class="pd-sr-win" style="--t:${colourOf(d, w.team)}"><b>${escapeHtml(w.car ? winnerName(w) : codeOf(d, w.winner))}</b>${w.date ? dayLabel(w.date) : ''}</span>`;
+    const won = `<span class="pd-sr-win" style="--t:${colourOf(d, w.team)}"><b>${escapeHtml(w.car ? winnerLine(w) : codeOf(d, w.winner))}</b>${w.date ? dayLabel(w.date) : ''}</span>`;
     return `<a class="pd-sr-tile" href="${page ?? (built(d, 'results') ? `${seriesPath(d.slug, 'results')}#r${r.round}` : month)}">${head}${won}</a>`;
   }
   const when = dates(r.startDate, r.endDate);
@@ -391,7 +393,8 @@ function resultRow(d: SeriesData, r: ResultRound & { round: number }, race: Resu
   const summary =
     `<summary><span class="pd-rs-n">${r.round}</span><span class="pd-rs-name"><b>${escapeHtml(name)}</b><small>${where}${sprint ? ' · <em>Sprint</em>' : ''}</small></span>` +
     `${winner}${page ? `<a class="pd-rs-go" href="${page}">See weekend →</a>` : '<span></span>'}</summary>`;
-  const all = race.tables[0]?.rows.length ?? 0;
+  // Every class's table: WEC's and IMSA's races are stored a table a class.
+  const all = race.tables.reduce((n, t) => n + t.rows.length, 0);
   const more = page ? `<a class="pd-rs-all" href="${page}">All ${all} and every session on the weekend page →</a>` : '';
   const points = fold ? fold(d, r) : pointsTable(d, weekendPoints(r), sprint);
   return `<details class="pd-rs-row" id="r${r.round}" style="--t:${w ? colourOf(d, w.team) : NEUTRAL}"${open ? ' open' : ''}>${summary}<div class="pd-rs-fold">${points}${more}</div></details>`;
