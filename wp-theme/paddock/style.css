@@ -1447,3 +1447,34 @@ a.pd-sn-t:hover { border-color: var(--pd-ink); border-top-color: var(--t, var(--
 	.pd-rt-row { grid-template-columns: minmax(0, 1fr); gap: 4px; }
 	.pd-wb > span { padding: 5px 9px; font-size: .78rem; }
 }
+
+/* ── Task 2.c (O34): family C's weekends, FIA WEC, IMSA and GT World ──────────────────────────────────────────────
+   The markup is the publisher's (lib/wp/endurance.ts), as drawn on Endurance Weekend Drafts: a car's number large,
+   its crew on one line and its team (C2); the line for a session called off; a class's leader on a session's card. */
+.pd-ec-tbl th.no, .pd-ec-tbl td.no { text-align: left; white-space: nowrap; }
+.pd-ec-tbl td.no { font-size: 1rem; font-weight: 800; font-stretch: 80%; vertical-align: middle; }
+.pd-ec-tbl td.crew { min-width: 220px; }
+.pd-ec-tbl .cup { white-space: nowrap; }
+/* Every column but the crew's keeps one width, so two tables under each other (Qualifying, then Hyperpole) line up. */
+.pd-ec-tbl th.no { width: 64px; }
+.pd-ec-tbl th.tm { width: 27%; }
+.pd-ec-tbl th.t { width: 92px; }
+.pd-ec-tbl th.n { width: 58px; }
+.pd-ec-tbl th.cup { width: 124px; }
+.pd-ec-tbl th:first-child, .pd-ec-tbl td:first-child { white-space: nowrap; }
+.pd-ec-wins td:first-child { font-weight: 800; }
+.pd-ec-flag { margin: 0; padding: 9px 12px; border: 1.5px solid var(--pd-ink); border-left: 6px solid #ffb400; background: var(--pd-surface); font-size: .88rem; font-weight: 700; }
+.pd-ec-part { display: flex; align-items: baseline; gap: 10px; margin: 14px 0 8px; font-size: 1rem; font-weight: 800; }
+.pd-ec-part:first-child { margin-top: 0; }
+.pd-ec-part small { font-size: .8rem; font-weight: 600; color: var(--pd-muted); }
+.pd-rt-p > .pd-wk-links { margin-top: 10px; }
+/* A card's rows share their columns, so the cars and the laps line up under each other whatever the class's name. */
+.pd-sc-rows.pd-ec-rows { display: grid; grid-template-columns: max-content max-content minmax(0, 1fr) max-content; align-items: baseline; gap: 9px 10px; padding: 11px 14px; }
+.pd-sc-rows.pd-ec-rows li { display: contents; }
+.pd-ec-rows .c { font-size: .72rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: var(--pd-muted); white-space: nowrap; }
+.pd-ec-rows b { font-stretch: 80%; }
+@media (max-width: 699px) {
+	.pd-ec-tbl td.crew { min-width: 160px; }
+	/* The crew is hidden on a phone, as a driver's name is on Formula 1's cards: the car, then its lap at the edge. */
+	.pd-sc-rows.pd-ec-rows { grid-template-columns: max-content minmax(0, 1fr) max-content; }
+}

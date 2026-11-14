@@ -12,5 +12,6 @@
   "seasonPage": "2026_IMSA_SportsCar_Championship",
   "officialStandingsUrl": "https://www.imsa.com/standings",
   "officialSite": "https://www.imsa.com/",
-  "watch": { "service": "IMSA", "url": "https://www.imsa.com/" }
+  "watch": { "service": "IMSA", "url": "https://www.imsa.com/" },
+  "site": { "family": "C", "pages": ["results", "weekends"] }
 }

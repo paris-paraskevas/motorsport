@@ -11,5 +11,6 @@
   "seasonPage": "2026_FIA_World_Endurance_Championship",
   "officialStandingsUrl": "https://www.fiawec.com/en/page/manufacturers-classification",
   "officialSite": "https://www.fiawec.com/",
-  "watch": { "service": "FIAWEC+", "url": "https://plus.fiawec.com/en" }
+  "watch": { "service": "FIAWEC+", "url": "https://plus.fiawec.com/en" },
+  "site": { "family": "C", "pages": ["results", "weekends"] }
 }
