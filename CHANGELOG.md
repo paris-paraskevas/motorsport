@@ -4,6 +4,45 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.307 — 2026-11-12
+
+### O34 (Task 2.c), the shared fix before family C's pages: a car's win read from a Crew column, and a family's own Overview standings
+
+Family C's pages (Task 2.c's second PR) were planned in plan mode and approved on 12 Nov with three answers: Standings and Champions are drawn first and built in a PR of their own; this shared fix is a small PR of its own first, announced at the desk (the batch plan's rule for a change to the groundwork); the missing timetables are curated from the official sites. Turning family C's pages on runs them through series.ts's Overview and Results and weekend.ts's season page, which found a winner only in a Driver or Rider column (series.ts `raceWins`). Family C's races classify cars that crews share (C2's Pos, No., Crew, Team, #1194), so every family C round would have read as not run: "8 rounds · 0 run", no winner on a tile, a Results row or the Last race card. Readers see no change: no series with a Crew table has its pages turned on yet, so with the stored data, and with family C's refilled data swapped in, `next` and this branch render the same 214 pages byte for byte.
+
+- **lib/wp/series.ts:**
+  - `raceWins` also reads a Crew column, from the race's first table: the crew as the winner and the car's number kept (`RoundWin.car`, from "No."). WEC and IMSA store a table a class, the top class first; GT World one table, every cup in overall order.
+  - A car's win is named "#8" beside its team on the Last race card and a Results row (`winnerName`), and "#8 TOYOTA RACING" on the Overview's round tiles (`winnerLine`), as the plan has it; a driver's win reads as before.
+  - A Results row's "All N" counts every class's table (Fuji: 35 cars in two classes, where the top class's table alone gave 17); Formula 1 stores one table a session, so its rows are unchanged.
+  - `seriesOverview` takes the family's standings block (`FamilyKit.overviewStandings`), Formula 1's drivers and constructors without it, and `seriesFamily` passes it. Family C's standings are kept by class (WEC four tables, IMSA eleven, GT World six), which Formula 1's two tables do not fit.
+- **lib/wp/weekend.ts:** `seasonPage`'s tile names a car's win with its team (`winnerLine`: "#8 TOYOTA RACING", or "#8" alone for a car without its team), as the Endurance Weekend Drafts' S draws it.
+- **lib/wp/render.ts:** `FamilyKit.overviewStandings`, optional, its markup escaped by the kit.
+- **scripts/wp-publish.mts:** the registry's comment names the new hook (a comment only).
+- **Tests** (7 new: 6 in series.test.ts, 1 in weekend.test.ts), on Fuji's rows as #1194's fetch step stores them (a local fill of 12 Nov):
+  - a Crew race's winner, team and car, and a driver's race keeps no car whatever its other columns;
+  - the round counted as run, and the car named on the Last race card and a Results row, with its team on the Overview's tile and the season page's tile (the car alone without a team);
+  - every class's cars counted in "All N";
+  - a crew left unread still counting by its car;
+  - a feed's car, crew and team kept as text;
+  - the family's Overview block, or none, Formula 1's by default.
+- **Reviewed** on the operator's "Yes, under 60%" (12 Nov): one fresh-context Sonnet reader, about 190,000 tokens and 90 tool calls by its own estimate. Its last message was cut by a network error, but its written report was whole: mergeable after fixes, 0 blockers, 3 should-fix, 8 nits. It rendered `next` and this branch on the stored and the refilled data (byte-identical both), and a scratch copy with family C turned on.
+- **Folded:**
+  - F1: the Overview's tile named a car's win without its team, where the plan has the car and the team (`winnerLine`).
+  - F3: a Results row's "All N" counted the top class alone.
+  - F6: GT World keeps one table, not a table a class (the comments and these records).
+  - F7: the test's Fuji rows now as the fetch stores them (203 laps, 6:01:01.299; they had been made up).
+  - F8, in part: the season tile's trailing space for a car without a team.
+  - F9: three tests (a crew left unread, a driver race with a car number column, a feed's markup).
+  - F10: the comments. F11: the version note and the Reviewed line.
+- **Accepted, with reasons:** F8's other half. A Crew row without its car would name the crew's last word on a tile (`codeOf`), but #1194's parsers always write the car: none of the 7,695 rows of the local fill is without one.
+- **Found, for family C's pages (the next PR), with the defaults taken:**
+  - F2: with Crew winners read, `aside`'s default championship box now draws for a family C weekend, from the first stored standings table, unspelled and without its class (WEC's "Hypercar · Drivers" in capitals, IMSA's crews run together). Family C's kit passes its own `champ`, as the plan draws it.
+  - F4: a GT World Sprint Cup round with Race 1 alone stored reads as run with Race 1's winner until Race 2 is stored. The 2026 season is over; this matters from 2027.
+  - F5: a kit without `overviewStandings` gets Formula 1's block. Family C's kit sets it to '' until its Standings are drawn.
+  - The team colours: WEC's drivers.json names its teams otherwise than the results ("Toyota Gazoo Racing #8 (Hypercar)" against "TOYOTA RACING"), so a car's win is drawn in the neutral grey until the colours are joined.
+- **Found, not changed:** two tests of the old app's designer (components/designer/PageDesigner.test.tsx, P2.2 and P2.24 A) time out at 5 s in the full suite run four workers wide, and pass alone (57 tests); P2.2 times out on `next` (b6ff1c6d) too, without this change.
+- **Version:** 1.0.307, taken at merge: `next` was at 1.0.306 (#1196). #1197 and #1200, which claimed 1.0.307, and #1198 (1.0.308) take the next free numbers at their own merges.
+
 ## 1.0.306 — 2026-11-12
 
 ### Records: sessions 71 and 72 (the desk)

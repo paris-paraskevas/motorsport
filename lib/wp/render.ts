@@ -915,6 +915,10 @@ export interface FamilyKit {
   /** The fold under a round's row on the Results page: the weekend's points as the family counts them, '' for none;
    *  without it, Formula 1's sprint and race points. */
   resultsFold?(d: SeriesData, r: ResultRound): string;
+  /** The Overview's standings block as markup, its text escaped by the kit, '' for none; without it, Formula 1's
+   *  drivers' top ten beside the constructors, which a series whose standings are kept by class does not fit (family C,
+   *  O34). */
+  overviewStandings?(d: SeriesData): string;
 }
 
 export interface SeriesTeam {
