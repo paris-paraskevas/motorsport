@@ -1,6 +1,6 @@
 // Family B's data (slot O35): IndyCar, NASCAR Cup and Formula E, every session of a round from each series' own results
 // (the operator's answers of 12 Nov: indycar.com's results service, NASCAR's race feed, fiaformulae.com's result pages),
-// every name spelled as the series' drivers.json spells it. Pure, as render.ts: the sources' answers in, the stored
+// each name as the series' drivers.json spells it when every word matches. Pure, as render.ts: the sources' answers in, the stored
 // shapes out. The publisher (scripts/wp-publish.mts, family B's block) fetches and keeps them; the pages that read them
 // join this file in O35's third PR.
 //
@@ -210,8 +210,9 @@ interface IndyCarRecord {
   IsDeleted?: unknown;
 }
 
-/** "+0.8731" from IndyCar's Difference; '' for the leader's "--.----" and a lapped car's "-". */
-const icGap = (d: unknown): string => (/^\d+(\.\d+)?$/.test(clean(d)) ? `+${clean(d)}` : '');
+/** "+0.8731" from IndyCar's Difference, "+1:01.9774" from the "01:01.9774" it writes past a minute (St. Petersburg 2026);
+ *  '' for the leader's "--.----" and a lapped car's "-". */
+const icGap = (d: unknown): string => (/^\d+(?::\d{2})*(?:\.\d+)?$/.test(clean(d)) ? `+${clock(d)}` : '');
 
 /**
  * One session from EventsSessionDetails' answer: its rows as classified, its day (SessionDate "7/20/2026" as YYYY-MM-DD)
@@ -393,7 +394,8 @@ const carOf = (v: unknown): string => clean(v).replace(/^\*+/, '');
  * A weekend feed's race as a session (`label`: "Race", "Duel 1"): its classification, then each stage's top ten and the
  * points it paid ("Stage 1", "Stage 2"; the Coca-Cola 600's three); its practices and qualifying beside it in running
  * order, each car's team from the race; and the race's day. Time is the winner's race time, then each car's gap
- * (diff_time, in milliseconds), "+N laps", or its status when it stopped ("Accident"). A car that did not qualify
+ * (diff_time, in milliseconds), "+N laps" (diff_laps, or its laps against the winner's where the feed gives a car none:
+ * Austin Hill, entered for no points), or its status when it stopped ("Accident"). A car that did not qualify
  * (position 0) is left out; a practice or qualifying with no time (called off, the field set by the rule book) too.
  */
 export function nascarWeekend(raw: string, label: string, spell: Spell): { race: ResultSession | null; others: ResultSession[]; day: string | null } | null {
@@ -414,13 +416,15 @@ export function nascarWeekend(raw: string, label: string, spell: Spell): { race:
   const name = (n: unknown): string => spell(clean(n)) ?? clean(n);
   const tables: Table[] = [];
   if (finish.length) {
+    const lead = num(finish[0].laps_completed);
     const rows = finish.map(r => {
       const status = clean(r.finishing_status);
-      const down = num(r.diff_laps) ?? 0;
+      const laps = num(r.laps_completed);
+      const down = Math.max(num(r.diff_laps) ?? 0, lead !== null && laps !== null ? lead - laps : 0);
       const gap = num(r.diff_time) ?? 0;
       const time = num(r.finishing_position) === 1 ? clock(race.total_race_time) : status && !/^running$/i.test(status) ? status : down > 0 ? lapsDown(down) : gap > 0 ? `+${seconds(gap / 1000)}` : '';
       const grid = num(r.starting_position);
-      return [String(num(r.finishing_position)), name(r.driver_fullname), clean(r.team_name), grid && grid > 0 ? String(grid) : '', num(r.laps_completed) === null ? '' : String(num(r.laps_completed)), time, String(num(r.points_earned) ?? '')];
+      return [String(num(r.finishing_position)), name(r.driver_fullname), clean(r.team_name), grid && grid > 0 ? String(grid) : '', laps === null ? '' : String(laps), time, String(num(r.points_earned) ?? '')];
     });
     tables.push({ title: label, columns: RACE_COLUMNS, rows });
     const stages = (Array.isArray(race.stage_results) ? race.stage_results : []).filter(isObj).sort((a, b) => (num(a.stage_number) ?? 0) - (num(b.stage_number) ?? 0));
@@ -462,6 +466,17 @@ export function nascarWeekend(raw: string, label: string, spell: Spell): { race:
 /** Formula E's season number on its site: season 12 is the 2025-26 championship, our 2026. */
 export const feSeason = (season: number): number => season - 2014;
 
+/** Whether the page's round is rounds.json's: a word of the slug's place ("12-shanghai", "2-ciudad-de-mexico") among the
+ *  words of the round's name ("Mexico City E-Prix"), so a round Formula E numbers otherwise (a race called off, the
+ *  rounds after it moved up) is left as stored, never kept under another round's name. The two races of one place pass
+ *  either way. */
+export function feSlugFits(slug: string, name: string): boolean {
+  const words = new Set(nameKey(name).split(' '));
+  return nameKey(slug.replace(/^\d+-/, '').replace(/-/g, ' '))
+    .split(' ')
+    .some(w => w.length > 2 && words.has(w));
+}
+
 /** The season's rounds as the results page links them ("12-shanghai"), keyed by their number. */
 export function feRounds(html: string, feSeasonNumber: number): Map<number, string> {
   const $ = cheerio.load(html);
@@ -501,8 +516,9 @@ export function feSessions(html: string, slug: string): { key: string; label: st
 /**
  * One session's table from its result page, read by its headings (Pos, Driver, Team, Grid, Time, Gap, Pts: the page
  * repeats Time and Pts for its narrow layout, the first is read). A race's lapped car "+1 lap" where the page writes
- * "1 Lap"; a car the page lists unplaced keeps its "—". The driver is the link to his page; the team as teamSpeller
- * spells Formula E's capitals. Null when the page holds no such table.
+ * "1 Lap"; a car the page lists unplaced keeps what the page writes ("—", "DSQ"). The driver is the link to his page (a
+ * row without one is left out: none in 2026); the team as teamSpeller spells Formula E's capitals. Null when the page
+ * holds no such table.
  */
 export function feTable(html: string, kind: FeKind, title: string, spell: Spell, team: (name: string) => string): Table | null {
   const $ = cheerio.load(html);
@@ -520,7 +536,7 @@ export function feTable(html: string, kind: FeKind, title: string, spell: Spell,
     const cells = $(tr).children('td, th');
     if (cells.length < heads.length) return;
     const cell = (i: number): string => (i < 0 ? '' : clean(cells.eq(i).text()));
-    const place = /^\d+/.exec(cell(pos))?.[0] ?? (/^[—–-]/.test(cell(pos)) ? '—' : '');
+    const place = /^\d+/.exec(cell(pos))?.[0] ?? (/^[—–-]/.test(cell(pos)) ? '—' : cell(pos));
     const named = clean(cells.eq(driver).find('a[href*="/drivers/"]').first().text());
     if (!place || !named) return;
     const head = [place, spell(named) ?? named, team(cell(club))];
@@ -561,10 +577,20 @@ export function roundsDue(rounds: readonly Pick<SeriesRoundEntry, 'round' | 'sta
 const keptFor = (stored: readonly ResultRound[] | null, e: Pick<SeriesRoundEntry, 'round' | 'startDate' | 'endDate'>): ResultRound | undefined =>
   (stored ?? []).find(r => r.round === e.round && r.date !== null && nearRound(r.date, e, 7, 7));
 
+/** Each session a stored round in this shape holds that a fresh one lacks, or holds with fewer tables: an answer that came
+ *  back empty (a feed's error page, a session with no rows) is no whole fetch. */
+export function lacking(fresh: ResultRound, stored: ResultRound | undefined): string[] {
+  if (!stored || !inShape(stored)) return [];
+  const tables = (r: ResultRound) => new Map([...r.sessions, ...(r.others ?? [])].map(s => [s.label, s.tables.length]));
+  const now = tables(fresh);
+  return [...tables(stored)].filter(([label, n]) => (now.get(label) ?? 0) < n).map(([label]) => label);
+}
+
 /** The season's stored rounds with the fresh ones in their place, by date then round: a round is replaced whole, as only
- *  a whole fetch is kept. A stored round no round of the season's rounds.json dates (last season's) is dropped. */
+ *  a whole fetch is kept, and never by one lacking a session the stored one holds (lacking). A stored round no round of
+ *  the season's rounds.json dates (last season's) is dropped. */
 export function mergeRounds(fresh: readonly ResultRound[], stored: readonly ResultRound[] | null, rounds: readonly Pick<SeriesRoundEntry, 'round' | 'startDate' | 'endDate'>[]): ResultRound[] {
   const out = new Map(rounds.flatMap(e => keptFor(stored, e) ?? []).map(r => [r.round as number, r]));
-  for (const f of fresh) if (f.round !== null) out.set(f.round, f);
+  for (const f of fresh) if (f.round !== null && lacking(f, out.get(f.round)).length === 0) out.set(f.round, f);
   return [...out.values()].sort((a, b) => (a.date ?? '').localeCompare(b.date ?? '') || (a.round ?? 0) - (b.round ?? 0));
 }

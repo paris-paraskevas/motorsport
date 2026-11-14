@@ -5,12 +5,14 @@ import {
   feRounds,
   feSeason,
   feSessions,
+  feSlugFits,
   feTable,
   inShape,
   indycarEvents,
   indycarLabel,
   indycarRound,
   indycarSession,
+  lacking,
   matchByName,
   mergeRounds,
   nameKey,
@@ -118,6 +120,17 @@ describe('IndyCar: indycar.com’s results service', () => {
     expect(row(got?.table, 'Scott Dixon')).toMatchObject({ Time: '+7 laps' });
     expect(row(got?.table, 'Caio Collet')).toMatchObject({ Pos: '25', Grid: '15', Laps: '17', Time: 'Contact', Pts: '5' });
     expect(got?.table.rows.reduce((n, r) => n + Number(r[6]), 0)).toBe(497);
+  });
+
+  // St. Petersburg's race as indycar.com answered it on 14 Nov 2026: a gap past a minute is written as a clock.
+  it('reads a gap past a minute as IndyCar writes it, a clock', () => {
+    const car = (pos: number, name: string, elapsed: string, difference: string) => ({ PositionFinish: pos, PositionStart: pos, DriverName: name, TeamName: 'T', LapsComplete: 100, LapsDown: 0, Status: 'Running', ElapsedTime: elapsed, Difference: difference, PointsEarned: 10 });
+    const raw = JSON.stringify({ SessionDate: '3/1/2026', SessionType: 'R', TrackType: 'S', records: [
+      car(1, 'Alex Palou', '01:52:21.6997', '--.----'),
+      car(16, 'Alexander Rossi', '01:53:11.3124', '49.6127'),
+      car(17, 'Caio Collet', '01:53:23.6771', '01:01.9774'),
+    ] });
+    expect(indycarSession(raw, 'Race', icSpell)?.table.rows.map(r => r[5])).toEqual(['1:52:21.6997', '+49.6127', '+1:01.9774']);
   });
 
   it('reads an oval’s qualifying by the run’s total time and its average speed; a car with none “No time”', () => {
@@ -238,6 +251,15 @@ describe('NASCAR: its race feed', () => {
     expect(qualifying.rows[0]).toEqual(['1', 'Ryan Blaney', 'Team Penske', '26.250', '137.143']);
   });
 
+  it('places a car the feed gives no laps down by its laps against the winner’s (Austin Hill, entered for no points)', () => {
+    const feed = JSON.parse(fixture('nascar-weekend-5633.json'));
+    const hill = (feed.weekend_race[0].results as { driver_fullname: string; laps_completed: number; diff_laps: number }[]).find(r => r.driver_fullname === 'Austin Hill');
+    expect(hill).toMatchObject({ laps_completed: 312, diff_laps: 0 });
+    expect(row(nascarWeekend(JSON.stringify(feed), 'Race', ncSpell)?.race?.tables[0], 'Austin Hill')).toMatchObject({ Laps: '312', Time: '' });
+    hill!.laps_completed = 304;
+    expect(row(nascarWeekend(JSON.stringify(feed), 'Race', ncSpell)?.race?.tables[0], 'Austin Hill')).toMatchObject({ Laps: '304', Time: '+8 laps' });
+  });
+
   it('leaves out a car that did not qualify and a session with no time (called off, the field set by the rule book)', () => {
     const feed = JSON.stringify({
       weekend_race: [{ race_date: '2026-02-22T15:00:00', total_race_time: '0:49:07', results: [
@@ -321,6 +343,19 @@ describe('Formula E: fiaformulae.com’s result pages', () => {
     const q = feTable(qualifying, 'qualifying', 'Qualifying', feSpell, teamSpeller(FE_TEAMS));
     expect(q?.columns).toEqual(['Pos', 'Driver', 'Team', 'Time']);
     expect(q?.rows).toEqual([['—', 'Lucas di Grassi', 'Lola Yamaha ABT', '1:10.916']]);
+    const race = `<table>${head(['PosPosition', 'Driver', 'Team', 'Grid', 'Time', 'Pts'])}${body([
+      ['1', 'Pascal Wehrlein', 'PORSCHE FORMULA E TEAM', '1', '40:30.411', '28'],
+      ['DSQ', 'Norman Nato', 'NISSAN FORMULA E TEAM', '20', 'DSQ', '0'],
+    ])}</table>`;
+    expect(feTable(race, 'race', 'Race', feSpell, teamSpeller(FE_TEAMS))?.rows.map(r => r[0])).toEqual(['1', 'DSQ']);
+  });
+
+  it('takes a page’s round only where its place is in the round’s name', () => {
+    expect(feSlugFits('12-shanghai', 'Shanghai E-Prix — Race 1')).toBe(true);
+    expect(feSlugFits('2-ciudad-de-mexico', 'Mexico City E-Prix')).toBe(true);
+    expect(feSlugFits('1-sao-paulo', 'São Paulo E-Prix')).toBe(true);
+    expect(feSlugFits('11-sanya-fenghuang-international-apt', 'Sanya E-Prix')).toBe(true);
+    expect(feSlugFits('4-jeddah', 'Mexico City E-Prix')).toBe(false);
   });
 });
 
@@ -356,6 +391,28 @@ describe('what a run fetches, and what it keeps', () => {
   it('puts the fresh rounds in the stored ones’ place, by date, last season’s dropped', () => {
     const merged = mergeRounds([shaped(2, '2026-03-08')], [old(2, '2026-03-08'), old(1, '2026-03-01'), old(9, '2025-09-01'), old(3, '2025-03-16')], rounds);
     expect(merged.map(r => `${r.round} ${inShape(r)}`)).toEqual(['1 false', '2 true']);
+  });
+
+  it('never puts a round fetched again in place of a stored one it lacks a session or a table of', () => {
+    const full = (): ResultRound => ({
+      ...shaped(3, '2026-03-15'),
+      others: [
+        { label: 'Practice 1', tables: [{ title: 'Practice 1', columns: ['Pos'], rows: [['1']] }] },
+        { label: 'Qualifying', tables: [{ title: 'Qualifying', columns: ['Pos'], rows: [['1']] }, { title: 'Round 2', columns: ['Pos'], rows: [['1']] }] },
+      ],
+    });
+    const noPractice = { ...full(), others: full().others?.slice(1) };
+    const oneQualifyingTable = { ...full(), others: [full().others![0], { ...full().others![1], tables: full().others![1].tables.slice(0, 1) }] };
+    expect(lacking(noPractice, full())).toEqual(['Practice 1']);
+    expect(lacking(oneQualifyingTable, full())).toEqual(['Qualifying']);
+    expect(lacking(noPractice, old(3, '2026-03-15'))).toEqual([]);
+    expect(lacking(noPractice, undefined)).toEqual([]);
+    const stored = [full()];
+    expect(mergeRounds([noPractice], stored, rounds)[0]).toBe(stored[0]);
+    expect(mergeRounds([oneQualifyingTable], stored, rounds)[0]).toBe(stored[0]);
+    const again = full();
+    expect(mergeRounds([again], stored, rounds)[0]).toBe(again);
+    expect(mergeRounds([noPractice], [old(3, '2026-03-15')], rounds)[0]).toBe(noPractice);
   });
 
   // Formula E's 2026 season opened in São Paulo on 6 December 2025: a season is told by its rounds' dates, not the year.
