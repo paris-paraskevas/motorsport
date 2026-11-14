@@ -14,7 +14,7 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
-## #1199 · 1.0.309 · O34 (the shared fix before family C's pages: a car's win read from a Crew column, and a family's own Overview standings) · opened 2026-11-12 into `next` on the operator's "Push and open PR", Task 2.c's PR 2a, on PR 2's plan approved in plan mode on 12 Nov with three answers ("Draw first, build in PR 3", "A small PR first", "Curate from official sites"); announced at the desk before the build; reviewed on "Yes, under 60%" (12 Nov), the review folded on "Try again" (14 Nov, after a network error cut the reviewer's last message); 1.0.309 provisional; the merge on the word
+## #1199 · 1.0.307 · O34 (the shared fix before family C's pages: a car's win read from a Crew column, and a family's own Overview standings) · opened 2026-11-12 into `next` on the operator's "Push and open PR", Task 2.c's PR 2a, on PR 2's plan approved in plan mode on 12 Nov with three answers ("Draw first, build in PR 3", "A small PR first", "Curate from official sites"); announced at the desk before the build; reviewed on "Yes, under 60%" (12 Nov), the review folded on "Try again" (14 Nov, after a network error cut the reviewer's last message); merged on the operator's "Merge #1199" (14 Nov) at 1.0.307, the next free number (`next` at 1.0.306)
 **A car's win.** `raceWins` found a winner only in a Driver or Rider column. Family C's races classify cars (C2's Crew column), so its rounds would have read as not run once its pages are turned on. It now reads Crew too and keeps the car, named "#8" beside its team on the Last race card and a Results row and "#8 TOYOTA RACING" on a tile; a Results row counts every class's cars; a family can draw its own Overview standings block.
 - **Readers see:** nothing. No series with a Crew table has its pages turned on; `next` and this branch render the same 214 pages, with the stored data and with family C's refilled data.
 - **Editors get:** nothing.
@@ -25,7 +25,7 @@ Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), fro
   - `scripts/wp-publish.mts` · the registry's comment names the new hook (a comment only).
   - `lib/wp/series.test.ts` · 6 new tests: a Crew race's winner, team and car (a driver's race keeps none, whatever its other columns); the round counted and the car named on the Overview and a Results row, with every class's cars in "All N"; a crew left unread; a feed's markup kept as text; the family's Overview block or none, Formula 1's by default.
   - `lib/wp/weekend.test.ts` · 1 new test: the season page's tile for a car's win, and for a car without its team.
-  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json`, `docs/pull-requests.md` · 1.0.309, provisional; taken at merge.
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json`, `docs/pull-requests.md` · 1.0.307, taken at merge.
 - **Verified,** after the review's fold (b9c36029; the records commit after it touches only `CHANGELOG.md` and `docs/pull-requests.md`):
   - `npx tsc --noEmit` exit 0; `npm run lint` 0 errors, the 2 known `_encoding` warnings;
   - `npm test` 3,039 of 3,040: the one failure is components/designer/PageDesigner.test.tsx P2.2, "Test timed out in 5000ms.", as on `next` (b6ff1c6d) without this change; it passes alone (57 tests). Not changed;

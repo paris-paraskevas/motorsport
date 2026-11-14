@@ -4,7 +4,7 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
-## 1.0.309 — 2026-11-12
+## 1.0.307 — 2026-11-12
 
 ### O34 (Task 2.c), the shared fix before family C's pages: a car's win read from a Crew column, and a family's own Overview standings
 
@@ -41,7 +41,7 @@ Family C's pages (Task 2.c's second PR) were planned in plan mode and approved o
   - F5: a kit without `overviewStandings` gets Formula 1's block. Family C's kit sets it to '' until its Standings are drawn.
   - The team colours: WEC's drivers.json names its teams otherwise than the results ("Toyota Gazoo Racing #8 (Hypercar)" against "TOYOTA RACING"), so a car's win is drawn in the neutral grey until the colours are joined.
 - **Found, not changed:** two tests of the old app's designer (components/designer/PageDesigner.test.tsx, P2.2 and P2.24 A) time out at 5 s in the full suite run four workers wide, and pass alone (57 tests); P2.2 times out on `next` (b6ff1c6d) too, without this change.
-- **Version:** 1.0.309, provisional. Four PRs are open into `next`: #1197 and #1200 both claim 1.0.307, and #1198 claims 1.0.308. The number is taken at merge.
+- **Version:** 1.0.307, taken at merge: `next` was at 1.0.306 (#1196). #1197 and #1200, which claimed 1.0.307, and #1198 (1.0.308) take the next free numbers at their own merges.
 
 ## 1.0.306 — 2026-11-12
 
