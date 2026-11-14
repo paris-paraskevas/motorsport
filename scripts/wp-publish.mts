@@ -43,11 +43,9 @@ import type { OF1RaceControl, OF1Session, OF1Stint, OF1Weather } from '../lib/op
 import { circuitMap, driverStints, finishedAt, poleLap, sessionMarks, weatherSummary, type MapsStore, type SessionExtras, type SessionsStore } from '../lib/openf1/weekend';
 import { venueForecast, type VenueForecast } from '../lib/met-norway';
 import { fetchDTMSeasonResults } from '../lib/results/dtm';
-import { fetchNascarCupSeasonResults } from '../lib/results/nascar-cup';
 import { fetchNlsSeasonResults } from '../lib/results/nls';
 import { buildEventResultsUrl, discoverGtWorldEventListings, roundForGtWorldEvent } from '../lib/results/gt-world';
 import { extractLiveProps, parseSelectOptions } from '../lib/results/wec';
-import { fetchIndyCarSeasonResults } from '../lib/results/indycar';
 import { loadCircuits, matchCircuitEntry, normalise, venueCandidates } from '../lib/circuits';
 import contentFs from '../lib/content-fs';
 import type { CancelledRoundEntry, Series, SeriesRoundEntry } from '../lib/types';
@@ -120,6 +118,7 @@ import {
   type WpPageRow,
 } from '../lib/wp/render';
 import { decideFeed, resultsShrank, statusPage, type FeedHealth, type FeedKind, type Fresh } from '../lib/wp/health';
+import * as familyB from '../lib/wp/family-b';
 
 const argv = process.argv.slice(2);
 // An unknown argument, or a flag missing its value, stops the run: "--only" with nothing after it would publish every page.
@@ -1082,7 +1081,8 @@ async function fetchEverything(slugs: string[], now: Date): Promise<Fetched> {
     const rounds = payload === null || payload === undefined ? [] : resultRounds(slug, payload, roundsOf(slug));
     out.results.set(slug, { data: rounds.length ? rounds : null, error: error ?? (rounds.length ? undefined : 'empty answer') });
   };
-  for (const slug of ['f2', 'f3', 'motogp', 'wsbk', 'formula-e', 'wrc']) {
+  // Formula E's from its own result pages in family B's block (O35), with IndyCar's and NASCAR's.
+  for (const slug of ['f2', 'f3', 'motogp', 'wsbk', 'wrc']) {
     const r = registry.get(slug);
     setResults(slug, r?.value ?? null, r?.error);
   }
@@ -1111,21 +1111,248 @@ async function fetchEverything(slugs: string[], now: Date): Promise<Fetched> {
   } catch (err) {
     log('F', `laps f1 ERROR ${errorText(err)}: ${F1_LAPS} stays as it was`);
   }
-  // IndyCar with the curated drivers, as the Results tab passes them (teams and names).
-  const indycar = await extra('indycar', async () => fetchIndyCarSeasonResults({ drivers: await loadCuratedDrivers('indycar') }));
-  setResults('indycar', indycar.value, indycar.error);
+  // Family B (O35): IndyCar, NASCAR Cup and Formula E, every session from each series' own results (familyBResults below).
+  await familyBResults(out, now, roundsOf, seasonOf);
   const dtm = await extra('dtm', () => fetchDTMSeasonResults(seasonOf('dtm'), roundsOf('dtm')));
   setResults('dtm', dtm.value, dtm.error);
-  const nascar = await extra('nascar-cup', () =>
-    fetchNascarCupSeasonResults({ rounds: roundsOf('nascar-cup').map(r => ({ round: r.round, startDate: r.startDate, name: r.name })) }),
-  );
-  setResults('nascar-cup', nascar.value, nascar.error);
   const nls = await extra('nls', () => fetchNlsSeasonResults(seasonOf('nls')));
   setResults('nls', nls.value, nls.error);
   // Family C (O34): IMSA, GT World and WEC, every session and each race's crews (familyC above).
   await familyC(out, now, roundsOf, seasonOf);
 
   return out;
+}
+
+// ── Family B (O35): IndyCar, NASCAR Cup and Formula E ────────────────────────
+//
+// Every session of a round from each series' own results (the operator's answers of 12 Nov): indycar.com's results
+// service; NASCAR's race feed, the one nascar.com's pages read (the finish, each stage's top ten, practice and
+// qualifying, and the Duels with the Daytona 500, whose top tens score); fiaformulae.com's result pages. Each name as
+// the series' drivers.json spells it when every word matches. A round is fetched while it runs and for a week after, or
+// until it is stored in this shape, then kept and never asked again, though spelled again every run, so an edit to
+// drivers.json reaches it. A round is kept only from a whole fetch: a request unanswered, an answer unreadable where a
+// classification is due, or the run's time running out leaves the stored round as it was, asked again next run, and a
+// round fetched again is kept only if it holds every session of the stored one. What a run asks for and keeps lives in
+// lib/wp/family-b.ts, where it is tested; the requests are made here. The three share one deadline inside the run's
+// twenty minutes; what is left waits for the next run.
+
+const FAMILY_B_MS = 4 * 60_000;
+/** Family B asks nothing once the run is this old, whatever its own deadline says: the job has twenty minutes in all. */
+const FAMILY_B_LATEST = Date.now() + 14 * 60_000;
+/** The rounds a run fetches for each, the newest first: an IndyCar event is up to twelve requests (six take about two
+ *  minutes), a Formula E round four or five pages; a NASCAR weekend is one request (three with the Duels), so a run can
+ *  take its whole season, the round in its week after the race among them. */
+const FAMILY_B_ROUNDS: Record<string, number> = { indycar: 6, 'nascar-cup': 40, 'formula-e': 6 };
+const INDYCAR_API = 'https://www.indycar.com/api/results';
+/** The NTT INDYCAR SERIES on indycar.com's results service (its own pages ask with it). */
+const INDYCAR_SERIES = 'b856a4f1-e85c-4fac-8c36-fd58d962227a';
+const NASCAR_FEED = 'https://cf.nascar.com/cacher';
+const FORMULA_E = 'https://www.fiaformulae.com/en/results-and-standings';
+const FAMILY_B_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36';
+
+/** Each host's last request, so the next waits its gap: one request at a time. */
+const familyBAsked = new Map<string, number>();
+
+/** A page or file as text, spaced `gapMs` from the last request to its host; null on any failure. */
+async function familyBText(url: string, gapMs: number): Promise<string | null> {
+  const host = new URL(url).host;
+  const wait = (familyBAsked.get(host) ?? 0) + gapMs - Date.now();
+  if (wait > 0) await new Promise(resolve => setTimeout(resolve, wait));
+  familyBAsked.set(host, Date.now());
+  try {
+    const res = await fetchUpstream(url, { headers: { 'User-Agent': FAMILY_B_UA, Accept: url.endsWith('.json') || url.includes('/api/') ? 'application/json' : 'text/html' } });
+    return res.ok ? await res.text() : null;
+  } catch {
+    return null;
+  }
+}
+
+/** drivers.json's spelling of a driver's name, and its teams' names (lib/wp/family-b.ts nameSpeller, teamSpeller). */
+async function familyBNames(slug: string): Promise<{ spell: (name: string) => string | null; team: (name: string) => string }> {
+  const teams = (await loadCuratedDrivers(slug))?.teams ?? [];
+  return { spell: familyB.nameSpeller(teams.flatMap(t => t.drivers.map(d => d.name))), team: familyB.teamSpeller(teams.map(t => t.name)) };
+}
+
+interface FamilyBRun {
+  rounds: ResultRound[];
+  due: number;
+  got: number;
+}
+
+const familyBMissed = (missed: readonly string[]): string => (missed.length ? `; ${missed.join(', ')} unanswered: kept as stored, asked again next run` : '');
+const familyBSessions = (r: ResultRound | null): string => (r ? [...r.sessions, ...(r.others ?? [])].map(s => s.label).join(', ') : 'NOTHING');
+
+/** A series' rounds as the run keeps them (lib/wp/family-b.ts mergeRounds): a round fetched again that lacks a session
+ *  of the stored one stays as stored, and the log says which; `got` counts the rounds kept from this run. */
+function familyBKept(slug: string, fresh: ResultRound[], stored: ResultRound[] | null, entries: SeriesRoundEntry[], spell: (name: string) => string | null, due: number): FamilyBRun {
+  const merged = familyB.mergeRounds(fresh, stored, entries);
+  const refused = fresh.filter(f => !merged.includes(f));
+  for (const f of refused) {
+    const lacks = familyB.lacking(f, merged.find(r => r.round === f.round));
+    log('F', `results ${slug} R${f.round} kept as stored: this answer lacks ${lacks.join(', ')}, which the stored round holds; asked again next run`);
+  }
+  return { rounds: familyB.respell(merged, spell), due, got: fresh.length - refused.length };
+}
+
+/** IndyCar: the season's events and their sessions from SeasonDropDown, each event by its name to its round, then each
+ *  of its sessions' classification. */
+async function indycarFamilyB(entries: SeriesRoundEntry[], stored: ResultRound[] | null, now: Date, deadline: number, season: number): Promise<FamilyBRun> {
+  const { spell } = await familyBNames('indycar');
+  const due = familyB.roundsDue(entries, stored, now, FAMILY_B_ROUNDS.indycar);
+  const fresh: ResultRound[] = [];
+  const list = due.length ? await familyBText(`${INDYCAR_API}/SeasonDropDown?id=${INDYCAR_SERIES}`, 1000) : null;
+  if (due.length && list === null) log('F', 'results indycar the season list did not answer');
+  const byRound = familyB.matchByName(list ? familyB.indycarEvents(list, season) : [], entries);
+  for (const round of due) {
+    if (Date.now() > deadline) {
+      log('F', 'results indycar out of time: the rest for the next run');
+      break;
+    }
+    const entry = entries.find(e => e.round === round);
+    const event = byRound.get(round);
+    if (!entry || !event) {
+      if (list !== null) log('F', `results indycar R${round} has no event of its name in IndyCar's season list (a new sponsor's name for rounds.json?)`);
+      continue;
+    }
+    const answers = new Map<number, string | null>();
+    for (const s of event.sessions) {
+      if (Date.now() > deadline) break;
+      answers.set(s.id, await familyBText(`${INDYCAR_API}/EventsSessionDetails?id=${s.id}`, 1000));
+    }
+    const got = familyB.indycarRound(entry, event, answers, spell);
+    if (got.round) fresh.push(got.round);
+    log('F', `results indycar R${round} ${event.name}: ${familyBSessions(got.round)}${familyBMissed(got.missed)}`);
+  }
+  return familyBKept('indycar', fresh, stored, entries, spell, due.length);
+}
+
+/** NASCAR: the season's races from race_list_basic.json, each round's by its day, then its weekend feed (and the Duels'
+ *  for the Daytona 500). The Duels join the round's races once the 500 is classified, its other sessions until then. */
+async function nascarFamilyB(entries: SeriesRoundEntry[], stored: ResultRound[] | null, now: Date, deadline: number, season: number): Promise<FamilyBRun> {
+  const { spell } = await familyBNames('nascar-cup');
+  const due = familyB.roundsDue(entries, stored, now, FAMILY_B_ROUNDS['nascar-cup']);
+  const fresh: ResultRound[] = [];
+  const list = due.length ? await familyBText(`${NASCAR_FEED}/${season}/1/race_list_basic.json`, 500) : null;
+  if (due.length && list === null) log('F', 'results nascar-cup the race list did not answer');
+  const byRound = familyB.nascarRoundRaces(list ? familyB.nascarRaces(list) : [], entries);
+  const feed = (id: number) => familyBText(`${NASCAR_FEED}/${season}/1/${id}/weekend-feed.json`, 500);
+  for (const round of due) {
+    if (Date.now() > deadline) {
+      log('F', 'results nascar-cup out of time: the rest for the next run');
+      break;
+    }
+    const entry = entries.find(e => e.round === round);
+    const races = byRound.get(round);
+    if (!entry || !races) {
+      if (list !== null) log('F', `results nascar-cup R${round} has no points race on its day in NASCAR's race list`);
+      continue;
+    }
+    const missed: string[] = [];
+    const raw = await feed(races.race.id);
+    const weekend = raw ? familyB.nascarWeekend(raw, 'Race', spell) : null;
+    if (!weekend) missed.push(raw ? 'the race (unreadable)' : 'the race');
+    const duels: ResultSession[] = [];
+    for (const [i, d] of races.duels.entries()) {
+      if (Date.now() > deadline) {
+        missed.push(`Duel ${i + 1} (out of time)`);
+        break;
+      }
+      const duelRaw = await feed(d.id);
+      const duel = duelRaw ? familyB.nascarWeekend(duelRaw, `Duel ${i + 1}`, spell) : null;
+      if (!duelRaw) missed.push(`Duel ${i + 1}`);
+      // The Duels run before the 500: once it is classified, a Duel's answer with no classification is no whole fetch.
+      else if (!duel?.race && weekend?.race) missed.push(`Duel ${i + 1} (unreadable)`);
+      if (duel?.race) duels.push(duel.race);
+    }
+    if (weekend?.day && !familyB.nearRound(weekend.day, entry, 1, 1)) missed.push(`the race on ${weekend.day}, outside round ${round}'s dates`);
+    let got: ResultRound | null = null;
+    if (weekend && missed.length === 0) {
+      const sessions = weekend.race ? [...duels, weekend.race] : [];
+      const others = weekend.race ? weekend.others : [...weekend.others, ...duels];
+      if (sessions.length || others.length) got = { round, name: entry.name, date: weekend.day ?? entry.endDate, sessions, ...(others.length ? { others } : {}) };
+    }
+    if (got) fresh.push(got);
+    log('F', `results nascar-cup R${round} race ${races.race.id}: ${familyBSessions(got)}${familyBMissed(missed)}`);
+  }
+  return familyBKept('nascar-cup', fresh, stored, entries, spell, due.length);
+}
+
+/** Formula E: the season's rounds as its results page links them, then each round's sessions as its race page links them. */
+async function formulaEFamilyB(entries: SeriesRoundEntry[], stored: ResultRound[] | null, now: Date, deadline: number, season: number): Promise<FamilyBRun> {
+  const { spell, team } = await familyBNames('formula-e');
+  const due = familyB.roundsDue(entries, stored, now, FAMILY_B_ROUNDS['formula-e']);
+  const fresh: ResultRound[] = [];
+  const number = familyB.feSeason(season);
+  const index = due.length ? await familyBText(`${FORMULA_E}?season=${number}`, 1500) : null;
+  if (due.length && index === null) log('F', 'results formula-e the results page did not answer');
+  const slugs = index ? familyB.feRounds(index, number) : new Map<number, string>();
+  const page = (slug: string, session: string) => familyBText(`${FORMULA_E}?season=${number}&round=${encodeURIComponent(slug)}&session=${session}`, 1500);
+  for (const round of due) {
+    if (Date.now() > deadline) {
+      log('F', 'results formula-e out of time: the rest for the next run');
+      break;
+    }
+    const entry = entries.find(e => e.round === round);
+    const slug = slugs.get(round);
+    if (!entry || !slug) {
+      if (index !== null) log('F', `results formula-e R${round} is not on Formula E's results page`);
+      continue;
+    }
+    if (!familyB.feSlugFits(slug, entry.name)) {
+      log('F', `results formula-e R${round} is ${slug} on Formula E's results page, not ${entry.name}: left as stored (are the rounds numbered as Formula E numbers them?)`);
+      continue;
+    }
+    const racePage = await page(slug, 'race');
+    const missed: string[] = racePage === null ? ['the race page'] : [];
+    const races: ResultSession[] = [];
+    const others: ResultSession[] = [];
+    for (const s of racePage ? familyB.feSessions(racePage, slug) : []) {
+      if (Date.now() > deadline) {
+        missed.push(`${s.label} on (out of time)`);
+        break;
+      }
+      const html = s.key === 'race' ? racePage : await page(slug, s.key);
+      if (html === null) {
+        missed.push(s.label);
+        continue;
+      }
+      const table = familyB.feTable(html, s.kind, s.label, spell, team);
+      if (table) (s.kind === 'race' ? races : others).push({ label: s.label, tables: [table] });
+    }
+    const got: ResultRound | null =
+      missed.length === 0 && races.length + others.length > 0 ? { round, name: entry.name, date: entry.endDate, sessions: races, ...(others.length ? { others } : {}) } : null;
+    if (got) fresh.push(got);
+    log('F', `results formula-e R${round} ${slug}: ${familyBSessions(got)}${familyBMissed(missed)}`);
+  }
+  return familyBKept('formula-e', fresh, stored, entries, spell, due.length);
+}
+
+/** Family B's results into the run, a series at a time inside one deadline. A series that answered for no due round
+ *  keeps its stored results and reads STALE. */
+async function familyBResults(out: Fetched, now: Date, roundsOf: (slug: string) => SeriesRoundEntry[], seasonOf: (slug: string) => number): Promise<void> {
+  const deadline = Math.min(Date.now() + FAMILY_B_MS, FAMILY_B_LATEST);
+  const runs: [string, typeof indycarFamilyB][] = [
+    ['indycar', indycarFamilyB],
+    ['nascar-cup', nascarFamilyB],
+    ['formula-e', formulaEFamilyB],
+  ];
+  for (const [slug, run] of runs) {
+    const started = Date.now();
+    if (started > deadline) {
+      out.results.set(slug, { data: null, error: 'out of time' });
+      log('F', `results ${slug} out of time: nothing asked, the stored results kept`);
+      continue;
+    }
+    try {
+      const got = await run(roundsOf(slug), readStored<ResultRound[]>(relOf(slug, 'results')), now, deadline, seasonOf(slug));
+      const silent = got.due > 0 && got.got === 0;
+      out.results.set(slug, { data: got.rounds.length ? got.rounds : null, partial: silent, error: silent ? 'no due round fetched' : got.rounds.length ? undefined : 'empty answer' });
+      log('F', `results ${slug} ${silent ? 'SILENT' : 'OK'} ${got.got} of ${got.due} due rounds fetched, ${got.rounds.length} kept ${Date.now() - started}ms`);
+    } catch (err) {
+      out.results.set(slug, { data: null, error: errorText(err) });
+      log('F', `results ${slug} ERROR ${errorText(err)} ${Date.now() - started}ms`);
+    }
+  }
 }
 
 // ── The families' pages (O33) ────────────────────────────────────────────────
