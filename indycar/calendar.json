@@ -219,7 +219,7 @@
     "start": "2026-05-08T13:05:00.000Z",
     "end": "2026-05-08T14:25:00.000Z",
     "dateOnly": false,
-    "event": "Sonsio Grand Prix at the Brickyard",
+    "event": "Sonsio Grand Prix",
     "session": "Practice 1",
     "round": 6,
     "location": "Indianapolis Motor Speedway Road Course, Indianapolis, IN"
@@ -228,7 +228,7 @@
     "start": "2026-05-08T17:05:00.000Z",
     "end": "2026-05-08T18:25:00.000Z",
     "dateOnly": false,
-    "event": "Sonsio Grand Prix at the Brickyard",
+    "event": "Sonsio Grand Prix",
     "session": "Practice 2",
     "round": 6,
     "location": "Indianapolis Motor Speedway Road Course, Indianapolis, IN"
@@ -237,7 +237,7 @@
     "start": "2026-05-09T14:45:00.000Z",
     "end": "2026-05-09T16:30:00.000Z",
     "dateOnly": false,
-    "event": "Sonsio Grand Prix at the Brickyard",
+    "event": "Sonsio Grand Prix",
     "session": "Qualifying",
     "round": 6,
     "location": "Indianapolis Motor Speedway Road Course, Indianapolis, IN"
@@ -246,7 +246,7 @@
     "start": "2026-05-09T20:30:00.000Z",
     "end": "2026-05-09T22:30:00.000Z",
     "dateOnly": false,
-    "event": "Sonsio Grand Prix at the Brickyard",
+    "event": "Sonsio Grand Prix",
     "session": "Sonsio Grand Prix",
     "round": 6,
     "location": "Indianapolis Motor Speedway Road Course, Indianapolis, IN"
@@ -558,38 +558,164 @@
     "location": "Nashville Superspeedway, Lebanon, TN"
   },
   {
-    "start": "2026-08-09T00:00:00.000Z",
-    "end": "2026-08-10T00:00:00.000Z",
-    "dateOnly": true,
+    "start": "2026-08-07T21:30:00.000Z",
+    "end": "2026-08-07T21:30:00.000Z",
+    "dateOnly": false,
     "event": "OnlyBulls Grand Prix of Portland",
-    "session": "IndyCar | bitnile.com Grand Prix of Portland",
+    "session": "Practice 1",
     "round": 13,
-    "location": "Portland International Raceway, 1940 N Victory Blvd, Portland, OR 97217, USA"
+    "location": "Portland International Raceway, Portland, OR"
   },
   {
-    "start": "2026-08-16T00:00:00.000Z",
-    "end": "2026-08-17T00:00:00.000Z",
-    "dateOnly": true,
+    "start": "2026-08-08T17:00:00.000Z",
+    "end": "2026-08-08T17:00:00.000Z",
+    "dateOnly": false,
+    "event": "OnlyBulls Grand Prix of Portland",
+    "session": "Practice 2",
+    "round": 13,
+    "location": "Portland International Raceway, Portland, OR"
+  },
+  {
+    "start": "2026-08-08T23:00:00.000Z",
+    "end": "2026-08-08T23:00:00.000Z",
+    "dateOnly": false,
+    "event": "OnlyBulls Grand Prix of Portland",
+    "session": "Qualifying",
+    "round": 13,
+    "location": "Portland International Raceway, Portland, OR"
+  },
+  {
+    "start": "2026-08-09T17:00:00.000Z",
+    "end": "2026-08-09T17:00:00.000Z",
+    "dateOnly": false,
+    "event": "OnlyBulls Grand Prix of Portland",
+    "session": "Warm-up",
+    "round": 13,
+    "location": "Portland International Raceway, Portland, OR"
+  },
+  {
+    "start": "2026-08-09T20:00:00.000Z",
+    "end": "2026-08-09T20:00:00.000Z",
+    "dateOnly": false,
+    "event": "OnlyBulls Grand Prix of Portland",
+    "session": "OnlyBulls Grand Prix of Portland",
+    "round": 13,
+    "location": "Portland International Raceway, Portland, OR"
+  },
+  {
+    "start": "2026-08-15T14:00:00.000Z",
+    "end": "2026-08-15T14:00:00.000Z",
+    "dateOnly": false,
     "event": "Ontario Honda Dealers Indy at Markham",
-    "session": "IndyCar | Ontario Honda Dealers Indy at Markham",
+    "session": "Practice 1",
     "round": 14,
-    "location": "Honda Indy Markham, Unionville, ON L3R 2E3, Canada"
+    "location": "Streets of Markham, Markham, ON"
   },
   {
-    "start": "2026-08-23T00:00:00.000Z",
-    "end": "2026-08-24T00:00:00.000Z",
-    "dateOnly": true,
+    "start": "2026-08-15T18:30:00.000Z",
+    "end": "2026-08-15T18:30:00.000Z",
+    "dateOnly": false,
+    "event": "Ontario Honda Dealers Indy at Markham",
+    "session": "Practice 2",
+    "round": 14,
+    "location": "Streets of Markham, Markham, ON"
+  },
+  {
+    "start": "2026-08-15T22:30:00.000Z",
+    "end": "2026-08-15T22:30:00.000Z",
+    "dateOnly": false,
+    "event": "Ontario Honda Dealers Indy at Markham",
+    "session": "Qualifying",
+    "round": 14,
+    "location": "Streets of Markham, Markham, ON"
+  },
+  {
+    "start": "2026-08-16T12:30:00.000Z",
+    "end": "2026-08-16T12:30:00.000Z",
+    "dateOnly": false,
+    "event": "Ontario Honda Dealers Indy at Markham",
+    "session": "Warm-up",
+    "round": 14,
+    "location": "Streets of Markham, Markham, ON"
+  },
+  {
+    "start": "2026-08-16T16:00:00.000Z",
+    "end": "2026-08-16T16:00:00.000Z",
+    "dateOnly": false,
+    "event": "Ontario Honda Dealers Indy at Markham",
+    "session": "Ontario Honda Dealers Indy at Markham",
+    "round": 14,
+    "location": "Streets of Markham, Markham, ON"
+  },
+  {
+    "start": "2026-08-22T13:00:00.000Z",
+    "end": "2026-08-22T13:00:00.000Z",
+    "dateOnly": false,
     "event": "Freedom 250 Grand Prix of Washington, D.C.",
-    "session": "IndyCar | Grand Prix of Washington",
+    "session": "Practice 1",
     "round": 15,
-    "location": "Washington, DC, USA"
+    "location": "Streets of Washington, Washington, DC"
+  },
+  {
+    "start": "2026-08-22T17:00:00.000Z",
+    "end": "2026-08-22T17:00:00.000Z",
+    "dateOnly": false,
+    "event": "Freedom 250 Grand Prix of Washington, D.C.",
+    "session": "Practice 2",
+    "round": 15,
+    "location": "Streets of Washington, Washington, DC"
+  },
+  {
+    "start": "2026-08-22T21:00:00.000Z",
+    "end": "2026-08-22T21:00:00.000Z",
+    "dateOnly": false,
+    "event": "Freedom 250 Grand Prix of Washington, D.C.",
+    "session": "Qualifying",
+    "round": 15,
+    "location": "Streets of Washington, Washington, DC"
+  },
+  {
+    "start": "2026-08-23T13:00:00.000Z",
+    "end": "2026-08-23T13:00:00.000Z",
+    "dateOnly": false,
+    "event": "Freedom 250 Grand Prix of Washington, D.C.",
+    "session": "Warm-up",
+    "round": 15,
+    "location": "Streets of Washington, Washington, DC"
+  },
+  {
+    "start": "2026-08-23T17:00:00.000Z",
+    "end": "2026-08-23T17:00:00.000Z",
+    "dateOnly": false,
+    "event": "Freedom 250 Grand Prix of Washington, D.C.",
+    "session": "Freedom 250 Grand Prix of Washington, D.C.",
+    "round": 15,
+    "location": "Streets of Washington, Washington, DC"
+  },
+  {
+    "start": "2026-08-28T22:00:00.000Z",
+    "end": "2026-08-28T22:00:00.000Z",
+    "dateOnly": false,
+    "event": "Snap-on Makers and Fixers 250 (Milwaukee Mile Race 1)",
+    "session": "Practice",
+    "round": 16,
+    "location": "Milwaukee Mile, West Allis, WI"
+  },
+  {
+    "start": "2026-08-29T15:00:00.000Z",
+    "end": "2026-08-29T15:00:00.000Z",
+    "dateOnly": false,
+    "event": "Snap-on Makers and Fixers 250 (Milwaukee Mile Race 1)",
+    "session": "Qualifying",
+    "round": 16,
+    "location": "Milwaukee Mile, West Allis, WI"
   },
   {
     "start": "2026-08-29T18:30:00.000Z",
     "end": "2026-08-29T21:00:00.000Z",
     "dateOnly": false,
     "event": "Snap-on Makers and Fixers 250 (Milwaukee Mile Race 1)",
-    "session": "Hy-Vee Milwaukee Mile Race 1",
+    "session": "Snap-on Makers and Fixers 250",
     "round": 16,
     "location": "Milwaukee Mile, West Allis, WI"
   },
@@ -598,17 +724,53 @@
     "end": "2026-08-30T19:30:00.000Z",
     "dateOnly": false,
     "event": "Snap-on Milwaukee Mile 250 (Race 2)",
-    "session": "Hy-Vee Milwaukee Mile Race 2",
+    "session": "Snap-on Milwaukee Mile 250",
     "round": 17,
     "location": "Milwaukee Mile, West Allis, WI"
   },
   {
-    "start": "2026-09-06T00:00:00.000Z",
-    "end": "2026-09-07T00:00:00.000Z",
-    "dateOnly": true,
-    "event": "WeatherTech Raceway Laguna Seca (Season Finale)",
-    "session": "IndyCar | Laguna Seca",
+    "start": "2026-09-04T21:00:00.000Z",
+    "end": "2026-09-04T21:00:00.000Z",
+    "dateOnly": false,
+    "event": "Mission Foods Grand Prix of Monterey",
+    "session": "Practice 1",
     "round": 18,
-    "location": "WeatherTech Raceway Laguna Seca, 1021 Monterey Salinas Hwy, Salinas, CA 93908, USA"
+    "location": "WeatherTech Raceway Laguna Seca, Monterey, CA"
+  },
+  {
+    "start": "2026-09-05T17:00:00.000Z",
+    "end": "2026-09-05T17:00:00.000Z",
+    "dateOnly": false,
+    "event": "Mission Foods Grand Prix of Monterey",
+    "session": "Practice 2",
+    "round": 18,
+    "location": "WeatherTech Raceway Laguna Seca, Monterey, CA"
+  },
+  {
+    "start": "2026-09-05T20:30:00.000Z",
+    "end": "2026-09-05T20:30:00.000Z",
+    "dateOnly": false,
+    "event": "Mission Foods Grand Prix of Monterey",
+    "session": "Qualifying",
+    "round": 18,
+    "location": "WeatherTech Raceway Laguna Seca, Monterey, CA"
+  },
+  {
+    "start": "2026-09-06T00:00:00.000Z",
+    "end": "2026-09-06T00:00:00.000Z",
+    "dateOnly": false,
+    "event": "Mission Foods Grand Prix of Monterey",
+    "session": "Final Practice",
+    "round": 18,
+    "location": "WeatherTech Raceway Laguna Seca, Monterey, CA"
+  },
+  {
+    "start": "2026-09-06T18:30:00.000Z",
+    "end": "2026-09-06T18:30:00.000Z",
+    "dateOnly": false,
+    "event": "Mission Foods Grand Prix of Monterey",
+    "session": "Mission Foods Grand Prix of Monterey",
+    "round": 18,
+    "location": "WeatherTech Raceway Laguna Seca, Monterey, CA"
   }
 ]

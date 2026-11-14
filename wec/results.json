@@ -1617,129 +1617,165 @@
             "title": "Hypercar",
             "columns": [
               "Pos",
-              "#",
-              "Drivers",
+              "No.",
+              "Crew",
               "Team",
+              "Laps",
+              "Time",
               "Gap"
             ],
             "rows": [
               [
                 "1",
                 "8",
-                "BRENDON HARTLEY, RYŌ HIRAKAWA, SÉBASTIEN BUEMI",
+                "Brendon Hartley, Ryo Hirakawa, Sébastien Buemi",
                 "TOYOTA RACING",
+                "203",
+                "6:01:01.299",
                 ""
               ],
               [
                 "2",
                 "36",
-                "JULES GOUNON, VICTOR MARTINS",
-                "ALPINE ENDURANCE TEAM",
+                "Jules Gounon, Victor Martins",
+                "Alpine Endurance Team",
+                "203",
+                "6:01:01.890",
                 "0.591"
               ],
               [
                 "3",
                 "15",
-                "KEVIN MAGNUSSEN, RAFFAELE MARCIELLO",
-                "BMW M TEAM WRT",
+                "Kevin Magnussen, Raffaele Marciello, Dries Vanthoor",
+                "BMW M Team WRT",
+                "203",
+                "6:01:07.714",
                 "6.415"
               ],
               [
                 "4",
                 "35",
-                "CHARLES MILESI, FERDINAND HABSBURG",
-                "ALPINE ENDURANCE TEAM",
+                "Charles Milesi, Ferdinand Habsburg",
+                "Alpine Endurance Team",
+                "203",
+                "6:01:08.998",
                 "7.699"
               ],
               [
                 "5",
                 "38",
-                "EARL BAMBER, SÉBASTIEN BOURDAIS",
-                "CADILLAC HERTZ TEAM JOTA",
+                "Earl Bamber, Sébastien Bourdais, Jack Aitken",
+                "Cadillac Hertz Team JOTA",
+                "203",
+                "6:01:09.441",
                 "8.142"
               ],
               [
                 "6",
                 "94",
-                "LOÏC DUVAL, MALTHE JAKOBSEN, THÉO POURCHAIRE",
-                "PEUGEOT TOTALENERGIES",
+                "Loïc Duval, Malthe Jakobsen, Théo Pourchaire",
+                "Peugeot TotalEnergies",
+                "203",
+                "6:01:11.475",
                 "10.176"
               ],
               [
                 "7",
                 "12",
-                "NORMAN NATO, WILL STEVENS",
-                "CADILLAC HERTZ TEAM JOTA",
+                "Will Stevens, Norman Nato",
+                "Cadillac Hertz Team JOTA",
+                "203",
+                "6:01:14.796",
                 "13.497"
               ],
               [
                 "8",
                 "7",
-                "KAMUI KOBAYASHI, MIKE CONWAY, NYCK DE VRIES",
+                "Mike Conway, Kamui Kobayashi, Nyck de Vries",
                 "TOYOTA RACING",
+                "203",
+                "6:01:15.505",
                 "14.206"
               ],
               [
                 "9",
                 "009",
-                "ALEX RIBERAS, MARCO SØRENSEN",
-                "ASTON MARTIN THOR TEAM",
+                "Alex Riberas, Marco Sørensen",
+                "Aston Martin THOR Team",
+                "203",
+                "6:01:25.536",
                 "24.237"
               ],
               [
                 "10",
                 "51",
-                "ALESSANDRO PIER GUIDI, ANTONIO GIOVINAZZI, JAMES CALADO",
-                "FERRARI AF CORSE",
+                "Alessandro Pier Guidi, James Calado, Antonio Giovinazzi",
+                "Ferrari AF Corse",
+                "203",
+                "6:01:27.742",
                 "26.443"
               ],
               [
                 "11",
                 "19",
-                "DANIEL JUNCADELLA, MATHIEU JAMINET, PAUL-LOUP CHATIN",
-                "GENESIS MAGMA RACING",
+                "Mathieu Jaminet, Paul-Loup Chatin, Daniel Juncadella",
+                "Genesis Magma Racing",
+                "203",
+                "6:01:46.824",
                 "45.525"
               ],
               [
                 "12",
                 "83",
-                "PHILIP HANSON, ROBERT KUBICA, YIFEI YE",
-                "AF CORSE",
+                "Yifei Ye, Robert Kubica, Philip Hanson",
+                "AF Corse",
+                "202",
+                "6:01:19.464",
                 "1 Lap"
               ],
               [
                 "13",
                 "20",
-                "RENÉ RAST, ROBIN FRIJNS",
-                "BMW M TEAM WRT",
+                "Robin Frijns, René Rast, Sheldon van der Linde",
+                "BMW M Team WRT",
+                "202",
+                "6:01:50.476",
                 "1 Lap"
               ],
               [
                 "14",
                 "007",
-                "HARRY TINCKNELL, TOM GAMBLE",
-                "ASTON MARTIN THOR TEAM",
+                "Harry Tincknell, Tom Gamble",
+                "Aston Martin THOR Team",
+                "202",
+                "6:01:51.877",
                 "1 Lap"
               ],
               [
                 "15",
                 "17",
-                "ANDRÉ LOTTERER, LUIS FELIPE DERANI, MATHYS JAUBERT",
-                "GENESIS MAGMA RACING",
+                "André Lotterer, Luis Felipe Derani, Mathys Jaubert",
+                "Genesis Magma Racing",
+                "202",
+                "6:02:44.367",
                 "1 Lap"
               ],
               [
                 "16",
                 "50",
-                "ANTONIO FUOCO, MIGUEL MOLINA, NICKLAS NIELSEN",
-                "FERRARI AF CORSE",
+                "Antonio Fuoco, Miguel Molina, Nicklas Nielsen",
+                "Ferrari AF Corse",
+                "145",
+                "4:09:01.438",
                 "58 Laps"
               ],
               [
                 "17",
                 "93",
-                "NICK CASSIDY, PAUL DI RESTA",
-                "PEUGEOT TOTALENERGIES",
+                "Paul di Resta, Stoffel Vandoorne, Nick Cassidy",
+                "Peugeot TotalEnergies",
+                "67",
+                "2:02:13.467",
                 "136 Laps"
               ]
             ]
@@ -1748,137 +1784,5145 @@
             "title": "LMGT3",
             "columns": [
               "Pos",
-              "#",
-              "Drivers",
+              "No.",
+              "Crew",
               "Team",
+              "Laps",
+              "Time",
               "Gap"
             ],
             "rows": [
               [
                 "1",
                 "32",
-                "AUGUSTO FARFUS, DARREN LEUNG, SEAN GELAEL",
-                "TEAM WRT",
+                "Darren Leung, Sean Gelael, Augusto Farfus",
+                "Team WRT",
+                "187",
+                "6:01:38.504",
                 ""
               ],
               [
                 "2",
                 "27",
-                "IAN JAMES, MATTIA DRUDI, ZACHARIE ROBICHON",
-                "HEART OF RACING TEAM",
+                "Ian James, Zacharie Robichon, Mattia Drudi",
+                "Heart of Racing Team",
+                "187",
+                "6:01:39.566",
                 "1.062"
               ],
               [
                 "3",
                 "34",
-                "CHARLIE EASTWOOD, PETER DEMPSEY, SALIH YOLUÇ",
-                "RACING TEAM TURKEY BY TF",
+                "Peter Dempsey, Salih Yoluç, Charlie Eastwood",
+                "Racing Team Turkey by TF",
+                "187",
+                "6:01:43.180",
                 "4.676"
               ],
               [
                 "4",
                 "54",
-                "DAVIDE RIGON, FRANCESCO CASTELLACCI, THOMAS FLOHR",
-                "VISTA AF CORSE",
+                "Thomas Flohr, Francesco Castellacci, Davide Rigon",
+                "VISTA AF Corse",
+                "187",
+                "6:01:45.105",
                 "6.601"
               ],
               [
                 "5",
                 "33",
-                "JONNY EDGAR",
-                "TF SPORT",
+                "Ben Keating, Jonny Edgar, Nicky Catsburg",
+                "TF Sport",
+                "187",
+                "6:01:48.640",
                 "10.136"
               ],
               [
                 "6",
                 "69",
-                "ANTHONY MCINTOSH, DANIEL HARPER, PARKER THOMPSON",
-                "TEAM WRT",
+                "Anthony McIntosh, Parker Thompson, Daniel Harper",
+                "Team WRT",
+                "187",
+                "6:01:50.893",
                 "12.389"
               ],
               [
                 "7",
                 "91",
-                "AYHANCAN GÜVEN, JAMES COTTINGHAM, TIMUR BOGUSLAVSKIY",
-                "MANTHEY DK ENGINEERING",
+                "James Cottingham, Timur Boguslavskiy, Ayhancan Güven",
+                "Manthey DK Engineering",
+                "187",
+                "6:01:50.906",
                 "12.402"
               ],
               [
                 "8",
                 "10",
-                "ANTARES AU, MARVIN KIRCHHÖFER, THOMAS FLEMING",
-                "GARAGE 59",
+                "Antares Au, Thomas Fleming, Marvin Kirchhöfer",
+                "Garage 59",
+                "187",
+                "6:01:51.698",
                 "13.194"
               ],
               [
                 "9",
                 "78",
-                "HADRIEN DAVID, TOM VAN ROMPUY",
-                "AKKODIS ASP TEAM",
+                "Tom Van Rompuy, Hadrien David, Esteban Masson",
+                "Akkodis ASP Team",
+                "187",
+                "6:02:12.722",
                 "34.218"
               ],
               [
                 "10",
                 "77",
-                "BEN TUCK, ERIC POWELL, SEBASTIAN PRIAULX",
-                "PROTON COMPETITION",
+                "Eric Powell, Ben Tuck, Sebastian Priaulx",
+                "Proton Competition",
+                "187",
+                "6:02:16.555",
                 "38.051"
               ],
               [
                 "11",
                 "87",
-                "CLEMENS SCHMID, JOSÉ MARÍA LÓPEZ, PETRU UMBRĂRESCU",
-                "AKKODIS ASP TEAM",
+                "Petru Umbrărescu, Clemens Schmid, José María López",
+                "Akkodis ASP Team",
+                "185",
+                "6:01:35.656",
                 "2 Laps"
               ],
               [
                 "12",
                 "92",
-                "RICCARDO PERA, RICHARD LIETZ, YASSER SHAHIN",
-                "THE BEND MANTHEY",
+                "Yasser Shahin, Riccardo Pera, Richard Lietz",
+                "The Bend Manthey",
+                "181",
+                "6:01:57.741",
                 "6 Laps"
               ],
               [
                 "13",
                 "79",
-                "JOHANNES ZELGER, LIN HODENIUS, MATTEO CRESSONI",
-                "IRON LYNX",
+                "Johannes Zelger, Matteo Cressoni, Lin Hodenius",
+                "Iron Lynx",
+                "178",
+                "6:01:55.514",
                 "9 Laps"
               ],
               [
                 "14",
                 "21",
-                "ALESSIO ROVERA, FRANÇOIS HÉRIAU, SIMON MANN",
-                "VISTA AF CORSE",
+                "François Hériau, Simon Mann, Alessio Rovera",
+                "VISTA AF Corse",
+                "184",
+                "5:57:50.059",
                 "3 Laps"
               ],
               [
                 "15",
                 "58",
-                "ALEXANDER WEST, BENJAMIN GOETHE, FINN GEHRSITZ",
-                "GARAGE 59",
+                "Alexander West, Finn Gehrsitz, Benjamin Goethe",
+                "Garage 59",
+                "160",
+                "5:02:00.264",
                 "27 Laps"
               ],
               [
                 "16",
                 "23",
-                "GRAY NEWELL, JONNY ADAM",
-                "HEART OF RACING TEAM",
+                "Gray Newell, Eduardo Barrichello, Jonny Adam",
+                "Heart of Racing Team",
+                "37",
+                "1:07:50.591",
                 "150 Laps"
               ],
               [
                 "17",
                 "88",
-                "GIAMMARCO LEVORATO, LOGAN SARGEANT, STEFANO GATTUSO",
-                "PROTON COMPETITION",
+                "Stefano Gattuso, Giammarco Levorato, Logan Sargeant",
+                "Proton Competition",
+                "1",
+                "2:18.701",
                 "186 Laps"
               ],
               [
                 "18",
                 "61",
-                "CHRISTIAN RIED, MAXIME MARTIN, RUI ANDRADE",
-                "IRON LYNX",
+                "Christian Ried, Rui Andrade, Maxime Martin",
+                "Iron Lynx",
+                "1",
+                "4:09.367",
                 "186 Laps"
+              ]
+            ]
+          }
+        ]
+      }
+    ],
+    "others": [
+      {
+        "label": "Free Practice 1",
+        "tables": [
+          {
+            "title": "Hypercar",
+            "columns": [
+              "Pos",
+              "No.",
+              "Crew",
+              "Team",
+              "Time",
+              "Laps",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "8",
+                "Brendon Hartley, Ryo Hirakawa, Sébastien Buemi",
+                "TOYOTA RACING",
+                "1:29.694",
+                "50",
+                ""
+              ],
+              [
+                "2",
+                "12",
+                "Will Stevens, Norman Nato",
+                "Cadillac Hertz Team JOTA",
+                "1:30.037",
+                "49",
+                "+0.343"
+              ],
+              [
+                "3",
+                "50",
+                "Antonio Fuoco, Miguel Molina, Nicklas Nielsen",
+                "Ferrari AF Corse",
+                "1:30.203",
+                "48",
+                "+0.509"
+              ],
+              [
+                "4",
+                "38",
+                "Earl Bamber, Sébastien Bourdais, Jack Aitken",
+                "Cadillac Hertz Team JOTA",
+                "1:30.401",
+                "50",
+                "+0.707"
+              ],
+              [
+                "5",
+                "36",
+                "Jules Gounon, Victor Martins",
+                "Alpine Endurance Team",
+                "1:30.501",
+                "43",
+                "+0.807"
+              ],
+              [
+                "6",
+                "19",
+                "Mathieu Jaminet, Paul-Loup Chatin, Daniel Juncadella",
+                "Genesis Magma Racing",
+                "1:30.518",
+                "51",
+                "+0.824"
+              ],
+              [
+                "7",
+                "007",
+                "Harry Tincknell, Tom Gamble",
+                "Aston Martin THOR Team",
+                "1:30.642",
+                "35",
+                "+0.948"
+              ],
+              [
+                "8",
+                "7",
+                "Mike Conway, Kamui Kobayashi, Nyck de Vries",
+                "TOYOTA RACING",
+                "1:30.659",
+                "48",
+                "+0.965"
+              ],
+              [
+                "9",
+                "83",
+                "Yifei Ye, Robert Kubica, Philip Hanson",
+                "AF Corse",
+                "1:30.680",
+                "45",
+                "+0.986"
+              ],
+              [
+                "10",
+                "51",
+                "Alessandro Pier Guidi, James Calado, Antonio Giovinazzi",
+                "Ferrari AF Corse",
+                "1:30.689",
+                "51",
+                "+0.995"
+              ],
+              [
+                "11",
+                "35",
+                "Charles Milesi, Ferdinand Habsburg",
+                "Alpine Endurance Team",
+                "1:30.755",
+                "40",
+                "+1.061"
+              ],
+              [
+                "12",
+                "20",
+                "Robin Frijns, René Rast, Sheldon van der Linde",
+                "BMW M Team WRT",
+                "1:30.849",
+                "54",
+                "+1.155"
+              ],
+              [
+                "13",
+                "15",
+                "Kevin Magnussen, Raffaele Marciello, Dries Vanthoor",
+                "BMW M Team WRT",
+                "1:30.915",
+                "54",
+                "+1.221"
+              ],
+              [
+                "14",
+                "93",
+                "Paul di Resta, Stoffel Vandoorne, Nick Cassidy",
+                "Peugeot TotalEnergies",
+                "1:30.994",
+                "49",
+                "+1.300"
+              ],
+              [
+                "15",
+                "009",
+                "Alex Riberas, Marco Sørensen",
+                "Aston Martin THOR Team",
+                "1:30.997",
+                "48",
+                "+1.303"
+              ],
+              [
+                "16",
+                "17",
+                "André Lotterer, Luis Felipe Derani, Mathys Jaubert",
+                "Genesis Magma Racing",
+                "1:31.052",
+                "49",
+                "+1.358"
+              ],
+              [
+                "17",
+                "94",
+                "Loïc Duval, Malthe Jakobsen, Théo Pourchaire",
+                "Peugeot TotalEnergies",
+                "1:31.516",
+                "44",
+                "+1.822"
+              ]
+            ]
+          },
+          {
+            "title": "LMGT3",
+            "columns": [
+              "Pos",
+              "No.",
+              "Crew",
+              "Team",
+              "Time",
+              "Laps",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "58",
+                "Alexander West, Finn Gehrsitz, Benjamin Goethe",
+                "Garage 59",
+                "1:40.214",
+                "45",
+                ""
+              ],
+              [
+                "2",
+                "10",
+                "Antares Au, Thomas Fleming, Marvin Kirchhöfer",
+                "Garage 59",
+                "1:40.257",
+                "45",
+                "+0.043"
+              ],
+              [
+                "3",
+                "34",
+                "Peter Dempsey, Salih Yoluç, Charlie Eastwood",
+                "Racing Team Turkey by TF",
+                "1:40.396",
+                "45",
+                "+0.182"
+              ],
+              [
+                "4",
+                "77",
+                "Eric Powell, Ben Tuck, Sebastian Priaulx",
+                "Proton Competition",
+                "1:40.451",
+                "47",
+                "+0.237"
+              ],
+              [
+                "5",
+                "88",
+                "Stefano Gattuso, Giammarco Levorato, Logan Sargeant",
+                "Proton Competition",
+                "1:40.588",
+                "43",
+                "+0.374"
+              ],
+              [
+                "6",
+                "78",
+                "Tom Van Rompuy, Hadrien David, Esteban Masson",
+                "Akkodis ASP Team",
+                "1:40.605",
+                "41",
+                "+0.391"
+              ],
+              [
+                "7",
+                "32",
+                "Darren Leung, Sean Gelael, Augusto Farfus",
+                "Team WRT",
+                "1:40.617",
+                "36",
+                "+0.403"
+              ],
+              [
+                "8",
+                "87",
+                "Petru Umbrărescu, Clemens Schmid, José María López",
+                "Akkodis ASP Team",
+                "1:40.621",
+                "40",
+                "+0.407"
+              ],
+              [
+                "9",
+                "61",
+                "Christian Ried, Rui Andrade, Maxime Martin",
+                "Iron Lynx",
+                "1:40.701",
+                "47",
+                "+0.487"
+              ],
+              [
+                "10",
+                "54",
+                "Thomas Flohr, Francesco Castellacci, Davide Rigon",
+                "VISTA AF Corse",
+                "1:40.752",
+                "46",
+                "+0.538"
+              ],
+              [
+                "11",
+                "69",
+                "Anthony McIntosh, Parker Thompson, Daniel Harper",
+                "Team WRT",
+                "1:40.832",
+                "44",
+                "+0.618"
+              ],
+              [
+                "12",
+                "92",
+                "Yasser Shahin, Riccardo Pera, Richard Lietz",
+                "The Bend Manthey",
+                "1:40.844",
+                "49",
+                "+0.630"
+              ],
+              [
+                "13",
+                "79",
+                "Johannes Zelger, Matteo Cressoni, Lin Hodenius",
+                "Iron Lynx",
+                "1:40.887",
+                "28",
+                "+0.673"
+              ],
+              [
+                "14",
+                "21",
+                "François Hériau, Simon Mann, Alessio Rovera",
+                "VISTA AF Corse",
+                "1:40.918",
+                "44",
+                "+0.704"
+              ],
+              [
+                "15",
+                "23",
+                "Gray Newell, Eduardo Barrichello, Jonny Adam",
+                "Heart of Racing Team",
+                "1:40.931",
+                "42",
+                "+0.717"
+              ],
+              [
+                "16",
+                "33",
+                "Ben Keating, Jonny Edgar, Nicky Catsburg",
+                "TF Sport",
+                "1:40.943",
+                "45",
+                "+0.729"
+              ],
+              [
+                "17",
+                "91",
+                "James Cottingham, Timur Boguslavskiy, Ayhancan Güven",
+                "Manthey DK Engineering",
+                "1:41.137",
+                "49",
+                "+0.923"
+              ],
+              [
+                "18",
+                "27",
+                "Ian James, Zacharie Robichon, Mattia Drudi",
+                "Heart of Racing Team",
+                "1:41.416",
+                "42",
+                "+1.202"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Free Practice 2",
+        "tables": [
+          {
+            "title": "Hypercar",
+            "columns": [
+              "Pos",
+              "No.",
+              "Crew",
+              "Team",
+              "Time",
+              "Laps",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "36",
+                "Jules Gounon, Victor Martins",
+                "Alpine Endurance Team",
+                "1:29.304",
+                "47",
+                ""
+              ],
+              [
+                "2",
+                "007",
+                "Harry Tincknell, Tom Gamble",
+                "Aston Martin THOR Team",
+                "1:29.343",
+                "53",
+                "+0.039"
+              ],
+              [
+                "3",
+                "35",
+                "Charles Milesi, Ferdinand Habsburg",
+                "Alpine Endurance Team",
+                "1:29.397",
+                "43",
+                "+0.093"
+              ],
+              [
+                "4",
+                "19",
+                "Mathieu Jaminet, Paul-Loup Chatin, Daniel Juncadella",
+                "Genesis Magma Racing",
+                "1:29.492",
+                "51",
+                "+0.188"
+              ],
+              [
+                "5",
+                "17",
+                "André Lotterer, Luis Felipe Derani, Mathys Jaubert",
+                "Genesis Magma Racing",
+                "1:29.558",
+                "51",
+                "+0.254"
+              ],
+              [
+                "6",
+                "009",
+                "Alex Riberas, Marco Sørensen",
+                "Aston Martin THOR Team",
+                "1:29.576",
+                "49",
+                "+0.272"
+              ],
+              [
+                "7",
+                "38",
+                "Earl Bamber, Sébastien Bourdais, Jack Aitken",
+                "Cadillac Hertz Team JOTA",
+                "1:29.617",
+                "53",
+                "+0.313"
+              ],
+              [
+                "8",
+                "8",
+                "Brendon Hartley, Ryo Hirakawa, Sébastien Buemi",
+                "TOYOTA RACING",
+                "1:29.714",
+                "51",
+                "+0.410"
+              ],
+              [
+                "9",
+                "93",
+                "Paul di Resta, Stoffel Vandoorne, Nick Cassidy",
+                "Peugeot TotalEnergies",
+                "1:29.884",
+                "41",
+                "+0.580"
+              ],
+              [
+                "10",
+                "12",
+                "Will Stevens, Norman Nato",
+                "Cadillac Hertz Team JOTA",
+                "1:29.888",
+                "52",
+                "+0.584"
+              ],
+              [
+                "11",
+                "50",
+                "Antonio Fuoco, Miguel Molina, Nicklas Nielsen",
+                "Ferrari AF Corse",
+                "1:29.989",
+                "51",
+                "+0.685"
+              ],
+              [
+                "12",
+                "83",
+                "Yifei Ye, Robert Kubica, Philip Hanson",
+                "AF Corse",
+                "1:30.036",
+                "52",
+                "+0.732"
+              ],
+              [
+                "13",
+                "7",
+                "Mike Conway, Kamui Kobayashi, Nyck de Vries",
+                "TOYOTA RACING",
+                "1:30.101",
+                "53",
+                "+0.797"
+              ],
+              [
+                "14",
+                "15",
+                "Kevin Magnussen, Raffaele Marciello, Dries Vanthoor",
+                "BMW M Team WRT",
+                "1:30.149",
+                "54",
+                "+0.845"
+              ],
+              [
+                "15",
+                "94",
+                "Loïc Duval, Malthe Jakobsen, Théo Pourchaire",
+                "Peugeot TotalEnergies",
+                "1:30.205",
+                "52",
+                "+0.901"
+              ],
+              [
+                "16",
+                "51",
+                "Alessandro Pier Guidi, James Calado, Antonio Giovinazzi",
+                "Ferrari AF Corse",
+                "1:30.334",
+                "52",
+                "+1.030"
+              ],
+              [
+                "17",
+                "20",
+                "Robin Frijns, René Rast, Sheldon van der Linde",
+                "BMW M Team WRT",
+                "1:30.362",
+                "54",
+                "+1.058"
+              ]
+            ]
+          },
+          {
+            "title": "LMGT3",
+            "columns": [
+              "Pos",
+              "No.",
+              "Crew",
+              "Team",
+              "Time",
+              "Laps",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "77",
+                "Eric Powell, Ben Tuck, Sebastian Priaulx",
+                "Proton Competition",
+                "1:39.828",
+                "49",
+                ""
+              ],
+              [
+                "2",
+                "79",
+                "Johannes Zelger, Matteo Cressoni, Lin Hodenius",
+                "Iron Lynx",
+                "1:39.873",
+                "44",
+                "+0.045"
+              ],
+              [
+                "3",
+                "78",
+                "Tom Van Rompuy, Hadrien David, Esteban Masson",
+                "Akkodis ASP Team",
+                "1:39.933",
+                "46",
+                "+0.105"
+              ],
+              [
+                "4",
+                "61",
+                "Christian Ried, Rui Andrade, Maxime Martin",
+                "Iron Lynx",
+                "1:40.229",
+                "43",
+                "+0.401"
+              ],
+              [
+                "5",
+                "87",
+                "Petru Umbrărescu, Clemens Schmid, José María López",
+                "Akkodis ASP Team",
+                "1:40.329",
+                "42",
+                "+0.501"
+              ],
+              [
+                "6",
+                "34",
+                "Peter Dempsey, Salih Yoluç, Charlie Eastwood",
+                "Racing Team Turkey by TF",
+                "1:40.375",
+                "41",
+                "+0.547"
+              ],
+              [
+                "7",
+                "21",
+                "François Hériau, Simon Mann, Alessio Rovera",
+                "VISTA AF Corse",
+                "1:40.419",
+                "45",
+                "+0.591"
+              ],
+              [
+                "8",
+                "33",
+                "Ben Keating, Jonny Edgar, Nicky Catsburg",
+                "TF Sport",
+                "1:40.556",
+                "45",
+                "+0.728"
+              ],
+              [
+                "9",
+                "54",
+                "Thomas Flohr, Francesco Castellacci, Davide Rigon",
+                "VISTA AF Corse",
+                "1:40.560",
+                "44",
+                "+0.732"
+              ],
+              [
+                "10",
+                "69",
+                "Anthony McIntosh, Parker Thompson, Daniel Harper",
+                "Team WRT",
+                "1:40.601",
+                "39",
+                "+0.773"
+              ],
+              [
+                "11",
+                "58",
+                "Alexander West, Finn Gehrsitz, Benjamin Goethe",
+                "Garage 59",
+                "1:40.605",
+                "47",
+                "+0.777"
+              ],
+              [
+                "12",
+                "23",
+                "Gray Newell, Eduardo Barrichello, Jonny Adam",
+                "Heart of Racing Team",
+                "1:40.682",
+                "45",
+                "+0.854"
+              ],
+              [
+                "13",
+                "27",
+                "Ian James, Zacharie Robichon, Mattia Drudi",
+                "Heart of Racing Team",
+                "1:40.693",
+                "46",
+                "+0.865"
+              ],
+              [
+                "14",
+                "32",
+                "Darren Leung, Sean Gelael, Augusto Farfus",
+                "Team WRT",
+                "1:40.763",
+                "46",
+                "+0.935"
+              ],
+              [
+                "15",
+                "88",
+                "Stefano Gattuso, Giammarco Levorato, Logan Sargeant",
+                "Proton Competition",
+                "1:40.789",
+                "45",
+                "+0.961"
+              ],
+              [
+                "16",
+                "10",
+                "Antares Au, Thomas Fleming, Marvin Kirchhöfer",
+                "Garage 59",
+                "1:40.957",
+                "48",
+                "+1.129"
+              ],
+              [
+                "17",
+                "92",
+                "Yasser Shahin, Riccardo Pera, Richard Lietz",
+                "The Bend Manthey",
+                "1:41.165",
+                "50",
+                "+1.337"
+              ],
+              [
+                "18",
+                "91",
+                "James Cottingham, Timur Boguslavskiy, Ayhancan Güven",
+                "Manthey DK Engineering",
+                "1:41.547",
+                "47",
+                "+1.719"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Free Practice 3",
+        "tables": [
+          {
+            "title": "Hypercar",
+            "columns": [
+              "Pos",
+              "No.",
+              "Crew",
+              "Team",
+              "Time",
+              "Laps",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "36",
+                "Jules Gounon, Victor Martins",
+                "Alpine Endurance Team",
+                "1:40.594",
+                "27",
+                ""
+              ],
+              [
+                "2",
+                "007",
+                "Harry Tincknell, Tom Gamble",
+                "Aston Martin THOR Team",
+                "1:40.659",
+                "16",
+                "+0.065"
+              ],
+              [
+                "3",
+                "009",
+                "Alex Riberas, Marco Sørensen",
+                "Aston Martin THOR Team",
+                "1:40.723",
+                "27",
+                "+0.129"
+              ],
+              [
+                "4",
+                "94",
+                "Loïc Duval, Malthe Jakobsen, Théo Pourchaire",
+                "Peugeot TotalEnergies",
+                "1:41.107",
+                "27",
+                "+0.513"
+              ],
+              [
+                "5",
+                "19",
+                "Mathieu Jaminet, Paul-Loup Chatin, Daniel Juncadella",
+                "Genesis Magma Racing",
+                "1:41.219",
+                "28",
+                "+0.625"
+              ],
+              [
+                "6",
+                "35",
+                "Charles Milesi, Ferdinand Habsburg",
+                "Alpine Endurance Team",
+                "1:41.266",
+                "27",
+                "+0.672"
+              ],
+              [
+                "7",
+                "17",
+                "André Lotterer, Luis Felipe Derani, Mathys Jaubert",
+                "Genesis Magma Racing",
+                "1:41.468",
+                "27",
+                "+0.874"
+              ],
+              [
+                "8",
+                "7",
+                "Mike Conway, Kamui Kobayashi, Nyck de Vries",
+                "TOYOTA RACING",
+                "1:41.589",
+                "29",
+                "+0.995"
+              ],
+              [
+                "9",
+                "15",
+                "Kevin Magnussen, Raffaele Marciello, Dries Vanthoor",
+                "BMW M Team WRT",
+                "1:41.608",
+                "25",
+                "+1.014"
+              ],
+              [
+                "10",
+                "50",
+                "Antonio Fuoco, Miguel Molina, Nicklas Nielsen",
+                "Ferrari AF Corse",
+                "1:41.672",
+                "29",
+                "+1.078"
+              ],
+              [
+                "11",
+                "51",
+                "Alessandro Pier Guidi, James Calado, Antonio Giovinazzi",
+                "Ferrari AF Corse",
+                "1:41.765",
+                "28",
+                "+1.171"
+              ],
+              [
+                "12",
+                "20",
+                "Robin Frijns, René Rast, Sheldon van der Linde",
+                "BMW M Team WRT",
+                "1:41.842",
+                "27",
+                "+1.248"
+              ],
+              [
+                "13",
+                "12",
+                "Will Stevens, Norman Nato",
+                "Cadillac Hertz Team JOTA",
+                "1:41.844",
+                "29",
+                "+1.250"
+              ],
+              [
+                "14",
+                "8",
+                "Brendon Hartley, Ryo Hirakawa, Sébastien Buemi",
+                "TOYOTA RACING",
+                "1:42.002",
+                "29",
+                "+1.408"
+              ],
+              [
+                "15",
+                "93",
+                "Paul di Resta, Stoffel Vandoorne, Nick Cassidy",
+                "Peugeot TotalEnergies",
+                "1:42.035",
+                "25",
+                "+1.441"
+              ],
+              [
+                "16",
+                "83",
+                "Yifei Ye, Robert Kubica, Philip Hanson",
+                "AF Corse",
+                "1:42.082",
+                "26",
+                "+1.488"
+              ],
+              [
+                "17",
+                "38",
+                "Earl Bamber, Sébastien Bourdais, Jack Aitken",
+                "Cadillac Hertz Team JOTA",
+                "1:42.528",
+                "27",
+                "+1.934"
+              ]
+            ]
+          },
+          {
+            "title": "LMGT3",
+            "columns": [
+              "Pos",
+              "No.",
+              "Crew",
+              "Team",
+              "Time",
+              "Laps",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "34",
+                "Peter Dempsey, Salih Yoluç, Charlie Eastwood",
+                "Racing Team Turkey by TF",
+                "1:51.232",
+                "26",
+                ""
+              ],
+              [
+                "2",
+                "69",
+                "Anthony McIntosh, Parker Thompson, Daniel Harper",
+                "Team WRT",
+                "1:51.564",
+                "27",
+                "+0.332"
+              ],
+              [
+                "3",
+                "88",
+                "Stefano Gattuso, Giammarco Levorato, Logan Sargeant",
+                "Proton Competition",
+                "1:51.575",
+                "21",
+                "+0.343"
+              ],
+              [
+                "4",
+                "54",
+                "Thomas Flohr, Francesco Castellacci, Davide Rigon",
+                "VISTA AF Corse",
+                "1:51.606",
+                "26",
+                "+0.374"
+              ],
+              [
+                "5",
+                "33",
+                "Ben Keating, Jonny Edgar, Nicky Catsburg",
+                "TF Sport",
+                "1:51.658",
+                "25",
+                "+0.426"
+              ],
+              [
+                "6",
+                "77",
+                "Eric Powell, Ben Tuck, Sebastian Priaulx",
+                "Proton Competition",
+                "1:51.663",
+                "17",
+                "+0.431"
+              ],
+              [
+                "7",
+                "10",
+                "Antares Au, Thomas Fleming, Marvin Kirchhöfer",
+                "Garage 59",
+                "1:51.701",
+                "25",
+                "+0.469"
+              ],
+              [
+                "8",
+                "79",
+                "Johannes Zelger, Matteo Cressoni, Lin Hodenius",
+                "Iron Lynx",
+                "1:51.806",
+                "26",
+                "+0.574"
+              ],
+              [
+                "9",
+                "21",
+                "François Hériau, Simon Mann, Alessio Rovera",
+                "VISTA AF Corse",
+                "1:51.824",
+                "26",
+                "+0.592"
+              ],
+              [
+                "10",
+                "23",
+                "Gray Newell, Eduardo Barrichello, Jonny Adam",
+                "Heart of Racing Team",
+                "1:51.836",
+                "24",
+                "+0.604"
+              ],
+              [
+                "11",
+                "87",
+                "Petru Umbrărescu, Clemens Schmid, José María López",
+                "Akkodis ASP Team",
+                "1:51.946",
+                "22",
+                "+0.714"
+              ],
+              [
+                "12",
+                "91",
+                "James Cottingham, Timur Boguslavskiy, Ayhancan Güven",
+                "Manthey DK Engineering",
+                "1:52.023",
+                "27",
+                "+0.791"
+              ],
+              [
+                "13",
+                "78",
+                "Tom Van Rompuy, Hadrien David, Esteban Masson",
+                "Akkodis ASP Team",
+                "1:52.211",
+                "22",
+                "+0.979"
+              ],
+              [
+                "14",
+                "27",
+                "Ian James, Zacharie Robichon, Mattia Drudi",
+                "Heart of Racing Team",
+                "1:52.290",
+                "25",
+                "+1.058"
+              ],
+              [
+                "15",
+                "61",
+                "Christian Ried, Rui Andrade, Maxime Martin",
+                "Iron Lynx",
+                "1:52.330",
+                "25",
+                "+1.098"
+              ],
+              [
+                "16",
+                "92",
+                "Yasser Shahin, Riccardo Pera, Richard Lietz",
+                "The Bend Manthey",
+                "1:52.348",
+                "26",
+                "+1.116"
+              ],
+              [
+                "17",
+                "32",
+                "Darren Leung, Sean Gelael, Augusto Farfus",
+                "Team WRT",
+                "1:52.583",
+                "25",
+                "+1.351"
+              ],
+              [
+                "18",
+                "58",
+                "Alexander West, Finn Gehrsitz, Benjamin Goethe",
+                "Garage 59",
+                "1:52.808",
+                "24",
+                "+1.576"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 7,
+    "name": "6 Hours of Barcelona",
+    "date": "2026-10-18",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Hypercar",
+            "columns": [
+              "Pos",
+              "No.",
+              "Crew",
+              "Team",
+              "Laps",
+              "Time",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "8",
+                "Brendon Hartley, Ryo Hirakawa, Sébastien Buemi",
+                "TOYOTA RACING",
+                "198",
+                "6:01:20.906",
+                ""
+              ],
+              [
+                "2",
+                "7",
+                "Mike Conway, Kamui Kobayashi, Nyck de Vries",
+                "TOYOTA RACING",
+                "198",
+                "6:01:21.489",
+                "0.583"
+              ],
+              [
+                "3",
+                "50",
+                "Antonio Fuoco, Miguel Molina, Nicklas Nielsen",
+                "Ferrari AF Corse",
+                "198",
+                "6:02:00.631",
+                "39.725"
+              ],
+              [
+                "4",
+                "38",
+                "Earl Bamber, Sébastien Bourdais, Jack Aitken",
+                "Cadillac Hertz Team JOTA",
+                "198",
+                "6:02:13.717",
+                "52.811"
+              ],
+              [
+                "5",
+                "83",
+                "Yifei Ye, Robert Kubica, Philip Hanson",
+                "AF Corse",
+                "198",
+                "6:02:14.259",
+                "53.353"
+              ],
+              [
+                "6",
+                "12",
+                "Will Stevens, Norman Nato, Alex Lynn",
+                "Cadillac Hertz Team JOTA",
+                "198",
+                "6:02:41.657",
+                "1:20.751"
+              ],
+              [
+                "7",
+                "15",
+                "Kevin Magnussen, Raffaele Marciello, Dries Vanthoor",
+                "BMW M Team WRT",
+                "198",
+                "6:02:53.041",
+                "1:32.135"
+              ],
+              [
+                "8",
+                "36",
+                "Jules Gounon, Victor Martins",
+                "Alpine Endurance Team",
+                "198",
+                "6:02:53.862",
+                "1:32.956"
+              ],
+              [
+                "9",
+                "009",
+                "Alex Riberas, Marco Sørensen",
+                "Aston Martin THOR Team",
+                "197",
+                "6:01:22.538",
+                "1 Lap"
+              ],
+              [
+                "10",
+                "35",
+                "Charles Milesi, Ferdinand Habsburg",
+                "Alpine Endurance Team",
+                "197",
+                "6:01:53.648",
+                "1 Lap"
+              ],
+              [
+                "11",
+                "19",
+                "Mathieu Jaminet, Paul-Loup Chatin, Daniel Juncadella",
+                "Genesis Magma Racing",
+                "197",
+                "6:01:54.062",
+                "1 Lap"
+              ],
+              [
+                "12",
+                "93",
+                "Paul di Resta, Nick Cassidy, Alex Quinn",
+                "Peugeot TotalEnergies",
+                "197",
+                "6:02:33.765",
+                "1 Lap"
+              ],
+              [
+                "13",
+                "94",
+                "Loïc Duval, Malthe Jakobsen, Théo Pourchaire",
+                "Peugeot TotalEnergies",
+                "197",
+                "6:03:04.328",
+                "1 Lap"
+              ],
+              [
+                "14",
+                "20",
+                "Robin Frijns, René Rast, Sheldon van der Linde",
+                "BMW M Team WRT",
+                "196",
+                "6:01:35.060",
+                "2 Laps"
+              ],
+              [
+                "15",
+                "51",
+                "Alessandro Pier Guidi, James Calado, Antonio Giovinazzi",
+                "Ferrari AF Corse",
+                "195",
+                "6:01:23.145",
+                "3 Laps"
+              ],
+              [
+                "16",
+                "17",
+                "André Lotterer, Luis Felipe Derani, Mathys Jaubert",
+                "Genesis Magma Racing",
+                "195",
+                "6:02:34.495",
+                "3 Laps"
+              ],
+              [
+                "17",
+                "007",
+                "Harry Tincknell, Tom Gamble",
+                "Aston Martin THOR Team",
+                "115",
+                "3:41:51.500",
+                "83 Laps"
+              ]
+            ]
+          },
+          {
+            "title": "LMGT3",
+            "columns": [
+              "Pos",
+              "No.",
+              "Crew",
+              "Team",
+              "Laps",
+              "Time",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "92",
+                "Yasser Shahin, Riccardo Pera, Richard Lietz",
+                "The Bend Manthey",
+                "183",
+                "6:02:28.418",
+                ""
+              ],
+              [
+                "2",
+                "10",
+                "Antares Au, Thomas Fleming, Marvin Kirchhöfer",
+                "Garage 59",
+                "183",
+                "6:02:33.168",
+                "4.750"
+              ],
+              [
+                "3",
+                "69",
+                "Anthony McIntosh, Parker Thompson, Daniel Harper",
+                "Team WRT",
+                "183",
+                "6:02:44.038",
+                "15.620"
+              ],
+              [
+                "4",
+                "34",
+                "Peter Dempsey, Salih Yoluç, Charlie Eastwood",
+                "Racing Team Turkey by TF",
+                "183",
+                "6:02:44.294",
+                "15.876"
+              ],
+              [
+                "5",
+                "21",
+                "François Hériau, Simon Mann, Alessio Rovera",
+                "VISTA AF Corse",
+                "183",
+                "6:03:00.431",
+                "32.013"
+              ],
+              [
+                "6",
+                "61",
+                "Christian Ried, Rui Andrade, Maxime Martin",
+                "Iron Lynx",
+                "183",
+                "6:03:04.172",
+                "35.754"
+              ],
+              [
+                "7",
+                "33",
+                "Ben Keating, Jonny Edgar, Nicky Catsburg",
+                "TF Sport",
+                "183",
+                "6:03:05.745",
+                "37.327"
+              ],
+              [
+                "8",
+                "79",
+                "Johannes Zelger, Matteo Cressoni, Lin Hodenius",
+                "Iron Lynx",
+                "182",
+                "6:01:36.740",
+                "1 Lap"
+              ],
+              [
+                "9",
+                "23",
+                "Gray Newell, Eduardo Barrichello, Jonny Adam",
+                "Heart of Racing Team",
+                "182",
+                "6:02:12.333",
+                "1 Lap"
+              ],
+              [
+                "10",
+                "32",
+                "Darren Leung, Sean Gelael, Augusto Farfus",
+                "Team WRT",
+                "182",
+                "6:02:26.167",
+                "1 Lap"
+              ],
+              [
+                "11",
+                "58",
+                "Alexander West, Finn Gehrsitz, Benjamin Goethe",
+                "Garage 59",
+                "182",
+                "6:03:00.766",
+                "1 Lap"
+              ],
+              [
+                "12",
+                "54",
+                "Thomas Flohr, Francesco Castellacci, Davide Rigon",
+                "VISTA AF Corse",
+                "181",
+                "6:01:39.128",
+                "2 Laps"
+              ],
+              [
+                "13",
+                "87",
+                "Petru Umbrărescu, Clemens Schmid, José María López",
+                "Akkodis ASP Team",
+                "180",
+                "6:02:07.468",
+                "3 Laps"
+              ],
+              [
+                "14",
+                "78",
+                "Tom Van Rompuy, Hadrien David, Esteban Masson",
+                "Akkodis ASP Team",
+                "179",
+                "6:01:30.251",
+                "4 Laps"
+              ],
+              [
+                "15",
+                "27",
+                "Ian James, Zacharie Robichon, Mattia Drudi",
+                "Heart of Racing Team",
+                "178",
+                "6:01:37.333",
+                "5 Laps"
+              ],
+              [
+                "16",
+                "91",
+                "James Cottingham, Timur Boguslavskiy, Ayhancan Güven",
+                "Manthey DK Engineering",
+                "174",
+                "6:01:32.137",
+                "9 Laps"
+              ],
+              [
+                "17",
+                "77",
+                "Eric Powell, Ben Tuck, Sebastian Priaulx",
+                "Proton Competition",
+                "181",
+                "6:00:12.970",
+                "2 Laps"
+              ],
+              [
+                "18",
+                "88",
+                "Stefano Gattuso, Giammarco Levorato, Logan Sargeant",
+                "Proton Competition",
+                "182",
+                "6:01:31.132",
+                "1 Lap"
+              ]
+            ]
+          }
+        ]
+      }
+    ],
+    "others": [
+      {
+        "label": "Free Practice 1",
+        "tables": [
+          {
+            "title": "Hypercar",
+            "columns": [
+              "Pos",
+              "No.",
+              "Crew",
+              "Team",
+              "Time",
+              "Laps",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "83",
+                "Yifei Ye, Robert Kubica, Philip Hanson",
+                "AF Corse",
+                "1:31.891",
+                "45",
+                ""
+              ],
+              [
+                "2",
+                "009",
+                "Alex Riberas, Marco Sørensen",
+                "Aston Martin THOR Team",
+                "1:31.998",
+                "45",
+                "+0.107"
+              ],
+              [
+                "3",
+                "51",
+                "Alessandro Pier Guidi, James Calado, Antonio Giovinazzi",
+                "Ferrari AF Corse",
+                "1:32.053",
+                "45",
+                "+0.162"
+              ],
+              [
+                "4",
+                "50",
+                "Antonio Fuoco, Miguel Molina, Nicklas Nielsen",
+                "Ferrari AF Corse",
+                "1:32.066",
+                "40",
+                "+0.175"
+              ],
+              [
+                "5",
+                "007",
+                "Harry Tincknell, Tom Gamble",
+                "Aston Martin THOR Team",
+                "1:32.716",
+                "44",
+                "+0.825"
+              ],
+              [
+                "6",
+                "8",
+                "Brendon Hartley, Ryo Hirakawa, Sébastien Buemi",
+                "TOYOTA RACING",
+                "1:32.834",
+                "49",
+                "+0.943"
+              ],
+              [
+                "7",
+                "38",
+                "Earl Bamber, Sébastien Bourdais, Jack Aitken",
+                "Cadillac Hertz Team JOTA",
+                "1:33.002",
+                "50",
+                "+1.111"
+              ],
+              [
+                "8",
+                "36",
+                "Jules Gounon, Victor Martins",
+                "Alpine Endurance Team",
+                "1:33.119",
+                "42",
+                "+1.228"
+              ],
+              [
+                "9",
+                "12",
+                "Will Stevens, Norman Nato, Alex Lynn",
+                "Cadillac Hertz Team JOTA",
+                "1:33.183",
+                "49",
+                "+1.292"
+              ],
+              [
+                "10",
+                "19",
+                "Mathieu Jaminet, Paul-Loup Chatin, Daniel Juncadella",
+                "Genesis Magma Racing",
+                "1:33.187",
+                "47",
+                "+1.296"
+              ],
+              [
+                "11",
+                "7",
+                "Mike Conway, Kamui Kobayashi, Nyck de Vries",
+                "TOYOTA RACING",
+                "1:33.342",
+                "50",
+                "+1.451"
+              ],
+              [
+                "12",
+                "17",
+                "André Lotterer, Luis Felipe Derani, Mathys Jaubert",
+                "Genesis Magma Racing",
+                "1:33.486",
+                "45",
+                "+1.595"
+              ],
+              [
+                "13",
+                "35",
+                "Charles Milesi, Ferdinand Habsburg",
+                "Alpine Endurance Team",
+                "1:33.729",
+                "41",
+                "+1.838"
+              ],
+              [
+                "14",
+                "94",
+                "Loïc Duval, Malthe Jakobsen, Théo Pourchaire",
+                "Peugeot TotalEnergies",
+                "1:33.789",
+                "45",
+                "+1.898"
+              ],
+              [
+                "15",
+                "93",
+                "Paul di Resta, Nick Cassidy, Alex Quinn",
+                "Peugeot TotalEnergies",
+                "1:33.958",
+                "47",
+                "+2.067"
+              ],
+              [
+                "16",
+                "15",
+                "Kevin Magnussen, Raffaele Marciello, Dries Vanthoor",
+                "BMW M Team WRT",
+                "1:33.990",
+                "52",
+                "+2.099"
+              ],
+              [
+                "17",
+                "20",
+                "Robin Frijns, René Rast, Sheldon van der Linde",
+                "BMW M Team WRT",
+                "1:34.017",
+                "50",
+                "+2.126"
+              ]
+            ]
+          },
+          {
+            "title": "LMGT3",
+            "columns": [
+              "Pos",
+              "No.",
+              "Crew",
+              "Team",
+              "Time",
+              "Laps",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "21",
+                "François Hériau, Simon Mann, Alessio Rovera",
+                "VISTA AF Corse",
+                "1:41.420",
+                "42",
+                ""
+              ],
+              [
+                "2",
+                "54",
+                "Thomas Flohr, Francesco Castellacci, Davide Rigon",
+                "VISTA AF Corse",
+                "1:41.851",
+                "43",
+                "+0.431"
+              ],
+              [
+                "3",
+                "34",
+                "Peter Dempsey, Salih Yoluç, Charlie Eastwood",
+                "Racing Team Turkey by TF",
+                "1:41.859",
+                "46",
+                "+0.439"
+              ],
+              [
+                "4",
+                "10",
+                "Antares Au, Thomas Fleming, Marvin Kirchhöfer",
+                "Garage 59",
+                "1:42.043",
+                "42",
+                "+0.623"
+              ],
+              [
+                "5",
+                "61",
+                "Christian Ried, Rui Andrade, Maxime Martin",
+                "Iron Lynx",
+                "1:42.219",
+                "39",
+                "+0.799"
+              ],
+              [
+                "6",
+                "78",
+                "Tom Van Rompuy, Hadrien David, Esteban Masson",
+                "Akkodis ASP Team",
+                "1:42.235",
+                "36",
+                "+0.815"
+              ],
+              [
+                "7",
+                "32",
+                "Darren Leung, Sean Gelael, Augusto Farfus",
+                "Team WRT",
+                "1:42.273",
+                "39",
+                "+0.853"
+              ],
+              [
+                "8",
+                "88",
+                "Stefano Gattuso, Giammarco Levorato, Logan Sargeant",
+                "Proton Competition",
+                "1:42.354",
+                "39",
+                "+0.934"
+              ],
+              [
+                "9",
+                "91",
+                "James Cottingham, Timur Boguslavskiy, Ayhancan Güven",
+                "Manthey DK Engineering",
+                "1:42.424",
+                "45",
+                "+1.004"
+              ],
+              [
+                "10",
+                "33",
+                "Ben Keating, Jonny Edgar, Nicky Catsburg",
+                "TF Sport",
+                "1:42.569",
+                "42",
+                "+1.149"
+              ],
+              [
+                "11",
+                "92",
+                "Yasser Shahin, Riccardo Pera, Richard Lietz",
+                "The Bend Manthey",
+                "1:42.755",
+                "42",
+                "+1.335"
+              ],
+              [
+                "12",
+                "23",
+                "Gray Newell, Eduardo Barrichello, Jonny Adam",
+                "Heart of Racing Team",
+                "1:42.846",
+                "38",
+                "+1.426"
+              ],
+              [
+                "13",
+                "69",
+                "Anthony McIntosh, Parker Thompson, Daniel Harper",
+                "Team WRT",
+                "1:43.011",
+                "43",
+                "+1.591"
+              ],
+              [
+                "14",
+                "87",
+                "Petru Umbrărescu, Clemens Schmid, José María López",
+                "Akkodis ASP Team",
+                "1:43.102",
+                "33",
+                "+1.682"
+              ],
+              [
+                "15",
+                "79",
+                "Johannes Zelger, Matteo Cressoni, Lin Hodenius",
+                "Iron Lynx",
+                "1:43.146",
+                "40",
+                "+1.726"
+              ],
+              [
+                "16",
+                "77",
+                "Eric Powell, Ben Tuck, Sebastian Priaulx",
+                "Proton Competition",
+                "1:43.858",
+                "40",
+                "+2.438"
+              ],
+              [
+                "17",
+                "58",
+                "Alexander West, Finn Gehrsitz, Benjamin Goethe",
+                "Garage 59",
+                "1:43.979",
+                "40",
+                "+2.559"
+              ],
+              [
+                "18",
+                "27",
+                "Ian James, Zacharie Robichon, Mattia Drudi",
+                "Heart of Racing Team",
+                "1:44.051",
+                "40",
+                "+2.631"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Free Practice 2",
+        "tables": [
+          {
+            "title": "Hypercar",
+            "columns": [
+              "Pos",
+              "No.",
+              "Crew",
+              "Team",
+              "Time",
+              "Laps",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "007",
+                "Harry Tincknell, Tom Gamble",
+                "Aston Martin THOR Team",
+                "1:31.712",
+                "47",
+                ""
+              ],
+              [
+                "2",
+                "17",
+                "André Lotterer, Luis Felipe Derani, Mathys Jaubert",
+                "Genesis Magma Racing",
+                "1:31.750",
+                "51",
+                "+0.038"
+              ],
+              [
+                "3",
+                "83",
+                "Yifei Ye, Robert Kubica, Philip Hanson",
+                "AF Corse",
+                "1:31.796",
+                "51",
+                "+0.084"
+              ],
+              [
+                "4",
+                "12",
+                "Will Stevens, Norman Nato, Alex Lynn",
+                "Cadillac Hertz Team JOTA",
+                "1:31.804",
+                "52",
+                "+0.092"
+              ],
+              [
+                "5",
+                "7",
+                "Mike Conway, Kamui Kobayashi, Nyck de Vries",
+                "TOYOTA RACING",
+                "1:31.916",
+                "50",
+                "+0.204"
+              ],
+              [
+                "6",
+                "38",
+                "Earl Bamber, Sébastien Bourdais, Jack Aitken",
+                "Cadillac Hertz Team JOTA",
+                "1:31.979",
+                "52",
+                "+0.267"
+              ],
+              [
+                "7",
+                "50",
+                "Antonio Fuoco, Miguel Molina, Nicklas Nielsen",
+                "Ferrari AF Corse",
+                "1:32.144",
+                "49",
+                "+0.432"
+              ],
+              [
+                "8",
+                "8",
+                "Brendon Hartley, Ryo Hirakawa, Sébastien Buemi",
+                "TOYOTA RACING",
+                "1:32.253",
+                "52",
+                "+0.541"
+              ],
+              [
+                "9",
+                "15",
+                "Kevin Magnussen, Raffaele Marciello, Dries Vanthoor",
+                "BMW M Team WRT",
+                "1:32.261",
+                "52",
+                "+0.549"
+              ],
+              [
+                "10",
+                "009",
+                "Alex Riberas, Marco Sørensen",
+                "Aston Martin THOR Team",
+                "1:32.335",
+                "46",
+                "+0.623"
+              ],
+              [
+                "11",
+                "94",
+                "Loïc Duval, Malthe Jakobsen, Théo Pourchaire",
+                "Peugeot TotalEnergies",
+                "1:32.681",
+                "48",
+                "+0.969"
+              ],
+              [
+                "12",
+                "51",
+                "Alessandro Pier Guidi, James Calado, Antonio Giovinazzi",
+                "Ferrari AF Corse",
+                "1:32.981",
+                "50",
+                "+1.269"
+              ],
+              [
+                "13",
+                "19",
+                "Mathieu Jaminet, Paul-Loup Chatin, Daniel Juncadella",
+                "Genesis Magma Racing",
+                "1:33.139",
+                "48",
+                "+1.427"
+              ],
+              [
+                "14",
+                "20",
+                "Robin Frijns, René Rast, Sheldon van der Linde",
+                "BMW M Team WRT",
+                "1:33.280",
+                "52",
+                "+1.568"
+              ],
+              [
+                "15",
+                "35",
+                "Charles Milesi, Ferdinand Habsburg",
+                "Alpine Endurance Team",
+                "1:33.604",
+                "47",
+                "+1.892"
+              ],
+              [
+                "16",
+                "36",
+                "Jules Gounon, Victor Martins",
+                "Alpine Endurance Team",
+                "1:33.714",
+                "52",
+                "+2.002"
+              ],
+              [
+                "17",
+                "93",
+                "Paul di Resta, Nick Cassidy, Alex Quinn",
+                "Peugeot TotalEnergies",
+                "1:34.214",
+                "47",
+                "+2.502"
+              ]
+            ]
+          },
+          {
+            "title": "LMGT3",
+            "columns": [
+              "Pos",
+              "No.",
+              "Crew",
+              "Team",
+              "Time",
+              "Laps",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "58",
+                "Alexander West, Finn Gehrsitz, Benjamin Goethe",
+                "Garage 59",
+                "1:41.650",
+                "44",
+                ""
+              ],
+              [
+                "2",
+                "78",
+                "Tom Van Rompuy, Hadrien David, Esteban Masson",
+                "Akkodis ASP Team",
+                "1:41.994",
+                "38",
+                "+0.344"
+              ],
+              [
+                "3",
+                "79",
+                "Johannes Zelger, Matteo Cressoni, Lin Hodenius",
+                "Iron Lynx",
+                "1:42.180",
+                "21",
+                "+0.530"
+              ],
+              [
+                "4",
+                "27",
+                "Ian James, Zacharie Robichon, Mattia Drudi",
+                "Heart of Racing Team",
+                "1:42.285",
+                "43",
+                "+0.635"
+              ],
+              [
+                "5",
+                "69",
+                "Anthony McIntosh, Parker Thompson, Daniel Harper",
+                "Team WRT",
+                "1:42.537",
+                "42",
+                "+0.887"
+              ],
+              [
+                "6",
+                "87",
+                "Petru Umbrărescu, Clemens Schmid, José María López",
+                "Akkodis ASP Team",
+                "1:42.575",
+                "35",
+                "+0.925"
+              ],
+              [
+                "7",
+                "91",
+                "James Cottingham, Timur Boguslavskiy, Ayhancan Güven",
+                "Manthey DK Engineering",
+                "1:42.780",
+                "39",
+                "+1.130"
+              ],
+              [
+                "8",
+                "61",
+                "Christian Ried, Rui Andrade, Maxime Martin",
+                "Iron Lynx",
+                "1:42.828",
+                "45",
+                "+1.178"
+              ],
+              [
+                "9",
+                "54",
+                "Thomas Flohr, Francesco Castellacci, Davide Rigon",
+                "VISTA AF Corse",
+                "1:42.897",
+                "46",
+                "+1.247"
+              ],
+              [
+                "10",
+                "10",
+                "Antares Au, Thomas Fleming, Marvin Kirchhöfer",
+                "Garage 59",
+                "1:43.095",
+                "48",
+                "+1.445"
+              ],
+              [
+                "11",
+                "77",
+                "Eric Powell, Ben Tuck, Sebastian Priaulx",
+                "Proton Competition",
+                "1:43.119",
+                "46",
+                "+1.469"
+              ],
+              [
+                "12",
+                "32",
+                "Darren Leung, Sean Gelael, Augusto Farfus",
+                "Team WRT",
+                "1:43.193",
+                "39",
+                "+1.543"
+              ],
+              [
+                "13",
+                "92",
+                "Yasser Shahin, Riccardo Pera, Richard Lietz",
+                "The Bend Manthey",
+                "1:43.254",
+                "50",
+                "+1.604"
+              ],
+              [
+                "14",
+                "88",
+                "Stefano Gattuso, Giammarco Levorato, Logan Sargeant",
+                "Proton Competition",
+                "1:43.314",
+                "35",
+                "+1.664"
+              ],
+              [
+                "15",
+                "21",
+                "François Hériau, Simon Mann, Alessio Rovera",
+                "VISTA AF Corse",
+                "1:43.314",
+                "47",
+                "+1.664"
+              ],
+              [
+                "16",
+                "34",
+                "Peter Dempsey, Salih Yoluç, Charlie Eastwood",
+                "Racing Team Turkey by TF",
+                "1:43.368",
+                "48",
+                "+1.718"
+              ],
+              [
+                "17",
+                "33",
+                "Ben Keating, Jonny Edgar, Nicky Catsburg",
+                "TF Sport",
+                "1:43.430",
+                "45",
+                "+1.780"
+              ],
+              [
+                "18",
+                "23",
+                "Gray Newell, Eduardo Barrichello, Jonny Adam",
+                "Heart of Racing Team",
+                "1:44.711",
+                "42",
+                "+3.061"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Free Practice 3",
+        "tables": [
+          {
+            "title": "Hypercar",
+            "columns": [
+              "Pos",
+              "No.",
+              "Crew",
+              "Team",
+              "Time",
+              "Laps",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "50",
+                "Antonio Fuoco, Miguel Molina, Nicklas Nielsen",
+                "Ferrari AF Corse",
+                "1:31.026",
+                "33",
+                ""
+              ],
+              [
+                "2",
+                "19",
+                "Mathieu Jaminet, Paul-Loup Chatin, Daniel Juncadella",
+                "Genesis Magma Racing",
+                "1:31.041",
+                "32",
+                "+0.015"
+              ],
+              [
+                "3",
+                "38",
+                "Earl Bamber, Sébastien Bourdais, Jack Aitken",
+                "Cadillac Hertz Team JOTA",
+                "1:31.277",
+                "32",
+                "+0.251"
+              ],
+              [
+                "4",
+                "009",
+                "Alex Riberas, Marco Sørensen",
+                "Aston Martin THOR Team",
+                "1:31.361",
+                "34",
+                "+0.335"
+              ],
+              [
+                "5",
+                "12",
+                "Will Stevens, Norman Nato, Alex Lynn",
+                "Cadillac Hertz Team JOTA",
+                "1:31.433",
+                "34",
+                "+0.407"
+              ],
+              [
+                "6",
+                "35",
+                "Charles Milesi, Ferdinand Habsburg",
+                "Alpine Endurance Team",
+                "1:31.650",
+                "30",
+                "+0.624"
+              ],
+              [
+                "7",
+                "83",
+                "Yifei Ye, Robert Kubica, Philip Hanson",
+                "AF Corse",
+                "1:31.651",
+                "33",
+                "+0.625"
+              ],
+              [
+                "8",
+                "36",
+                "Jules Gounon, Victor Martins",
+                "Alpine Endurance Team",
+                "1:31.662",
+                "29",
+                "+0.636"
+              ],
+              [
+                "9",
+                "15",
+                "Kevin Magnussen, Raffaele Marciello, Dries Vanthoor",
+                "BMW M Team WRT",
+                "1:31.691",
+                "33",
+                "+0.665"
+              ],
+              [
+                "10",
+                "007",
+                "Harry Tincknell, Tom Gamble",
+                "Aston Martin THOR Team",
+                "1:31.786",
+                "34",
+                "+0.760"
+              ],
+              [
+                "11",
+                "7",
+                "Mike Conway, Kamui Kobayashi, Nyck de Vries",
+                "TOYOTA RACING",
+                "1:31.887",
+                "35",
+                "+0.861"
+              ],
+              [
+                "12",
+                "8",
+                "Brendon Hartley, Ryo Hirakawa, Sébastien Buemi",
+                "TOYOTA RACING",
+                "1:31.906",
+                "34",
+                "+0.880"
+              ],
+              [
+                "13",
+                "51",
+                "Alessandro Pier Guidi, James Calado, Antonio Giovinazzi",
+                "Ferrari AF Corse",
+                "1:32.007",
+                "33",
+                "+0.981"
+              ],
+              [
+                "14",
+                "20",
+                "Robin Frijns, René Rast, Sheldon van der Linde",
+                "BMW M Team WRT",
+                "1:32.019",
+                "34",
+                "+0.993"
+              ],
+              [
+                "15",
+                "94",
+                "Loïc Duval, Malthe Jakobsen, Théo Pourchaire",
+                "Peugeot TotalEnergies",
+                "1:32.091",
+                "31",
+                "+1.065"
+              ],
+              [
+                "16",
+                "93",
+                "Paul di Resta, Nick Cassidy, Alex Quinn",
+                "Peugeot TotalEnergies",
+                "1:32.599",
+                "33",
+                "+1.573"
+              ],
+              [
+                "17",
+                "17",
+                "André Lotterer, Luis Felipe Derani, Mathys Jaubert",
+                "Genesis Magma Racing",
+                "1:33.714",
+                "34",
+                "+2.688"
+              ]
+            ]
+          },
+          {
+            "title": "LMGT3",
+            "columns": [
+              "Pos",
+              "No.",
+              "Crew",
+              "Team",
+              "Time",
+              "Laps",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "21",
+                "François Hériau, Simon Mann, Alessio Rovera",
+                "VISTA AF Corse",
+                "1:41.696",
+                "29",
+                ""
+              ],
+              [
+                "2",
+                "61",
+                "Christian Ried, Rui Andrade, Maxime Martin",
+                "Iron Lynx",
+                "1:42.138",
+                "29",
+                "+0.442"
+              ],
+              [
+                "3",
+                "87",
+                "Petru Umbrărescu, Clemens Schmid, José María López",
+                "Akkodis ASP Team",
+                "1:42.225",
+                "28",
+                "+0.529"
+              ],
+              [
+                "4",
+                "58",
+                "Alexander West, Finn Gehrsitz, Benjamin Goethe",
+                "Garage 59",
+                "1:42.607",
+                "31",
+                "+0.911"
+              ],
+              [
+                "5",
+                "88",
+                "Stefano Gattuso, Giammarco Levorato, Logan Sargeant",
+                "Proton Competition",
+                "1:42.620",
+                "32",
+                "+0.924"
+              ],
+              [
+                "6",
+                "23",
+                "Gray Newell, Eduardo Barrichello, Jonny Adam",
+                "Heart of Racing Team",
+                "1:42.747",
+                "30",
+                "+1.051"
+              ],
+              [
+                "7",
+                "54",
+                "Thomas Flohr, Francesco Castellacci, Davide Rigon",
+                "VISTA AF Corse",
+                "1:42.765",
+                "31",
+                "+1.069"
+              ],
+              [
+                "8",
+                "92",
+                "Yasser Shahin, Riccardo Pera, Richard Lietz",
+                "The Bend Manthey",
+                "1:42.777",
+                "33",
+                "+1.081"
+              ],
+              [
+                "9",
+                "69",
+                "Anthony McIntosh, Parker Thompson, Daniel Harper",
+                "Team WRT",
+                "1:42.798",
+                "27",
+                "+1.102"
+              ],
+              [
+                "10",
+                "78",
+                "Tom Van Rompuy, Hadrien David, Esteban Masson",
+                "Akkodis ASP Team",
+                "1:42.913",
+                "29",
+                "+1.217"
+              ],
+              [
+                "11",
+                "34",
+                "Peter Dempsey, Salih Yoluç, Charlie Eastwood",
+                "Racing Team Turkey by TF",
+                "1:42.968",
+                "32",
+                "+1.272"
+              ],
+              [
+                "12",
+                "10",
+                "Antares Au, Thomas Fleming, Marvin Kirchhöfer",
+                "Garage 59",
+                "1:43.025",
+                "30",
+                "+1.329"
+              ],
+              [
+                "13",
+                "27",
+                "Ian James, Zacharie Robichon, Mattia Drudi",
+                "Heart of Racing Team",
+                "1:43.080",
+                "31",
+                "+1.384"
+              ],
+              [
+                "14",
+                "91",
+                "James Cottingham, Timur Boguslavskiy, Ayhancan Güven",
+                "Manthey DK Engineering",
+                "1:43.101",
+                "31",
+                "+1.405"
+              ],
+              [
+                "15",
+                "33",
+                "Ben Keating, Jonny Edgar, Nicky Catsburg",
+                "TF Sport",
+                "1:43.407",
+                "29",
+                "+1.711"
+              ],
+              [
+                "16",
+                "32",
+                "Darren Leung, Sean Gelael, Augusto Farfus",
+                "Team WRT",
+                "1:43.444",
+                "31",
+                "+1.748"
+              ],
+              [
+                "17",
+                "79",
+                "Johannes Zelger, Matteo Cressoni, Lin Hodenius",
+                "Iron Lynx",
+                "1:43.768",
+                "30",
+                "+2.072"
+              ],
+              [
+                "18",
+                "77",
+                "Eric Powell, Ben Tuck, Sebastian Priaulx",
+                "Proton Competition",
+                "1:44.502",
+                "33",
+                "+2.806"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Qualifying",
+        "tables": [
+          {
+            "title": "Hypercar",
+            "columns": [
+              "Pos",
+              "No.",
+              "Crew",
+              "Team",
+              "Time",
+              "Laps",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "19",
+                "Mathieu Jaminet, Paul-Loup Chatin, Daniel Juncadella",
+                "Genesis Magma Racing",
+                "1:30.479",
+                "6",
+                ""
+              ],
+              [
+                "2",
+                "8",
+                "Brendon Hartley, Ryo Hirakawa, Sébastien Buemi",
+                "TOYOTA RACING",
+                "1:30.623",
+                "6",
+                "+0.144"
+              ],
+              [
+                "3",
+                "17",
+                "André Lotterer, Luis Felipe Derani, Mathys Jaubert",
+                "Genesis Magma Racing",
+                "1:30.658",
+                "7",
+                "+0.179"
+              ],
+              [
+                "4",
+                "38",
+                "Earl Bamber, Sébastien Bourdais, Jack Aitken",
+                "Cadillac Hertz Team JOTA",
+                "1:30.983",
+                "8",
+                "+0.504"
+              ],
+              [
+                "5",
+                "12",
+                "Will Stevens, Norman Nato, Alex Lynn",
+                "Cadillac Hertz Team JOTA",
+                "1:31.116",
+                "8",
+                "+0.637"
+              ],
+              [
+                "6",
+                "50",
+                "Antonio Fuoco, Miguel Molina, Nicklas Nielsen",
+                "Ferrari AF Corse",
+                "1:31.149",
+                "7",
+                "+0.670"
+              ],
+              [
+                "7",
+                "36",
+                "Jules Gounon, Victor Martins",
+                "Alpine Endurance Team",
+                "1:31.161",
+                "7",
+                "+0.682"
+              ],
+              [
+                "8",
+                "7",
+                "Mike Conway, Kamui Kobayashi, Nyck de Vries",
+                "TOYOTA RACING",
+                "1:31.355",
+                "7",
+                "+0.876"
+              ],
+              [
+                "9",
+                "35",
+                "Charles Milesi, Ferdinand Habsburg",
+                "Alpine Endurance Team",
+                "1:31.365",
+                "7",
+                "+0.886"
+              ],
+              [
+                "10",
+                "83",
+                "Yifei Ye, Robert Kubica, Philip Hanson",
+                "AF Corse",
+                "1:31.411",
+                "7",
+                "+0.932"
+              ],
+              [
+                "11",
+                "009",
+                "Alex Riberas, Marco Sørensen",
+                "Aston Martin THOR Team",
+                "1:31.443",
+                "7",
+                "+0.964"
+              ],
+              [
+                "12",
+                "007",
+                "Harry Tincknell, Tom Gamble",
+                "Aston Martin THOR Team",
+                "1:31.464",
+                "7",
+                "+0.985"
+              ],
+              [
+                "13",
+                "51",
+                "Alessandro Pier Guidi, James Calado, Antonio Giovinazzi",
+                "Ferrari AF Corse",
+                "1:31.508",
+                "8",
+                "+1.029"
+              ],
+              [
+                "14",
+                "20",
+                "Robin Frijns, René Rast, Sheldon van der Linde",
+                "BMW M Team WRT",
+                "1:31.571",
+                "7",
+                "+1.092"
+              ],
+              [
+                "15",
+                "94",
+                "Loïc Duval, Malthe Jakobsen, Théo Pourchaire",
+                "Peugeot TotalEnergies",
+                "1:31.628",
+                "7",
+                "+1.149"
+              ],
+              [
+                "16",
+                "15",
+                "Kevin Magnussen, Raffaele Marciello, Dries Vanthoor",
+                "BMW M Team WRT",
+                "1:31.650",
+                "7",
+                "+1.171"
+              ],
+              [
+                "17",
+                "93",
+                "Paul di Resta, Nick Cassidy, Alex Quinn",
+                "Peugeot TotalEnergies",
+                "1:31.713",
+                "7",
+                "+1.234"
+              ]
+            ]
+          },
+          {
+            "title": "LMGT3",
+            "columns": [
+              "Pos",
+              "No.",
+              "Crew",
+              "Team",
+              "Time",
+              "Laps",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "34",
+                "Peter Dempsey, Salih Yoluç, Charlie Eastwood",
+                "Racing Team Turkey by TF",
+                "1:42.082",
+                "5",
+                ""
+              ],
+              [
+                "2",
+                "88",
+                "Stefano Gattuso, Giammarco Levorato, Logan Sargeant",
+                "Proton Competition",
+                "1:42.624",
+                "7",
+                "+0.542"
+              ],
+              [
+                "3",
+                "21",
+                "François Hériau, Simon Mann, Alessio Rovera",
+                "VISTA AF Corse",
+                "1:42.678",
+                "6",
+                "+0.596"
+              ],
+              [
+                "4",
+                "33",
+                "Ben Keating, Jonny Edgar, Nicky Catsburg",
+                "TF Sport",
+                "1:42.920",
+                "7",
+                "+0.838"
+              ],
+              [
+                "5",
+                "87",
+                "Petru Umbrărescu, Clemens Schmid, José María López",
+                "Akkodis ASP Team",
+                "1:42.922",
+                "6",
+                "+0.840"
+              ],
+              [
+                "6",
+                "92",
+                "Yasser Shahin, Riccardo Pera, Richard Lietz",
+                "The Bend Manthey",
+                "1:42.954",
+                "6",
+                "+0.872"
+              ],
+              [
+                "7",
+                "61",
+                "Christian Ried, Rui Andrade, Maxime Martin",
+                "Iron Lynx",
+                "1:42.968",
+                "6",
+                "+0.886"
+              ],
+              [
+                "8",
+                "32",
+                "Darren Leung, Sean Gelael, Augusto Farfus",
+                "Team WRT",
+                "1:42.971",
+                "5",
+                "+0.889"
+              ],
+              [
+                "9",
+                "10",
+                "Antares Au, Thomas Fleming, Marvin Kirchhöfer",
+                "Garage 59",
+                "1:43.032",
+                "7",
+                "+0.950"
+              ],
+              [
+                "10",
+                "77",
+                "Eric Powell, Ben Tuck, Sebastian Priaulx",
+                "Proton Competition",
+                "1:43.106",
+                "7",
+                "+1.024"
+              ],
+              [
+                "11",
+                "78",
+                "Tom Van Rompuy, Hadrien David, Esteban Masson",
+                "Akkodis ASP Team",
+                "1:43.124",
+                "6",
+                "+1.042"
+              ],
+              [
+                "12",
+                "91",
+                "James Cottingham, Timur Boguslavskiy, Ayhancan Güven",
+                "Manthey DK Engineering",
+                "1:43.169",
+                "5",
+                "+1.087"
+              ],
+              [
+                "13",
+                "54",
+                "Thomas Flohr, Francesco Castellacci, Davide Rigon",
+                "VISTA AF Corse",
+                "1:43.332",
+                "7",
+                "+1.250"
+              ],
+              [
+                "14",
+                "23",
+                "Gray Newell, Eduardo Barrichello, Jonny Adam",
+                "Heart of Racing Team",
+                "1:43.513",
+                "6",
+                "+1.431"
+              ],
+              [
+                "15",
+                "69",
+                "Anthony McIntosh, Parker Thompson, Daniel Harper",
+                "Team WRT",
+                "1:43.975",
+                "7",
+                "+1.893"
+              ],
+              [
+                "16",
+                "58",
+                "Alexander West, Finn Gehrsitz, Benjamin Goethe",
+                "Garage 59",
+                "1:44.267",
+                "6",
+                "+2.185"
+              ],
+              [
+                "17",
+                "79",
+                "Johannes Zelger, Matteo Cressoni, Lin Hodenius",
+                "Iron Lynx",
+                "1:44.655",
+                "6",
+                "+2.573"
+              ],
+              [
+                "18",
+                "27",
+                "Ian James, Zacharie Robichon, Mattia Drudi",
+                "Heart of Racing Team",
+                "1:49.121",
+                "6",
+                "+7.039"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Hyperpole",
+        "tables": [
+          {
+            "title": "Hypercar",
+            "columns": [
+              "Pos",
+              "No.",
+              "Crew",
+              "Team",
+              "Time",
+              "Laps",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "17",
+                "André Lotterer, Luis Felipe Derani, Mathys Jaubert",
+                "Genesis Magma Racing",
+                "1:30.166",
+                "6",
+                ""
+              ],
+              [
+                "2",
+                "8",
+                "Brendon Hartley, Ryo Hirakawa, Sébastien Buemi",
+                "TOYOTA RACING",
+                "1:30.336",
+                "6",
+                "+0.170"
+              ],
+              [
+                "3",
+                "19",
+                "Mathieu Jaminet, Paul-Loup Chatin, Daniel Juncadella",
+                "Genesis Magma Racing",
+                "1:30.490",
+                "6",
+                "+0.324"
+              ],
+              [
+                "4",
+                "35",
+                "Charles Milesi, Ferdinand Habsburg",
+                "Alpine Endurance Team",
+                "1:30.722",
+                "6",
+                "+0.556"
+              ],
+              [
+                "5",
+                "12",
+                "Will Stevens, Norman Nato, Alex Lynn",
+                "Cadillac Hertz Team JOTA",
+                "1:30.784",
+                "7",
+                "+0.618"
+              ],
+              [
+                "6",
+                "83",
+                "Yifei Ye, Robert Kubica, Philip Hanson",
+                "AF Corse",
+                "1:30.804",
+                "6",
+                "+0.638"
+              ],
+              [
+                "7",
+                "36",
+                "Jules Gounon, Victor Martins",
+                "Alpine Endurance Team",
+                "1:30.814",
+                "6",
+                "+0.648"
+              ],
+              [
+                "8",
+                "50",
+                "Antonio Fuoco, Miguel Molina, Nicklas Nielsen",
+                "Ferrari AF Corse",
+                "1:30.836",
+                "6",
+                "+0.670"
+              ],
+              [
+                "9",
+                "7",
+                "Mike Conway, Kamui Kobayashi, Nyck de Vries",
+                "TOYOTA RACING",
+                "1:30.953",
+                "6",
+                "+0.787"
+              ],
+              [
+                "10",
+                "38",
+                "Earl Bamber, Sébastien Bourdais, Jack Aitken",
+                "Cadillac Hertz Team JOTA",
+                "1:31.065",
+                "6",
+                "+0.899"
+              ]
+            ]
+          },
+          {
+            "title": "LMGT3",
+            "columns": [
+              "Pos",
+              "No.",
+              "Crew",
+              "Team",
+              "Time",
+              "Laps",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "10",
+                "Antares Au, Thomas Fleming, Marvin Kirchhöfer",
+                "Garage 59",
+                "1:40.933",
+                "5",
+                ""
+              ],
+              [
+                "2",
+                "92",
+                "Yasser Shahin, Riccardo Pera, Richard Lietz",
+                "The Bend Manthey",
+                "1:41.055",
+                "6",
+                "+0.122"
+              ],
+              [
+                "3",
+                "21",
+                "François Hériau, Simon Mann, Alessio Rovera",
+                "VISTA AF Corse",
+                "1:41.398",
+                "6",
+                "+0.465"
+              ],
+              [
+                "4",
+                "33",
+                "Ben Keating, Jonny Edgar, Nicky Catsburg",
+                "TF Sport",
+                "1:41.447",
+                "6",
+                "+0.514"
+              ],
+              [
+                "5",
+                "61",
+                "Christian Ried, Rui Andrade, Maxime Martin",
+                "Iron Lynx",
+                "1:41.625",
+                "5",
+                "+0.692"
+              ],
+              [
+                "6",
+                "32",
+                "Darren Leung, Sean Gelael, Augusto Farfus",
+                "Team WRT",
+                "1:41.698",
+                "5",
+                "+0.765"
+              ],
+              [
+                "7",
+                "87",
+                "Petru Umbrărescu, Clemens Schmid, José María López",
+                "Akkodis ASP Team",
+                "1:41.894",
+                "6",
+                "+0.961"
+              ],
+              [
+                "8",
+                "77",
+                "Eric Powell, Ben Tuck, Sebastian Priaulx",
+                "Proton Competition",
+                "1:41.956",
+                "6",
+                "+1.023"
+              ],
+              [
+                "9",
+                "88",
+                "Stefano Gattuso, Giammarco Levorato, Logan Sargeant",
+                "Proton Competition",
+                "1:42.222",
+                "6",
+                "+1.289"
+              ],
+              [
+                "10",
+                "34",
+                "Peter Dempsey, Salih Yoluç, Charlie Eastwood",
+                "Racing Team Turkey by TF",
+                "1:42.774",
+                "6",
+                "+1.841"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 8,
+    "name": "6 Hours of Monza",
+    "date": "2026-11-08",
+    "sessions": [
+      {
+        "label": "Race",
+        "tables": [
+          {
+            "title": "Hypercar",
+            "columns": [
+              "Pos",
+              "No.",
+              "Crew",
+              "Team",
+              "Laps",
+              "Time",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "38",
+                "Earl Bamber, Sébastien Bourdais, Jack Aitken",
+                "Cadillac Hertz Team JOTA",
+                "191",
+                "6:01:33.199",
+                ""
+              ],
+              [
+                "2",
+                "36",
+                "Jules Gounon, Victor Martins",
+                "Alpine Endurance Team",
+                "191",
+                "6:01:38.806",
+                "5.607"
+              ],
+              [
+                "3",
+                "51",
+                "Alessandro Pier Guidi, James Calado, Antonio Giovinazzi",
+                "Ferrari AF Corse",
+                "191",
+                "6:02:08.966",
+                "35.767"
+              ],
+              [
+                "4",
+                "94",
+                "Loïc Duval, Malthe Jakobsen, Théo Pourchaire",
+                "Peugeot TotalEnergies",
+                "191",
+                "6:02:28.089",
+                "54.890"
+              ],
+              [
+                "5",
+                "15",
+                "Kevin Magnussen, Raffaele Marciello, Dries Vanthoor",
+                "BMW M Team WRT",
+                "191",
+                "6:02:36.327",
+                "1:03.128"
+              ],
+              [
+                "6",
+                "83",
+                "Yifei Ye, Robert Kubica, Philip Hanson",
+                "AF Corse",
+                "191",
+                "6:03:00.151",
+                "1:26.952"
+              ],
+              [
+                "7",
+                "20",
+                "Robin Frijns, René Rast, Sheldon van der Linde",
+                "BMW M Team WRT",
+                "191",
+                "6:03:03.124",
+                "1:29.925"
+              ],
+              [
+                "8",
+                "93",
+                "Paul di Resta, Nick Cassidy, Alex Quinn",
+                "Peugeot TotalEnergies",
+                "191",
+                "6:03:05.077",
+                "1:31.878"
+              ],
+              [
+                "9",
+                "50",
+                "Antonio Fuoco, Miguel Molina, Nicklas Nielsen",
+                "Ferrari AF Corse",
+                "191",
+                "6:03:06.098",
+                "1:32.899"
+              ],
+              [
+                "10",
+                "8",
+                "Sébastien Buemi, Brendon Hartley, Ryo Hirakawa",
+                "TOYOTA RACING",
+                "190",
+                "6:01:37.721",
+                "1 Lap"
+              ],
+              [
+                "11",
+                "7",
+                "Mike Conway, Kamui Kobayashi, Nyck de Vries",
+                "TOYOTA RACING",
+                "190",
+                "6:01:50.955",
+                "1 Lap"
+              ],
+              [
+                "12",
+                "007",
+                "Harry Tincknell, Tom Gamble",
+                "Aston Martin THOR Team",
+                "190",
+                "6:03:17.179",
+                "1 Lap"
+              ],
+              [
+                "13",
+                "17",
+                "André Lotterer, Luis Felipe Derani, Mathys Jaubert",
+                "Genesis Magma Racing",
+                "189",
+                "6:01:52.636",
+                "2 Laps"
+              ],
+              [
+                "14",
+                "009",
+                "Alex Riberas, Marco Sørensen",
+                "Aston Martin THOR Team",
+                "189",
+                "6:02:14.443",
+                "2 Laps"
+              ],
+              [
+                "15",
+                "12",
+                "Will Stevens, Norman Nato, Alex Lynn",
+                "Cadillac Hertz Team JOTA",
+                "188",
+                "5:57:38.480",
+                "3 Laps"
+              ],
+              [
+                "16",
+                "35",
+                "Charles Milesi, Ferdinand Habsburg",
+                "Alpine Endurance Team",
+                "102",
+                "3:20:52.724",
+                "89 Laps"
+              ],
+              [
+                "17",
+                "19",
+                "Mathieu Jaminet, Paul-Loup Chatin, Daniel Juncadella",
+                "Genesis Magma Racing",
+                "62",
+                "2:00:06.582",
+                "129 Laps"
+              ]
+            ]
+          },
+          {
+            "title": "LMGT3",
+            "columns": [
+              "Pos",
+              "No.",
+              "Crew",
+              "Team",
+              "Laps",
+              "Time",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "92",
+                "Yasser Shahin, Riccardo Pera, Richard Lietz",
+                "The Bend Manthey",
+                "173",
+                "6:01:56.424",
+                ""
+              ],
+              [
+                "2",
+                "23",
+                "Gray Newell, Eduardo Barrichello, Jonny Adam",
+                "Heart of Racing Team",
+                "173",
+                "6:01:56.694",
+                "0.270"
+              ],
+              [
+                "3",
+                "33",
+                "Ben Keating, Jonny Edgar, Nicky Catsburg",
+                "TF Sport",
+                "173",
+                "6:02:06.024",
+                "9.600"
+              ],
+              [
+                "4",
+                "69",
+                "Anthony McIntosh, Parker Thompson, Daniel Harper",
+                "Team WRT",
+                "173",
+                "6:02:19.307",
+                "22.883"
+              ],
+              [
+                "5",
+                "91",
+                "James Cottingham, Timur Boguslavskiy, Ayhancan Güven",
+                "Manthey DK Engineering",
+                "173",
+                "6:02:24.670",
+                "28.246"
+              ],
+              [
+                "6",
+                "79",
+                "Johannes Zelger, Matteo Cressoni, Lin Hodenius",
+                "Iron Lynx",
+                "173",
+                "6:02:26.621",
+                "30.197"
+              ],
+              [
+                "7",
+                "61",
+                "Christian Ried, Rui Andrade, Maxime Martin",
+                "Iron Lynx",
+                "173",
+                "6:02:31.083",
+                "34.659"
+              ],
+              [
+                "8",
+                "21",
+                "François Hériau, Simon Mann, Alessio Rovera",
+                "VISTA AF Corse",
+                "173",
+                "6:02:33.225",
+                "36.801"
+              ],
+              [
+                "9",
+                "27",
+                "Ian James, Zacharie Robichon, Mattia Drudi",
+                "Heart of Racing Team",
+                "173",
+                "6:03:01.475",
+                "1:05.051"
+              ],
+              [
+                "10",
+                "78",
+                "Tom Van Rompuy, Hadrien David, Esteban Masson",
+                "Akkodis ASP Team",
+                "173",
+                "6:03:02.768",
+                "1:06.344"
+              ],
+              [
+                "11",
+                "34",
+                "Peter Dempsey, Salih Yoluç, Charlie Eastwood",
+                "Racing Team Turkey by TF",
+                "173",
+                "6:03:03.919",
+                "1:07.495"
+              ],
+              [
+                "12",
+                "77",
+                "Eric Powell, Ben Tuck, Sebastian Priaulx",
+                "Proton Competition",
+                "172",
+                "6:02:45.613",
+                "1 Lap"
+              ],
+              [
+                "13",
+                "10",
+                "Antares Au, Thomas Fleming, Marvin Kirchhöfer",
+                "Garage 59",
+                "171",
+                "6:03:01.813",
+                "2 Laps"
+              ],
+              [
+                "14",
+                "88",
+                "Stefano Gattuso, Giammarco Levorato, Logan Sargeant",
+                "Proton Competition",
+                "166",
+                "5:53:07.872",
+                "7 Laps"
+              ],
+              [
+                "15",
+                "87",
+                "Petru Umbrărescu, Clemens Schmid, José María López",
+                "Akkodis ASP Team",
+                "76",
+                "2:48:15.415",
+                "97 Laps"
+              ],
+              [
+                "16",
+                "54",
+                "Thomas Flohr, Francesco Castellacci, Davide Rigon",
+                "VISTA AF Corse",
+                "69",
+                "2:34:45.419",
+                "104 Laps"
+              ],
+              [
+                "17",
+                "58",
+                "Alexander West, Finn Gehrsitz, Benjamin Goethe",
+                "Garage 59",
+                "42",
+                "1:31:45.723",
+                "131 Laps"
+              ],
+              [
+                "18",
+                "32",
+                "Darren Leung, Sean Gelael, Augusto Farfus",
+                "Team WRT",
+                "41",
+                "1:25:39.844",
+                "132 Laps"
+              ]
+            ]
+          }
+        ]
+      }
+    ],
+    "others": [
+      {
+        "label": "Free Practice 1",
+        "tables": [
+          {
+            "title": "Hypercar",
+            "columns": [
+              "Pos",
+              "No.",
+              "Crew",
+              "Team",
+              "Time",
+              "Laps",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "35",
+                "Charles Milesi, Ferdinand Habsburg",
+                "Alpine Endurance Team",
+                "1:45.862",
+                "24",
+                ""
+              ],
+              [
+                "2",
+                "83",
+                "Yifei Ye, Robert Kubica, Philip Hanson",
+                "AF Corse",
+                "1:46.263",
+                "38",
+                "+0.401"
+              ],
+              [
+                "3",
+                "36",
+                "Jules Gounon, Victor Martins",
+                "Alpine Endurance Team",
+                "1:46.453",
+                "24",
+                "+0.591"
+              ],
+              [
+                "4",
+                "007",
+                "Harry Tincknell, Tom Gamble",
+                "Aston Martin THOR Team",
+                "1:46.453",
+                "36",
+                "+0.591"
+              ],
+              [
+                "5",
+                "51",
+                "Alessandro Pier Guidi, James Calado, Antonio Giovinazzi",
+                "Ferrari AF Corse",
+                "1:46.557",
+                "36",
+                "+0.695"
+              ],
+              [
+                "6",
+                "17",
+                "André Lotterer, Luis Felipe Derani, Mathys Jaubert",
+                "Genesis Magma Racing",
+                "1:46.835",
+                "32",
+                "+0.973"
+              ],
+              [
+                "7",
+                "94",
+                "Loïc Duval, Malthe Jakobsen, Théo Pourchaire",
+                "Peugeot TotalEnergies",
+                "1:46.893",
+                "36",
+                "+1.031"
+              ],
+              [
+                "8",
+                "50",
+                "Antonio Fuoco, Miguel Molina, Nicklas Nielsen",
+                "Ferrari AF Corse",
+                "1:46.967",
+                "30",
+                "+1.105"
+              ],
+              [
+                "9",
+                "19",
+                "Mathieu Jaminet, Paul-Loup Chatin, Daniel Juncadella",
+                "Genesis Magma Racing",
+                "1:47.418",
+                "34",
+                "+1.556"
+              ],
+              [
+                "10",
+                "38",
+                "Earl Bamber, Sébastien Bourdais, Jack Aitken",
+                "Cadillac Hertz Team JOTA",
+                "1:48.015",
+                "32",
+                "+2.153"
+              ],
+              [
+                "11",
+                "8",
+                "Sébastien Buemi, Brendon Hartley, Ryo Hirakawa",
+                "TOYOTA RACING",
+                "1:48.079",
+                "28",
+                "+2.217"
+              ],
+              [
+                "12",
+                "009",
+                "Alex Riberas, Marco Sørensen",
+                "Aston Martin THOR Team",
+                "1:48.837",
+                "30",
+                "+2.975"
+              ],
+              [
+                "13",
+                "20",
+                "Robin Frijns, René Rast, Sheldon van der Linde",
+                "BMW M Team WRT",
+                "1:50.053",
+                "19",
+                "+4.191"
+              ],
+              [
+                "14",
+                "7",
+                "Mike Conway, Kamui Kobayashi, Nyck de Vries",
+                "TOYOTA RACING",
+                "1:50.317",
+                "28",
+                "+4.455"
+              ],
+              [
+                "15",
+                "15",
+                "Kevin Magnussen, Raffaele Marciello, Dries Vanthoor",
+                "BMW M Team WRT",
+                "1:50.444",
+                "21",
+                "+4.582"
+              ],
+              [
+                "16",
+                "93",
+                "Paul di Resta, Nick Cassidy, Alex Quinn",
+                "Peugeot TotalEnergies",
+                "1:50.997",
+                "34",
+                "+5.135"
+              ],
+              [
+                "17",
+                "12",
+                "Will Stevens, Norman Nato, Alex Lynn",
+                "Cadillac Hertz Team JOTA",
+                "1:51.040",
+                "29",
+                "+5.178"
+              ]
+            ]
+          },
+          {
+            "title": "LMGT3",
+            "columns": [
+              "Pos",
+              "No.",
+              "Crew",
+              "Team",
+              "Time",
+              "Laps",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "10",
+                "Antares Au, Thomas Fleming, Marvin Kirchhöfer",
+                "Garage 59",
+                "1:57.575",
+                "32",
+                ""
+              ],
+              [
+                "2",
+                "88",
+                "Stefano Gattuso, Giammarco Levorato, Logan Sargeant",
+                "Proton Competition",
+                "1:57.905",
+                "32",
+                "+0.330"
+              ],
+              [
+                "3",
+                "33",
+                "Ben Keating, Jonny Edgar, Nicky Catsburg",
+                "TF Sport",
+                "1:57.946",
+                "35",
+                "+0.371"
+              ],
+              [
+                "4",
+                "69",
+                "Anthony McIntosh, Parker Thompson, Daniel Harper",
+                "Team WRT",
+                "1:58.020",
+                "30",
+                "+0.445"
+              ],
+              [
+                "5",
+                "79",
+                "Johannes Zelger, Matteo Cressoni, Lin Hodenius",
+                "Iron Lynx",
+                "1:58.095",
+                "33",
+                "+0.520"
+              ],
+              [
+                "6",
+                "32",
+                "Darren Leung, Sean Gelael, Augusto Farfus",
+                "Team WRT",
+                "1:58.103",
+                "31",
+                "+0.528"
+              ],
+              [
+                "7",
+                "23",
+                "Gray Newell, Eduardo Barrichello, Jonny Adam",
+                "Heart of Racing Team",
+                "1:58.206",
+                "35",
+                "+0.631"
+              ],
+              [
+                "8",
+                "87",
+                "Petru Umbrărescu, Clemens Schmid, José María López",
+                "Akkodis ASP Team",
+                "1:58.445",
+                "33",
+                "+0.870"
+              ],
+              [
+                "9",
+                "77",
+                "Eric Powell, Ben Tuck, Sebastian Priaulx",
+                "Proton Competition",
+                "1:58.470",
+                "34",
+                "+0.895"
+              ],
+              [
+                "10",
+                "34",
+                "Peter Dempsey, Salih Yoluç, Charlie Eastwood",
+                "Racing Team Turkey by TF",
+                "1:59.449",
+                "33",
+                "+1.874"
+              ],
+              [
+                "11",
+                "54",
+                "Thomas Flohr, Francesco Castellacci, Davide Rigon",
+                "VISTA AF Corse",
+                "1:59.583",
+                "34",
+                "+2.008"
+              ],
+              [
+                "12",
+                "27",
+                "Ian James, Zacharie Robichon, Mattia Drudi",
+                "Heart of Racing Team",
+                "1:59.625",
+                "36",
+                "+2.050"
+              ],
+              [
+                "13",
+                "91",
+                "James Cottingham, Timur Boguslavskiy, Ayhancan Güven",
+                "Manthey DK Engineering",
+                "1:59.805",
+                "31",
+                "+2.230"
+              ],
+              [
+                "14",
+                "61",
+                "Christian Ried, Rui Andrade, Maxime Martin",
+                "Iron Lynx",
+                "1:59.824",
+                "33",
+                "+2.249"
+              ],
+              [
+                "15",
+                "58",
+                "Alexander West, Finn Gehrsitz, Benjamin Goethe",
+                "Garage 59",
+                "2:00.109",
+                "34",
+                "+2.534"
+              ],
+              [
+                "16",
+                "21",
+                "François Hériau, Simon Mann, Alessio Rovera",
+                "VISTA AF Corse",
+                "2:00.301",
+                "31",
+                "+2.726"
+              ],
+              [
+                "17",
+                "78",
+                "Tom Van Rompuy, Hadrien David, Esteban Masson",
+                "Akkodis ASP Team",
+                "2:00.594",
+                "34",
+                "+3.019"
+              ],
+              [
+                "18",
+                "92",
+                "Yasser Shahin, Riccardo Pera, Richard Lietz",
+                "The Bend Manthey",
+                "2:04.491",
+                "3",
+                "+6.916"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Free Practice 2",
+        "tables": [
+          {
+            "title": "Hypercar",
+            "columns": [
+              "Pos",
+              "No.",
+              "Crew",
+              "Team",
+              "Time",
+              "Laps",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "83",
+                "Yifei Ye, Robert Kubica, Philip Hanson",
+                "AF Corse",
+                "1:38.143",
+                "46",
+                ""
+              ],
+              [
+                "2",
+                "007",
+                "Harry Tincknell, Tom Gamble",
+                "Aston Martin THOR Team",
+                "1:38.939",
+                "45",
+                "+0.796"
+              ],
+              [
+                "3",
+                "15",
+                "Kevin Magnussen, Raffaele Marciello, Dries Vanthoor",
+                "BMW M Team WRT",
+                "1:39.759",
+                "41",
+                "+1.616"
+              ],
+              [
+                "4",
+                "36",
+                "Jules Gounon, Victor Martins",
+                "Alpine Endurance Team",
+                "1:40.058",
+                "40",
+                "+1.915"
+              ],
+              [
+                "5",
+                "19",
+                "Mathieu Jaminet, Paul-Loup Chatin, Daniel Juncadella",
+                "Genesis Magma Racing",
+                "1:40.239",
+                "41",
+                "+2.096"
+              ],
+              [
+                "6",
+                "38",
+                "Earl Bamber, Sébastien Bourdais, Jack Aitken",
+                "Cadillac Hertz Team JOTA",
+                "1:40.265",
+                "46",
+                "+2.122"
+              ],
+              [
+                "7",
+                "50",
+                "Antonio Fuoco, Miguel Molina, Nicklas Nielsen",
+                "Ferrari AF Corse",
+                "1:40.295",
+                "45",
+                "+2.152"
+              ],
+              [
+                "8",
+                "94",
+                "Loïc Duval, Malthe Jakobsen, Théo Pourchaire",
+                "Peugeot TotalEnergies",
+                "1:40.909",
+                "46",
+                "+2.766"
+              ],
+              [
+                "9",
+                "17",
+                "André Lotterer, Luis Felipe Derani, Mathys Jaubert",
+                "Genesis Magma Racing",
+                "1:41.046",
+                "42",
+                "+2.903"
+              ],
+              [
+                "10",
+                "35",
+                "Charles Milesi, Ferdinand Habsburg",
+                "Alpine Endurance Team",
+                "1:41.063",
+                "35",
+                "+2.920"
+              ],
+              [
+                "11",
+                "20",
+                "Robin Frijns, René Rast, Sheldon van der Linde",
+                "BMW M Team WRT",
+                "1:41.279",
+                "45",
+                "+3.136"
+              ],
+              [
+                "12",
+                "8",
+                "Sébastien Buemi, Brendon Hartley, Ryo Hirakawa",
+                "TOYOTA RACING",
+                "1:41.458",
+                "45",
+                "+3.315"
+              ],
+              [
+                "13",
+                "93",
+                "Paul di Resta, Nick Cassidy, Alex Quinn",
+                "Peugeot TotalEnergies",
+                "1:41.661",
+                "45",
+                "+3.518"
+              ],
+              [
+                "14",
+                "009",
+                "Alex Riberas, Marco Sørensen",
+                "Aston Martin THOR Team",
+                "1:41.747",
+                "46",
+                "+3.604"
+              ],
+              [
+                "15",
+                "51",
+                "Alessandro Pier Guidi, James Calado, Antonio Giovinazzi",
+                "Ferrari AF Corse",
+                "1:41.783",
+                "45",
+                "+3.640"
+              ],
+              [
+                "16",
+                "12",
+                "Will Stevens, Norman Nato, Alex Lynn",
+                "Cadillac Hertz Team JOTA",
+                "1:42.259",
+                "47",
+                "+4.116"
+              ],
+              [
+                "17",
+                "7",
+                "Mike Conway, Kamui Kobayashi, Nyck de Vries",
+                "TOYOTA RACING",
+                "1:43.377",
+                "44",
+                "+5.234"
+              ]
+            ]
+          },
+          {
+            "title": "LMGT3",
+            "columns": [
+              "Pos",
+              "No.",
+              "Crew",
+              "Team",
+              "Time",
+              "Laps",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "77",
+                "Eric Powell, Ben Tuck, Sebastian Priaulx",
+                "Proton Competition",
+                "1:50.352",
+                "41",
+                ""
+              ],
+              [
+                "2",
+                "88",
+                "Stefano Gattuso, Giammarco Levorato, Logan Sargeant",
+                "Proton Competition",
+                "1:50.439",
+                "41",
+                "+0.087"
+              ],
+              [
+                "3",
+                "61",
+                "Christian Ried, Rui Andrade, Maxime Martin",
+                "Iron Lynx",
+                "1:50.653",
+                "38",
+                "+0.301"
+              ],
+              [
+                "4",
+                "91",
+                "James Cottingham, Timur Boguslavskiy, Ayhancan Güven",
+                "Manthey DK Engineering",
+                "1:51.344",
+                "40",
+                "+0.992"
+              ],
+              [
+                "5",
+                "87",
+                "Petru Umbrărescu, Clemens Schmid, José María López",
+                "Akkodis ASP Team",
+                "1:51.367",
+                "37",
+                "+1.015"
+              ],
+              [
+                "6",
+                "78",
+                "Tom Van Rompuy, Hadrien David, Esteban Masson",
+                "Akkodis ASP Team",
+                "1:51.435",
+                "39",
+                "+1.083"
+              ],
+              [
+                "7",
+                "32",
+                "Darren Leung, Sean Gelael, Augusto Farfus",
+                "Team WRT",
+                "1:51.481",
+                "39",
+                "+1.129"
+              ],
+              [
+                "8",
+                "27",
+                "Ian James, Zacharie Robichon, Mattia Drudi",
+                "Heart of Racing Team",
+                "1:51.743",
+                "40",
+                "+1.391"
+              ],
+              [
+                "9",
+                "92",
+                "Yasser Shahin, Riccardo Pera, Richard Lietz",
+                "The Bend Manthey",
+                "1:51.926",
+                "39",
+                "+1.574"
+              ],
+              [
+                "10",
+                "10",
+                "Antares Au, Thomas Fleming, Marvin Kirchhöfer",
+                "Garage 59",
+                "1:51.990",
+                "40",
+                "+1.638"
+              ],
+              [
+                "11",
+                "54",
+                "Thomas Flohr, Francesco Castellacci, Davide Rigon",
+                "VISTA AF Corse",
+                "1:52.201",
+                "40",
+                "+1.849"
+              ],
+              [
+                "12",
+                "21",
+                "François Hériau, Simon Mann, Alessio Rovera",
+                "VISTA AF Corse",
+                "1:53.126",
+                "39",
+                "+2.774"
+              ],
+              [
+                "13",
+                "23",
+                "Gray Newell, Eduardo Barrichello, Jonny Adam",
+                "Heart of Racing Team",
+                "1:53.179",
+                "38",
+                "+2.827"
+              ],
+              [
+                "14",
+                "69",
+                "Anthony McIntosh, Parker Thompson, Daniel Harper",
+                "Team WRT",
+                "1:53.598",
+                "38",
+                "+3.246"
+              ],
+              [
+                "15",
+                "58",
+                "Alexander West, Finn Gehrsitz, Benjamin Goethe",
+                "Garage 59",
+                "1:54.688",
+                "40",
+                "+4.336"
+              ],
+              [
+                "16",
+                "34",
+                "Peter Dempsey, Salih Yoluç, Charlie Eastwood",
+                "Racing Team Turkey by TF",
+                "1:54.809",
+                "37",
+                "+4.457"
+              ],
+              [
+                "17",
+                "33",
+                "Ben Keating, Jonny Edgar, Nicky Catsburg",
+                "TF Sport",
+                "1:55.485",
+                "40",
+                "+5.133"
+              ],
+              [
+                "18",
+                "79",
+                "Johannes Zelger, Matteo Cressoni, Lin Hodenius",
+                "Iron Lynx",
+                "1:55.548",
+                "38",
+                "+5.196"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Free Practice 3",
+        "tables": [
+          {
+            "title": "Hypercar",
+            "columns": [
+              "Pos",
+              "No.",
+              "Crew",
+              "Team",
+              "Time",
+              "Laps",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "36",
+                "Jules Gounon, Victor Martins",
+                "Alpine Endurance Team",
+                "1:42.746",
+                "32",
+                ""
+              ],
+              [
+                "2",
+                "83",
+                "Yifei Ye, Robert Kubica, Philip Hanson",
+                "AF Corse",
+                "1:42.839",
+                "28",
+                "+0.093"
+              ],
+              [
+                "3",
+                "50",
+                "Antonio Fuoco, Miguel Molina, Nicklas Nielsen",
+                "Ferrari AF Corse",
+                "1:43.076",
+                "31",
+                "+0.330"
+              ],
+              [
+                "4",
+                "19",
+                "Mathieu Jaminet, Paul-Loup Chatin, Daniel Juncadella",
+                "Genesis Magma Racing",
+                "1:43.333",
+                "25",
+                "+0.587"
+              ],
+              [
+                "5",
+                "35",
+                "Charles Milesi, Ferdinand Habsburg",
+                "Alpine Endurance Team",
+                "1:43.352",
+                "31",
+                "+0.606"
+              ],
+              [
+                "6",
+                "15",
+                "Kevin Magnussen, Raffaele Marciello, Dries Vanthoor",
+                "BMW M Team WRT",
+                "1:43.560",
+                "30",
+                "+0.814"
+              ],
+              [
+                "7",
+                "17",
+                "André Lotterer, Luis Felipe Derani, Mathys Jaubert",
+                "Genesis Magma Racing",
+                "1:43.570",
+                "30",
+                "+0.824"
+              ],
+              [
+                "8",
+                "7",
+                "Mike Conway, Kamui Kobayashi, Nyck de Vries",
+                "TOYOTA RACING",
+                "1:43.850",
+                "32",
+                "+1.104"
+              ],
+              [
+                "9",
+                "007",
+                "Harry Tincknell, Tom Gamble",
+                "Aston Martin THOR Team",
+                "1:43.900",
+                "30",
+                "+1.154"
+              ],
+              [
+                "10",
+                "93",
+                "Paul di Resta, Nick Cassidy, Alex Quinn",
+                "Peugeot TotalEnergies",
+                "1:43.922",
+                "29",
+                "+1.176"
+              ],
+              [
+                "11",
+                "38",
+                "Earl Bamber, Sébastien Bourdais, Jack Aitken",
+                "Cadillac Hertz Team JOTA",
+                "1:43.994",
+                "32",
+                "+1.248"
+              ],
+              [
+                "12",
+                "94",
+                "Loïc Duval, Malthe Jakobsen, Théo Pourchaire",
+                "Peugeot TotalEnergies",
+                "1:44.150",
+                "30",
+                "+1.404"
+              ],
+              [
+                "13",
+                "12",
+                "Will Stevens, Norman Nato, Alex Lynn",
+                "Cadillac Hertz Team JOTA",
+                "1:44.491",
+                "31",
+                "+1.745"
+              ],
+              [
+                "14",
+                "009",
+                "Alex Riberas, Marco Sørensen",
+                "Aston Martin THOR Team",
+                "1:44.795",
+                "32",
+                "+2.049"
+              ],
+              [
+                "15",
+                "8",
+                "Sébastien Buemi, Brendon Hartley, Ryo Hirakawa",
+                "TOYOTA RACING",
+                "1:44.982",
+                "31",
+                "+2.236"
+              ],
+              [
+                "16",
+                "20",
+                "Robin Frijns, René Rast, Sheldon van der Linde",
+                "BMW M Team WRT",
+                "1:45.148",
+                "29",
+                "+2.402"
+              ],
+              [
+                "17",
+                "51",
+                "Alessandro Pier Guidi, James Calado, Antonio Giovinazzi",
+                "Ferrari AF Corse",
+                "1:48.941",
+                "7",
+                "+6.195"
+              ]
+            ]
+          },
+          {
+            "title": "LMGT3",
+            "columns": [
+              "Pos",
+              "No.",
+              "Crew",
+              "Team",
+              "Time",
+              "Laps",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "21",
+                "François Hériau, Simon Mann, Alessio Rovera",
+                "VISTA AF Corse",
+                "1:56.069",
+                "27",
+                ""
+              ],
+              [
+                "2",
+                "61",
+                "Christian Ried, Rui Andrade, Maxime Martin",
+                "Iron Lynx",
+                "1:56.351",
+                "28",
+                "+0.282"
+              ],
+              [
+                "3",
+                "79",
+                "Johannes Zelger, Matteo Cressoni, Lin Hodenius",
+                "Iron Lynx",
+                "1:56.442",
+                "28",
+                "+0.373"
+              ],
+              [
+                "4",
+                "33",
+                "Ben Keating, Jonny Edgar, Nicky Catsburg",
+                "TF Sport",
+                "1:56.552",
+                "28",
+                "+0.483"
+              ],
+              [
+                "5",
+                "69",
+                "Anthony McIntosh, Parker Thompson, Daniel Harper",
+                "Team WRT",
+                "1:56.571",
+                "25",
+                "+0.502"
+              ],
+              [
+                "6",
+                "87",
+                "Petru Umbrărescu, Clemens Schmid, José María López",
+                "Akkodis ASP Team",
+                "1:56.727",
+                "24",
+                "+0.658"
+              ],
+              [
+                "7",
+                "88",
+                "Stefano Gattuso, Giammarco Levorato, Logan Sargeant",
+                "Proton Competition",
+                "1:56.873",
+                "29",
+                "+0.804"
+              ],
+              [
+                "8",
+                "58",
+                "Alexander West, Finn Gehrsitz, Benjamin Goethe",
+                "Garage 59",
+                "1:56.914",
+                "28",
+                "+0.845"
+              ],
+              [
+                "9",
+                "77",
+                "Eric Powell, Ben Tuck, Sebastian Priaulx",
+                "Proton Competition",
+                "1:57.255",
+                "28",
+                "+1.186"
+              ],
+              [
+                "10",
+                "91",
+                "James Cottingham, Timur Boguslavskiy, Ayhancan Güven",
+                "Manthey DK Engineering",
+                "1:57.306",
+                "28",
+                "+1.237"
+              ],
+              [
+                "11",
+                "78",
+                "Tom Van Rompuy, Hadrien David, Esteban Masson",
+                "Akkodis ASP Team",
+                "1:57.594",
+                "25",
+                "+1.525"
+              ],
+              [
+                "12",
+                "27",
+                "Ian James, Zacharie Robichon, Mattia Drudi",
+                "Heart of Racing Team",
+                "1:57.596",
+                "26",
+                "+1.527"
+              ],
+              [
+                "13",
+                "10",
+                "Antares Au, Thomas Fleming, Marvin Kirchhöfer",
+                "Garage 59",
+                "1:57.632",
+                "27",
+                "+1.563"
+              ],
+              [
+                "14",
+                "54",
+                "Thomas Flohr, Francesco Castellacci, Davide Rigon",
+                "VISTA AF Corse",
+                "1:57.662",
+                "26",
+                "+1.593"
+              ],
+              [
+                "15",
+                "23",
+                "Gray Newell, Eduardo Barrichello, Jonny Adam",
+                "Heart of Racing Team",
+                "1:57.846",
+                "28",
+                "+1.777"
+              ],
+              [
+                "16",
+                "92",
+                "Yasser Shahin, Riccardo Pera, Richard Lietz",
+                "The Bend Manthey",
+                "1:57.981",
+                "29",
+                "+1.912"
+              ],
+              [
+                "17",
+                "32",
+                "Darren Leung, Sean Gelael, Augusto Farfus",
+                "Team WRT",
+                "1:58.246",
+                "24",
+                "+2.177"
+              ],
+              [
+                "18",
+                "34",
+                "Peter Dempsey, Salih Yoluç, Charlie Eastwood",
+                "Racing Team Turkey by TF",
+                "1:58.418",
+                "23",
+                "+2.349"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Qualifying",
+        "tables": [
+          {
+            "title": "Hypercar",
+            "columns": [
+              "Pos",
+              "No.",
+              "Crew",
+              "Team",
+              "Time",
+              "Laps",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "50",
+                "Antonio Fuoco, Miguel Molina, Nicklas Nielsen",
+                "Ferrari AF Corse",
+                "1:33.400",
+                "8",
+                ""
+              ],
+              [
+                "2",
+                "19",
+                "Mathieu Jaminet, Paul-Loup Chatin, Daniel Juncadella",
+                "Genesis Magma Racing",
+                "1:33.792",
+                "7",
+                "+0.392"
+              ],
+              [
+                "3",
+                "83",
+                "Yifei Ye, Robert Kubica, Philip Hanson",
+                "AF Corse",
+                "1:33.880",
+                "8",
+                "+0.480"
+              ],
+              [
+                "4",
+                "51",
+                "Alessandro Pier Guidi, James Calado, Antonio Giovinazzi",
+                "Ferrari AF Corse",
+                "1:34.077",
+                "8",
+                "+0.677"
+              ],
+              [
+                "5",
+                "38",
+                "Earl Bamber, Sébastien Bourdais, Jack Aitken",
+                "Cadillac Hertz Team JOTA",
+                "1:34.177",
+                "7",
+                "+0.777"
+              ],
+              [
+                "6",
+                "94",
+                "Loïc Duval, Malthe Jakobsen, Théo Pourchaire",
+                "Peugeot TotalEnergies",
+                "1:34.235",
+                "7",
+                "+0.835"
+              ],
+              [
+                "7",
+                "20",
+                "Robin Frijns, René Rast, Sheldon van der Linde",
+                "BMW M Team WRT",
+                "1:34.255",
+                "7",
+                "+0.855"
+              ],
+              [
+                "8",
+                "36",
+                "Jules Gounon, Victor Martins",
+                "Alpine Endurance Team",
+                "1:34.265",
+                "7",
+                "+0.865"
+              ],
+              [
+                "9",
+                "12",
+                "Will Stevens, Norman Nato, Alex Lynn",
+                "Cadillac Hertz Team JOTA",
+                "1:34.351",
+                "7",
+                "+0.951"
+              ],
+              [
+                "10",
+                "93",
+                "Paul di Resta, Nick Cassidy, Alex Quinn",
+                "Peugeot TotalEnergies",
+                "1:34.364",
+                "7",
+                "+0.964"
+              ],
+              [
+                "11",
+                "35",
+                "Charles Milesi, Ferdinand Habsburg",
+                "Alpine Endurance Team",
+                "1:34.438",
+                "7",
+                "+1.038"
+              ],
+              [
+                "12",
+                "009",
+                "Alex Riberas, Marco Sørensen",
+                "Aston Martin THOR Team",
+                "1:34.492",
+                "8",
+                "+1.092"
+              ],
+              [
+                "13",
+                "17",
+                "André Lotterer, Luis Felipe Derani, Mathys Jaubert",
+                "Genesis Magma Racing",
+                "1:34.567",
+                "7",
+                "+1.167"
+              ],
+              [
+                "14",
+                "007",
+                "Harry Tincknell, Tom Gamble",
+                "Aston Martin THOR Team",
+                "1:34.627",
+                "7",
+                "+1.227"
+              ],
+              [
+                "15",
+                "8",
+                "Sébastien Buemi, Brendon Hartley, Ryo Hirakawa",
+                "TOYOTA RACING",
+                "1:34.734",
+                "8",
+                "+1.334"
+              ],
+              [
+                "16",
+                "7",
+                "Mike Conway, Kamui Kobayashi, Nyck de Vries",
+                "TOYOTA RACING",
+                "1:35.065",
+                "7",
+                "+1.665"
+              ],
+              [
+                "17",
+                "15",
+                "Kevin Magnussen, Raffaele Marciello, Dries Vanthoor",
+                "BMW M Team WRT",
+                "1:35.339",
+                "7",
+                "+1.939"
+              ]
+            ]
+          },
+          {
+            "title": "LMGT3",
+            "columns": [
+              "Pos",
+              "No.",
+              "Crew",
+              "Team",
+              "Time",
+              "Laps",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "34",
+                "Peter Dempsey, Salih Yoluç, Charlie Eastwood",
+                "Racing Team Turkey by TF",
+                "1:48.440",
+                "7",
+                ""
+              ],
+              [
+                "2",
+                "88",
+                "Stefano Gattuso, Giammarco Levorato, Logan Sargeant",
+                "Proton Competition",
+                "1:48.889",
+                "7",
+                "+0.449"
+              ],
+              [
+                "3",
+                "77",
+                "Eric Powell, Ben Tuck, Sebastian Priaulx",
+                "Proton Competition",
+                "1:49.384",
+                "7",
+                "+0.944"
+              ],
+              [
+                "4",
+                "23",
+                "Gray Newell, Eduardo Barrichello, Jonny Adam",
+                "Heart of Racing Team",
+                "1:49.490",
+                "7",
+                "+1.050"
+              ],
+              [
+                "5",
+                "27",
+                "Ian James, Zacharie Robichon, Mattia Drudi",
+                "Heart of Racing Team",
+                "1:50.131",
+                "7",
+                "+1.691"
+              ],
+              [
+                "6",
+                "87",
+                "Petru Umbrărescu, Clemens Schmid, José María López",
+                "Akkodis ASP Team",
+                "1:50.147",
+                "7",
+                "+1.707"
+              ],
+              [
+                "7",
+                "61",
+                "Christian Ried, Rui Andrade, Maxime Martin",
+                "Iron Lynx",
+                "1:50.275",
+                "6",
+                "+1.835"
+              ],
+              [
+                "8",
+                "78",
+                "Tom Van Rompuy, Hadrien David, Esteban Masson",
+                "Akkodis ASP Team",
+                "1:50.356",
+                "7",
+                "+1.916"
+              ],
+              [
+                "9",
+                "33",
+                "Ben Keating, Jonny Edgar, Nicky Catsburg",
+                "TF Sport",
+                "1:50.647",
+                "6",
+                "+2.207"
+              ],
+              [
+                "10",
+                "91",
+                "James Cottingham, Timur Boguslavskiy, Ayhancan Güven",
+                "Manthey DK Engineering",
+                "1:50.742",
+                "6",
+                "+2.302"
+              ],
+              [
+                "11",
+                "92",
+                "Yasser Shahin, Riccardo Pera, Richard Lietz",
+                "The Bend Manthey",
+                "1:50.820",
+                "6",
+                "+2.380"
+              ],
+              [
+                "12",
+                "32",
+                "Darren Leung, Sean Gelael, Augusto Farfus",
+                "Team WRT",
+                "1:51.047",
+                "6",
+                "+2.607"
+              ],
+              [
+                "13",
+                "79",
+                "Johannes Zelger, Matteo Cressoni, Lin Hodenius",
+                "Iron Lynx",
+                "1:51.190",
+                "6",
+                "+2.750"
+              ],
+              [
+                "14",
+                "58",
+                "Alexander West, Finn Gehrsitz, Benjamin Goethe",
+                "Garage 59",
+                "1:51.285",
+                "6",
+                "+2.845"
+              ],
+              [
+                "15",
+                "54",
+                "Thomas Flohr, Francesco Castellacci, Davide Rigon",
+                "VISTA AF Corse",
+                "1:51.315",
+                "6",
+                "+2.875"
+              ],
+              [
+                "16",
+                "69",
+                "Anthony McIntosh, Parker Thompson, Daniel Harper",
+                "Team WRT",
+                "1:51.332",
+                "6",
+                "+2.892"
+              ],
+              [
+                "17",
+                "10",
+                "Antares Au, Thomas Fleming, Marvin Kirchhöfer",
+                "Garage 59",
+                "",
+                "6",
+                ""
+              ],
+              [
+                "18",
+                "21",
+                "François Hériau, Simon Mann, Alessio Rovera",
+                "VISTA AF Corse",
+                "",
+                "0",
+                ""
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Hyperpole",
+        "tables": [
+          {
+            "title": "Hypercar",
+            "columns": [
+              "Pos",
+              "No.",
+              "Crew",
+              "Team",
+              "Time",
+              "Laps",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "50",
+                "Antonio Fuoco, Miguel Molina, Nicklas Nielsen",
+                "Ferrari AF Corse",
+                "1:33.364",
+                "7",
+                ""
+              ],
+              [
+                "2",
+                "19",
+                "Mathieu Jaminet, Paul-Loup Chatin, Daniel Juncadella",
+                "Genesis Magma Racing",
+                "1:33.460",
+                "6",
+                "+0.096"
+              ],
+              [
+                "3",
+                "38",
+                "Earl Bamber, Sébastien Bourdais, Jack Aitken",
+                "Cadillac Hertz Team JOTA",
+                "1:33.541",
+                "6",
+                "+0.177"
+              ],
+              [
+                "4",
+                "51",
+                "Alessandro Pier Guidi, James Calado, Antonio Giovinazzi",
+                "Ferrari AF Corse",
+                "1:33.573",
+                "6",
+                "+0.209"
+              ],
+              [
+                "5",
+                "94",
+                "Loïc Duval, Malthe Jakobsen, Théo Pourchaire",
+                "Peugeot TotalEnergies",
+                "1:33.617",
+                "6",
+                "+0.253"
+              ],
+              [
+                "6",
+                "36",
+                "Jules Gounon, Victor Martins",
+                "Alpine Endurance Team",
+                "1:33.858",
+                "6",
+                "+0.494"
+              ],
+              [
+                "7",
+                "12",
+                "Will Stevens, Norman Nato, Alex Lynn",
+                "Cadillac Hertz Team JOTA",
+                "1:33.900",
+                "6",
+                "+0.536"
+              ],
+              [
+                "8",
+                "83",
+                "Yifei Ye, Robert Kubica, Philip Hanson",
+                "AF Corse",
+                "1:33.922",
+                "6",
+                "+0.558"
+              ],
+              [
+                "9",
+                "93",
+                "Paul di Resta, Nick Cassidy, Alex Quinn",
+                "Peugeot TotalEnergies",
+                "1:34.084",
+                "6",
+                "+0.720"
+              ],
+              [
+                "10",
+                "20",
+                "Robin Frijns, René Rast, Sheldon van der Linde",
+                "BMW M Team WRT",
+                "1:34.415",
+                "6",
+                "+1.051"
+              ]
+            ]
+          },
+          {
+            "title": "LMGT3",
+            "columns": [
+              "Pos",
+              "No.",
+              "Crew",
+              "Team",
+              "Time",
+              "Laps",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "78",
+                "Tom Van Rompuy, Hadrien David, Esteban Masson",
+                "Akkodis ASP Team",
+                "1:47.523",
+                "6",
+                ""
+              ],
+              [
+                "2",
+                "33",
+                "Ben Keating, Jonny Edgar, Nicky Catsburg",
+                "TF Sport",
+                "1:47.537",
+                "6",
+                "+0.014"
+              ],
+              [
+                "3",
+                "77",
+                "Eric Powell, Ben Tuck, Sebastian Priaulx",
+                "Proton Competition",
+                "1:47.595",
+                "6",
+                "+0.072"
+              ],
+              [
+                "4",
+                "23",
+                "Gray Newell, Eduardo Barrichello, Jonny Adam",
+                "Heart of Racing Team",
+                "1:47.701",
+                "6",
+                "+0.178"
+              ],
+              [
+                "5",
+                "87",
+                "Petru Umbrărescu, Clemens Schmid, José María López",
+                "Akkodis ASP Team",
+                "1:47.733",
+                "6",
+                "+0.210"
+              ],
+              [
+                "6",
+                "27",
+                "Ian James, Zacharie Robichon, Mattia Drudi",
+                "Heart of Racing Team",
+                "1:47.760",
+                "6",
+                "+0.237"
+              ],
+              [
+                "7",
+                "88",
+                "Stefano Gattuso, Giammarco Levorato, Logan Sargeant",
+                "Proton Competition",
+                "1:47.768",
+                "6",
+                "+0.245"
+              ],
+              [
+                "8",
+                "61",
+                "Christian Ried, Rui Andrade, Maxime Martin",
+                "Iron Lynx",
+                "1:48.037",
+                "6",
+                "+0.514"
+              ],
+              [
+                "9",
+                "91",
+                "James Cottingham, Timur Boguslavskiy, Ayhancan Güven",
+                "Manthey DK Engineering",
+                "1:48.084",
+                "6",
+                "+0.561"
+              ],
+              [
+                "10",
+                "34",
+                "Peter Dempsey, Salih Yoluç, Charlie Eastwood",
+                "Racing Team Turkey by TF",
+                "1:49.363",
+                "6",
+                "+1.840"
               ]
             ]
           }

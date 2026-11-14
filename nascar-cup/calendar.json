@@ -9,22 +9,76 @@
     "location": "Bowman Gray Stadium, Winston-Salem, NC"
   },
   {
-    "start": "2026-02-13T00:00:00.000Z",
-    "end": "2026-02-13T02:30:00.000Z",
+    "start": "2026-02-11T15:00:00.000Z",
+    "end": "2026-02-11T15:00:00.000Z",
     "dateOnly": false,
     "event": "68th Daytona 500",
-    "session": "Bluegreen Vacations Duel at Daytona",
+    "session": "Practice 1",
     "round": 1,
     "location": "Daytona International Speedway, Daytona Beach, FL"
   },
   {
-    "start": "2026-02-15T19:30:00.000Z",
-    "end": "2026-02-15T23:30:00.000Z",
+    "start": "2026-02-12T01:15:00.000Z",
+    "end": "2026-02-12T01:15:00.000Z",
+    "dateOnly": false,
+    "event": "68th Daytona 500",
+    "session": "Qualifying",
+    "round": 1,
+    "location": "Daytona International Speedway, Daytona Beach, FL"
+  },
+  {
+    "start": "2026-02-13T00:00:00.000Z",
+    "end": "2026-02-13T00:00:00.000Z",
+    "dateOnly": false,
+    "event": "68th Daytona 500",
+    "session": "America 250 Florida Duel 1 at Daytona",
+    "round": 1,
+    "location": "Daytona International Speedway, Daytona Beach, FL"
+  },
+  {
+    "start": "2026-02-13T01:45:00.000Z",
+    "end": "2026-02-13T01:45:00.000Z",
+    "dateOnly": false,
+    "event": "68th Daytona 500",
+    "session": "America 250 Florida Duel 2 at Daytona",
+    "round": 1,
+    "location": "Daytona International Speedway, Daytona Beach, FL"
+  },
+  {
+    "start": "2026-02-13T22:35:00.000Z",
+    "end": "2026-02-13T22:35:00.000Z",
+    "dateOnly": false,
+    "event": "68th Daytona 500",
+    "session": "Practice 2",
+    "round": 1,
+    "location": "Daytona International Speedway, Daytona Beach, FL"
+  },
+  {
+    "start": "2026-02-14T20:00:00.000Z",
+    "end": "2026-02-14T20:00:00.000Z",
+    "dateOnly": false,
+    "event": "68th Daytona 500",
+    "session": "Practice 3",
+    "round": 1,
+    "location": "Daytona International Speedway, Daytona Beach, FL"
+  },
+  {
+    "start": "2026-02-15T18:30:00.000Z",
+    "end": "2026-02-15T22:30:00.000Z",
     "dateOnly": false,
     "event": "68th Daytona 500",
     "session": "68th Daytona 500",
     "round": 1,
     "location": "Daytona International Speedway, Daytona Beach, FL"
+  },
+  {
+    "start": "2026-02-21T16:00:00.000Z",
+    "end": "2026-02-21T16:00:00.000Z",
+    "dateOnly": false,
+    "event": "Autotrader 400 (Atlanta)",
+    "session": "Qualifying",
+    "round": 2,
+    "location": "Atlanta Motor Speedway, Hampton, GA"
   },
   {
     "start": "2026-02-22T20:00:00.000Z",
@@ -36,6 +90,24 @@
     "location": "Atlanta Motor Speedway, Hampton, GA"
   },
   {
+    "start": "2026-02-28T15:00:00.000Z",
+    "end": "2026-02-28T15:00:00.000Z",
+    "dateOnly": false,
+    "event": "DuraMAX Texas Grand Prix (COTA)",
+    "session": "Practice",
+    "round": 3,
+    "location": "Circuit of the Americas, Austin, TX"
+  },
+  {
+    "start": "2026-02-28T16:10:00.000Z",
+    "end": "2026-02-28T16:10:00.000Z",
+    "dateOnly": false,
+    "event": "DuraMAX Texas Grand Prix (COTA)",
+    "session": "Qualifying",
+    "round": 3,
+    "location": "Circuit of the Americas, Austin, TX"
+  },
+  {
     "start": "2026-03-01T20:30:00.000Z",
     "end": "2026-03-02T00:00:00.000Z",
     "dateOnly": false,
@@ -43,6 +115,24 @@
     "session": "DuraMAX Texas Grand Prix",
     "round": 3,
     "location": "Circuit of the Americas, Austin, TX"
+  },
+  {
+    "start": "2026-03-07T17:00:00.000Z",
+    "end": "2026-03-07T17:00:00.000Z",
+    "dateOnly": false,
+    "event": "Straight Talk Wireless 500 (Phoenix)",
+    "session": "Practice",
+    "round": 4,
+    "location": "Phoenix Raceway, Avondale, AZ"
+  },
+  {
+    "start": "2026-03-07T18:10:00.000Z",
+    "end": "2026-03-07T18:10:00.000Z",
+    "dateOnly": false,
+    "event": "Straight Talk Wireless 500 (Phoenix)",
+    "session": "Qualifying",
+    "round": 4,
+    "location": "Phoenix Raceway, Avondale, AZ"
   },
   {
     "start": "2026-03-08T19:30:00.000Z",
@@ -54,6 +144,24 @@
     "location": "Phoenix Raceway, Avondale, AZ"
   },
   {
+    "start": "2026-03-14T18:30:00.000Z",
+    "end": "2026-03-14T18:30:00.000Z",
+    "dateOnly": false,
+    "event": "Pennzoil 400 (Las Vegas)",
+    "session": "Practice",
+    "round": 5,
+    "location": "Las Vegas Motor Speedway, Las Vegas, NV"
+  },
+  {
+    "start": "2026-03-14T19:40:00.000Z",
+    "end": "2026-03-14T19:40:00.000Z",
+    "dateOnly": false,
+    "event": "Pennzoil 400 (Las Vegas)",
+    "session": "Qualifying",
+    "round": 5,
+    "location": "Las Vegas Motor Speedway, Las Vegas, NV"
+  },
+  {
     "start": "2026-03-15T20:00:00.000Z",
     "end": "2026-03-15T23:30:00.000Z",
     "dateOnly": false,
@@ -61,6 +169,24 @@
     "session": "Pennzoil 400",
     "round": 5,
     "location": "Las Vegas Motor Speedway, Las Vegas, NV"
+  },
+  {
+    "start": "2026-03-21T18:30:00.000Z",
+    "end": "2026-03-21T18:30:00.000Z",
+    "dateOnly": false,
+    "event": "Goodyear 400 (Darlington)",
+    "session": "Practice",
+    "round": 6,
+    "location": "Darlington Raceway, Darlington, SC"
+  },
+  {
+    "start": "2026-03-21T19:40:00.000Z",
+    "end": "2026-03-21T19:40:00.000Z",
+    "dateOnly": false,
+    "event": "Goodyear 400 (Darlington)",
+    "session": "Qualifying",
+    "round": 6,
+    "location": "Darlington Raceway, Darlington, SC"
   },
   {
     "start": "2026-03-22T19:00:00.000Z",
@@ -72,6 +198,24 @@
     "location": "Darlington Raceway, Darlington, SC"
   },
   {
+    "start": "2026-03-28T16:30:00.000Z",
+    "end": "2026-03-28T16:30:00.000Z",
+    "dateOnly": false,
+    "event": "Cook Out 400 (Martinsville)",
+    "session": "Practice",
+    "round": 7,
+    "location": "Martinsville Speedway, Martinsville, VA"
+  },
+  {
+    "start": "2026-03-28T17:40:00.000Z",
+    "end": "2026-03-28T17:40:00.000Z",
+    "dateOnly": false,
+    "event": "Cook Out 400 (Martinsville)",
+    "session": "Qualifying",
+    "round": 7,
+    "location": "Martinsville Speedway, Martinsville, VA"
+  },
+  {
     "start": "2026-03-29T19:30:00.000Z",
     "end": "2026-03-29T22:30:00.000Z",
     "dateOnly": false,
@@ -79,6 +223,24 @@
     "session": "Cook Out 400",
     "round": 7,
     "location": "Martinsville Speedway, Martinsville, VA"
+  },
+  {
+    "start": "2026-04-11T20:30:00.000Z",
+    "end": "2026-04-11T20:30:00.000Z",
+    "dateOnly": false,
+    "event": "Food City 500 (Bristol)",
+    "session": "Practice",
+    "round": 8,
+    "location": "Bristol Motor Speedway, Bristol, TN"
+  },
+  {
+    "start": "2026-04-11T21:40:00.000Z",
+    "end": "2026-04-11T21:40:00.000Z",
+    "dateOnly": false,
+    "event": "Food City 500 (Bristol)",
+    "session": "Qualifying",
+    "round": 8,
+    "location": "Bristol Motor Speedway, Bristol, TN"
   },
   {
     "start": "2026-04-12T19:00:00.000Z",
@@ -90,6 +252,24 @@
     "location": "Bristol Motor Speedway, Bristol, TN"
   },
   {
+    "start": "2026-04-18T20:00:00.000Z",
+    "end": "2026-04-18T20:00:00.000Z",
+    "dateOnly": false,
+    "event": "AdventHealth 400 (Kansas)",
+    "session": "Practice",
+    "round": 9,
+    "location": "Kansas Speedway, Kansas City, KS"
+  },
+  {
+    "start": "2026-04-18T21:10:00.000Z",
+    "end": "2026-04-18T21:10:00.000Z",
+    "dateOnly": false,
+    "event": "AdventHealth 400 (Kansas)",
+    "session": "Qualifying",
+    "round": 9,
+    "location": "Kansas Speedway, Kansas City, KS"
+  },
+  {
     "start": "2026-04-19T18:00:00.000Z",
     "end": "2026-04-19T21:30:00.000Z",
     "dateOnly": false,
@@ -97,6 +277,15 @@
     "session": "AdventHealth 400",
     "round": 9,
     "location": "Kansas Speedway, Kansas City, KS"
+  },
+  {
+    "start": "2026-04-25T14:30:00.000Z",
+    "end": "2026-04-25T14:30:00.000Z",
+    "dateOnly": false,
+    "event": "Jack Link's 500 (Talladega)",
+    "session": "Qualifying",
+    "round": 10,
+    "location": "Talladega Superspeedway, Talladega, AL"
   },
   {
     "start": "2026-04-26T19:00:00.000Z",
@@ -108,6 +297,24 @@
     "location": "Talladega Superspeedway, Talladega, AL"
   },
   {
+    "start": "2026-05-02T16:30:00.000Z",
+    "end": "2026-05-02T16:30:00.000Z",
+    "dateOnly": false,
+    "event": "Würth 400 (Texas)",
+    "session": "Practice",
+    "round": 11,
+    "location": "Texas Motor Speedway, Fort Worth, TX"
+  },
+  {
+    "start": "2026-05-02T17:40:00.000Z",
+    "end": "2026-05-02T17:40:00.000Z",
+    "dateOnly": false,
+    "event": "Würth 400 (Texas)",
+    "session": "Qualifying",
+    "round": 11,
+    "location": "Texas Motor Speedway, Fort Worth, TX"
+  },
+  {
     "start": "2026-05-03T19:30:00.000Z",
     "end": "2026-05-03T22:30:00.000Z",
     "dateOnly": false,
@@ -115,6 +322,24 @@
     "session": "Wurth 400",
     "round": 11,
     "location": "Texas Motor Speedway, Fort Worth, TX"
+  },
+  {
+    "start": "2026-05-09T17:00:00.000Z",
+    "end": "2026-05-09T17:00:00.000Z",
+    "dateOnly": false,
+    "event": "Go Bowling at The Glen",
+    "session": "Practice",
+    "round": 12,
+    "location": "Watkins Glen International, Watkins Glen, NY"
+  },
+  {
+    "start": "2026-05-09T18:10:00.000Z",
+    "end": "2026-05-09T18:10:00.000Z",
+    "dateOnly": false,
+    "event": "Go Bowling at The Glen",
+    "session": "Qualifying",
+    "round": 12,
+    "location": "Watkins Glen International, Watkins Glen, NY"
   },
   {
     "start": "2026-05-10T19:00:00.000Z",
@@ -144,6 +369,24 @@
     "location": "Dover Motor Speedway, Dover, DE"
   },
   {
+    "start": "2026-05-23T18:40:00.000Z",
+    "end": "2026-05-23T18:40:00.000Z",
+    "dateOnly": false,
+    "event": "Coca-Cola 600 (Charlotte)",
+    "session": "Qualifying",
+    "round": 13,
+    "location": "Charlotte Motor Speedway, Concord, NC"
+  },
+  {
+    "start": "2026-05-23T18:45:00.000Z",
+    "end": "2026-05-23T18:45:00.000Z",
+    "dateOnly": false,
+    "event": "Coca-Cola 600 (Charlotte)",
+    "session": "Practice",
+    "round": 13,
+    "location": "Charlotte Motor Speedway, Concord, NC"
+  },
+  {
     "start": "2026-05-24T22:00:00.000Z",
     "end": "2026-05-25T03:00:00.000Z",
     "dateOnly": false,
@@ -151,6 +394,24 @@
     "session": "Coca-Cola 600",
     "round": 13,
     "location": "Charlotte Motor Speedway, Concord, NC"
+  },
+  {
+    "start": "2026-05-30T21:40:00.000Z",
+    "end": "2026-05-30T21:40:00.000Z",
+    "dateOnly": false,
+    "event": "Cracker Barrel 400 (Nashville)",
+    "session": "Practice",
+    "round": 14,
+    "location": "Nashville Superspeedway, Lebanon, TN"
+  },
+  {
+    "start": "2026-05-30T21:40:00.000Z",
+    "end": "2026-05-30T21:40:00.000Z",
+    "dateOnly": false,
+    "event": "Cracker Barrel 400 (Nashville)",
+    "session": "Qualifying",
+    "round": 14,
+    "location": "Nashville Superspeedway, Lebanon, TN"
   },
   {
     "start": "2026-05-31T23:00:00.000Z",
@@ -162,6 +423,24 @@
     "location": "Nashville Superspeedway, Lebanon, TN"
   },
   {
+    "start": "2026-06-06T21:00:00.000Z",
+    "end": "2026-06-06T21:00:00.000Z",
+    "dateOnly": false,
+    "event": "FireKeepers Casino 400 (Michigan)",
+    "session": "Practice",
+    "round": 15,
+    "location": "Michigan International Speedway, Brooklyn, MI"
+  },
+  {
+    "start": "2026-06-06T22:10:00.000Z",
+    "end": "2026-06-06T22:10:00.000Z",
+    "dateOnly": false,
+    "event": "FireKeepers Casino 400 (Michigan)",
+    "session": "Qualifying",
+    "round": 15,
+    "location": "Michigan International Speedway, Brooklyn, MI"
+  },
+  {
     "start": "2026-06-07T19:00:00.000Z",
     "end": "2026-06-07T22:30:00.000Z",
     "dateOnly": false,
@@ -171,13 +450,49 @@
     "location": "Michigan International Speedway, Brooklyn, MI"
   },
   {
-    "start": "2026-06-14T19:00:00.000Z",
-    "end": "2026-06-14T22:30:00.000Z",
+    "start": "2026-06-13T17:00:00.000Z",
+    "end": "2026-06-13T17:00:00.000Z",
+    "dateOnly": false,
+    "event": "The Great American Getaway 400 (Pocono)",
+    "session": "Practice",
+    "round": 16,
+    "location": "Pocono Raceway, Long Pond, PA"
+  },
+  {
+    "start": "2026-06-13T18:10:00.000Z",
+    "end": "2026-06-13T18:10:00.000Z",
+    "dateOnly": false,
+    "event": "The Great American Getaway 400 (Pocono)",
+    "session": "Qualifying",
+    "round": 16,
+    "location": "Pocono Raceway, Long Pond, PA"
+  },
+  {
+    "start": "2026-06-14T17:00:00.000Z",
+    "end": "2026-06-14T20:30:00.000Z",
     "dateOnly": false,
     "event": "The Great American Getaway 400 (Pocono)",
     "session": "The Great American Getaway 400",
     "round": 16,
     "location": "Pocono Raceway, Long Pond, PA"
+  },
+  {
+    "start": "2026-06-19T21:00:00.000Z",
+    "end": "2026-06-19T21:00:00.000Z",
+    "dateOnly": false,
+    "event": "Anduril 250 Race the Base (San Diego)",
+    "session": "Practice",
+    "round": 17,
+    "location": "Naval Base Coronado Street Circuit, San Diego, CA"
+  },
+  {
+    "start": "2026-06-20T18:30:00.000Z",
+    "end": "2026-06-20T18:30:00.000Z",
+    "dateOnly": false,
+    "event": "Anduril 250 Race the Base (San Diego)",
+    "session": "Qualifying",
+    "round": 17,
+    "location": "Naval Base Coronado Street Circuit, San Diego, CA"
   },
   {
     "start": "2026-06-21T20:00:00.000Z",
@@ -189,6 +504,24 @@
     "location": "Naval Base Coronado Street Circuit, San Diego, CA"
   },
   {
+    "start": "2026-06-27T18:00:00.000Z",
+    "end": "2026-06-27T18:00:00.000Z",
+    "dateOnly": false,
+    "event": "Toyota/Save Mart 350 (Sonoma)",
+    "session": "Practice",
+    "round": 18,
+    "location": "Sonoma Raceway, Sonoma, CA"
+  },
+  {
+    "start": "2026-06-27T19:10:00.000Z",
+    "end": "2026-06-27T19:10:00.000Z",
+    "dateOnly": false,
+    "event": "Toyota/Save Mart 350 (Sonoma)",
+    "session": "Qualifying",
+    "round": 18,
+    "location": "Sonoma Raceway, Sonoma, CA"
+  },
+  {
     "start": "2026-06-28T19:30:00.000Z",
     "end": "2026-06-28T22:30:00.000Z",
     "dateOnly": false,
@@ -196,6 +529,24 @@
     "session": "Toyota/Save Mart 350",
     "round": 18,
     "location": "Sonoma Raceway, Sonoma, CA"
+  },
+  {
+    "start": "2026-07-03T22:00:00.000Z",
+    "end": "2026-07-03T22:00:00.000Z",
+    "dateOnly": false,
+    "event": "eero 400 (Chicagoland)",
+    "session": "Practice",
+    "round": 19,
+    "location": "Chicagoland Speedway, Joliet, IL"
+  },
+  {
+    "start": "2026-07-04T19:00:00.000Z",
+    "end": "2026-07-04T19:00:00.000Z",
+    "dateOnly": false,
+    "event": "eero 400 (Chicagoland)",
+    "session": "Qualifying",
+    "round": 19,
+    "location": "Chicagoland Speedway, Joliet, IL"
   },
   {
     "start": "2026-07-05T22:00:00.000Z",
@@ -207,6 +558,15 @@
     "location": "Chicagoland Speedway, Joliet, IL"
   },
   {
+    "start": "2026-07-11T20:30:00.000Z",
+    "end": "2026-07-11T20:30:00.000Z",
+    "dateOnly": false,
+    "event": "Quaker State 400 (Atlanta)",
+    "session": "Qualifying",
+    "round": 20,
+    "location": "Atlanta Motor Speedway, Hampton, GA"
+  },
+  {
     "start": "2026-07-12T23:00:00.000Z",
     "end": "2026-07-13T02:30:00.000Z",
     "dateOnly": false,
@@ -214,6 +574,24 @@
     "session": "Quaker State 400",
     "round": 20,
     "location": "Atlanta Motor Speedway, Hampton, GA"
+  },
+  {
+    "start": "2026-07-18T22:10:00.000Z",
+    "end": "2026-07-18T22:10:00.000Z",
+    "dateOnly": false,
+    "event": "Window World 450 (North Wilkesboro)",
+    "session": "Qualifying",
+    "round": 21,
+    "location": "North Wilkesboro Speedway, North Wilkesboro, NC"
+  },
+  {
+    "start": "2026-07-18T22:40:00.000Z",
+    "end": "2026-07-18T22:40:00.000Z",
+    "dateOnly": false,
+    "event": "Window World 450 (North Wilkesboro)",
+    "session": "Practice",
+    "round": 21,
+    "location": "North Wilkesboro Speedway, North Wilkesboro, NC"
   },
   {
     "start": "2026-07-19T23:00:00.000Z",
@@ -225,6 +603,24 @@
     "location": "North Wilkesboro Speedway, North Wilkesboro, NC"
   },
   {
+    "start": "2026-07-24T17:00:00.000Z",
+    "end": "2026-07-24T17:00:00.000Z",
+    "dateOnly": false,
+    "event": "Brickyard 400 (Indianapolis)",
+    "session": "Practice",
+    "round": 22,
+    "location": "Indianapolis Motor Speedway, Indianapolis, IN"
+  },
+  {
+    "start": "2026-07-25T17:30:00.000Z",
+    "end": "2026-07-25T17:30:00.000Z",
+    "dateOnly": false,
+    "event": "Brickyard 400 (Indianapolis)",
+    "session": "Qualifying",
+    "round": 22,
+    "location": "Indianapolis Motor Speedway, Indianapolis, IN"
+  },
+  {
     "start": "2026-07-26T18:00:00.000Z",
     "end": "2026-07-26T22:00:00.000Z",
     "dateOnly": false,
@@ -232,6 +628,24 @@
     "session": "Brickyard 400",
     "round": 22,
     "location": "Indianapolis Motor Speedway, Indianapolis, IN"
+  },
+  {
+    "start": "2026-08-08T18:05:00.000Z",
+    "end": "2026-08-08T18:05:00.000Z",
+    "dateOnly": false,
+    "event": "Iowa Corn 350",
+    "session": "Practice",
+    "round": 23,
+    "location": "Iowa Speedway, Newton, IA"
+  },
+  {
+    "start": "2026-08-08T19:10:00.000Z",
+    "end": "2026-08-08T19:10:00.000Z",
+    "dateOnly": false,
+    "event": "Iowa Corn 350",
+    "session": "Qualifying",
+    "round": 23,
+    "location": "Iowa Speedway, Newton, IA"
   },
   {
     "start": "2026-08-09T19:30:00.000Z",
@@ -243,6 +657,24 @@
     "location": "Iowa Speedway, Newton, IA"
   },
   {
+    "start": "2026-08-14T19:30:00.000Z",
+    "end": "2026-08-14T19:30:00.000Z",
+    "dateOnly": false,
+    "event": "Cook Out 400 (Richmond)",
+    "session": "Practice",
+    "round": 24,
+    "location": "Richmond Raceway, Richmond, VA"
+  },
+  {
+    "start": "2026-08-14T20:40:00.000Z",
+    "end": "2026-08-14T20:40:00.000Z",
+    "dateOnly": false,
+    "event": "Cook Out 400 (Richmond)",
+    "session": "Qualifying",
+    "round": 24,
+    "location": "Richmond Raceway, Richmond, VA"
+  },
+  {
     "start": "2026-08-15T23:00:00.000Z",
     "end": "2026-08-16T02:30:00.000Z",
     "dateOnly": false,
@@ -252,13 +684,40 @@
     "location": "Richmond Raceway, Richmond, VA"
   },
   {
-    "start": "2026-08-23T19:00:00.000Z",
-    "end": "2026-08-23T22:30:00.000Z",
+    "start": "2026-08-22T14:30:00.000Z",
+    "end": "2026-08-22T14:30:00.000Z",
+    "dateOnly": false,
+    "event": "Dollar Tree 301 (New Hampshire)",
+    "session": "Practice",
+    "round": 25,
+    "location": "New Hampshire Motor Speedway, Loudon, NH"
+  },
+  {
+    "start": "2026-08-22T15:35:00.000Z",
+    "end": "2026-08-22T15:35:00.000Z",
+    "dateOnly": false,
+    "event": "Dollar Tree 301 (New Hampshire)",
+    "session": "Qualifying",
+    "round": 25,
+    "location": "New Hampshire Motor Speedway, Loudon, NH"
+  },
+  {
+    "start": "2026-08-23T18:00:00.000Z",
+    "end": "2026-08-23T21:30:00.000Z",
     "dateOnly": false,
     "event": "Dollar Tree 301 (New Hampshire)",
     "session": "Dollar Tree 301",
     "round": 25,
     "location": "New Hampshire Motor Speedway, Loudon, NH"
+  },
+  {
+    "start": "2026-08-28T21:00:00.000Z",
+    "end": "2026-08-28T21:00:00.000Z",
+    "dateOnly": false,
+    "event": "Coke Zero Sugar 400 (Daytona — regular-season finale)",
+    "session": "Qualifying",
+    "round": 26,
+    "location": "Daytona International Speedway, Daytona Beach, FL"
   },
   {
     "start": "2026-08-29T23:30:00.000Z",
@@ -270,6 +729,24 @@
     "location": "Daytona International Speedway, Daytona Beach, FL"
   },
   {
+    "start": "2026-09-05T20:00:00.000Z",
+    "end": "2026-09-05T20:00:00.000Z",
+    "dateOnly": false,
+    "event": "Southern 500 (Darlington)",
+    "session": "Practice",
+    "round": 27,
+    "location": "Darlington Raceway, Darlington, SC"
+  },
+  {
+    "start": "2026-09-05T21:05:00.000Z",
+    "end": "2026-09-05T21:05:00.000Z",
+    "dateOnly": false,
+    "event": "Southern 500 (Darlington)",
+    "session": "Qualifying",
+    "round": 27,
+    "location": "Darlington Raceway, Darlington, SC"
+  },
+  {
     "start": "2026-09-06T21:00:00.000Z",
     "end": "2026-09-07T01:30:00.000Z",
     "dateOnly": false,
@@ -277,6 +754,24 @@
     "session": "Southern 500",
     "round": 27,
     "location": "Darlington Raceway, Darlington, SC"
+  },
+  {
+    "start": "2026-09-12T19:30:00.000Z",
+    "end": "2026-09-12T19:30:00.000Z",
+    "dateOnly": false,
+    "event": "Enjoy Illinois 300 (WWT Raceway)",
+    "session": "Practice",
+    "round": 28,
+    "location": "World Wide Technology Raceway, Madison, IL"
+  },
+  {
+    "start": "2026-09-12T20:35:00.000Z",
+    "end": "2026-09-12T20:35:00.000Z",
+    "dateOnly": false,
+    "event": "Enjoy Illinois 300 (WWT Raceway)",
+    "session": "Qualifying",
+    "round": 28,
+    "location": "World Wide Technology Raceway, Madison, IL"
   },
   {
     "start": "2026-09-13T19:00:00.000Z",
@@ -288,6 +783,24 @@
     "location": "World Wide Technology Raceway, Madison, IL"
   },
   {
+    "start": "2026-09-18T20:30:00.000Z",
+    "end": "2026-09-18T20:30:00.000Z",
+    "dateOnly": false,
+    "event": "Bass Pro Shops Night Race (Bristol)",
+    "session": "Practice",
+    "round": 29,
+    "location": "Bristol Motor Speedway, Bristol, TN"
+  },
+  {
+    "start": "2026-09-18T21:40:00.000Z",
+    "end": "2026-09-18T21:40:00.000Z",
+    "dateOnly": false,
+    "event": "Bass Pro Shops Night Race (Bristol)",
+    "session": "Qualifying",
+    "round": 29,
+    "location": "Bristol Motor Speedway, Bristol, TN"
+  },
+  {
     "start": "2026-09-19T23:30:00.000Z",
     "end": "2026-09-20T03:00:00.000Z",
     "dateOnly": false,
@@ -295,6 +808,24 @@
     "session": "Bass Pro Shops Night Race",
     "round": 29,
     "location": "Bristol Motor Speedway, Bristol, TN"
+  },
+  {
+    "start": "2026-09-26T14:00:00.000Z",
+    "end": "2026-09-26T14:00:00.000Z",
+    "dateOnly": false,
+    "event": "Hollywood Casino 400 (Kansas)",
+    "session": "Practice",
+    "round": 30,
+    "location": "Kansas Speedway, Kansas City, KS"
+  },
+  {
+    "start": "2026-09-26T15:10:00.000Z",
+    "end": "2026-09-26T15:10:00.000Z",
+    "dateOnly": false,
+    "event": "Hollywood Casino 400 (Kansas)",
+    "session": "Qualifying",
+    "round": 30,
+    "location": "Kansas Speedway, Kansas City, KS"
   },
   {
     "start": "2026-09-27T19:00:00.000Z",
@@ -306,6 +837,24 @@
     "location": "Kansas Speedway, Kansas City, KS"
   },
   {
+    "start": "2026-10-03T20:30:00.000Z",
+    "end": "2026-10-03T20:30:00.000Z",
+    "dateOnly": false,
+    "event": "South Point 400 (Las Vegas)",
+    "session": "Practice",
+    "round": 31,
+    "location": "Las Vegas Motor Speedway, Las Vegas, NV"
+  },
+  {
+    "start": "2026-10-03T21:35:00.000Z",
+    "end": "2026-10-03T21:35:00.000Z",
+    "dateOnly": false,
+    "event": "South Point 400 (Las Vegas)",
+    "session": "Qualifying",
+    "round": 31,
+    "location": "Las Vegas Motor Speedway, Las Vegas, NV"
+  },
+  {
     "start": "2026-10-04T21:30:00.000Z",
     "end": "2026-10-05T01:00:00.000Z",
     "dateOnly": false,
@@ -313,6 +862,24 @@
     "session": "South Point 400",
     "round": 31,
     "location": "Las Vegas Motor Speedway, Las Vegas, NV"
+  },
+  {
+    "start": "2026-10-10T15:00:00.000Z",
+    "end": "2026-10-10T15:00:00.000Z",
+    "dateOnly": false,
+    "event": "Bank of America 400 (Charlotte oval)",
+    "session": "Practice",
+    "round": 32,
+    "location": "Charlotte Motor Speedway (oval), Concord, NC"
+  },
+  {
+    "start": "2026-10-10T16:05:00.000Z",
+    "end": "2026-10-10T16:05:00.000Z",
+    "dateOnly": false,
+    "event": "Bank of America 400 (Charlotte oval)",
+    "session": "Qualifying",
+    "round": 32,
+    "location": "Charlotte Motor Speedway (oval), Concord, NC"
   },
   {
     "start": "2026-10-11T19:00:00.000Z",
@@ -324,6 +891,24 @@
     "location": "Charlotte Motor Speedway (oval), Concord, NC"
   },
   {
+    "start": "2026-10-17T20:30:00.000Z",
+    "end": "2026-10-17T20:30:00.000Z",
+    "dateOnly": false,
+    "event": "Freeway Insurance 500 (Phoenix)",
+    "session": "Practice",
+    "round": 33,
+    "location": "Phoenix Raceway, Avondale, AZ"
+  },
+  {
+    "start": "2026-10-17T21:35:00.000Z",
+    "end": "2026-10-17T21:35:00.000Z",
+    "dateOnly": false,
+    "event": "Freeway Insurance 500 (Phoenix)",
+    "session": "Qualifying",
+    "round": 33,
+    "location": "Phoenix Raceway, Avondale, AZ"
+  },
+  {
     "start": "2026-10-18T19:00:00.000Z",
     "end": "2026-10-18T22:30:00.000Z",
     "dateOnly": false,
@@ -331,6 +916,15 @@
     "session": "Freeway Insurance 500",
     "round": 33,
     "location": "Phoenix Raceway, Avondale, AZ"
+  },
+  {
+    "start": "2026-10-24T17:00:00.000Z",
+    "end": "2026-10-24T17:00:00.000Z",
+    "dateOnly": false,
+    "event": "YellaWood 500 (Talladega)",
+    "session": "Qualifying",
+    "round": 34,
+    "location": "Talladega Superspeedway, Talladega, AL"
   },
   {
     "start": "2026-10-25T18:00:00.000Z",
@@ -342,6 +936,24 @@
     "location": "Talladega Superspeedway, Talladega, AL"
   },
   {
+    "start": "2026-10-31T17:00:00.000Z",
+    "end": "2026-10-31T17:00:00.000Z",
+    "dateOnly": false,
+    "event": "Xfinity 500 (Martinsville)",
+    "session": "Practice",
+    "round": 35,
+    "location": "Martinsville Speedway, Martinsville, VA"
+  },
+  {
+    "start": "2026-10-31T18:05:00.000Z",
+    "end": "2026-10-31T18:05:00.000Z",
+    "dateOnly": false,
+    "event": "Xfinity 500 (Martinsville)",
+    "session": "Qualifying",
+    "round": 35,
+    "location": "Martinsville Speedway, Martinsville, VA"
+  },
+  {
     "start": "2026-11-01T19:00:00.000Z",
     "end": "2026-11-01T22:30:00.000Z",
     "dateOnly": false,
@@ -349,6 +961,24 @@
     "session": "Xfinity 500",
     "round": 35,
     "location": "Martinsville Speedway, Martinsville, VA"
+  },
+  {
+    "start": "2026-11-06T22:30:00.000Z",
+    "end": "2026-11-06T22:30:00.000Z",
+    "dateOnly": false,
+    "event": "NASCAR Cup Series Championship (Homestead)",
+    "session": "Practice",
+    "round": 36,
+    "location": "Homestead-Miami Speedway, Homestead, FL"
+  },
+  {
+    "start": "2026-11-07T19:30:00.000Z",
+    "end": "2026-11-07T19:30:00.000Z",
+    "dateOnly": false,
+    "event": "NASCAR Cup Series Championship (Homestead)",
+    "session": "Qualifying",
+    "round": 36,
+    "location": "Homestead-Miami Speedway, Homestead, FL"
   },
   {
     "start": "2026-11-08T20:00:00.000Z",

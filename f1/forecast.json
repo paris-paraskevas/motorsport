@@ -1,544 +1,509 @@
 {
   "las-vegas": {
-    "fetched": "2026-11-12T12:22:48.978Z",
-    "expires": "Thu, 12 Nov 2026 12:52:41 GMT",
-    "lastModified": "Thu, 12 Nov 2026 12:21:08 GMT",
+    "fetched": "2026-11-14T14:07:47.155Z",
+    "expires": "Sat, 14 Nov 2026 14:24:12 GMT",
+    "lastModified": "Sat, 14 Nov 2026 13:53:27 GMT",
     "steps": [
       {
-        "t": "2026-11-12T12:00:00.000Z",
-        "air": 13,
-        "symbol": "clearsky_night",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-12T13:00:00.000Z",
-        "air": 13,
-        "symbol": "clearsky_night",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-12T14:00:00.000Z",
-        "air": 13,
-        "symbol": "clearsky_day",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-12T15:00:00.000Z",
-        "air": 14,
-        "symbol": "clearsky_day",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-12T16:00:00.000Z",
-        "air": 17,
-        "symbol": "clearsky_day",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-12T17:00:00.000Z",
-        "air": 19,
-        "symbol": "clearsky_day",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-12T18:00:00.000Z",
-        "air": 20,
-        "symbol": "clearsky_day",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-12T19:00:00.000Z",
-        "air": 21,
-        "symbol": "fair_day",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-12T20:00:00.000Z",
-        "air": 22,
-        "symbol": "clearsky_day",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-12T21:00:00.000Z",
-        "air": 23,
-        "symbol": "clearsky_day",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-12T22:00:00.000Z",
-        "air": 24,
-        "symbol": "partlycloudy_day",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-12T23:00:00.000Z",
-        "air": 23,
-        "symbol": "partlycloudy_day",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-13T00:00:00.000Z",
-        "air": 22,
-        "symbol": "partlycloudy_day",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-13T01:00:00.000Z",
-        "air": 21,
-        "symbol": "partlycloudy_night",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-13T02:00:00.000Z",
-        "air": 19,
-        "symbol": "partlycloudy_night",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-13T03:00:00.000Z",
-        "air": 18,
-        "symbol": "partlycloudy_night",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-13T04:00:00.000Z",
-        "air": 17,
-        "symbol": "partlycloudy_night",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-13T05:00:00.000Z",
-        "air": 16,
-        "symbol": "partlycloudy_night",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-13T06:00:00.000Z",
-        "air": 15,
-        "symbol": "partlycloudy_night",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-13T07:00:00.000Z",
-        "air": 15,
-        "symbol": "partlycloudy_night",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-13T08:00:00.000Z",
-        "air": 15,
-        "symbol": "fair_night",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-13T09:00:00.000Z",
-        "air": 15,
-        "symbol": "partlycloudy_night",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-13T10:00:00.000Z",
-        "air": 15,
-        "symbol": "fair_night",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-13T11:00:00.000Z",
-        "air": 15,
-        "symbol": "partlycloudy_night",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-13T12:00:00.000Z",
-        "air": 14,
-        "symbol": "cloudy",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-13T13:00:00.000Z",
-        "air": 15,
-        "symbol": "cloudy",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-13T14:00:00.000Z",
-        "air": 15,
-        "symbol": "cloudy",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-13T15:00:00.000Z",
-        "air": 15,
-        "symbol": "partlycloudy_day",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-13T16:00:00.000Z",
-        "air": 17,
-        "symbol": "partlycloudy_day",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-13T17:00:00.000Z",
-        "air": 19,
-        "symbol": "clearsky_day",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-13T18:00:00.000Z",
-        "air": 21,
-        "symbol": "fair_day",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-13T19:00:00.000Z",
-        "air": 22,
-        "symbol": "partlycloudy_day",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-13T20:00:00.000Z",
-        "air": 22,
-        "symbol": "clearsky_day",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-13T21:00:00.000Z",
-        "air": 23,
-        "symbol": "clearsky_day",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-13T22:00:00.000Z",
-        "air": 22,
-        "symbol": "fair_day",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-13T23:00:00.000Z",
-        "air": 22,
-        "symbol": "partlycloudy_day",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-14T00:00:00.000Z",
-        "air": 22,
-        "symbol": "cloudy",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-14T01:00:00.000Z",
-        "air": 21,
-        "symbol": "fair_night",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-14T02:00:00.000Z",
-        "air": 20,
-        "symbol": "rainshowers_night",
-        "mm": 0.7,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-14T03:00:00.000Z",
-        "air": 18,
-        "symbol": "partlycloudy_night",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-14T04:00:00.000Z",
-        "air": 18,
-        "symbol": "partlycloudy_night",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-14T05:00:00.000Z",
-        "air": 18,
-        "symbol": "partlycloudy_night",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-14T06:00:00.000Z",
-        "air": 17,
-        "symbol": "lightrainshowers_night",
-        "mm": 0.3,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-14T07:00:00.000Z",
-        "air": 16,
-        "symbol": "partlycloudy_night",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-14T08:00:00.000Z",
-        "air": 15,
-        "symbol": "partlycloudy_night",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-14T09:00:00.000Z",
-        "air": 15,
-        "symbol": "partlycloudy_night",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-14T10:00:00.000Z",
-        "air": 15,
-        "symbol": "partlycloudy_night",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-14T11:00:00.000Z",
-        "air": 14,
-        "symbol": "fair_night",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-14T12:00:00.000Z",
-        "air": 13,
-        "symbol": "clearsky_night",
-        "mm": 0,
-        "hours": 1
-      },
-      {
-        "t": "2026-11-14T13:00:00.000Z",
-        "air": 12,
-        "symbol": "clearsky_night",
-        "mm": 0,
-        "hours": 1
-      },
-      {
         "t": "2026-11-14T14:00:00.000Z",
-        "air": 11,
+        "air": 13,
         "symbol": "clearsky_day",
         "mm": 0,
         "hours": 1
       },
       {
         "t": "2026-11-14T15:00:00.000Z",
-        "air": 12,
+        "air": 13,
         "symbol": "clearsky_day",
         "mm": 0,
         "hours": 1
       },
       {
         "t": "2026-11-14T16:00:00.000Z",
-        "air": 14,
-        "symbol": "fair_day",
+        "air": 15,
+        "symbol": "clearsky_day",
         "mm": 0,
         "hours": 1
       },
       {
         "t": "2026-11-14T17:00:00.000Z",
-        "air": 16,
-        "symbol": "fair_day",
+        "air": 17,
+        "symbol": "clearsky_day",
         "mm": 0,
         "hours": 1
       },
       {
         "t": "2026-11-14T18:00:00.000Z",
-        "air": 17,
-        "symbol": "fair_day",
+        "air": 18,
+        "symbol": "clearsky_day",
         "mm": 0,
         "hours": 1
       },
       {
         "t": "2026-11-14T19:00:00.000Z",
-        "air": 18,
-        "symbol": "fair_day",
+        "air": 19,
+        "symbol": "clearsky_day",
         "mm": 0,
         "hours": 1
       },
       {
         "t": "2026-11-14T20:00:00.000Z",
-        "air": 19,
-        "symbol": "fair_day",
+        "air": 20,
+        "symbol": "clearsky_day",
         "mm": 0,
         "hours": 1
       },
       {
         "t": "2026-11-14T21:00:00.000Z",
-        "air": 20,
-        "symbol": "partlycloudy_day",
+        "air": 21,
+        "symbol": "clearsky_day",
         "mm": 0,
         "hours": 1
       },
       {
         "t": "2026-11-14T22:00:00.000Z",
-        "air": 20,
-        "symbol": "partlycloudy_day",
+        "air": 21,
+        "symbol": "clearsky_day",
         "mm": 0,
         "hours": 1
       },
       {
         "t": "2026-11-14T23:00:00.000Z",
         "air": 20,
-        "symbol": "partlycloudy_day",
+        "symbol": "clearsky_day",
         "mm": 0,
         "hours": 1
       },
       {
         "t": "2026-11-15T00:00:00.000Z",
-        "air": 19,
-        "symbol": "fair_night",
+        "air": 20,
+        "symbol": "clearsky_day",
         "mm": 0,
-        "hours": 6
+        "hours": 1
+      },
+      {
+        "t": "2026-11-15T01:00:00.000Z",
+        "air": 18,
+        "symbol": "clearsky_night",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-15T02:00:00.000Z",
+        "air": 17,
+        "symbol": "clearsky_night",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-15T03:00:00.000Z",
+        "air": 16,
+        "symbol": "clearsky_night",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-15T04:00:00.000Z",
+        "air": 15,
+        "symbol": "clearsky_night",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-15T05:00:00.000Z",
+        "air": 15,
+        "symbol": "partlycloudy_night",
+        "mm": 0,
+        "hours": 1
       },
       {
         "t": "2026-11-15T06:00:00.000Z",
-        "air": 13,
+        "air": 15,
+        "symbol": "partlycloudy_night",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-15T07:00:00.000Z",
+        "air": 14,
         "symbol": "clearsky_night",
         "mm": 0,
-        "hours": 6
+        "hours": 1
+      },
+      {
+        "t": "2026-11-15T08:00:00.000Z",
+        "air": 14,
+        "symbol": "fair_night",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-15T09:00:00.000Z",
+        "air": 13,
+        "symbol": "partlycloudy_night",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-15T10:00:00.000Z",
+        "air": 13,
+        "symbol": "partlycloudy_night",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-15T11:00:00.000Z",
+        "air": 12,
+        "symbol": "fair_night",
+        "mm": 0,
+        "hours": 1
       },
       {
         "t": "2026-11-15T12:00:00.000Z",
-        "air": 10,
+        "air": 12,
+        "symbol": "fair_night",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-15T13:00:00.000Z",
+        "air": 12,
+        "symbol": "clearsky_night",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-15T14:00:00.000Z",
+        "air": 11,
         "symbol": "clearsky_day",
         "mm": 0,
-        "hours": 6
+        "hours": 1
+      },
+      {
+        "t": "2026-11-15T15:00:00.000Z",
+        "air": 12,
+        "symbol": "clearsky_day",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-15T16:00:00.000Z",
+        "air": 14,
+        "symbol": "fair_day",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-15T17:00:00.000Z",
+        "air": 16,
+        "symbol": "fair_day",
+        "mm": 0,
+        "hours": 1
       },
       {
         "t": "2026-11-15T18:00:00.000Z",
         "air": 17,
         "symbol": "fair_day",
         "mm": 0,
-        "hours": 6
+        "hours": 1
+      },
+      {
+        "t": "2026-11-15T19:00:00.000Z",
+        "air": 18,
+        "symbol": "fair_day",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-15T20:00:00.000Z",
+        "air": 19,
+        "symbol": "partlycloudy_day",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-15T21:00:00.000Z",
+        "air": 20,
+        "symbol": "partlycloudy_day",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-15T22:00:00.000Z",
+        "air": 20,
+        "symbol": "partlycloudy_day",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-15T23:00:00.000Z",
+        "air": 20,
+        "symbol": "partlycloudy_day",
+        "mm": 0,
+        "hours": 1
       },
       {
         "t": "2026-11-16T00:00:00.000Z",
-        "air": 18,
-        "symbol": "cloudy",
+        "air": 19,
+        "symbol": "partlycloudy_day",
         "mm": 0,
-        "hours": 6
+        "hours": 1
+      },
+      {
+        "t": "2026-11-16T01:00:00.000Z",
+        "air": 18,
+        "symbol": "partlycloudy_night",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-16T02:00:00.000Z",
+        "air": 17,
+        "symbol": "partlycloudy_night",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-16T03:00:00.000Z",
+        "air": 16,
+        "symbol": "partlycloudy_night",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-16T04:00:00.000Z",
+        "air": 15,
+        "symbol": "partlycloudy_night",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-16T05:00:00.000Z",
+        "air": 14,
+        "symbol": "partlycloudy_night",
+        "mm": 0,
+        "hours": 1
       },
       {
         "t": "2026-11-16T06:00:00.000Z",
+        "air": 14,
+        "symbol": "partlycloudy_night",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-16T07:00:00.000Z",
+        "air": 14,
+        "symbol": "partlycloudy_night",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-16T08:00:00.000Z",
+        "air": 14,
+        "symbol": "partlycloudy_night",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-16T09:00:00.000Z",
         "air": 13,
+        "symbol": "partlycloudy_night",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-16T10:00:00.000Z",
+        "air": 13,
+        "symbol": "partlycloudy_night",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-16T11:00:00.000Z",
+        "air": 13,
+        "symbol": "partlycloudy_night",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-16T12:00:00.000Z",
+        "air": 13,
+        "symbol": "partlycloudy_night",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-16T13:00:00.000Z",
+        "air": 13,
+        "symbol": "fair_night",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-16T14:00:00.000Z",
+        "air": 12,
+        "symbol": "partlycloudy_day",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-16T15:00:00.000Z",
+        "air": 12,
+        "symbol": "partlycloudy_day",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-16T16:00:00.000Z",
+        "air": 14,
+        "symbol": "partlycloudy_day",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-16T17:00:00.000Z",
+        "air": 15,
+        "symbol": "partlycloudy_day",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-16T18:00:00.000Z",
+        "air": 17,
+        "symbol": "fair_day",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-16T19:00:00.000Z",
+        "air": 18,
+        "symbol": "fair_day",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-16T20:00:00.000Z",
+        "air": 20,
+        "symbol": "partlycloudy_day",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-16T21:00:00.000Z",
+        "air": 21,
+        "symbol": "partlycloudy_day",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-16T22:00:00.000Z",
+        "air": 21,
+        "symbol": "cloudy",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-16T23:00:00.000Z",
+        "air": 21,
+        "symbol": "cloudy",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-17T00:00:00.000Z",
+        "air": 21,
+        "symbol": "cloudy",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-17T01:00:00.000Z",
+        "air": 21,
+        "symbol": "fair_night",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-17T02:00:00.000Z",
+        "air": 20,
+        "symbol": "fair_night",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-17T03:00:00.000Z",
+        "air": 19,
+        "symbol": "fair_night",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-17T04:00:00.000Z",
+        "air": 18,
+        "symbol": "fair_night",
+        "mm": 0,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-17T05:00:00.000Z",
+        "air": 17,
+        "symbol": "lightrainshowers_night",
+        "mm": 0.2,
+        "hours": 1
+      },
+      {
+        "t": "2026-11-17T06:00:00.000Z",
+        "air": 16,
+        "symbol": "lightrainshowers_night",
+        "mm": 2.3,
+        "hours": 6
+      },
+      {
+        "t": "2026-11-17T12:00:00.000Z",
+        "air": 11,
+        "symbol": "lightrain",
+        "mm": 0.7,
+        "hours": 6
+      },
+      {
+        "t": "2026-11-17T18:00:00.000Z",
+        "air": 15,
+        "symbol": "cloudy",
+        "mm": 0.2,
+        "hours": 6
+      },
+      {
+        "t": "2026-11-18T00:00:00.000Z",
+        "air": 16,
         "symbol": "clearsky_night",
         "mm": 0,
         "hours": 6
       },
       {
-        "t": "2026-11-16T12:00:00.000Z",
+        "t": "2026-11-18T06:00:00.000Z",
+        "air": 9,
+        "symbol": "clearsky_night",
+        "mm": 0,
+        "hours": 6
+      },
+      {
+        "t": "2026-11-18T12:00:00.000Z",
+        "air": 6,
+        "symbol": "clearsky_day",
+        "mm": 0,
+        "hours": 6
+      },
+      {
+        "t": "2026-11-18T18:00:00.000Z",
         "air": 11,
         "symbol": "clearsky_day",
         "mm": 0,
         "hours": 6
       },
       {
-        "t": "2026-11-16T18:00:00.000Z",
-        "air": 16,
-        "symbol": "fair_day",
-        "mm": 0.3,
-        "hours": 6
-      },
-      {
-        "t": "2026-11-17T00:00:00.000Z",
-        "air": 17,
-        "symbol": "rainshowers_night",
-        "mm": 5.1,
-        "hours": 6
-      },
-      {
-        "t": "2026-11-17T06:00:00.000Z",
-        "air": 13,
-        "symbol": "rain",
-        "mm": 3.3,
-        "hours": 6
-      },
-      {
-        "t": "2026-11-17T12:00:00.000Z",
-        "air": 12,
-        "symbol": "heavyrain",
-        "mm": 10,
-        "hours": 6
-      },
-      {
-        "t": "2026-11-17T18:00:00.000Z",
-        "air": 12,
-        "symbol": "rain",
-        "mm": 4.3,
-        "hours": 6
-      },
-      {
-        "t": "2026-11-18T00:00:00.000Z",
-        "air": 12,
-        "symbol": "rain",
-        "mm": 4.9,
-        "hours": 6
-      },
-      {
-        "t": "2026-11-18T06:00:00.000Z",
-        "air": 10,
-        "symbol": "lightrain",
-        "mm": 0.5,
-        "hours": 6
-      },
-      {
-        "t": "2026-11-18T12:00:00.000Z",
-        "air": 10,
-        "symbol": "partlycloudy_day",
-        "mm": 0,
-        "hours": 6
-      },
-      {
-        "t": "2026-11-18T18:00:00.000Z",
-        "air": 14,
-        "symbol": "partlycloudy_day",
-        "mm": 0,
-        "hours": 6
-      },
-      {
         "t": "2026-11-19T00:00:00.000Z",
-        "air": 14,
+        "air": 16,
         "symbol": "clearsky_night",
         "mm": 0,
         "hours": 6
@@ -546,83 +511,139 @@
       {
         "t": "2026-11-19T06:00:00.000Z",
         "air": 10,
-        "symbol": "lightrainshowers_night",
-        "mm": 1.9,
+        "symbol": "partlycloudy_night",
+        "mm": 0,
         "hours": 6
       },
       {
         "t": "2026-11-19T12:00:00.000Z",
-        "air": 10,
-        "symbol": "lightrain",
-        "mm": 0.6,
+        "air": 8,
+        "symbol": "rain",
+        "mm": 2.3,
         "hours": 6
       },
       {
         "t": "2026-11-19T18:00:00.000Z",
-        "air": 13,
-        "symbol": "lightrainshowers_day",
-        "mm": 0.8,
+        "air": 11,
+        "symbol": "lightrain",
+        "mm": 1.4,
         "hours": 6
       },
       {
         "t": "2026-11-20T00:00:00.000Z",
-        "air": 12,
-        "symbol": "fair_night",
-        "mm": 0,
+        "air": 11,
+        "symbol": "rainshowers_night",
+        "mm": 3.1,
         "hours": 6
       },
       {
         "t": "2026-11-20T06:00:00.000Z",
-        "air": 5,
-        "symbol": "fair_night",
-        "mm": 0,
+        "air": 9,
+        "symbol": "cloudy",
+        "mm": 0.4,
         "hours": 6
       },
       {
         "t": "2026-11-20T12:00:00.000Z",
-        "air": 3,
-        "symbol": "clearsky_day",
-        "mm": 0,
+        "air": 7,
+        "symbol": "cloudy",
+        "mm": 0.5,
         "hours": 6
       },
       {
         "t": "2026-11-20T18:00:00.000Z",
         "air": 10,
-        "symbol": "clearsky_day",
-        "mm": 0,
+        "symbol": "rainshowers_day",
+        "mm": 5.6,
         "hours": 6
       },
       {
         "t": "2026-11-21T00:00:00.000Z",
-        "air": 11,
-        "symbol": "clearsky_night",
+        "air": 10,
+        "symbol": "fair_night",
         "mm": 0,
         "hours": 6
       },
       {
         "t": "2026-11-21T06:00:00.000Z",
-        "air": 5,
-        "symbol": "clearsky_night",
+        "air": 7,
+        "symbol": "fair_night",
         "mm": 0,
         "hours": 6
       },
       {
         "t": "2026-11-21T12:00:00.000Z",
-        "air": 4,
-        "symbol": "clearsky_day",
+        "air": 5,
+        "symbol": "fair_day",
         "mm": 0,
         "hours": 6
       },
       {
         "t": "2026-11-21T18:00:00.000Z",
         "air": 10,
-        "symbol": "clearsky_day",
+        "symbol": "partlycloudy_day",
         "mm": 0,
         "hours": 6
       },
       {
         "t": "2026-11-22T00:00:00.000Z",
         "air": 12,
+        "symbol": "fair_night",
+        "mm": 0,
+        "hours": 6
+      },
+      {
+        "t": "2026-11-22T06:00:00.000Z",
+        "air": 6,
+        "symbol": "clearsky_night",
+        "mm": 0,
+        "hours": 6
+      },
+      {
+        "t": "2026-11-22T12:00:00.000Z",
+        "air": 5,
+        "symbol": "partlycloudy_day",
+        "mm": 0,
+        "hours": 6
+      },
+      {
+        "t": "2026-11-22T18:00:00.000Z",
+        "air": 12,
+        "symbol": "clearsky_day",
+        "mm": 0,
+        "hours": 6
+      },
+      {
+        "t": "2026-11-23T00:00:00.000Z",
+        "air": 13,
+        "symbol": "partlycloudy_night",
+        "mm": 0,
+        "hours": 6
+      },
+      {
+        "t": "2026-11-23T06:00:00.000Z",
+        "air": 9,
+        "symbol": "cloudy",
+        "mm": 0,
+        "hours": 6
+      },
+      {
+        "t": "2026-11-23T12:00:00.000Z",
+        "air": 7,
+        "symbol": "partlycloudy_day",
+        "mm": 0,
+        "hours": 6
+      },
+      {
+        "t": "2026-11-23T18:00:00.000Z",
+        "air": 14,
+        "symbol": "clearsky_day",
+        "mm": 0,
+        "hours": 6
+      },
+      {
+        "t": "2026-11-24T00:00:00.000Z",
+        "air": 15,
         "symbol": "",
         "mm": null,
         "hours": 6

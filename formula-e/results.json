@@ -1651,7 +1651,7 @@
   },
   {
     "round": 12,
-    "name": "Shanghai ePrix",
+    "name": "Shanghai E-Prix — Race 1",
     "date": "2026-07-04",
     "sessions": [
       {
@@ -1663,6 +1663,7 @@
               "Pos",
               "Driver",
               "Team",
+              "Grid",
               "Time",
               "Pts"
             ],
@@ -1671,8 +1672,613 @@
                 "1",
                 "Pascal Wehrlein",
                 "Porsche Formula E Team",
-                "Race winner",
-                "25"
+                "1",
+                "40:30.411",
+                "28"
+              ],
+              [
+                "2",
+                "António Félix da Costa",
+                "Jaguar TCS Racing",
+                "5",
+                "+1.633",
+                "19"
+              ],
+              [
+                "3",
+                "Jake Dennis",
+                "Andretti Formula E",
+                "3",
+                "+4.709",
+                "15"
+              ],
+              [
+                "4",
+                "Felipe Drugovich",
+                "Andretti Formula E",
+                "9",
+                "+5.425",
+                "12"
+              ],
+              [
+                "5",
+                "Nyck de Vries",
+                "Mahindra Racing",
+                "16",
+                "+8.407",
+                "10"
+              ],
+              [
+                "6",
+                "Jean-Éric Vergne",
+                "Citroën Racing",
+                "7",
+                "+12.497",
+                "8"
+              ],
+              [
+                "7",
+                "Joel Eriksson",
+                "Envision Racing",
+                "15",
+                "+12.714",
+                "6"
+              ],
+              [
+                "8",
+                "Mitch Evans",
+                "Jaguar TCS Racing",
+                "2",
+                "+14.120",
+                "4"
+              ],
+              [
+                "9",
+                "Maximilian Günther",
+                "DS Penske",
+                "4",
+                "+14.674",
+                "2"
+              ],
+              [
+                "10",
+                "Nico Müller",
+                "Porsche Formula E Team",
+                "14",
+                "+15.749",
+                "1"
+              ],
+              [
+                "11",
+                "Zane Maloney",
+                "Lola Yamaha ABT",
+                "19",
+                "+16.375",
+                "0"
+              ],
+              [
+                "12",
+                "Dan Ticktum",
+                "Cupra Kiro",
+                "8",
+                "+17.927",
+                "0"
+              ],
+              [
+                "13",
+                "Oliver Rowland",
+                "Nissan Formula E Team",
+                "13",
+                "+18.858",
+                "0"
+              ],
+              [
+                "14",
+                "Josep Maria Martí",
+                "Cupra Kiro",
+                "12",
+                "+20.103",
+                "0"
+              ],
+              [
+                "15",
+                "Edoardo Mortara",
+                "Mahindra Racing",
+                "17",
+                "+20.167",
+                "0"
+              ],
+              [
+                "16",
+                "Taylor Barnard",
+                "DS Penske",
+                "10",
+                "+20.684",
+                "0"
+              ],
+              [
+                "17",
+                "Sébastien Buemi",
+                "Envision Racing",
+                "6",
+                "+21.068",
+                "0"
+              ],
+              [
+                "18",
+                "Lucas di Grassi",
+                "Lola Yamaha ABT",
+                "18",
+                "+21.145",
+                "0"
+              ],
+              [
+                "19",
+                "Nick Cassidy",
+                "Citroën Racing",
+                "11",
+                "+37.715",
+                "0"
+              ],
+              [
+                "20",
+                "Norman Nato",
+                "Nissan Formula E Team",
+                "20",
+                "+1 lap",
+                "0"
+              ]
+            ]
+          }
+        ]
+      }
+    ],
+    "others": [
+      {
+        "label": "Practice 1",
+        "tables": [
+          {
+            "title": "Practice 1",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "Pascal Wehrlein",
+                "Porsche Formula E Team",
+                "1:09.259",
+                ""
+              ],
+              [
+                "2",
+                "Jean-Éric Vergne",
+                "Citroën Racing",
+                "1:09.449",
+                "+0.190"
+              ],
+              [
+                "3",
+                "Nico Müller",
+                "Porsche Formula E Team",
+                "1:09.501",
+                "+0.242"
+              ],
+              [
+                "4",
+                "Nick Cassidy",
+                "Citroën Racing",
+                "1:09.585",
+                "+0.326"
+              ],
+              [
+                "5",
+                "Edoardo Mortara",
+                "Mahindra Racing",
+                "1:09.693",
+                "+0.434"
+              ],
+              [
+                "6",
+                "Nyck de Vries",
+                "Mahindra Racing",
+                "1:09.728",
+                "+0.469"
+              ],
+              [
+                "7",
+                "Joel Eriksson",
+                "Envision Racing",
+                "1:09.743",
+                "+0.484"
+              ],
+              [
+                "8",
+                "Dan Ticktum",
+                "Cupra Kiro",
+                "1:09.939",
+                "+0.680"
+              ],
+              [
+                "9",
+                "Zane Maloney",
+                "Lola Yamaha ABT",
+                "1:09.999",
+                "+0.740"
+              ],
+              [
+                "10",
+                "Felipe Drugovich",
+                "Andretti Formula E",
+                "1:10.079",
+                "+0.820"
+              ],
+              [
+                "11",
+                "Lucas di Grassi",
+                "Lola Yamaha ABT",
+                "1:10.126",
+                "+0.867"
+              ],
+              [
+                "12",
+                "Sébastien Buemi",
+                "Envision Racing",
+                "1:10.608",
+                "+1.349"
+              ],
+              [
+                "13",
+                "Taylor Barnard",
+                "DS Penske",
+                "1:10.616",
+                "+1.357"
+              ],
+              [
+                "14",
+                "António Félix da Costa",
+                "Jaguar TCS Racing",
+                "1:10.730",
+                "+1.471"
+              ],
+              [
+                "15",
+                "Mitch Evans",
+                "Jaguar TCS Racing",
+                "1:10.761",
+                "+1.502"
+              ],
+              [
+                "16",
+                "Jake Dennis",
+                "Andretti Formula E",
+                "1:10.830",
+                "+1.571"
+              ],
+              [
+                "17",
+                "Josep Maria Martí",
+                "Cupra Kiro",
+                "1:10.927",
+                "+1.668"
+              ],
+              [
+                "18",
+                "Norman Nato",
+                "Nissan Formula E Team",
+                "1:11.065",
+                "+1.806"
+              ],
+              [
+                "19",
+                "Maximilian Günther",
+                "DS Penske",
+                "1:11.124",
+                "+1.865"
+              ],
+              [
+                "20",
+                "Oliver Rowland",
+                "Nissan Formula E Team",
+                "1:11.268",
+                "+2.009"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Practice 2",
+        "tables": [
+          {
+            "title": "Practice 2",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "Edoardo Mortara",
+                "Mahindra Racing",
+                "1:09.021",
+                ""
+              ],
+              [
+                "2",
+                "António Félix da Costa",
+                "Jaguar TCS Racing",
+                "1:09.060",
+                "+0.039"
+              ],
+              [
+                "3",
+                "Jake Dennis",
+                "Andretti Formula E",
+                "1:09.070",
+                "+0.049"
+              ],
+              [
+                "4",
+                "Joel Eriksson",
+                "Envision Racing",
+                "1:09.132",
+                "+0.111"
+              ],
+              [
+                "5",
+                "Maximilian Günther",
+                "DS Penske",
+                "1:09.147",
+                "+0.126"
+              ],
+              [
+                "6",
+                "Jean-Éric Vergne",
+                "Citroën Racing",
+                "1:09.154",
+                "+0.133"
+              ],
+              [
+                "7",
+                "Oliver Rowland",
+                "Nissan Formula E Team",
+                "1:09.177",
+                "+0.156"
+              ],
+              [
+                "8",
+                "Nico Müller",
+                "Porsche Formula E Team",
+                "1:09.187",
+                "+0.166"
+              ],
+              [
+                "9",
+                "Mitch Evans",
+                "Jaguar TCS Racing",
+                "1:09.193",
+                "+0.172"
+              ],
+              [
+                "10",
+                "Taylor Barnard",
+                "DS Penske",
+                "1:09.224",
+                "+0.203"
+              ],
+              [
+                "11",
+                "Josep Maria Martí",
+                "Cupra Kiro",
+                "1:09.286",
+                "+0.265"
+              ],
+              [
+                "12",
+                "Pascal Wehrlein",
+                "Porsche Formula E Team",
+                "1:09.290",
+                "+0.269"
+              ],
+              [
+                "13",
+                "Dan Ticktum",
+                "Cupra Kiro",
+                "1:09.320",
+                "+0.299"
+              ],
+              [
+                "14",
+                "Felipe Drugovich",
+                "Andretti Formula E",
+                "1:09.327",
+                "+0.306"
+              ],
+              [
+                "15",
+                "Sébastien Buemi",
+                "Envision Racing",
+                "1:09.378",
+                "+0.357"
+              ],
+              [
+                "16",
+                "Nick Cassidy",
+                "Citroën Racing",
+                "1:09.437",
+                "+0.416"
+              ],
+              [
+                "17",
+                "Lucas di Grassi",
+                "Lola Yamaha ABT",
+                "1:09.627",
+                "+0.606"
+              ],
+              [
+                "18",
+                "Zane Maloney",
+                "Lola Yamaha ABT",
+                "1:09.660",
+                "+0.639"
+              ],
+              [
+                "19",
+                "Norman Nato",
+                "Nissan Formula E Team",
+                "1:10.730",
+                "+1.709"
+              ],
+              [
+                "20",
+                "Nyck de Vries",
+                "Mahindra Racing",
+                "—",
+                ""
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Qualifying",
+        "tables": [
+          {
+            "title": "Qualifying",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time"
+            ],
+            "rows": [
+              [
+                "1",
+                "Pascal Wehrlein",
+                "Porsche Formula E Team",
+                "1:09.260"
+              ],
+              [
+                "2",
+                "Mitch Evans",
+                "Jaguar TCS Racing",
+                "1:09.463"
+              ],
+              [
+                "3",
+                "Jake Dennis",
+                "Andretti Formula E",
+                "1:09.306"
+              ],
+              [
+                "4",
+                "Maximilian Günther",
+                "DS Penske",
+                "1:09.423"
+              ],
+              [
+                "5",
+                "Dan Ticktum",
+                "Cupra Kiro",
+                "1:09.147"
+              ],
+              [
+                "6",
+                "António Félix da Costa",
+                "Jaguar TCS Racing",
+                "1:09.362"
+              ],
+              [
+                "7",
+                "Sébastien Buemi",
+                "Envision Racing",
+                "1:09.506"
+              ],
+              [
+                "8",
+                "Jean-Éric Vergne",
+                "Citroën Racing",
+                "1:09.544"
+              ],
+              [
+                "9",
+                "Felipe Drugovich",
+                "Andretti Formula E",
+                "1:10.363"
+              ],
+              [
+                "10",
+                "Taylor Barnard",
+                "DS Penske",
+                "1:10.323"
+              ],
+              [
+                "11",
+                "Nick Cassidy",
+                "Citroën Racing",
+                "1:10.390"
+              ],
+              [
+                "12",
+                "Josep Maria Martí",
+                "Cupra Kiro",
+                "1:10.369"
+              ],
+              [
+                "13",
+                "Oliver Rowland",
+                "Nissan Formula E Team",
+                "1:10.511"
+              ],
+              [
+                "14",
+                "Nico Müller",
+                "Porsche Formula E Team",
+                "1:10.452"
+              ],
+              [
+                "15",
+                "Zane Maloney",
+                "Lola Yamaha ABT",
+                "1:10.609"
+              ],
+              [
+                "16",
+                "Joel Eriksson",
+                "Envision Racing",
+                "1:10.452"
+              ],
+              [
+                "17",
+                "Nyck de Vries",
+                "Mahindra Racing",
+                "1:10.661"
+              ],
+              [
+                "18",
+                "Edoardo Mortara",
+                "Mahindra Racing",
+                "1:10.541"
+              ],
+              [
+                "19",
+                "Norman Nato",
+                "Nissan Formula E Team",
+                "1:12.444"
+              ],
+              [
+                "20",
+                "Lucas di Grassi",
+                "Lola Yamaha ABT",
+                "1:10.916"
               ]
             ]
           }
@@ -1682,7 +2288,7 @@
   },
   {
     "round": 13,
-    "name": "Shanghai ePrix",
+    "name": "Shanghai E-Prix — Race 2",
     "date": "2026-07-05",
     "sessions": [
       {
@@ -1694,6 +2300,7 @@
               "Pos",
               "Driver",
               "Team",
+              "Grid",
               "Time",
               "Pts"
             ],
@@ -1701,9 +2308,457 @@
               [
                 "1",
                 "Lucas di Grassi",
-                "Lola Yamaha ABT Formula E Team",
-                "Race winner",
+                "Lola Yamaha ABT",
+                "19",
+                "40:43.390",
                 "25"
+              ],
+              [
+                "2",
+                "Jean-Éric Vergne",
+                "Citroën Racing",
+                "18",
+                "+0.565",
+                "18"
+              ],
+              [
+                "3",
+                "Joel Eriksson",
+                "Envision Racing",
+                "17",
+                "+2.903",
+                "15"
+              ],
+              [
+                "4",
+                "Pascal Wehrlein",
+                "Porsche Formula E Team",
+                "3",
+                "+11.093",
+                "12"
+              ],
+              [
+                "5",
+                "Sébastien Buemi",
+                "Envision Racing",
+                "16",
+                "+17.373",
+                "10"
+              ],
+              [
+                "6",
+                "Felipe Drugovich",
+                "Andretti Formula E",
+                "1",
+                "+19.651",
+                "11"
+              ],
+              [
+                "7",
+                "Nico Müller",
+                "Porsche Formula E Team",
+                "5",
+                "+22.456",
+                "6"
+              ],
+              [
+                "8",
+                "Oliver Rowland",
+                "Nissan Formula E Team",
+                "4",
+                "+22.539",
+                "5"
+              ],
+              [
+                "9",
+                "Taylor Barnard",
+                "DS Penske",
+                "2",
+                "+22.690",
+                "2"
+              ],
+              [
+                "10",
+                "Maximilian Günther",
+                "DS Penske",
+                "11",
+                "+24.248",
+                "1"
+              ],
+              [
+                "11",
+                "Dan Ticktum",
+                "Cupra Kiro",
+                "14",
+                "+23.685",
+                "0"
+              ],
+              [
+                "12",
+                "Josep Maria Martí",
+                "Cupra Kiro",
+                "6",
+                "+24.362",
+                "0"
+              ],
+              [
+                "13",
+                "Jake Dennis",
+                "Andretti Formula E",
+                "10",
+                "+26.722",
+                "0"
+              ],
+              [
+                "14",
+                "António Félix da Costa",
+                "Jaguar TCS Racing",
+                "13",
+                "+26.934",
+                "0"
+              ],
+              [
+                "15",
+                "Nick Cassidy",
+                "Citroën Racing",
+                "15",
+                "+27.138",
+                "0"
+              ],
+              [
+                "16",
+                "Edoardo Mortara",
+                "Mahindra Racing",
+                "7",
+                "+29.960",
+                "0"
+              ],
+              [
+                "17",
+                "Norman Nato",
+                "Nissan Formula E Team",
+                "20",
+                "+31.309",
+                "0"
+              ],
+              [
+                "18",
+                "Nyck de Vries",
+                "Mahindra Racing",
+                "9",
+                "+52.032",
+                "0"
+              ],
+              [
+                "—",
+                "Zane Maloney",
+                "Lola Yamaha ABT",
+                "8",
+                "30:54.093",
+                "0"
+              ],
+              [
+                "—",
+                "Mitch Evans",
+                "Jaguar TCS Racing",
+                "12",
+                "dnf",
+                "0"
+              ]
+            ]
+          }
+        ]
+      }
+    ],
+    "others": [
+      {
+        "label": "Practice 3",
+        "tables": [
+          {
+            "title": "Practice 3",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "Taylor Barnard",
+                "DS Penske",
+                "1:16.902",
+                ""
+              ],
+              [
+                "2",
+                "Pascal Wehrlein",
+                "Porsche Formula E Team",
+                "1:17.033",
+                "+0.131"
+              ],
+              [
+                "3",
+                "Felipe Drugovich",
+                "Andretti Formula E",
+                "1:17.529",
+                "+0.627"
+              ],
+              [
+                "4",
+                "Nico Müller",
+                "Porsche Formula E Team",
+                "1:17.732",
+                "+0.830"
+              ],
+              [
+                "5",
+                "Jake Dennis",
+                "Andretti Formula E",
+                "1:17.896",
+                "+0.994"
+              ],
+              [
+                "6",
+                "Nyck de Vries",
+                "Mahindra Racing",
+                "1:18.015",
+                "+1.113"
+              ],
+              [
+                "7",
+                "Maximilian Günther",
+                "DS Penske",
+                "1:18.078",
+                "+1.176"
+              ],
+              [
+                "8",
+                "António Félix da Costa",
+                "Jaguar TCS Racing",
+                "1:18.207",
+                "+1.305"
+              ],
+              [
+                "9",
+                "Mitch Evans",
+                "Jaguar TCS Racing",
+                "1:18.356",
+                "+1.454"
+              ],
+              [
+                "10",
+                "Norman Nato",
+                "Nissan Formula E Team",
+                "1:18.466",
+                "+1.564"
+              ],
+              [
+                "11",
+                "Dan Ticktum",
+                "Cupra Kiro",
+                "1:18.589",
+                "+1.687"
+              ],
+              [
+                "12",
+                "Oliver Rowland",
+                "Nissan Formula E Team",
+                "1:18.621",
+                "+1.719"
+              ],
+              [
+                "13",
+                "Jean-Éric Vergne",
+                "Citroën Racing",
+                "1:18.926",
+                "+2.024"
+              ],
+              [
+                "14",
+                "Edoardo Mortara",
+                "Mahindra Racing",
+                "1:19.102",
+                "+2.200"
+              ],
+              [
+                "15",
+                "Josep Maria Martí",
+                "Cupra Kiro",
+                "1:19.563",
+                "+2.661"
+              ],
+              [
+                "16",
+                "Sébastien Buemi",
+                "Envision Racing",
+                "1:19.996",
+                "+3.094"
+              ],
+              [
+                "17",
+                "Zane Maloney",
+                "Lola Yamaha ABT",
+                "1:20.206",
+                "+3.304"
+              ],
+              [
+                "18",
+                "Nick Cassidy",
+                "Citroën Racing",
+                "1:20.302",
+                "+3.400"
+              ],
+              [
+                "19",
+                "Lucas di Grassi",
+                "Lola Yamaha ABT",
+                "1:20.424",
+                "+3.522"
+              ],
+              [
+                "20",
+                "Joel Eriksson",
+                "Envision Racing",
+                "1:21.001",
+                "+4.099"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Qualifying",
+        "tables": [
+          {
+            "title": "Qualifying",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time"
+            ],
+            "rows": [
+              [
+                "1",
+                "Felipe Drugovich",
+                "Andretti Formula E",
+                "1:10.609"
+              ],
+              [
+                "2",
+                "Taylor Barnard",
+                "DS Penske",
+                "1:11.106"
+              ],
+              [
+                "3",
+                "Pascal Wehrlein",
+                "Porsche Formula E Team",
+                "1:12.153"
+              ],
+              [
+                "4",
+                "Oliver Rowland",
+                "Nissan Formula E Team",
+                "1:12.548"
+              ],
+              [
+                "5",
+                "Norman Nato",
+                "Nissan Formula E Team",
+                "1:13.549"
+              ],
+              [
+                "6",
+                "Nico Müller",
+                "Porsche Formula E Team",
+                "1:13.788"
+              ],
+              [
+                "7",
+                "Josep Maria Martí",
+                "Cupra Kiro",
+                "1:14.030"
+              ],
+              [
+                "8",
+                "Edoardo Mortara",
+                "Mahindra Racing",
+                "1:14.313"
+              ],
+              [
+                "9",
+                "Zane Maloney",
+                "Lola Yamaha ABT",
+                "1:16.606"
+              ],
+              [
+                "10",
+                "Nyck de Vries",
+                "Mahindra Racing",
+                "1:17.298"
+              ],
+              [
+                "11",
+                "Jake Dennis",
+                "Andretti Formula E",
+                "1:16.668"
+              ],
+              [
+                "12",
+                "Maximilian Günther",
+                "DS Penske",
+                "1:17.418"
+              ],
+              [
+                "13",
+                "Dan Ticktum",
+                "Cupra Kiro",
+                "1:16.670"
+              ],
+              [
+                "14",
+                "Mitch Evans",
+                "Jaguar TCS Racing",
+                "1:17.467"
+              ],
+              [
+                "15",
+                "Sébastien Buemi",
+                "Envision Racing",
+                "1:16.723"
+              ],
+              [
+                "16",
+                "António Félix da Costa",
+                "Jaguar TCS Racing",
+                "1:17.574"
+              ],
+              [
+                "17",
+                "Nick Cassidy",
+                "Citroën Racing",
+                "1:16.921"
+              ],
+              [
+                "18",
+                "Joel Eriksson",
+                "Envision Racing",
+                "1:17.748"
+              ],
+              [
+                "19",
+                "Jean-Éric Vergne",
+                "Citroën Racing",
+                "1:17.201"
+              ],
+              [
+                "20",
+                "Lucas di Grassi",
+                "Lola Yamaha ABT",
+                "1:18.362"
               ]
             ]
           }
@@ -1713,7 +2768,7 @@
   },
   {
     "round": 14,
-    "name": "Tokyo ePrix",
+    "name": "Tokyo E-Prix — Race 1",
     "date": "2026-07-25",
     "sessions": [
       {
@@ -1725,6 +2780,7 @@
               "Pos",
               "Driver",
               "Team",
+              "Grid",
               "Time",
               "Pts"
             ],
@@ -1733,141 +2789,613 @@
                 "1",
                 "Dan Ticktum",
                 "Cupra Kiro",
-                "Finished",
-                "25"
+                "6",
+                "47:41.746",
+                "26"
               ],
               [
                 "2",
                 "Jake Dennis",
                 "Andretti Formula E",
-                "0.380",
-                "18"
+                "1",
+                "+0.380",
+                "21"
               ],
               [
                 "3",
                 "Nick Cassidy",
-                "DS Penske",
-                "0.617",
+                "Citroën Racing",
+                "7",
+                "+0.617",
                 "15"
               ],
               [
                 "4",
                 "Mitch Evans",
-                "Jaguar Racing",
-                "4.763",
+                "Jaguar TCS Racing",
+                "16",
+                "+4.763",
                 "12"
               ],
               [
                 "5",
-                "Edo Mortara",
+                "Edoardo Mortara",
                 "Mahindra Racing",
-                "6.223",
+                "2",
+                "+6.223",
                 "10"
               ],
               [
                 "6",
-                "Jean-Eric Vergne",
-                "DS Penske",
-                "6.619",
+                "Jean-Éric Vergne",
+                "Citroën Racing",
+                "10",
+                "+6.619",
                 "8"
               ],
               [
                 "7",
                 "Oliver Rowland",
-                "Nissan e.Dams",
-                "7.159",
+                "Nissan Formula E Team",
+                "15",
+                "+7.159",
                 "6"
               ],
               [
                 "8",
-                "Pepe Marti",
+                "Josep Maria Martí",
                 "Cupra Kiro",
-                "7.516",
+                "18",
+                "+7.516",
                 "4"
               ],
               [
                 "9",
-                "Antonio Felix da Costa",
-                "Jaguar Racing",
-                "7.765",
+                "António Félix da Costa",
+                "Jaguar TCS Racing",
+                "3",
+                "+7.765",
                 "2"
               ],
               [
                 "10",
                 "Taylor Barnard",
                 "DS Penske",
-                "10.456",
+                "5",
+                "+10.456",
                 "1"
               ],
               [
                 "11",
                 "Lucas di Grassi",
-                "LOLA YAMAHA ABT",
-                "11.411",
+                "Lola Yamaha ABT",
+                "17",
+                "+11.411",
                 "0"
               ],
               [
                 "12",
                 "Joel Eriksson",
                 "Envision Racing",
-                "14.380",
+                "13",
+                "+14.380",
                 "0"
               ],
               [
                 "13",
                 "Felipe Drugovich",
                 "Andretti Formula E",
-                "15.391",
+                "20",
+                "+15.391",
                 "0"
               ],
               [
                 "14",
-                "Sebastien Buemi",
+                "Sébastien Buemi",
                 "Envision Racing",
-                "15.808",
+                "14",
+                "+15.808",
                 "0"
               ],
               [
                 "15",
-                "Max Guenther",
+                "Maximilian Günther",
                 "DS Penske",
-                "19.028",
+                "9",
+                "+19.028",
                 "0"
               ],
               [
                 "16",
                 "Norman Nato",
-                "Nissan e.Dams",
-                "36.804",
+                "Nissan Formula E Team",
+                "11",
+                "+36.804",
                 "0"
               ],
               [
                 "17",
                 "Nyck de Vries",
                 "Mahindra Racing",
-                "46.973",
+                "12",
+                "+46.973",
                 "0"
               ],
               [
                 "18",
-                "Nico Mueller",
-                "Porsche Team",
-                "1:04.205",
+                "Nico Müller",
+                "Porsche Formula E Team",
+                "4",
+                "+1:04.205",
                 "0"
               ],
               [
                 "19",
                 "Zane Maloney",
-                "LOLA YAMAHA ABT",
-                "1:11.524",
+                "Lola Yamaha ABT",
+                "19",
+                "+1:11.524",
                 "0"
               ],
               [
-                "20",
+                "—",
                 "Pascal Wehrlein",
-                "Porsche Team",
-                "Finished",
+                "Porsche Formula E Team",
+                "8",
+                "47:59.410",
                 "0"
+              ]
+            ]
+          }
+        ]
+      }
+    ],
+    "others": [
+      {
+        "label": "Practice 1",
+        "tables": [
+          {
+            "title": "Practice 1",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "Edoardo Mortara",
+                "Mahindra Racing",
+                "1:13.094",
+                ""
+              ],
+              [
+                "2",
+                "Maximilian Günther",
+                "DS Penske",
+                "1:13.322",
+                "+0.228"
+              ],
+              [
+                "3",
+                "Jake Dennis",
+                "Andretti Formula E",
+                "1:13.458",
+                "+0.364"
+              ],
+              [
+                "4",
+                "Pascal Wehrlein",
+                "Porsche Formula E Team",
+                "1:13.562",
+                "+0.468"
+              ],
+              [
+                "5",
+                "António Félix da Costa",
+                "Jaguar TCS Racing",
+                "1:13.647",
+                "+0.553"
+              ],
+              [
+                "6",
+                "Nyck de Vries",
+                "Mahindra Racing",
+                "1:13.651",
+                "+0.557"
+              ],
+              [
+                "7",
+                "Dan Ticktum",
+                "Cupra Kiro",
+                "1:13.673",
+                "+0.579"
+              ],
+              [
+                "8",
+                "Nick Cassidy",
+                "Citroën Racing",
+                "1:13.782",
+                "+0.688"
+              ],
+              [
+                "9",
+                "Norman Nato",
+                "Nissan Formula E Team",
+                "1:13.792",
+                "+0.698"
+              ],
+              [
+                "10",
+                "Mitch Evans",
+                "Jaguar TCS Racing",
+                "1:13.827",
+                "+0.733"
+              ],
+              [
+                "11",
+                "Taylor Barnard",
+                "DS Penske",
+                "1:13.901",
+                "+0.807"
+              ],
+              [
+                "12",
+                "Joel Eriksson",
+                "Envision Racing",
+                "1:14.063",
+                "+0.969"
+              ],
+              [
+                "13",
+                "Jean-Éric Vergne",
+                "Citroën Racing",
+                "1:14.075",
+                "+0.981"
+              ],
+              [
+                "14",
+                "Nico Müller",
+                "Porsche Formula E Team",
+                "1:14.109",
+                "+1.015"
+              ],
+              [
+                "15",
+                "Oliver Rowland",
+                "Nissan Formula E Team",
+                "1:14.326",
+                "+1.232"
+              ],
+              [
+                "16",
+                "Felipe Drugovich",
+                "Andretti Formula E",
+                "1:14.381",
+                "+1.287"
+              ],
+              [
+                "17",
+                "Sébastien Buemi",
+                "Envision Racing",
+                "1:14.517",
+                "+1.423"
+              ],
+              [
+                "18",
+                "Zane Maloney",
+                "Lola Yamaha ABT",
+                "1:14.556",
+                "+1.462"
+              ],
+              [
+                "19",
+                "Lucas di Grassi",
+                "Lola Yamaha ABT",
+                "1:15.105",
+                "+2.011"
+              ],
+              [
+                "20",
+                "Josep Maria Martí",
+                "Cupra Kiro",
+                "1:17.005",
+                "+3.911"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Practice 2",
+        "tables": [
+          {
+            "title": "Practice 2",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "Edoardo Mortara",
+                "Mahindra Racing",
+                "1:12.491",
+                ""
+              ],
+              [
+                "2",
+                "Dan Ticktum",
+                "Cupra Kiro",
+                "1:12.626",
+                "+0.135"
+              ],
+              [
+                "3",
+                "Pascal Wehrlein",
+                "Porsche Formula E Team",
+                "1:12.706",
+                "+0.215"
+              ],
+              [
+                "4",
+                "Nico Müller",
+                "Porsche Formula E Team",
+                "1:12.851",
+                "+0.360"
+              ],
+              [
+                "5",
+                "Jake Dennis",
+                "Andretti Formula E",
+                "1:12.937",
+                "+0.446"
+              ],
+              [
+                "6",
+                "Mitch Evans",
+                "Jaguar TCS Racing",
+                "1:12.994",
+                "+0.503"
+              ],
+              [
+                "7",
+                "Maximilian Günther",
+                "DS Penske",
+                "1:13.015",
+                "+0.524"
+              ],
+              [
+                "8",
+                "Nick Cassidy",
+                "Citroën Racing",
+                "1:13.082",
+                "+0.591"
+              ],
+              [
+                "9",
+                "António Félix da Costa",
+                "Jaguar TCS Racing",
+                "1:13.201",
+                "+0.710"
+              ],
+              [
+                "10",
+                "Taylor Barnard",
+                "DS Penske",
+                "1:13.245",
+                "+0.754"
+              ],
+              [
+                "11",
+                "Josep Maria Martí",
+                "Cupra Kiro",
+                "1:13.267",
+                "+0.776"
+              ],
+              [
+                "12",
+                "Jean-Éric Vergne",
+                "Citroën Racing",
+                "1:13.310",
+                "+0.819"
+              ],
+              [
+                "13",
+                "Joel Eriksson",
+                "Envision Racing",
+                "1:13.410",
+                "+0.919"
+              ],
+              [
+                "14",
+                "Norman Nato",
+                "Nissan Formula E Team",
+                "1:13.506",
+                "+1.015"
+              ],
+              [
+                "15",
+                "Sébastien Buemi",
+                "Envision Racing",
+                "1:13.653",
+                "+1.162"
+              ],
+              [
+                "16",
+                "Lucas di Grassi",
+                "Lola Yamaha ABT",
+                "1:14.231",
+                "+1.740"
+              ],
+              [
+                "17",
+                "Oliver Rowland",
+                "Nissan Formula E Team",
+                "1:14.431",
+                "+1.940"
+              ],
+              [
+                "18",
+                "Zane Maloney",
+                "Lola Yamaha ABT",
+                "1:14.881",
+                "+2.390"
+              ],
+              [
+                "19",
+                "Nyck de Vries",
+                "Mahindra Racing",
+                "1:15.664",
+                "+3.173"
+              ],
+              [
+                "20",
+                "Felipe Drugovich",
+                "Andretti Formula E",
+                "1:29.475",
+                "+16.984"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Qualifying",
+        "tables": [
+          {
+            "title": "Qualifying",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time"
+            ],
+            "rows": [
+              [
+                "1",
+                "Jake Dennis",
+                "Andretti Formula E",
+                "1:11.863"
+              ],
+              [
+                "2",
+                "Edoardo Mortara",
+                "Mahindra Racing",
+                "1:11.915"
+              ],
+              [
+                "3",
+                "António Félix da Costa",
+                "Jaguar TCS Racing",
+                "1:11.963"
+              ],
+              [
+                "4",
+                "Nico Müller",
+                "Porsche Formula E Team",
+                "1:12.109"
+              ],
+              [
+                "5",
+                "Taylor Barnard",
+                "DS Penske",
+                "1:12.359"
+              ],
+              [
+                "6",
+                "Dan Ticktum",
+                "Cupra Kiro",
+                "1:12.427"
+              ],
+              [
+                "7",
+                "Jean-Éric Vergne",
+                "Citroën Racing",
+                "1:12.522"
+              ],
+              [
+                "8",
+                "Nick Cassidy",
+                "Citroën Racing",
+                "1:12.574"
+              ],
+              [
+                "9",
+                "Pascal Wehrlein",
+                "Porsche Formula E Team",
+                "1:14.051"
+              ],
+              [
+                "10",
+                "Maximilian Günther",
+                "DS Penske",
+                "1:13.960"
+              ],
+              [
+                "11",
+                "Norman Nato",
+                "Nissan Formula E Team",
+                "1:14.095"
+              ],
+              [
+                "12",
+                "Nyck de Vries",
+                "Mahindra Racing",
+                "1:14.026"
+              ],
+              [
+                "13",
+                "Joel Eriksson",
+                "Envision Racing",
+                "1:14.127"
+              ],
+              [
+                "14",
+                "Sébastien Buemi",
+                "Envision Racing",
+                "1:14.029"
+              ],
+              [
+                "15",
+                "Oliver Rowland",
+                "Nissan Formula E Team",
+                "1:14.744"
+              ],
+              [
+                "16",
+                "Mitch Evans",
+                "Jaguar TCS Racing",
+                "1:14.043"
+              ],
+              [
+                "17",
+                "Lucas di Grassi",
+                "Lola Yamaha ABT",
+                "1:14.810"
+              ],
+              [
+                "18",
+                "Josep Maria Martí",
+                "Cupra Kiro",
+                "1:14.061"
+              ],
+              [
+                "19",
+                "Felipe Drugovich",
+                "Andretti Formula E",
+                "—"
+              ],
+              [
+                "20",
+                "Zane Maloney",
+                "Lola Yamaha ABT",
+                "1:14.541"
               ]
             ]
           }
@@ -1877,7 +3405,7 @@
   },
   {
     "round": 15,
-    "name": "Tokyo ePrix",
+    "name": "Tokyo E-Prix — Race 2",
     "date": "2026-07-26",
     "sessions": [
       {
@@ -1889,6 +3417,7 @@
               "Pos",
               "Driver",
               "Team",
+              "Grid",
               "Time",
               "Pts"
             ],
@@ -1897,141 +3426,299 @@
                 "1",
                 "Nyck de Vries",
                 "Mahindra Racing",
-                "01:01:13:217",
+                "5",
+                "1:01:13.217",
                 "25"
               ],
               [
                 "2",
                 "Nick Cassidy",
-                "DS Penske",
-                "+ 0:00:683",
+                "Citroën Racing",
+                "13",
+                "+0.683",
                 "18"
               ],
               [
                 "3",
                 "Jake Dennis",
                 "Andretti Formula E",
-                "+ 0:00:958",
-                "15"
+                "17",
+                "+0.958",
+                "16"
               ],
               [
                 "4",
                 "Oliver Rowland",
-                "Nissan e.Dams",
-                "+ 0:02:662",
+                "Nissan Formula E Team",
+                "8",
+                "+2.662",
                 "12"
               ],
               [
                 "5",
-                "Jean-Eric Vergne",
-                "DS Penske",
-                "+ 0:02:960",
+                "Jean-Éric Vergne",
+                "Citroën Racing",
+                "12",
+                "+2.960",
                 "10"
               ],
               [
                 "6",
                 "Norman Nato",
-                "Nissan e.Dams",
-                "+ 0:03:430",
+                "Nissan Formula E Team",
+                "6",
+                "+3.430",
                 "8"
               ],
               [
                 "7",
-                "Sebastien Buemi",
-                "Envision Racing",
-                "+ 0:03:799",
+                "Nico Müller",
+                "Porsche Formula E Team",
+                "10",
+                "+4.194",
                 "6"
               ],
               [
                 "8",
-                "Nico Mueller",
-                "Porsche Team",
-                "+ 0:04:194",
+                "Taylor Barnard",
+                "DS Penske",
+                "4",
+                "+4.702",
                 "4"
               ],
               [
                 "9",
-                "Taylro Barnard",
+                "Maximilian Günther",
                 "DS Penske",
-                "+ 0:04:702",
+                "14",
+                "+5.140",
                 "2"
               ],
               [
                 "10",
-                "Maximilian Guenther",
-                "DS Penske",
-                "+ 0:05:140",
+                "Zane Maloney",
+                "Lola Yamaha ABT",
+                "15",
+                "+6.049",
                 "1"
               ],
               [
                 "11",
-                "Felipe Drugovich",
-                "Andretti Formula E",
-                "+ 0:05:604",
+                "Lucas di Grassi",
+                "Lola Yamaha ABT",
+                "19",
+                "+6.349",
                 "0"
               ],
               [
                 "12",
-                "Zane Maloney",
-                "LOLA YAMAHA ABT",
-                "+ 0:06:049",
+                "Dan Ticktum",
+                "Cupra Kiro",
+                "3",
+                "+6.826",
                 "0"
               ],
               [
                 "13",
-                "Lucas di Grassi",
-                "LOLA YAMAHA ABT",
-                "+ 0:06:349",
+                "Pascal Wehrlein",
+                "Porsche Formula E Team",
+                "11",
+                "+8.375",
                 "0"
               ],
               [
                 "14",
-                "Dan Ticktum",
-                "Cupra Kiro",
-                "+ 0:06:826",
+                "António Félix da Costa",
+                "Jaguar TCS Racing",
+                "2",
+                "+8.535",
                 "0"
               ],
               [
                 "15",
-                "Pascal Wehrlein",
-                "Porsche Team",
-                "+ 0:08:375",
+                "Sébastien Buemi",
+                "Envision Racing",
+                "16",
+                "+8.799",
                 "0"
               ],
               [
                 "16",
-                "Antonio Felix da Costa",
-                "Jaguar Racing",
-                "+ 0:08:535",
+                "Felipe Drugovich",
+                "Andretti Formula E",
+                "18",
+                "+10.604",
                 "0"
+              ],
+              [
+                "—",
+                "Edoardo Mortara",
+                "Mahindra Racing",
+                "1",
+                "50:58.442",
+                "3"
+              ],
+              [
+                "—",
+                "Mitch Evans",
+                "Jaguar TCS Racing",
+                "7",
+                "1:00:02.830",
+                "0"
+              ],
+              [
+                "—",
+                "Joel Eriksson",
+                "Envision Racing",
+                "20",
+                "45:38.183",
+                "0"
+              ],
+              [
+                "—",
+                "Josep Maria Martí",
+                "Cupra Kiro",
+                "9",
+                "20:27.882",
+                "0"
+              ]
+            ]
+          }
+        ]
+      }
+    ],
+    "others": [
+      {
+        "label": "Qualifying",
+        "tables": [
+          {
+            "title": "Qualifying",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time"
+            ],
+            "rows": [
+              [
+                "1",
+                "Edoardo Mortara",
+                "Mahindra Racing",
+                "1:12.341"
+              ],
+              [
+                "2",
+                "António Félix da Costa",
+                "Jaguar TCS Racing",
+                "1:13.018"
+              ],
+              [
+                "3",
+                "Dan Ticktum",
+                "Cupra Kiro",
+                "1:12.810"
+              ],
+              [
+                "4",
+                "Taylor Barnard",
+                "DS Penske",
+                "1:13.118"
+              ],
+              [
+                "5",
+                "Nyck de Vries",
+                "Mahindra Racing",
+                "1:13.300"
+              ],
+              [
+                "6",
+                "Norman Nato",
+                "Nissan Formula E Team",
+                "1:13.351"
+              ],
+              [
+                "7",
+                "Mitch Evans",
+                "Jaguar TCS Racing",
+                "1:13.837"
+              ],
+              [
+                "8",
+                "Oliver Rowland",
+                "Nissan Formula E Team",
+                "1:13.848"
+              ],
+              [
+                "9",
+                "Josep Maria Martí",
+                "Cupra Kiro",
+                "1:14.798"
+              ],
+              [
+                "10",
+                "Nico Müller",
+                "Porsche Formula E Team",
+                "1:15.444"
+              ],
+              [
+                "11",
+                "Pascal Wehrlein",
+                "Porsche Formula E Team",
+                "1:14.798"
+              ],
+              [
+                "12",
+                "Jean-Éric Vergne",
+                "Citroën Racing",
+                "1:15.667"
+              ],
+              [
+                "13",
+                "Nick Cassidy",
+                "Citroën Racing",
+                "1:14.830"
+              ],
+              [
+                "14",
+                "Sébastien Buemi",
+                "Envision Racing",
+                "1:15.856"
+              ],
+              [
+                "15",
+                "Maximilian Günther",
+                "DS Penske",
+                "1:14.865"
+              ],
+              [
+                "16",
+                "Felipe Drugovich",
+                "Andretti Formula E",
+                "1:15.890"
               ],
               [
                 "17",
-                "Mitch Evans",
-                "Jaguar Racing",
-                "DNF",
-                "0"
+                "Zane Maloney",
+                "Lola Yamaha ABT",
+                "1:15.105"
               ],
               [
                 "18",
-                "Edo Mortara",
-                "Mahindra Racing",
-                "DNF",
-                "0"
+                "Jake Dennis",
+                "Andretti Formula E",
+                "1:15.915"
               ],
               [
                 "19",
-                "Joel Eriksson",
-                "Envision Racing",
-                "DNF",
-                "0"
+                "Lucas di Grassi",
+                "Lola Yamaha ABT",
+                "1:15.197"
               ],
               [
                 "20",
-                "Pepe Marti",
-                "Cupra Kiro",
-                "DNF",
-                "0"
+                "Joel Eriksson",
+                "Envision Racing",
+                "1:16.244"
               ]
             ]
           }
@@ -2041,7 +3728,7 @@
   },
   {
     "round": 16,
-    "name": "London ePrix",
+    "name": "London E-Prix — Race 1",
     "date": "2026-08-15",
     "sessions": [
       {
@@ -2053,6 +3740,7 @@
               "Pos",
               "Driver",
               "Team",
+              "Grid",
               "Time",
               "Pts"
             ],
@@ -2060,142 +3748,614 @@
               [
                 "1",
                 "Pascal Wehrlein",
-                "Porsche Team",
-                "Finished",
-                "25"
+                "Porsche Formula E Team",
+                "1",
+                "49:48.354",
+                "28"
               ],
               [
                 "2",
                 "Jake Dennis",
                 "Andretti Formula E",
-                "Finished",
+                "5",
+                "+5.777",
                 "18"
               ],
               [
                 "3",
-                "Antonio Felix Da Costa",
+                "António Félix da Costa",
                 "Jaguar TCS Racing",
-                "Finished",
+                "7",
+                "+22.308",
                 "15"
               ],
               [
                 "4",
-                "Sebastien Buemi",
+                "Sébastien Buemi",
                 "Envision Racing",
-                "Finished",
+                "10",
+                "+23.729",
                 "12"
               ],
               [
                 "5",
-                "Edo Mortara",
-                "Mahindra Racing",
-                "Finished",
+                "Taylor Barnard",
+                "DS Penske",
+                "12",
+                "+24.480",
                 "10"
               ],
               [
                 "6",
-                "Taylor Barnard",
-                "DS Penske",
-                "Finished",
+                "Dan Ticktum",
+                "Cupra Kiro",
+                "4",
+                "+27.579",
                 "8"
               ],
               [
                 "7",
-                "Dan Ticktum",
-                "Cupra Kiro",
-                "Finished",
+                "Edoardo Mortara",
+                "Mahindra Racing",
+                "18",
+                "+28.969",
                 "6"
               ],
               [
                 "8",
                 "Mitch Evans",
                 "Jaguar TCS Racing",
-                "Finished",
+                "3",
+                "+30.540",
                 "4"
               ],
               [
                 "9",
                 "Nick Cassidy",
-                "DS Penske",
-                "Finished",
+                "Citroën Racing",
+                "11",
+                "+31.547",
                 "2"
               ],
               [
                 "10",
-                "Ollie Rowland",
-                "Nissan e.Dams",
-                "Finished",
-                "1"
+                "Oliver Rowland",
+                "Nissan Formula E Team",
+                "13",
+                "+33.880",
+                "2"
               ],
               [
                 "11",
-                "Nico Mueller",
-                "Porsche Team",
-                "Finished",
+                "Nico Müller",
+                "Porsche Formula E Team",
+                "2",
+                "+41.574",
                 "0"
               ],
               [
                 "12",
-                "Maximilian Gunther",
+                "Maximilian Günther",
                 "DS Penske",
-                "Finished",
+                "19",
+                "+41.964",
                 "0"
               ],
               [
                 "13",
-                "Nyck De Vries",
+                "Nyck de Vries",
                 "Mahindra Racing",
-                "Finished",
+                "9",
+                "+42.361",
                 "0"
               ],
               [
                 "14",
                 "Joel Eriksson",
                 "Envision Racing",
-                "Finished",
+                "6",
+                "+47.982",
                 "0"
               ],
               [
                 "15",
                 "Norman Nato",
-                "Nissan e.Dams",
-                "Finished",
+                "Nissan Formula E Team",
+                "16",
+                "+58.243",
                 "0"
               ],
               [
                 "16",
                 "Felipe Drugovich",
                 "Andretti Formula E",
-                "Finished",
+                "14",
+                "+1 lap",
                 "0"
+              ],
+              [
+                "—",
+                "Zane Maloney",
+                "Lola Yamaha ABT",
+                "17",
+                "6:28.029",
+                "0"
+              ],
+              [
+                "—",
+                "Josep Maria Martí",
+                "Cupra Kiro",
+                "15",
+                "48:25.356",
+                "0"
+              ],
+              [
+                "—",
+                "Lucas di Grassi",
+                "Lola Yamaha ABT",
+                "20",
+                "25:52.656",
+                "0"
+              ],
+              [
+                "—",
+                "Jean-Éric Vergne",
+                "Citroën Racing",
+                "8",
+                "48:27.410",
+                "0"
+              ]
+            ]
+          }
+        ]
+      }
+    ],
+    "others": [
+      {
+        "label": "Practice 1",
+        "tables": [
+          {
+            "title": "Practice 1",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "Mitch Evans",
+                "Jaguar TCS Racing",
+                "1:08.175",
+                ""
+              ],
+              [
+                "2",
+                "Nyck de Vries",
+                "Mahindra Racing",
+                "1:08.358",
+                "+0.183"
+              ],
+              [
+                "3",
+                "Pascal Wehrlein",
+                "Porsche Formula E Team",
+                "1:08.378",
+                "+0.203"
+              ],
+              [
+                "4",
+                "Taylor Barnard",
+                "DS Penske",
+                "1:08.386",
+                "+0.211"
+              ],
+              [
+                "5",
+                "Jake Dennis",
+                "Andretti Formula E",
+                "1:08.455",
+                "+0.280"
+              ],
+              [
+                "6",
+                "António Félix da Costa",
+                "Jaguar TCS Racing",
+                "1:08.555",
+                "+0.380"
+              ],
+              [
+                "7",
+                "Edoardo Mortara",
+                "Mahindra Racing",
+                "1:08.569",
+                "+0.394"
+              ],
+              [
+                "8",
+                "Nico Müller",
+                "Porsche Formula E Team",
+                "1:08.595",
+                "+0.420"
+              ],
+              [
+                "9",
+                "Sébastien Buemi",
+                "Envision Racing",
+                "1:08.769",
+                "+0.594"
+              ],
+              [
+                "10",
+                "Nick Cassidy",
+                "Citroën Racing",
+                "1:08.839",
+                "+0.664"
+              ],
+              [
+                "11",
+                "Oliver Rowland",
+                "Nissan Formula E Team",
+                "1:08.893",
+                "+0.718"
+              ],
+              [
+                "12",
+                "Norman Nato",
+                "Nissan Formula E Team",
+                "1:08.994",
+                "+0.819"
+              ],
+              [
+                "13",
+                "Felipe Drugovich",
+                "Andretti Formula E",
+                "1:09.016",
+                "+0.841"
+              ],
+              [
+                "14",
+                "Joel Eriksson",
+                "Envision Racing",
+                "1:09.189",
+                "+1.014"
+              ],
+              [
+                "15",
+                "Dan Ticktum",
+                "Cupra Kiro",
+                "1:09.213",
+                "+1.038"
+              ],
+              [
+                "16",
+                "Lucas di Grassi",
+                "Lola Yamaha ABT",
+                "1:09.268",
+                "+1.093"
               ],
               [
                 "17",
-                "Pepe Marti",
-                "Cupra Kiro",
-                "Finished",
-                "0"
+                "Maximilian Günther",
+                "DS Penske",
+                "1:09.310",
+                "+1.135"
               ],
               [
                 "18",
-                "Jean-Eric Vergne",
-                "DS Penske",
-                "Finished",
-                "0"
+                "Zane Maloney",
+                "Lola Yamaha ABT",
+                "1:09.373",
+                "+1.198"
               ],
               [
                 "19",
-                "Lucas Di Grassi",
-                "Lola Yamaha ABT",
-                "DNF",
-                "0"
+                "Josep Maria Martí",
+                "Cupra Kiro",
+                "1:09.419",
+                "+1.244"
               ],
               [
                 "20",
+                "Jean-Éric Vergne",
+                "Citroën Racing",
+                "1:09.514",
+                "+1.339"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Practice 2",
+        "tables": [
+          {
+            "title": "Practice 2",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "Edoardo Mortara",
+                "Mahindra Racing",
+                "1:07.284",
+                ""
+              ],
+              [
+                "2",
+                "Pascal Wehrlein",
+                "Porsche Formula E Team",
+                "1:07.538",
+                "+0.254"
+              ],
+              [
+                "3",
+                "Nico Müller",
+                "Porsche Formula E Team",
+                "1:07.574",
+                "+0.290"
+              ],
+              [
+                "4",
+                "Taylor Barnard",
+                "DS Penske",
+                "1:07.649",
+                "+0.365"
+              ],
+              [
+                "5",
+                "Mitch Evans",
+                "Jaguar TCS Racing",
+                "1:07.696",
+                "+0.412"
+              ],
+              [
+                "6",
+                "Jake Dennis",
+                "Andretti Formula E",
+                "1:07.763",
+                "+0.479"
+              ],
+              [
+                "7",
+                "Nyck de Vries",
+                "Mahindra Racing",
+                "1:07.818",
+                "+0.534"
+              ],
+              [
+                "8",
+                "Dan Ticktum",
+                "Cupra Kiro",
+                "1:07.826",
+                "+0.542"
+              ],
+              [
+                "9",
+                "António Félix da Costa",
+                "Jaguar TCS Racing",
+                "1:07.833",
+                "+0.549"
+              ],
+              [
+                "10",
+                "Sébastien Buemi",
+                "Envision Racing",
+                "1:07.861",
+                "+0.577"
+              ],
+              [
+                "11",
+                "Maximilian Günther",
+                "DS Penske",
+                "1:07.999",
+                "+0.715"
+              ],
+              [
+                "12",
+                "Joel Eriksson",
+                "Envision Racing",
+                "1:08.050",
+                "+0.766"
+              ],
+              [
+                "13",
+                "Jean-Éric Vergne",
+                "Citroën Racing",
+                "1:08.169",
+                "+0.885"
+              ],
+              [
+                "14",
+                "Oliver Rowland",
+                "Nissan Formula E Team",
+                "1:08.175",
+                "+0.891"
+              ],
+              [
+                "15",
+                "Josep Maria Martí",
+                "Cupra Kiro",
+                "1:08.180",
+                "+0.896"
+              ],
+              [
+                "16",
+                "Felipe Drugovich",
+                "Andretti Formula E",
+                "1:08.257",
+                "+0.973"
+              ],
+              [
+                "17",
+                "Nick Cassidy",
+                "Citroën Racing",
+                "1:08.394",
+                "+1.110"
+              ],
+              [
+                "18",
+                "Lucas di Grassi",
+                "Lola Yamaha ABT",
+                "1:08.508",
+                "+1.224"
+              ],
+              [
+                "19",
                 "Zane Maloney",
                 "Lola Yamaha ABT",
-                "DNF",
-                "0"
+                "1:09.490",
+                "+2.206"
+              ],
+              [
+                "20",
+                "Norman Nato",
+                "Nissan Formula E Team",
+                "1:09.903",
+                "+2.619"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Qualifying",
+        "tables": [
+          {
+            "title": "Qualifying",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time"
+            ],
+            "rows": [
+              [
+                "1",
+                "Pascal Wehrlein",
+                "Porsche Formula E Team",
+                "1:07.587"
+              ],
+              [
+                "2",
+                "Nico Müller",
+                "Porsche Formula E Team",
+                "1:08.730"
+              ],
+              [
+                "3",
+                "Mitch Evans",
+                "Jaguar TCS Racing",
+                "1:07.767"
+              ],
+              [
+                "4",
+                "Dan Ticktum",
+                "Cupra Kiro",
+                "1:10.125"
+              ],
+              [
+                "5",
+                "Jake Dennis",
+                "Andretti Formula E",
+                "1:07.605"
+              ],
+              [
+                "6",
+                "Joel Eriksson",
+                "Envision Racing",
+                "1:07.820"
+              ],
+              [
+                "7",
+                "António Félix da Costa",
+                "Jaguar TCS Racing",
+                "1:07.883"
+              ],
+              [
+                "8",
+                "Jean-Éric Vergne",
+                "Citroën Racing",
+                "1:07.957"
+              ],
+              [
+                "9",
+                "Nyck de Vries",
+                "Mahindra Racing",
+                "1:09.470"
+              ],
+              [
+                "10",
+                "Sébastien Buemi",
+                "Envision Racing",
+                "1:09.278"
+              ],
+              [
+                "11",
+                "Nick Cassidy",
+                "Citroën Racing",
+                "1:09.542"
+              ],
+              [
+                "12",
+                "Taylor Barnard",
+                "DS Penske",
+                "1:09.299"
+              ],
+              [
+                "13",
+                "Edoardo Mortara",
+                "Mahindra Racing",
+                "1:09.544"
+              ],
+              [
+                "14",
+                "Oliver Rowland",
+                "Nissan Formula E Team",
+                "1:09.400"
+              ],
+              [
+                "15",
+                "Felipe Drugovich",
+                "Andretti Formula E",
+                "1:09.569"
+              ],
+              [
+                "16",
+                "Josep Maria Martí",
+                "Cupra Kiro",
+                "1:09.643"
+              ],
+              [
+                "17",
+                "Norman Nato",
+                "Nissan Formula E Team",
+                "1:09.637"
+              ],
+              [
+                "18",
+                "Zane Maloney",
+                "Lola Yamaha ABT",
+                "1:09.735"
+              ],
+              [
+                "19",
+                "Lucas di Grassi",
+                "Lola Yamaha ABT",
+                "1:09.728"
+              ],
+              [
+                "20",
+                "Maximilian Günther",
+                "DS Penske",
+                "1:15.347"
               ]
             ]
           }
@@ -2205,7 +4365,7 @@
   },
   {
     "round": 17,
-    "name": "London ePrix",
+    "name": "London E-Prix — Race 2 (Season Finale)",
     "date": "2026-08-16",
     "sessions": [
       {
@@ -2217,6 +4377,7 @@
               "Pos",
               "Driver",
               "Team",
+              "Grid",
               "Time",
               "Pts"
             ],
@@ -2225,141 +4386,456 @@
                 "1",
                 "Taylor Barnard",
                 "DS Penske",
-                "Finished",
+                "6",
+                "42:19.363",
                 "25"
               ],
               [
                 "2",
-                "Nyck De Vries",
+                "Nyck de Vries",
                 "Mahindra Racing",
-                "0.614",
-                "18"
+                "1",
+                "+0.614",
+                "21"
               ],
               [
                 "3",
-                "Edo Mortara",
+                "Edoardo Mortara",
                 "Mahindra Racing",
-                "6.087",
+                "2",
+                "+6.087",
                 "15"
               ],
               [
                 "4",
                 "Mitch Evans",
                 "Jaguar TCS Racing",
-                "7.722",
+                "5",
+                "+7.722",
                 "12"
               ],
               [
                 "5",
-                "Sebastien Buemi",
+                "Sébastien Buemi",
                 "Envision Racing",
-                "16.754",
+                "10",
+                "+16.754",
                 "10"
               ],
               [
                 "6",
                 "Nick Cassidy",
-                "DS Penske",
-                "17.205",
+                "Citroën Racing",
+                "7",
+                "+17.205",
                 "8"
               ],
               [
                 "7",
-                "Jean-Eric Vergne",
-                "DS Penske",
-                "17.864",
+                "Jean-Éric Vergne",
+                "Citroën Racing",
+                "12",
+                "+17.864",
                 "6"
               ],
               [
                 "8",
-                "Pepe Marti",
+                "Josep Maria Martí",
                 "Cupra Kiro",
-                "18.312",
+                "13",
+                "+18.312",
                 "4"
               ],
               [
                 "9",
                 "Oliver Rowland",
-                "Nissan e.Dams",
-                "19.363",
-                "2"
+                "Nissan Formula E Team",
+                "17",
+                "+19.363",
+                "3"
               ],
               [
                 "10",
                 "Norman Nato",
-                "Nissan e.Dams",
-                "24.990",
+                "Nissan Formula E Team",
+                "19",
+                "+24.990",
                 "1"
               ],
               [
                 "11",
-                "Maximilian Gunther",
+                "Maximilian Günther",
                 "DS Penske",
-                "31.219",
+                "14",
+                "+31.219",
                 "0"
               ],
               [
                 "12",
-                "Felipe Drugovich",
-                "Andretti Formula E",
-                "35.367",
+                "Nico Müller",
+                "Porsche Formula E Team",
+                "4",
+                "+35.367",
                 "0"
               ],
               [
                 "13",
-                "Nico Muller",
-                "Porsche Team",
-                "38.658",
+                "Felipe Drugovich",
+                "Andretti Formula E",
+                "11",
+                "+38.658",
                 "0"
               ],
               [
                 "14",
-                "Antonio Felix Da Costa",
-                "Jaguar TCS Racing",
-                "48.737",
+                "Pascal Wehrlein",
+                "Porsche Formula E Team",
+                "3",
+                "+48.737",
                 "0"
               ],
               [
                 "15",
-                "Pascal Wehrlein",
-                "Porsche Team",
-                "49.110",
+                "António Félix da Costa",
+                "Jaguar TCS Racing",
+                "9",
+                "+49.110",
                 "0"
               ],
               [
                 "16",
-                "Zane Maloney",
-                "Lola Yamamaha ABT",
-                "59.710",
+                "Dan Ticktum",
+                "Cupra Kiro",
+                "8",
+                "+59.710",
                 "0"
               ],
               [
                 "17",
-                "Dan Ticktum",
-                "Cupra Kiro",
-                "1:03.794",
+                "Zane Maloney",
+                "Lola Yamaha ABT",
+                "18",
+                "+1:03.794",
                 "0"
               ],
               [
                 "18",
                 "Jake Dennis",
                 "Andretti Formula E",
-                "+1 Lap",
+                "16",
+                "+1 lap",
                 "0"
+              ],
+              [
+                "—",
+                "Joel Eriksson",
+                "Envision Racing",
+                "15",
+                "38:28.701",
+                "0"
+              ],
+              [
+                "—",
+                "Lucas di Grassi",
+                "Lola Yamaha ABT",
+                "20",
+                "14:26.791",
+                "0"
+              ]
+            ]
+          }
+        ]
+      }
+    ],
+    "others": [
+      {
+        "label": "Practice 3",
+        "tables": [
+          {
+            "title": "Practice 3",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time",
+              "Gap"
+            ],
+            "rows": [
+              [
+                "1",
+                "Nyck de Vries",
+                "Mahindra Racing",
+                "1:07.118",
+                ""
+              ],
+              [
+                "2",
+                "Dan Ticktum",
+                "Cupra Kiro",
+                "1:07.148",
+                "+0.030"
+              ],
+              [
+                "3",
+                "Sébastien Buemi",
+                "Envision Racing",
+                "1:07.224",
+                "+0.106"
+              ],
+              [
+                "4",
+                "Pascal Wehrlein",
+                "Porsche Formula E Team",
+                "1:07.364",
+                "+0.246"
+              ],
+              [
+                "5",
+                "Nick Cassidy",
+                "Citroën Racing",
+                "1:07.432",
+                "+0.314"
+              ],
+              [
+                "6",
+                "Joel Eriksson",
+                "Envision Racing",
+                "1:07.474",
+                "+0.356"
+              ],
+              [
+                "7",
+                "Maximilian Günther",
+                "DS Penske",
+                "1:07.509",
+                "+0.391"
+              ],
+              [
+                "8",
+                "Jake Dennis",
+                "Andretti Formula E",
+                "1:07.514",
+                "+0.396"
+              ],
+              [
+                "9",
+                "António Félix da Costa",
+                "Jaguar TCS Racing",
+                "1:07.571",
+                "+0.453"
+              ],
+              [
+                "10",
+                "Edoardo Mortara",
+                "Mahindra Racing",
+                "1:07.590",
+                "+0.472"
+              ],
+              [
+                "11",
+                "Oliver Rowland",
+                "Nissan Formula E Team",
+                "1:07.611",
+                "+0.493"
+              ],
+              [
+                "12",
+                "Nico Müller",
+                "Porsche Formula E Team",
+                "1:07.623",
+                "+0.505"
+              ],
+              [
+                "13",
+                "Taylor Barnard",
+                "DS Penske",
+                "1:07.844",
+                "+0.726"
+              ],
+              [
+                "14",
+                "Lucas di Grassi",
+                "Lola Yamaha ABT",
+                "1:07.929",
+                "+0.811"
+              ],
+              [
+                "15",
+                "Felipe Drugovich",
+                "Andretti Formula E",
+                "1:07.940",
+                "+0.822"
+              ],
+              [
+                "16",
+                "Jean-Éric Vergne",
+                "Citroën Racing",
+                "1:08.061",
+                "+0.943"
+              ],
+              [
+                "17",
+                "Josep Maria Martí",
+                "Cupra Kiro",
+                "1:09.148",
+                "+2.030"
+              ],
+              [
+                "18",
+                "Zane Maloney",
+                "Lola Yamaha ABT",
+                "1:09.356",
+                "+2.238"
               ],
               [
                 "19",
-                "Joel Eriksson",
-                "Envision Racing",
-                "DNF",
-                "0"
+                "Norman Nato",
+                "Nissan Formula E Team",
+                "1:09.400",
+                "+2.282"
               ],
               [
                 "20",
-                "Lucas Di Grassi",
+                "Mitch Evans",
+                "Jaguar TCS Racing",
+                "1:16.781",
+                "+9.663"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Qualifying",
+        "tables": [
+          {
+            "title": "Qualifying",
+            "columns": [
+              "Pos",
+              "Driver",
+              "Team",
+              "Time"
+            ],
+            "rows": [
+              [
+                "1",
+                "Nyck de Vries",
+                "Mahindra Racing",
+                "1:06.925"
+              ],
+              [
+                "2",
+                "Edoardo Mortara",
+                "Mahindra Racing",
+                "1:07.120"
+              ],
+              [
+                "3",
+                "Pascal Wehrlein",
+                "Porsche Formula E Team",
+                "1:07.062"
+              ],
+              [
+                "4",
+                "Nico Müller",
+                "Porsche Formula E Team",
+                "1:07.319"
+              ],
+              [
+                "5",
+                "Mitch Evans",
+                "Jaguar TCS Racing",
+                "1:07.408"
+              ],
+              [
+                "6",
+                "Taylor Barnard",
+                "DS Penske",
+                "1:07.525"
+              ],
+              [
+                "7",
+                "Nick Cassidy",
+                "Citroën Racing",
+                "1:08.271"
+              ],
+              [
+                "8",
+                "Dan Ticktum",
+                "Cupra Kiro",
+                "1:08.667"
+              ],
+              [
+                "9",
+                "António Félix da Costa",
+                "Jaguar TCS Racing",
+                "1:08.893"
+              ],
+              [
+                "10",
+                "Sébastien Buemi",
+                "Envision Racing",
+                "1:08.710"
+              ],
+              [
+                "11",
+                "Josep Maria Martí",
+                "Cupra Kiro",
+                "1:09.040"
+              ],
+              [
+                "12",
+                "Maximilian Günther",
+                "DS Penske",
+                "1:08.740"
+              ],
+              [
+                "13",
+                "Felipe Drugovich",
+                "Andretti Formula E",
+                "1:09.062"
+              ],
+              [
+                "14",
+                "Jean-Éric Vergne",
+                "Citroën Racing",
+                "1:08.799"
+              ],
+              [
+                "15",
+                "Joel Eriksson",
+                "Envision Racing",
+                "1:09.162"
+              ],
+              [
+                "16",
+                "Jake Dennis",
+                "Andretti Formula E",
+                "1:08.801"
+              ],
+              [
+                "17",
+                "Norman Nato",
+                "Nissan Formula E Team",
+                "—"
+              ],
+              [
+                "18",
+                "Oliver Rowland",
+                "Nissan Formula E Team",
+                "1:08.905"
+              ],
+              [
+                "19",
+                "Lucas di Grassi",
                 "Lola Yamaha ABT",
-                "DNF",
-                "0"
+                "—"
+              ],
+              [
+                "20",
+                "Zane Maloney",
+                "Lola Yamaha ABT",
+                "1:09.095"
               ]
             ]
           }
