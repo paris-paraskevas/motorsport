@@ -4,7 +4,7 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
-## 1.0.308 — 2026-11-12
+## 1.0.309 — 2026-11-12
 
 ### O35 (Task 2.d): family B's results from each series' own source
 
@@ -21,6 +21,45 @@ IndyCar's, NASCAR's and Formula E's stored results came from Wikipedia. Checked 
 - **The tests:** lib/wp/family-b.test.ts, 28 tests, on five saved answers of 12 Nov (tests/fixtures, new): IndyCar's 2026 season list, Nashville's race and qualifying, NASCAR's Phoenix weekend, Formula E's Shanghai race page; and inline samples (St. Petersburg's gaps as indycar.com wrote them on 14 Nov among them).
 - **The review** (one fresh-context Sonnet reader, 12–14 Nov, about 499,000 tokens over two runs, the first cut off by a network error): 14 findings, 3 medium, 11 low. Folded: IndyCar's gaps past a minute stored blank (25 lead-lap cars in 7 races of the first fill), NASCAR's lapped cars the feed gives no laps down (15 rows), Formula E's rows with a written place, the round check by place, a round fetched again lacking a session, a Duel answered unreadable, the deadline before each series' first request and the Duels, and these records (28 of 458 rows, not 75; round 14's "Finished" alone; the readers' line; the Daytona 500's three requests). Left for the pages' PR: four IndyCar teams as indycar.com writes them ("ECR", "A.J. Foyt Enterprises", "Meyer Shank w/ Curb-Agajanian", "Andretti Global w/ Curb-Agajanian"; the stored standings write the first two too), so its colours and team wins need an alias there; two drivers the sources write otherwise ("John H. Nemechek", "Josep Maria Martí", drivers.json's "John Hunter Nemechek" and "Pepe Martí"); the Duels' points in round 1's points table (`weekendPoints` reads the race alone). Every kept round is spelled again each run, so an alias added then reaches them. A follow-up of its own: the shrink guard (lib/wp/health.ts, every series') tells a new season by its year, which would hold back a Formula E season that opens in the year the last one closed; season 13 opens on 16 January 2027 (fiaformulae.com, 12 Nov). Not built: a tie between two events of one name (none in 2026); a test of the publisher's block itself (wp-publish.mts runs on import).
 - **The check:** tsc 0; lint 0 errors (the 2 known warnings); vitest 284 of 284 files and 3,061 of 3,061 tests passed, family-b.test.ts's 28 among them. The fill, again on 14 Nov after the last edit: three fetching dry runs of the publisher, with #1197's timetables beside the code in a local commit (523dd8da, never pushed), into a fresh copy of paddock-data 41519f91: 42 feeds OK and 214 pages in each; family B's no request unanswered and no round kept as stored; IndyCar 6 events a run (all 18 in three), NASCAR all 36 weekends in the first (round 36, in its week, again in the next two), Formula E 6, 6 and 5. Stored: IndyCar 18 rounds (18 races, 67 other sessions), NASCAR 36 (38 races with the two Duels, 56 other sessions), Formula E 17 (17 races, 42 other sessions), every round in this shape. Against 12 Nov's fill, before the review's fold: 25 IndyCar times now hold the gap past a minute and 15 NASCAR times the laps down, and no other cell differs (no point, no name). Against each series' official table (12 Nov; no point has changed since): IndyCar's 33 drivers' totals equal indycar.com's YearPointSummary; Formula E's 20 equal its drivers' standings page (Pepe Martí's 66 under the name its result pages write, "Josep Maria Martí"); NASCAR's 24 drivers outside the Chase equal its points feed but Josh Berry (676 by his races, 651 official: NASCAR docked him 25 points after Martinsville, nascar.com, 3 Nov; a race keeps the points it paid), the Chase's drivers reset to 2,000 and more as its format does. Every round's winner equals the one stored before (NASCAR's without Wikipedia's "(i)" and "(CC)"). The publisher's dry runs on this branch from paddock-data 41519f91 and from a local commit with family B's three refilled files alone (6ccd09e2, never pushed): 214 pages both, 3,631,068 → 3,732,151 bytes; changed: /series/indycar/, /series/nascar-cup/, /series/formula-e/ and their results pages (pages the site does not have), and /status/ by its date; Formula 1's 144 pages (2,162,193 bytes) byte-identical. The stored files on paddock-data: IndyCar's results 87 → 605 KB, NASCAR's 253 → 848 KB, Formula E's 54 → 227 KB (the Worker does not read them).
+
+## 1.0.307 — 2026-11-12
+
+### O34 (Task 2.c), the shared fix before family C's pages: a car's win read from a Crew column, and a family's own Overview standings
+
+Family C's pages (Task 2.c's second PR) were planned in plan mode and approved on 12 Nov with three answers: Standings and Champions are drawn first and built in a PR of their own; this shared fix is a small PR of its own first, announced at the desk (the batch plan's rule for a change to the groundwork); the missing timetables are curated from the official sites. Turning family C's pages on runs them through series.ts's Overview and Results and weekend.ts's season page, which found a winner only in a Driver or Rider column (series.ts `raceWins`). Family C's races classify cars that crews share (C2's Pos, No., Crew, Team, #1194), so every family C round would have read as not run: "8 rounds · 0 run", no winner on a tile, a Results row or the Last race card. Readers see no change: no series with a Crew table has its pages turned on yet, so with the stored data, and with family C's refilled data swapped in, `next` and this branch render the same 214 pages byte for byte.
+
+- **lib/wp/series.ts:**
+  - `raceWins` also reads a Crew column, from the race's first table: the crew as the winner and the car's number kept (`RoundWin.car`, from "No."). WEC and IMSA store a table a class, the top class first; GT World one table, every cup in overall order.
+  - A car's win is named "#8" beside its team on the Last race card and a Results row (`winnerName`), and "#8 TOYOTA RACING" on the Overview's round tiles (`winnerLine`), as the plan has it; a driver's win reads as before.
+  - A Results row's "All N" counts every class's table (Fuji: 35 cars in two classes, where the top class's table alone gave 17); Formula 1 stores one table a session, so its rows are unchanged.
+  - `seriesOverview` takes the family's standings block (`FamilyKit.overviewStandings`), Formula 1's drivers and constructors without it, and `seriesFamily` passes it. Family C's standings are kept by class (WEC four tables, IMSA eleven, GT World six), which Formula 1's two tables do not fit.
+- **lib/wp/weekend.ts:** `seasonPage`'s tile names a car's win with its team (`winnerLine`: "#8 TOYOTA RACING", or "#8" alone for a car without its team), as the Endurance Weekend Drafts' S draws it.
+- **lib/wp/render.ts:** `FamilyKit.overviewStandings`, optional, its markup escaped by the kit.
+- **scripts/wp-publish.mts:** the registry's comment names the new hook (a comment only).
+- **Tests** (7 new: 6 in series.test.ts, 1 in weekend.test.ts), on Fuji's rows as #1194's fetch step stores them (a local fill of 12 Nov):
+  - a Crew race's winner, team and car, and a driver's race keeps no car whatever its other columns;
+  - the round counted as run, and the car named on the Last race card and a Results row, with its team on the Overview's tile and the season page's tile (the car alone without a team);
+  - every class's cars counted in "All N";
+  - a crew left unread still counting by its car;
+  - a feed's car, crew and team kept as text;
+  - the family's Overview block, or none, Formula 1's by default.
+- **Reviewed** on the operator's "Yes, under 60%" (12 Nov): one fresh-context Sonnet reader, about 190,000 tokens and 90 tool calls by its own estimate. Its last message was cut by a network error, but its written report was whole: mergeable after fixes, 0 blockers, 3 should-fix, 8 nits. It rendered `next` and this branch on the stored and the refilled data (byte-identical both), and a scratch copy with family C turned on.
+- **Folded:**
+  - F1: the Overview's tile named a car's win without its team, where the plan has the car and the team (`winnerLine`).
+  - F3: a Results row's "All N" counted the top class alone.
+  - F6: GT World keeps one table, not a table a class (the comments and these records).
+  - F7: the test's Fuji rows now as the fetch stores them (203 laps, 6:01:01.299; they had been made up).
+  - F8, in part: the season tile's trailing space for a car without a team.
+  - F9: three tests (a crew left unread, a driver race with a car number column, a feed's markup).
+  - F10: the comments. F11: the version note and the Reviewed line.
+- **Accepted, with reasons:** F8's other half. A Crew row without its car would name the crew's last word on a tile (`codeOf`), but #1194's parsers always write the car: none of the 7,695 rows of the local fill is without one.
+- **Found, for family C's pages (the next PR), with the defaults taken:**
+  - F2: with Crew winners read, `aside`'s default championship box now draws for a family C weekend, from the first stored standings table, unspelled and without its class (WEC's "Hypercar · Drivers" in capitals, IMSA's crews run together). Family C's kit passes its own `champ`, as the plan draws it.
+  - F4: a GT World Sprint Cup round with Race 1 alone stored reads as run with Race 1's winner until Race 2 is stored. The 2026 season is over; this matters from 2027.
+  - F5: a kit without `overviewStandings` gets Formula 1's block. Family C's kit sets it to '' until its Standings are drawn.
+  - The team colours: WEC's drivers.json names its teams otherwise than the results ("Toyota Gazoo Racing #8 (Hypercar)" against "TOYOTA RACING"), so a car's win is drawn in the neutral grey until the colours are joined.
+- **Found, not changed:** two tests of the old app's designer (components/designer/PageDesigner.test.tsx, P2.2 and P2.24 A) time out at 5 s in the full suite run four workers wide, and pass alone (57 tests); P2.2 times out on `next` (b6ff1c6d) too, without this change.
+- **Version:** 1.0.307, taken at merge: `next` was at 1.0.306 (#1196). #1197 and #1200, which claimed 1.0.307, and #1198 (1.0.308) take the next free numbers at their own merges.
 
 ## 1.0.306 — 2026-11-12
 

@@ -1358,7 +1358,8 @@ async function familyBResults(out: Fetched, now: Date, roundsOf: (slug: string) 
 // ── The families' pages (O33) ────────────────────────────────────────────────
 
 /** What each family draws itself: a series' meta.json names its family (site.family), and its kit draws the series'
- *  weekends and its Results fold. Each family adds its import above and its one line here. */
+ *  weekends, its Results fold and its Overview's standings block. Each family adds its import above and its one line
+ *  here. */
 const KITS: Partial<Record<Family, FamilyKit>> = {
   F1: { weekendPages },
 };

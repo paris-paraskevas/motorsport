@@ -4,9 +4,13 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
-## 1.0.308 — 2026-11-12
+## 1.0.309 — 2026-11-12
 
 Behind the scenes: IndyCar's, NASCAR's and Formula E's results now come from each series' own results, every session of a race weekend: practice and qualifying as well as the race, with laps and gaps, NASCAR's stages and the Daytona Duels, and every point as the series awards it. Nothing changes for readers yet.
+
+## 1.0.307 — 2026-11-12
+
+Behind the scenes: the series pages learn to name a win by the car and its team, for the endurance and GT championships, where a crew shares each car. Nothing changes for readers yet.
 
 ## 1.0.306 — 2026-11-12
 
