@@ -111,7 +111,8 @@ describe('IndyCar 2026 calendar', () => {
     expect(rounds.map(r => r.round)).toEqual(Array.from({ length: 18 }, (_, i) => i + 1));
     const starts = rounds.map(r => r.startDate);
     expect([...starts].sort()).toEqual(starts);
-    expect(rounds.at(-1)?.name).toMatch(/Laguna Seca/);
+    // The finale's own name (indycar.com/Schedule/2026/Laguna-Seca), its circuit by venue.
+    expect(rounds.at(-1)).toMatchObject({ name: 'Mission Foods Grand Prix of Monterey', venue: 'WeatherTech Raceway Laguna Seca' });
   });
 
   it('carries the Honda Indy 200 at Mid-Ohio at round 11 on 3-5 July', () => {
