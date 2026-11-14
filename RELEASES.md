@@ -4,9 +4,13 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
-## 1.0.307 — 2026-11-12
+## 1.0.308 — 2026-11-12
 
 Behind the scenes: the calendar now carries IndyCar's last race weekends in full, Portland to Laguna Seca with Milwaukee's practice and qualifying, and every NASCAR Cup race's practice and qualifying through the season, each at the time the series published; the Daytona 500, Pocono and New Hampshire races now start when NASCAR's own schedule says. IndyCar's season finale goes by its own name, the Mission Foods Grand Prix of Monterey, and the Daytona Duels by theirs. Nothing changes for readers yet.
+
+## 1.0.307 — 2026-11-12
+
+Behind the scenes: the series pages learn to name a win by the car and its team, for the endurance and GT championships, where a crew shares each car. Nothing changes for readers yet.
 
 ## 1.0.306 — 2026-11-12
 
