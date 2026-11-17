@@ -596,26 +596,32 @@ const qualifyingNumber = (name: string): string => /^qualifying\s+(\d+)\b/i.exec
  * A weekend's units in running order, the timetable's sessions (Weekend.sessions) paired with the stored ones by kind
  * and order (PR 2's plan): a practice by its name, then a timetable practice without a number with the next numbered
  * one left ("Final Practice" is IMSA's Practice 3); every qualifying part on one Qualifying page, a Sprint Cup round's
- * by its number (a page before each race); the races in order. A stored session the timetable does not name stands
- * alone, after the units before it; `left` names each, for the publisher's log.
+ * by its number (a page before each race); the races by their name where the two share one, the rest in order. A
+ * stored session the timetable does not name stands alone, after the units before it; `left` names each, for the
+ * publisher's log.
  */
 export function unitsOf(w: Weekend): { units: Unit[]; left: string[] } {
   const entries = w.sessions.filter(e => !NOT_A_SESSION.test(e.session));
   const races = new Set(w.result?.sessions ?? []);
   const stored = [...(w.result?.others ?? []), ...(w.result?.sessions ?? [])].filter(own);
   const kindOf = (s: ResultSession): Kind => (races.has(s) ? 'race' : sessionKind(s.label));
-  const of = (k: Kind) => ({ cal: entries.filter(e => sessionKind(e.session) === k), st: stored.filter(s => kindOf(s) === k) });
+  const both = (k: Kind) => ({ cal: entries.filter(e => sessionKind(e.session) === k), st: stored.filter(s => kindOf(s) === k) });
 
-  const r = of('race');
-  const count = Math.max(r.cal.length, r.st.length);
-  const raceUnits: Unit[] = Array.from({ length: count }, (_, i) => ({
-    label: count === 1 ? 'Race' : (r.st[i]?.label ?? plainName(r.cal[i].session)),
-    kind: 'race',
-    entries: r.cal[i] ? [r.cal[i]] : [],
-    sessions: r.st[i] ? [r.st[i]] : [],
-  }));
+  // "Sprint Race 2" is the stored Race 2 by its name, so a Race 2 stored without its Race 1 never takes Race 1's place
+  // and page. Where no name is shared ("6 Hours of Fuji (Race)" and the stored Race) the races pair in order.
+  const r = both('race');
+  const unraced = [...r.st];
+  const raceUnits: Unit[] = r.cal.map(e => ({ label: plainName(e.session), kind: 'race', entries: [e], sessions: [] }));
+  for (const u of raceUnits) {
+    const at = unraced.findIndex(s => sameSession(s.label, u.label));
+    if (at >= 0) u.sessions.push(...unraced.splice(at, 1));
+  }
+  if (!raceUnits.some(u => u.sessions.length)) for (const u of raceUnits) u.sessions.push(...unraced.splice(0, 1));
+  raceUnits.push(...unraced.map(s => ({ label: s.label, kind: 'race' as const, entries: [], sessions: [s] })));
+  const count = raceUnits.length;
+  for (const u of raceUnits) u.label = count === 1 ? 'Race' : (u.sessions[0]?.label ?? u.label);
 
-  const q = of('qualifying');
+  const q = both('qualifying');
   const pages = new Map<string, Unit>();
   const page = (name: string): Unit => {
     const n = count > 1 ? qualifyingNumber(name) : '';
@@ -626,7 +632,7 @@ export function unitsOf(w: Weekend): { units: Unit[]; left: string[] } {
   for (const e of q.cal) page(e.session).entries.push(e);
   for (const s of q.st) page(s.label).sessions.push(s);
 
-  const p = of('practice');
+  const p = both('practice');
   const practice: Unit[] = [];
   for (const e of p.cal) {
     const u = practice.find(x => sameSession(x.label, e.session));
@@ -743,11 +749,18 @@ function cupTable(t: Table, cup: string): Table {
 /** A session's views: WEC's and IMSA's classes, the top class first; GT World's whole order, then each cup in
  *  GT World's order (Pro, Gold, Silver, Bronze, then any other). */
 function viewsOf(s: ResultSession): View[] {
-  const tables = s.tables.filter(t => t.rows.length > 0);
+  const tables = classTables(s);
   const whole = tables.find(t => cupAt(t) >= 0);
   if (!whole) return tables.map(t => ({ name: className(t.title), table: t, cup: false }));
   const cups = [...new Set(whole.rows.map(r => r[cupAt(whole)] ?? '').filter(Boolean))].sort((a, b) => cupRank(a) - cupRank(b));
   return [{ name: 'Overall', table: whole, cup: false }, ...cups.map(c => ({ name: cupName(c), table: cupTable(whole, c), cup: true }))];
+}
+
+/** A session's tables that hold a car, a class once: two tabs of one name would stop the publisher's whole run
+ *  (resultTabs throws), every other series' pages with it. */
+function classTables(s: ResultSession): Table[] {
+  const filled = s.tables.filter(t => t.rows.length > 0);
+  return filled.filter((t, i) => filled.findIndex(x => x.title === t.title) === i);
 }
 
 const cupSeries = (u: Unit | undefined): boolean => Boolean(u?.sessions.some(s => s.tables.some(t => cupAt(t) >= 0)));
@@ -755,9 +768,12 @@ const cupSeries = (u: Unit | undefined): boolean => Boolean(u?.sessions.some(s =
 const cupSeriesOf = (d: SeriesData): boolean => (d.results ?? []).some(r => r.sessions.some(s => s.tables.some(t => cupAt(t) >= 0)));
 /** A session's cars, every class's. */
 const carsIn = (s: ResultSession): number => {
-  const whole = s.tables.find(t => cupAt(t) >= 0);
-  return whole ? whole.rows.length : s.tables.reduce((n, t) => n + t.rows.length, 0);
+  const tables = classTables(s);
+  const whole = tables.find(t => cupAt(t) >= 0);
+  return whole ? whole.rows.length : tables.reduce((n, t) => n + t.rows.length, 0);
 };
+/** "17 cars", "1 car". */
+const cars = (n: number): string => `${n} car${n === 1 ? '' : 's'}`;
 
 /** A qualifying's combined order: GT World's "Qualifying Combined", or the session beside its groups that names none
  *  (Misano's "Qualifying 2" beside its Group A and Group B). */
@@ -812,7 +828,7 @@ function crewTable(t: Table, o: { limit?: number; only?: readonly string[] } = {
 }
 
 /** A tab's name: a class with its cars ("Hypercar · 17 cars", C1); a cup or the whole order bare (G). */
-const tabName = (v: View): string => (v.cup || v.name === 'Overall' ? v.name : `${v.name} · ${v.table.rows.length} cars`);
+const tabName = (v: View): string => (v.cup || v.name === 'Overall' ? v.name : `${v.name} · ${cars(v.table.rows.length)}`);
 
 // ── The parts of a weekend's pages ───────────────────────────────────────────
 
@@ -888,20 +904,22 @@ function unitBar(w: Weekend, units: readonly Unit[], states: readonly UnitState[
 
 /** The Overview's results (C1, C4): a tab a class, the top ten with the gap and a way to every car on the race's page
  *  (O, M); GT World overall with the cup, the top ten, and each cup's first five with their overall places (G), a Sprint
- *  Cup round's races in a row of tabs over the classes, opening on the last race overall. */
+ *  Cup round's races in a row of tabs over the classes, opening on the last race run, overall; a round of two races
+ *  names its race in that row from its first, so Race 1's table never stands unnamed while Race 2 is to come. */
 function resultsTabs(w: Weekend, races: readonly Unit[]): string {
-  const run = races.filter(u => u.sessions.length);
-  const two = run.length > 1;
-  const panels: TabPanel[] = run.flatMap(u => {
-    const e = u.entries[0];
-    const race = e ? `${u.label} · ${trackWeekday(w, e.start)}` : u.label;
-    return viewsOf(u.sessions[0]).map(v => {
-      // A class's table, or GT World's whole order: every car of it is on the race's page.
-      const all = `<p class="pd-wk-links"><a class="pd-wk-link" href="${sessionPath(w, u.label)}">All ${v.table.rows.length} on the race's page</a></p>`;
-      const body = v.cup ? crewTable(v.table, { limit: 5, only: ['Overall'] }) : `${crewTable(v.table, { limit: 10, only: [cupAt(v.table) >= 0 ? 'Cup' : 'Gap'] })}${all}`;
-      return { tab: two ? [race, tabName(v)] : [tabName(v)], body };
+  const two = races.length > 1;
+  const panels: TabPanel[] = races
+    .filter(u => u.sessions.length)
+    .flatMap(u => {
+      const e = u.entries[0];
+      const race = e ? `${u.label} · ${trackWeekday(w, e.start)}` : u.label;
+      return viewsOf(u.sessions[0]).map(v => {
+        // A class's table, or GT World's whole order: every car of it is on the race's page.
+        const all = `<p class="pd-wk-links pd-ec-all"><a class="pd-wk-link" href="${sessionPath(w, u.label)}">All ${v.table.rows.length} on the race's page</a></p>`;
+        const body = v.cup ? crewTable(v.table, { limit: 5, only: ['Overall'] }) : `${crewTable(v.table, { limit: 10, only: [cupAt(v.table) >= 0 ? 'Cup' : 'Gap'] })}${all}`;
+        return { tab: two ? [race, tabName(v)] : [tabName(v)], body };
+      });
     });
-  });
   // The last race's first tab: Race 2 overall (C4).
   const last = panels[panels.length - 1]?.tab[0];
   const first = panels.find(p => p.tab[0] === last)?.tab[1];
@@ -933,31 +951,36 @@ function unitCard(w: Weekend, u: Unit): string {
       if (!row) return [];
       const no = cell(v.table, row, 'No.');
       const time = cell(v.table, row, 'Time') || cell(v.table, row, 'Best lap') || lapIn(no);
+      // A class that set no lap (IMSA's GTD classes at Indianapolis, listed with 0 laps) has no fastest car to name.
+      if (!time) return [];
       return [`<li><span class="c">${esc(v.name)}</span><b>${no ? `#${esc(no)}` : ''}</b><span class="nm">${esc(cell(v.table, row, CREW))}</span><span class="tt">${esc(time)}</span></li>`];
     })
     .join('');
   const e = u.entries[0];
-  const when = e ? `<p>${yours(e.start, 'wt')} your time · ${trackWeekday(w, e.start)} ${trackTime(w, e.start)} at the track</p>` : '';
+  // A unit of several timed parts (a class or a group at a time) starts with its first; its page names each one's.
+  const when = e ? `<p>${u.entries.length > 1 ? 'from ' : ''}${yours(e.start, 'wt')} your time · ${trackWeekday(w, e.start)} ${trackTime(w, e.start)} at the track</p>` : '';
   // Every car of the unit: a group's session holds half of them.
-  const cars = Math.max(0, ...u.sessions.map(carsIn));
+  const all = Math.max(0, ...u.sessions.map(carsIn));
   return (
-    `<article class="pd-sc pd-ec-sc"><header><div><h3>${esc(u.label)}</h3>${when}</div></header>${rows ? `<ol class="pd-sc-rows pd-ec-rows">${rows}</ol>` : ''}` +
-    `<a class="pd-sc-go" href="${sessionPath(w, u.label)}">All ${cars} on its page →</a></article>`
+    `<article class="pd-sc"><header><div><h3>${esc(u.label)}</h3>${when}</div></header>${rows ? `<ol class="pd-sc-rows pd-ec-rows">${rows}</ol>` : ''}` +
+    `<a class="pd-sc-go" href="${sessionPath(w, u.label)}">All ${all} on its page →</a></article>`
   );
 }
 
-/** The sessions still to run, by the track's day: your time and the track's, the forecast, a way to each one's page. */
+const byStart = (a: CalendarEntry, b: CalendarEntry): number => (a.start < b.start ? -1 : a.start > b.start ? 1 : 0);
+
+/** The sessions still to run in the order they run, by the track's day: your time and the track's, the forecast, a way
+ *  to each one's page (a class's part of a unit to that unit's). */
 function aheadRows(w: Weekend, units: readonly Unit[], used: Used): string {
   const days = new Map<string, string[]>();
-  for (const u of units) {
-    for (const e of u.entries) {
-      const day = trackDay(w, e.start);
-      days.set(day, [
-        ...(days.get(day) ?? []),
-        `<a class="pd-wk-row" href="${sessionPath(w, u.label)}"><span class="pd-wk-when"><b>${yours(e.start, 'wt')}</b><small>Track ${trackTime(w, e.start)}</small></span>` +
-          `<span class="pd-wk-name">${esc(e.session)}</span>${forecast(w, e.start, used) || '<span class="pd-wk-wx"></span>'}<span class="pd-wk-go"><span class="t">Its page</span> →</span></a>`,
-      ]);
-    }
+  const parts = units.flatMap(u => u.entries.map(e => ({ u, e }))).sort((a, b) => byStart(a.e, b.e));
+  for (const { u, e } of parts) {
+    const day = trackDay(w, e.start);
+    days.set(day, [
+      ...(days.get(day) ?? []),
+      `<a class="pd-wk-row" href="${sessionPath(w, u.label)}"><span class="pd-wk-when"><b>${yours(e.start, 'wt')}</b><small>Track ${trackTime(w, e.start)}</small></span>` +
+        `<span class="pd-wk-name">${esc(e.session)}</span>${forecast(w, e.start, used) || '<span class="pd-wk-wx"></span>'}<span class="pd-wk-go"><span class="t">Its page</span> →</span></a>`,
+    ]);
   }
   return [...days].map(([day, rows]) => `<h3 class="pd-wk-day">${esc(day)}</h3><div class="pd-wk-rows">${rows.join('')}</div>`).join('');
 }
@@ -1072,7 +1095,7 @@ function overviewPage(w: Weekend, units: readonly Unit[], states: readonly UnitS
     const e = last?.entries[0];
     const hint =
       races.length > 1
-        ? 'A race, then overall or a cup'
+        ? `A race, then overall or a cup; it opens on ${last?.label ?? 'the last race'} overall`
         : [e ? trackDay(w, e.start).split(' ')[0] : '', lengthOf(w, last), cups ? 'overall or a cup at a time' : 'a class at a time'].filter(Boolean).join(' · ');
     parts.push(section('Results', esc(hint), `${flags(off)}${resultsTabs(w, races)}`));
     if (run.length) parts.push(section('Earlier in the weekend', `${leaders}, in the order they ran`, `<div class="pd-sc-grid">${run.map(u => unitCard(w, u)).join('')}</div>`));
@@ -1088,8 +1111,11 @@ function overviewPage(w: Weekend, units: readonly Unit[], states: readonly UnitS
   if (!units.length) parts.push(section('The weekend', '', '<p class="pd-wk-empty">The weekend’s session times are not published yet; they appear here as soon as they are.</p>'));
   // GT World's rounds count for one of its two cups: two races, the Sprint Cup's (G); one, the Endurance Cup's.
   const crumb = cups && races.length ? `Round ${w.r.round} of ${(w.d.rounds ?? []).length} · ${races.length > 1 ? 'Sprint' : 'Endurance'} Cup` : undefined;
+  // The strip's Next line is read from the sessions still to run: the shared strip takes a session as run when a
+  // stored one carries its timetable name, which family C's stored labels do not ("LMGT3 Qualifying", "Qualifying").
+  const toRun = ahead.flatMap(u => u.entries).sort(byStart);
   const body =
-    `<div class="pd-wkp pd-s-${esc(w.d.slug)}">${weekendBand(w, crumb ? { crumb } : {})}${strip(w, finalLine(units))}${unitBar(w, units, states, null)}` +
+    `<div class="pd-wkp pd-s-${esc(w.d.slug)}">${weekendBand(w, crumb ? { crumb } : {})}${strip(toRun.length ? { ...w, sessions: toRun } : w, finalLine(units))}${unitBar(w, units, states, null)}` +
     `<div class="pd-wk-main"><div class="pd-wk-col">${parts.join('')}</div>${aside(w, raced, { champ: null, before: champBox(w), facts: trackFacts(w, units) })}</div>${credit(used)}</div>`;
   return { path: w.path, title: `${w.r.name} ${w.season}`, body: htmlBlock(body), template: 'page-wide' };
 }
@@ -1114,9 +1140,9 @@ function unitBody(u: Unit): { hint: string; body: string } {
       });
       const first = parts[0]?.t.rows.length ?? 0;
       const body = parts
-        .map(({ label, t }, i) => `<h4 class="pd-ec-part">${esc(label)} <small>${i && t.rows.length < first ? `the top ${t.rows.length}` : `${t.rows.length} cars`}</small></h4>${crewTable(t)}`)
+        .map(({ label, t }, i) => `<h4 class="pd-ec-part">${esc(label)} <small>${i && t.rows.length < first ? `the top ${t.rows.length}` : cars(t.rows.length)}</small></h4>${crewTable(t)}`)
         .join('');
-      return { tab: [`${name} · ${first} cars`], body };
+      return { tab: [`${name} · ${cars(first)}`], body };
     });
     return { hint: `A class at a time: ${u.sessions.map(s => s.label).join(', then ')}`, body: resultTabs(panels) };
   }
@@ -1124,6 +1150,21 @@ function unitBody(u: Unit): { hint: string; body: string } {
   const panels = s ? viewsOf(s).map(v => ({ tab: [tabName(v)], body: crewTable(v.table) })) : [];
   const what = u.kind === 'race' ? 'Every car, as classified' : 'Every car’s best lap';
   return { hint: `${what}, ${cup ? 'overall or a cup' : 'a class'} at a time`, body: resultTabs(panels) };
+}
+
+/** A unit's band. One timed session: the shared session band. Several (a class or a group at a time, Le Mans' two
+ *  days): each one's own start at the track by day, under its timetable name, then the first in the reader's time, so
+ *  no class's hour stands for another's. None: the round's dates. */
+function unitBand(w: Weekend, u: Unit): string {
+  const [first] = u.entries;
+  if (first && u.entries.length === 1) return sessionBand(w, { ...first, session: u.label });
+  const days = new Map<string, string[]>();
+  for (const e of u.entries) days.set(trackDay(w, e.start), [...(days.get(trackDay(w, e.start)) ?? []), `${esc(e.session)} ${trackTime(w, e.start)}`]);
+  const sub = first ? `${[...days].map(([day, parts]) => `${esc(day)} · ${parts.join(' · ')}`).join('; ')}, at the track; from ${yours(first.start, 'wt')} your time` : longDates(w.r.startDate, w.r.endDate);
+  return (
+    `<section class="pd-ss-band"><div class="pd-ss-band-in"><p class="pd-wk-crumb"><a href="/series/${esc(w.d.slug)}/">${esc(w.d.name)}</a> › <a href="/series/${esc(w.d.slug)}/${w.season}/">${w.season}</a> › ` +
+    `<a href="${w.path}">Round ${w.r.round} · ${esc(w.r.name)}</a></p><h1>${esc(u.label)}</h1><p class="pd-ss-sub">${sub}</p></div></section>`
+  );
 }
 
 /** A unit's own page: its classification, every car; before it runs, its forecast. */
@@ -1137,12 +1178,9 @@ function unitPage(w: Weekend, units: readonly Unit[], states: readonly UnitState
   } else {
     parts.push(section('Classification', '', '<p class="pd-wk-empty">Not run yet. Its results join this page when it ends.</p>'));
   }
-  const band = e
-    ? sessionBand(w, { ...e, session: u.label })
-    : `<section class="pd-ss-band"><div class="pd-ss-band-in"><p class="pd-wk-crumb"><a href="/series/${esc(w.d.slug)}/">${esc(w.d.name)}</a> › <a href="/series/${esc(w.d.slug)}/${w.season}/">${w.season}</a> › <a href="${w.path}">Round ${w.r.round} · ${esc(w.r.name)}</a></p><h1>${esc(u.label)}</h1><p class="pd-ss-sub">${longDates(w.r.startDate, w.r.endDate)}</p></div></section>`;
   const side = !u.sessions.length && e ? forecastBox(w, e, used) : '';
   const body =
-    `<div class="pd-wkp pd-s-${esc(w.d.slug)}">${band}${unitBar(w, units, states, u)}` +
+    `<div class="pd-wkp pd-s-${esc(w.d.slug)}">${unitBand(w, u)}${unitBar(w, units, states, u)}` +
     `<div class="pd-wk-main"><div class="pd-wk-col">${parts.join('')}</div><aside class="pd-wk-aside">${side}${nextRound(w)}</aside></div>${credit(used)}</div>`;
   return { path: sessionPath(w, u.label), title: `${w.r.name} ${w.season}: ${u.label}`, body: htmlBlock(body), template: 'page-wide' };
 }
@@ -1202,7 +1240,9 @@ function endurancePages(d: SeriesData, o: EnduranceOptions): Page[] {
     const { units, left } = unitsOf(w);
     const off = o.calledOff?.(d.slug, r.round) ?? [];
     const states = unitStates(units, off);
-    const dropped = [...(w.result?.others ?? []), ...(w.result?.sessions ?? [])].filter(s => !own(s)).map(s => `${s.label}: another championship's cars, left out`);
+    const dropped = [...(w.result?.others ?? []), ...(w.result?.sessions ?? [])]
+      .filter(s => !own(s))
+      .map(s => `${s.label}: ${s.tables.some(t => t.rows.length > 0) ? "another championship's cars" : 'no car stored'}, left out`);
     for (const line of [...left, ...dropped, ...units.filter((_, i) => states[i] === 'off').map(u => `${u.label}: not stored`)]) o.log?.(`${d.slug} R${r.round} ${line}`);
     pages.push(overviewPage(w, units, states, off), ...units.flatMap((u, i) => (states[i] === 'run' || states[i] === 'up' ? [unitPage(w, units, states, u)] : [])));
   }

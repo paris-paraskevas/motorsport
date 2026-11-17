@@ -14,7 +14,7 @@
         { "round": 8, "name": "6 Hours of Monza", "startDate": "2026-11-06", "endDate": "2026-11-08", "venue": "Autodromo Nazionale Monza", "outline": "monza", "circuit": "monza", "tz": "Europe/Rome", "country": "Italy" }
       ],
       "calendar": [
-        { "start": "2026-04-13T21:00:00.000Z", "end": "2026-04-14T21:00:00.000Z", "dateOnly": true, "event": "6 Hours of Imola", "session": "FIA WEC | [TEST] Prologue", "round": 1, "location": "Autodromo Enzo e Dino Ferrari, Piazza Ayrton Senna da Silva, 1, 40026 Imola BO, Italy" },
+        { "start": "2026-04-14T00:00:00.000Z", "end": "2026-04-15T00:00:00.000Z", "dateOnly": true, "event": "6 Hours of Imola", "session": "FIA WEC | [TEST] Prologue", "round": 1, "location": "Autodromo Enzo e Dino Ferrari, Piazza Ayrton Senna da Silva, 1, 40026 Imola BO, Italy" },
         { "start": "2026-04-17T08:15:00.000Z", "end": "2026-04-17T09:45:00.000Z", "dateOnly": false, "event": "6 Hours of Imola", "session": "Free Practice 1", "round": 1, "location": "Autodromo Internazionale Enzo e Dino Ferrari, Imola" },
         { "start": "2026-04-17T13:15:00.000Z", "end": "2026-04-17T14:45:00.000Z", "dateOnly": false, "event": "6 Hours of Imola", "session": "Free Practice 2", "round": 1, "location": "Autodromo Internazionale Enzo e Dino Ferrari, Imola" },
         { "start": "2026-04-18T08:30:00.000Z", "end": "2026-04-18T09:30:00.000Z", "dateOnly": false, "event": "6 Hours of Imola", "session": "Free Practice 3", "round": 1, "location": "Autodromo Internazionale Enzo e Dino Ferrari, Imola" },

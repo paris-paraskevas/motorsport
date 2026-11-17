@@ -1467,7 +1467,7 @@ a.pd-sn-t:hover { border-color: var(--pd-ink); border-top-color: var(--t, var(--
 .pd-ec-part { display: flex; align-items: baseline; gap: 10px; margin: 14px 0 8px; font-size: 1rem; font-weight: 800; }
 .pd-ec-part:first-child { margin-top: 0; }
 .pd-ec-part small { font-size: .8rem; font-weight: 600; color: var(--pd-muted); }
-.pd-rt-p > .pd-wk-links { margin-top: 10px; }
+.pd-ec-all { margin-top: 10px; }
 /* A card's rows share their columns, so the cars and the laps line up under each other whatever the class's name. */
 .pd-sc-rows.pd-ec-rows { display: grid; grid-template-columns: max-content max-content minmax(0, 1fr) max-content; align-items: baseline; gap: 9px 10px; padding: 11px 14px; }
 .pd-sc-rows.pd-ec-rows li { display: contents; }

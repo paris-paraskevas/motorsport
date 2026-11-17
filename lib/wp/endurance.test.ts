@@ -640,7 +640,7 @@ describe("family C's weekend pages (O34), as drawn on Endurance Weekend Drafts",
     expect(hypercar).toContain('<tr><td class="p">1</td><td class="no">#8</td><td class="crew">Brendon Hartley, Ryo Hirakawa, Sébastien Buemi</td><td class="tm">TOYOTA RACING</td><td class="t">–</td></tr>');
     expect(hypercar).toContain('<tr><td class="p">2</td><td class="no">#36</td><td class="crew">Jules Gounon, Victor Martins</td><td class="tm">Alpine Endurance Team</td><td class="t">0.591</td></tr>');
     expect(rowsIn(hypercar)).toBe(10);
-    expect(hypercar).toContain('<a class="pd-wk-link" href="/series/wec/2026/round-6/race/">All 17 on the race\'s page</a>');
+    expect(hypercar).toContain('<p class="pd-wk-links pd-ec-all"><a class="pd-wk-link" href="/series/wec/2026/round-6/race/">All 17 on the race\'s page</a></p>');
     const lmgt3 = panel(html, 'LMGT3 · 18 cars');
     expect(lmgt3).toContain('<tr><td class="p">1</td><td class="no">#32</td><td class="crew">Darren Leung, Sean Gelael, Augusto Farfus</td><td class="tm">Team WRT</td><td class="t">–</td></tr>');
     expect(lmgt3).toContain("All 18 on the race's page");
@@ -650,12 +650,12 @@ describe("family C's weekend pages (O34), as drawn on Endurance Weekend Drafts",
     const html = body(wecPages, FUJI);
     expect(html).toContain('<h2>Earlier in the weekend</h2><p class="pd-wk-hint">Each class’s fastest in practice and its pole in qualifying, in the order they ran</p>');
     expect(html).toContain(
-      '<article class="pd-sc pd-ec-sc"><header><div><h3>Free Practice 1</h3><p><span class="pd-t" data-utc="2026-09-25T01:15:00.000Z" data-f="wt">Fri 01:15 UTC</span> your time · Fri 10:15 at the track</p></div></header>' +
+      '<article class="pd-sc"><header><div><h3>Free Practice 1</h3><p><span class="pd-t" data-utc="2026-09-25T01:15:00.000Z" data-f="wt">Fri 01:15 UTC</span> your time · Fri 10:15 at the track</p></div></header>' +
         '<ol class="pd-sc-rows pd-ec-rows"><li><span class="c">Hypercar</span><b>#8</b><span class="nm">Brendon Hartley, Ryo Hirakawa, Sébastien Buemi</span><span class="tt">1:29.694</span></li>' +
         '<li><span class="c">LMGT3</span><b>#58</b><span class="nm">Alexander West, Finn Gehrsitz, Benjamin Goethe</span><span class="tt">1:40.214</span></li></ol>' +
         '<a class="pd-sc-go" href="/series/wec/2026/round-6/free-practice-1/">All 35 on its page →</a></article>',
     );
-    expect((html.match(/<article class="pd-sc pd-ec-sc">/g) ?? []).length).toBe(3);
+    expect((html.match(/<article class="pd-sc">/g) ?? []).length).toBe(3);
     expect(html).toContain(
       '<section class="pd-wk-box pd-wk-champ"><h3>Hypercar drivers, as they stand</h3><ol><li><span class="p">1</span><i class="pd-tc" style="--t:#EB0A1E"></i>' +
         '<span class="d"><b>Brendon Hartley, Ryo Hirakawa, Sébastien Buemi</b><small>#8 TOYOTA RACING</small></span><span class="g">Leader</span><b class="pt">115</b></li>',
@@ -700,7 +700,7 @@ describe("family C's weekend pages (O34), as drawn on Endurance Weekend Drafts",
     expect(html).toContain('› Round 8 of 10 · Sprint Cup</p><h1>Zandvoort Sprint</h1>');
     expect(html).toContain('<span class="pd-wk-sum"><b>#69 Emil Frey Racing</b> won Race 2; #58 Garage 59 Race 1</span>');
     expect(barOf(html)).toEqual(['Overview | the weekend', 'Free Practice 1 | Fri · #99', 'Free Practice 2 | Fri · #2', 'Qualifying 1 | Sat · #2', 'Race 1 | Sat · #58', 'Qualifying 2 | Sun · #14', 'Race 2 | Sun · #69']);
-    expect(html).toContain('<h2>Results</h2><p class="pd-wk-hint">A race, then overall or a cup</p></div><div class="pd-rt" data-pd-rt="Race|Class" data-pd-open="Race 2 · Sun|Overall">');
+    expect(html).toContain('<h2>Results</h2><p class="pd-wk-hint">A race, then overall or a cup; it opens on Race 2 overall</p></div><div class="pd-rt" data-pd-rt="Race|Class" data-pd-open="Race 2 · Sun|Overall">');
     expect(tabsOf(html)).toEqual([
       'Race 1 · Sat|Overall',
       'Race 1 · Sat|Pro',
@@ -901,7 +901,7 @@ describe("family C's weekend pages (O34), as drawn on Endurance Weekend Drafts",
     const during = seriesOf('wec', { results: [...(wec.results ?? []).filter(r => r.round !== 6), { ...fuji, sessions: [], others: (fuji.others ?? []).filter(s => s.label !== 'Free Practice 3') }] });
     const html = body(pagesOf(during), FUJI);
     expect(html).toContain('<h2>Done so far</h2><p class="pd-wk-hint">Each class’s fastest in practice and its pole in qualifying</p>');
-    expect((html.match(/<article class="pd-sc pd-ec-sc">/g) ?? []).length).toBe(2);
+    expect((html.match(/<article class="pd-sc">/g) ?? []).length).toBe(2);
     expect(html).toContain('<h2>Still to come</h2>');
     expect(html).not.toContain('<h2>Results</h2>');
     expect(html).not.toContain('is-fin');
@@ -925,5 +925,122 @@ describe("family C's weekend pages (O34), as drawn on Endurance Weekend Drafts",
 
   it("names a driver by the surname with its particle, for the strip's crew", () => {
     expect(['Sébastien Buemi', 'Nyck de Vries', 'Sheldon van der Linde', 'António Félix da Costa', 'Dave Musial Jr.', 'Tom Van Rompuy', 'Ye'].map(surnameOf)).toEqual(['Buemi', 'de Vries', 'van der Linde', 'da Costa', 'Musial Jr.', 'Van Rompuy', 'Ye']);
+  });
+});
+
+describe("family C's pages: what #1201's review found", () => {
+  const without = (d: SeriesData, round: number): ResultRound[] => (d.results ?? []).filter(r => r.round !== round);
+
+  it('pairs a race by its name: a Race 2 stored without its Race 1 keeps its own place and its own page', () => {
+    const z = resultOf(gtw, 8);
+    const d = seriesOf('gt-world', { results: [...without(gtw, 8), { ...z, sessions: z.sessions.filter(s => s.label === 'Race 2') }] });
+    const { units } = unitList(d, 8);
+    expect(units.filter(u => u.kind === 'race').map(u => `${u.label} <- ${u.entries.map(e => e.session).join()} = ${u.sessions.map(s => s.label).join()}`)).toEqual([
+      'Race 1 <- Sprint Race 1 = ',
+      'Race 2 <- Sprint Race 2 = Race 2',
+    ]);
+    const paths = kit.weekendPages(d).map(p => p.path);
+    expect(new Set(paths).size).toBe(paths.length);
+    expect(paths.filter(p => p.startsWith(ZANDVOORT) && /race/.test(p))).toEqual([`${ZANDVOORT}race-2/`]);
+    // Where the two share no name, the races still pair in order.
+    expect(unitList(wec, 6).units.filter(u => u.kind === 'race').map(u => `${u.label} <- ${u.entries[0].session} = ${u.sessions[0].label}`)).toEqual(['Race <- 6 Hours of Fuji (Race) = Race']);
+  });
+
+  it('lists the sessions still to come in the order they run, a class at a time among them', () => {
+    const calendar = (wec.calendar ?? []).flatMap(e =>
+      e.round === 6 && e.session === 'Free Practice 3' ? [{ ...e, session: 'LMGT3 Free Practice 3' }, { ...e, session: 'Hypercar Free Practice 3', start: '2026-09-26T05:10:00.000Z', end: '2026-09-26T05:18:00.000Z' }] : [e],
+    );
+    const html = body(pagesOf(seriesOf('wec', { calendar, results: without(wec, 6) }), enduranceKit()), FUJI);
+    const saturday = html.slice(html.indexOf('<h3 class="pd-wk-day">Saturday 26 September</h3>'), html.indexOf('<h3 class="pd-wk-day">Sunday 27 September</h3>'));
+    expect([...saturday.matchAll(/data-utc="2026-09-26T(\d\d:\d\d)[^>]*>[^<]*<\/span><\/b>.*?<span class="pd-wk-name">([^<]+)<\/span>/g)].map(m => `${m[1]} ${m[2]}`)).toEqual([
+      '00:30 LMGT3 Free Practice 3',
+      '05:00 LMGT3 Qualifying',
+      '05:10 Hypercar Free Practice 3',
+      '05:20 LMGT3 Hyperpole',
+      '05:40 Hypercar Qualifying',
+      '06:00 Hypercar Hyperpole',
+    ]);
+    // Each part to its own unit's page.
+    expect(saturday).toContain(`<a class="pd-wk-row" href="${FUJI}free-practice-3/"><span class="pd-wk-when"><b><span class="pd-t" data-utc="2026-09-26T05:10:00.000Z"`);
+  });
+
+  it("a unit of several timed parts: its card says from when, its page names each part's own start at the track", () => {
+    const overview = body(wecPages, LE_MANS);
+    expect(overview).toContain('<h3>Qualifying</h3><p>from <span class="pd-t" data-utc="2026-06-10T16:45:00.000Z" data-f="wt">Wed 16:45 UTC</span> your time · Wed 18:45 at the track</p>');
+    expect(overview).toContain('<h3>Free Practice 1</h3><p><span class="pd-t" data-utc="2026-06-10T12:00:00.000Z" data-f="wt">Wed 12:00 UTC</span> your time · Wed 14:00 at the track</p>');
+    expect(body(wecPages, `${LE_MANS}qualifying/`)).toContain(
+      '<h1>Qualifying</h1><p class="pd-ss-sub">Wednesday 10 June · Le Mans Qualifying (LMP2 &amp; LMGT3) 18:45 · Le Mans Qualifying (Hypercar) 19:30; ' +
+        'Thursday 11 June · Le Mans Hyperpole 1 (LMP2 &amp; LMGT3) 20:00 · Le Mans Hyperpole 2 (LMP2 &amp; LMGT3) 20:35 · Le Mans Hyperpole 1 (Hypercar) 21:05 · Le Mans Hyperpole 2 (Hypercar) 21:40, at the track; ' +
+        'from <span class="pd-t" data-utc="2026-06-10T16:45:00.000Z" data-f="wt">Wed 16:45 UTC</span> your time</p>',
+    );
+    expect(body(gtwPages, `${ZANDVOORT}qualifying-1/`)).toContain('<p class="pd-ss-sub">Saturday 19 September · Qualifying 1 (Group A) 09:50 · Qualifying 1 (Group B) 10:05, at the track; from ');
+    // One timed session keeps the shared band.
+    expect(body(wecPages, `${FUJI}race/`)).toContain('<h1>Race</h1><p class="pd-ss-sub">Sunday 27 September · 11:00 at the track, ');
+  });
+
+  it('reads a class named twice in a stored session once, so the publisher’s run goes on', () => {
+    const fuji = resultOf(wec, 6);
+    const twice = { ...fuji, sessions: fuji.sessions.map(s => ({ ...s, tables: [...s.tables, s.tables[0]] })) };
+    const pages = pagesOf(seriesOf('wec', { results: [...without(wec, 6), twice] }));
+    expect(tabsOf(body(pages, FUJI))).toEqual(['Hypercar · 17 cars', 'LMGT3 · 18 cars']);
+    expect(tabsOf(body(pages, `${FUJI}race/`))).toEqual(['Hypercar · 17 cars', 'LMGT3 · 18 cars']);
+  });
+
+  it('names the first session still to run on the strip, whatever the timetable calls the ones already stored', () => {
+    const lm = resultOf(wec, 3);
+    const d = seriesOf('wec', { results: [...without(wec, 3), { ...lm, sessions: [], others: (lm.others ?? []).filter(s => s.label === 'Free Practice 1') }] });
+    const html = body(pagesOf(d), LE_MANS);
+    expect(html).toContain('<b class="pd-sr-ses">Le Mans Qualifying (LMP2 &amp; LMGT3) · <span class="pd-t" data-utc="2026-06-10T16:45:00.000Z" data-f="wt">Wed 16:45 UTC</span></b>');
+    expect(html).toContain('data-pd-target="2026-06-10T16:45:00.000Z"');
+    expect(html).not.toContain('Le%20Mans%20Free%20Practice%201|');
+    expect(html).toContain('<h2>Done so far</h2>');
+  });
+
+  it("keeps an unclassified car's mark in a cup's tab, in its place and beside it", () => {
+    const pro = panel(body(gtwPages, `${ZANDVOORT}race-2/`), 'Pro');
+    expect(pro).toContain('<tr><td class="p">NC</td><td class="no">#7</td><td class="crew">Nicki Thiim, Kobe Pauwels</td><td class="tm">Comtoyou Racing</td><td class="cup">NC</td>');
+    expect(pro).toContain('<tr><td class="p">1</td><td class="no">#69</td>');
+  });
+
+  it('a Sprint Cup round after its first race: the race named in its own row of tabs, no Final until both are run', () => {
+    const z = resultOf(gtw, 8);
+    const first = { ...z, sessions: z.sessions.filter(s => s.label === 'Race 1'), others: (z.others ?? []).filter(s => !/^Qualifying 2/.test(s.label)) };
+    const html = body(pagesOf(seriesOf('gt-world', { results: [...without(gtw, 8), first] })), ZANDVOORT);
+    expect(html).not.toContain('is-fin');
+    expect(html).toContain('<p class="pd-wk-hint">A race, then overall or a cup; it opens on Race 1 overall</p></div><div class="pd-rt" data-pd-rt="Race|Class" data-pd-open="Race 1 · Sat|Overall">');
+    expect(tabsOf(html)).toEqual(['Race 1 · Sat|Overall', 'Race 1 · Sat|Pro', 'Race 1 · Sat|Gold', 'Race 1 · Sat|Silver', 'Race 1 · Sat|Bronze']);
+    expect(barOf(html).slice(3)).toEqual(['Qualifying 1 | Sat · #2', 'Race 1 | Sat · #58', 'Qualifying 2 | Sun 08:35 UTC · still to run', 'Race 2 | Sun 12:15 UTC · still to run']);
+    expect(html).toContain('<b class="pd-sr-ses">Qualifying 2 (Group A) · ');
+  });
+
+  it('keeps a standings name the results do not hold as it is written', () => {
+    const [table] = saved.imsa.standings;
+    const standings = [{ ...table, rows: [['1', 'Zed Unknown Quux Nobody', '3100'], ...table.rows] }];
+    const html = body(pagesOf(seriesOf('imsa', { standings })), DAYTONA);
+    expect(html).toContain('<span class="d"><b>Zed Unknown Quux Nobody</b><small></small></span><span class="g">Leader</span><b class="pt">3100</b>');
+    expect(html).toContain('<span class="d"><b>Jack Aitken</b><small>#31 Cadillac Whelen</small></span><span class="g">−80</span><b class="pt">3020</b>');
+  });
+
+  it('names no fastest car for a class that set no lap', () => {
+    const day = resultOf(imsa, 1);
+    const blank = (t: Table): Table => ({ ...t, rows: t.rows.map(r => r.map((c, i) => (t.columns[i] === 'Time' || t.columns[i] === 'Gap' ? '' : t.columns[i] === 'Laps' ? '0' : c))) });
+    const others = (day.others ?? []).map(s => (s.label === 'Qualifying' ? { ...s, tables: s.tables.map(t => (t.title === 'GTD Pro' ? blank(t) : t)) } : s));
+    const html = body(pagesOf(seriesOf('imsa', { results: [{ ...day, others }] })), DAYTONA);
+    const from = html.indexOf('<h3>Qualifying</h3>');
+    const card = html.slice(from, html.indexOf('</article>', from));
+    expect([...card.matchAll(/<span class="c">([^<]+)<\/span>/g)].map(m => m[1])).toEqual(['GTP', 'LMP2', 'GTD']);
+    // The page itself still lists the class as stored.
+    expect(tabsOf(body(pagesOf(seriesOf('imsa', { results: [{ ...day, others }] })), `${DAYTONA}qualifying/`))).toContain('GTD PRO · 15 cars');
+  });
+
+  it('logs a stored session without a car as that, and counts one car as one', () => {
+    const fuji = resultOf(wec, 6);
+    const empty: ResultSession = { label: 'Free Practice 4', tables: [{ title: 'Hypercar', columns: fuji.sessions[0].tables[0].columns, rows: [] }] };
+    const one = { ...fuji, sessions: fuji.sessions.map(s => ({ ...s, tables: s.tables.map(t => (t.title === 'LMGT3' ? { ...t, rows: t.rows.slice(0, 1) } : t)) })), others: [...(fuji.others ?? []), empty] };
+    const lines: string[] = [];
+    const pages = pagesOf(seriesOf('wec', { results: [...without(wec, 6), one] }), enduranceKit({ log: line => lines.push(line) }));
+    expect(lines).toContain('wec R6 Free Practice 4: no car stored, left out');
+    expect(lines.some(l => /another championship/.test(l))).toBe(false);
+    expect(tabsOf(body(pages, FUJI))).toEqual(['Hypercar · 17 cars', 'LMGT3 · 1 car']);
   });
 });
