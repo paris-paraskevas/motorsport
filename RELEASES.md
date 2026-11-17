@@ -6,7 +6,7 @@ Paddock is out of early access. Fifteen championships in one place, every sessio
 
 ## 1.0.310 — 2026-11-17
 
-Behind the scenes: five IndyCar race weekends now start on the right day on the calendar. Detroit begins on the Friday of its first practice; Nashville, Markham and Washington, D.C. on the Saturday each began; and the first Milwaukee race on the Friday of its practice.
+Behind the scenes: four IndyCar race weekends now start on the right day on the calendar. Detroit begins on the Friday of its first practice, Nashville and Washington, D.C. on the Saturday each began, and the first Milwaukee race on the Friday of its practice.
 
 ## 1.0.309 — 2026-11-12
 
