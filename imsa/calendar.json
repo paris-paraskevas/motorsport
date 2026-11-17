@@ -63,6 +63,24 @@
     "location": "Sebring International Raceway"
   },
   {
+    "start": "2026-03-19T20:00:00.000Z",
+    "end": "2026-03-19T21:45:00.000Z",
+    "dateOnly": false,
+    "event": "Mobil 1 Twelve Hours of Sebring",
+    "session": "Practice 2",
+    "round": 2,
+    "location": "Sebring International Raceway"
+  },
+  {
+    "start": "2026-03-19T23:45:00.000Z",
+    "end": "2026-03-20T01:15:00.000Z",
+    "dateOnly": false,
+    "event": "Mobil 1 Twelve Hours of Sebring",
+    "session": "Practice 3",
+    "round": 2,
+    "location": "Sebring International Raceway"
+  },
+  {
     "start": "2026-03-20T15:25:00.000Z",
     "end": "2026-03-20T16:40:00.000Z",
     "dateOnly": false,
@@ -180,6 +198,15 @@
     "location": "Detroit Street Circuit"
   },
   {
+    "start": "2026-05-30T15:10:00.000Z",
+    "end": "2026-05-30T15:30:00.000Z",
+    "dateOnly": false,
+    "event": "Chevrolet Detroit Sports Car Classic",
+    "session": "Practice 3",
+    "round": 5,
+    "location": "Detroit Street Circuit"
+  },
+  {
     "start": "2026-05-30T20:10:00.000Z",
     "end": "2026-05-30T21:50:00.000Z",
     "dateOnly": false,
@@ -261,6 +288,24 @@
     "location": "Canadian Tire Motorsport Park"
   },
   {
+    "start": "2026-07-31T16:25:00.000Z",
+    "end": "2026-07-31T17:55:00.000Z",
+    "dateOnly": false,
+    "event": "Motul SportsCar Endurance Grand Prix",
+    "session": "Practice 1",
+    "round": 8,
+    "location": "Road America"
+  },
+  {
+    "start": "2026-08-01T14:50:00.000Z",
+    "end": "2026-08-01T16:35:00.000Z",
+    "dateOnly": false,
+    "event": "Motul SportsCar Endurance Grand Prix",
+    "session": "Practice 2",
+    "round": 8,
+    "location": "Road America"
+  },
+  {
     "start": "2026-08-01T20:25:00.000Z",
     "end": "2026-08-01T21:00:00.000Z",
     "dateOnly": false,
@@ -279,6 +324,24 @@
     "location": "Road America"
   },
   {
+    "start": "2026-08-21T19:10:00.000Z",
+    "end": "2026-08-21T20:40:00.000Z",
+    "dateOnly": false,
+    "event": "Michelin GT Challenge at VIR",
+    "session": "Practice 1",
+    "round": 9,
+    "location": "Virginia International Raceway"
+  },
+  {
+    "start": "2026-08-22T14:30:00.000Z",
+    "end": "2026-08-22T16:00:00.000Z",
+    "dateOnly": false,
+    "event": "Michelin GT Challenge at VIR",
+    "session": "Practice 2",
+    "round": 9,
+    "location": "Virginia International Raceway"
+  },
+  {
     "start": "2026-08-22T20:50:00.000Z",
     "end": "2026-08-22T21:05:00.000Z",
     "dateOnly": false,
@@ -295,6 +358,15 @@
     "session": "Michelin GT Challenge at VIR (Race)",
     "round": 9,
     "location": "Virginia International Raceway"
+  },
+  {
+    "start": "2026-09-18T19:25:00.000Z",
+    "end": "2026-09-18T20:55:00.000Z",
+    "dateOnly": false,
+    "event": "TireRack.com Battle on the Bricks",
+    "session": "Practice 1",
+    "round": 10,
+    "location": "Indianapolis Motor Speedway"
   },
   {
     "start": "2026-09-19T14:45:00.000Z",
@@ -322,6 +394,33 @@
     "session": "TireRack.com Battle on the Bricks (Race)",
     "round": 10,
     "location": "Indianapolis Motor Speedway"
+  },
+  {
+    "start": "2026-10-01T14:40:00.000Z",
+    "end": "2026-10-01T16:10:00.000Z",
+    "dateOnly": false,
+    "event": "Motul Petit Le Mans",
+    "session": "Practice 1",
+    "round": 11,
+    "location": "Michelin Raceway Road Atlanta"
+  },
+  {
+    "start": "2026-10-01T19:20:00.000Z",
+    "end": "2026-10-01T21:05:00.000Z",
+    "dateOnly": false,
+    "event": "Motul Petit Le Mans",
+    "session": "Practice 2",
+    "round": 11,
+    "location": "Michelin Raceway Road Atlanta"
+  },
+  {
+    "start": "2026-10-01T23:30:00.000Z",
+    "end": "2026-10-02T01:00:00.000Z",
+    "dateOnly": false,
+    "event": "Motul Petit Le Mans",
+    "session": "Practice 3",
+    "round": 11,
+    "location": "Michelin Raceway Road Atlanta"
   },
   {
     "start": "2026-10-02T18:20:00.000Z",
