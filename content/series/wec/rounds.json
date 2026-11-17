@@ -6,7 +6,19 @@
     { "round": 3, "startDate": "2026-06-13", "endDate": "2026-06-14", "name": "24 Hours of Le Mans" },
     { "round": 4, "startDate": "2026-07-10", "endDate": "2026-07-12", "name": "Rolex 6 Hours of São Paulo" },
     { "round": 5, "startDate": "2026-09-04", "endDate": "2026-09-06", "name": "Lone Star Le Mans" },
-    { "round": 6, "startDate": "2026-09-25", "endDate": "2026-09-27", "name": "6 Hours of Fuji" },
+    {
+      "round": 6,
+      "startDate": "2026-09-25",
+      "endDate": "2026-09-27",
+      "name": "6 Hours of Fuji",
+      "calledOff": [
+        {
+          "session": "Qualifying",
+          "note": "Qualifying and Hyperpole called off for rain: the grid came from each car’s fastest lap in the three free practices",
+          "source": "https://www.fiawec.com/en/news/alpine-locks-out-front-row-after-qualifying-cancelled-at-fuji/13817"
+        }
+      ]
+    },
     { "round": 7, "startDate": "2026-10-16", "endDate": "2026-10-18", "name": "6 Hours of Barcelona" },
     { "round": 8, "startDate": "2026-11-06", "endDate": "2026-11-08", "name": "6 Hours of Monza" }
   ],

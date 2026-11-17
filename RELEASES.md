@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.310 — 2026-11-17
+
+Behind the scenes: the endurance and GT championships get their weekend pages, the FIA World Endurance Championship, IMSA and GT World Challenge Europe. Every round has a page for the weekend and one for each session: the results a class at a time, each car with its number, its whole crew and its team; one qualifying page a round, the WEC's with Qualifying and Hyperpole; GT World's sprint rounds with both races, overall or a cup at a time. A session called off says so and why, as at Fuji, where rain stopped qualifying, and the WEC's two called-off rounds, Qatar and Bahrain, stand struck through on its season page. On the calendar, the WEC's Barcelona and Monza weekends and eleven IMSA practice sessions get their times. Nothing changes for readers yet.
+
 ## 1.0.309 — 2026-11-12
 
 Behind the scenes: IndyCar's, NASCAR's and Formula E's results now come from each series' own results, every session of a race weekend: practice and qualifying as well as the race, with laps and gaps, NASCAR's stages and the Daytona Duels, and every point as the series awards it. Nothing changes for readers yet.
