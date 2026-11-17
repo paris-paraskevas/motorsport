@@ -28,6 +28,7 @@ import {
   sessionBand,
   sessionPath,
   strip,
+  tabAnchor,
   trackDay,
   trackTime,
   trackWeekday,
@@ -809,22 +810,36 @@ function leadOf(u: Unit): string {
 
 const FIXED = ['Pos', 'No.', CREW, 'Team'];
 const figureClass = (c: string): string => (c === 'Laps' ? 'n' : c === 'Cup' || c === 'Overall' ? 'cup' : 't');
+/** The figure a narrow table keeps at its edge, the first of these it holds (O34's check, 17 Nov): a race's gap (a cup's
+ *  own table: its overall place), a practice's or a qualifying's time. */
+const RACE_EDGE = ['Gap', 'Overall'];
+const TIMED_EDGE = ['Time', 'Gap'];
 
 /** C2's rows: the car's number large, every driver's full name, then the team; the session's own columns after them,
- *  or `only` those (the Overview's Gap, Cup or Overall). */
-function crewTable(t: Table, o: { limit?: number; only?: readonly string[] } = {}): string {
+ *  or `only` those (the Overview's Gap, Cup or Overall). In a box too narrow for them (the theme's container queries)
+ *  the team leaves, then every figure but the `edge` one (else the last) moves to a line under the crew, each named:
+ *  "Laps 203 · Time 6:01:01.299", a cup or an overall place bare (the operator's "A · Under the crew", 17 Nov). */
+function crewTable(t: Table, o: { limit?: number; only?: readonly string[]; edge?: readonly string[] } = {}): string {
   const [pos, no, crew, team] = FIXED.map(c => t.columns.indexOf(c));
   const figures = t.columns.map((_, i) => i).filter(i => !FIXED.includes(t.columns[i]) && (!o.only || o.only.includes(t.columns[i])));
-  const head = `<tr><th class="p">Pos</th><th class="no">No.</th><th class="crew">Crew</th><th class="tm">Team</th>${figures.map(i => `<th class="${figureClass(t.columns[i])}">${esc(t.columns[i])}</th>`).join('')}</tr>`;
+  const edge = (o.edge ?? []).map(c => t.columns.indexOf(c)).find(i => figures.includes(i)) ?? figures[figures.length - 1];
+  const moved = figures.filter(i => i !== edge);
+  const kind = (i: number): string => `${figureClass(t.columns[i])}${moved.includes(i) ? ' mv' : ''}`;
+  const sub = (row: readonly string[]): string => {
+    const parts = moved.filter(i => (row[i] ?? '') !== '').map(i => (figureClass(t.columns[i]) === 'cup' ? esc(row[i]) : `${esc(t.columns[i])}&nbsp;${esc(row[i])}`));
+    return parts.length ? `<span class="pd-ec-sub">${parts.join(' · ')}</span>` : '';
+  };
+  const head = `<tr><th class="p">Pos</th><th class="no">No.</th><th class="crew">Crew</th><th class="tm">Team</th>${figures.map(i => `<th class="${kind(i)}">${esc(t.columns[i])}</th>`).join('')}</tr>`;
   const body = t.rows
     .slice(0, o.limit ?? Infinity)
     .map(
       row =>
-        `<tr><td class="p">${esc(row[pos] ?? '')}</td><td class="no">${row[no] ? `#${esc(row[no])}` : ''}</td><td class="crew">${esc(row[crew] ?? '')}</td><td class="tm">${esc(row[team] ?? '')}</td>` +
-        `${figures.map(i => `<td class="${figureClass(t.columns[i])}">${esc(row[i] ?? '') || '–'}</td>`).join('')}</tr>`,
+        `<tr><td class="p">${esc(row[pos] ?? '')}</td><td class="no">${row[no] ? `#${esc(row[no])}` : ''}</td><td class="crew">${esc(row[crew] ?? '')}${sub(row)}</td><td class="tm">${esc(row[team] ?? '')}</td>` +
+        `${figures.map(i => `<td class="${kind(i)}">${esc(row[i] ?? '') || '–'}</td>`).join('')}</tr>`,
     )
     .join('');
-  return `<div class="pd-wk-scroll"><table class="pd-wk-tbl pd-ec-tbl"><thead>${head}</thead><tbody>${body}</tbody></table></div>`;
+  // Four figures or more (GT World's race overall, its qualifying with each driver's time) need a wider box.
+  return `<div class="pd-wk-scroll"><table class="pd-wk-tbl pd-ec-tbl${figures.length >= 4 ? ' is-wide' : ''}"><thead>${head}</thead><tbody>${body}</tbody></table></div>`;
 }
 
 /** A tab's name: a class with its cars ("Hypercar · 17 cars", C1); a cup or the whole order bare (G). */
@@ -914,8 +929,8 @@ function resultsTabs(w: Weekend, races: readonly Unit[]): string {
       const e = u.entries[0];
       const race = e ? `${u.label} · ${trackWeekday(w, e.start)}` : u.label;
       return viewsOf(u.sessions[0]).map(v => {
-        // A class's table, or GT World's whole order: every car of it is on the race's page.
-        const all = `<p class="pd-wk-links pd-ec-all"><a class="pd-wk-link" href="${sessionPath(w, u.label)}">All ${v.table.rows.length} on the race's page</a></p>`;
+        // A class's table, or GT World's whole order: every car of it is on the race's page, opened on its tab.
+        const all = `<p class="pd-wk-links pd-ec-all"><a class="pd-wk-link" href="${sessionPath(w, u.label)}#${tabAnchor([tabName(v)])}">All ${v.table.rows.length} on the race's page</a></p>`;
         const body = v.cup ? crewTable(v.table, { limit: 5, only: ['Overall'] }) : `${crewTable(v.table, { limit: 10, only: [cupAt(v.table) >= 0 ? 'Cup' : 'Gap'] })}${all}`;
         return { tab: two ? [race, tabName(v)] : [tabName(v)], body };
       });
@@ -1124,12 +1139,13 @@ function overviewPage(w: Weekend, units: readonly Unit[], states: readonly UnitS
  *  (C3); GT World's sessions in a row over overall and the cups, opening on the combined order overall (C3, C4). */
 function unitBody(u: Unit): { hint: string; body: string } {
   const cup = cupSeries(u);
+  const edge = u.kind === 'race' ? RACE_EDGE : TIMED_EDGE;
   if (u.kind === 'qualifying' && u.sessions.length > 1) {
     if (cup) {
       const combined = combinedOf(u);
       const sessions = combined ? [combined, ...u.sessions.filter(s => s !== combined)] : u.sessions;
       const short = (s: ResultSession): string => (s === combined ? 'Combined' : s.label.replace(/^qualifying \d+\s*-\s*/i, ''));
-      const panels = sessions.flatMap(s => viewsOf(s).map(v => ({ tab: [short(s), v.name], body: crewTable(v.table) })));
+      const panels = sessions.flatMap(s => viewsOf(s).map(v => ({ tab: [short(s), v.name], body: crewTable(v.table, { edge }) })));
       return { hint: 'A session, then overall or a cup', body: resultTabs(panels, { rows: ['Session', 'Class'], open: [short(sessions[0]), 'Overall'] }) };
     }
     const classes = [...new Set(u.sessions.flatMap(s => viewsOf(s).map(v => v.name)))];
@@ -1140,14 +1156,14 @@ function unitBody(u: Unit): { hint: string; body: string } {
       });
       const first = parts[0]?.t.rows.length ?? 0;
       const body = parts
-        .map(({ label, t }, i) => `<h4 class="pd-ec-part">${esc(label)} <small>${i && t.rows.length < first ? `the top ${t.rows.length}` : cars(t.rows.length)}</small></h4>${crewTable(t)}`)
+        .map(({ label, t }, i) => `<h4 class="pd-ec-part">${esc(label)} <small>${i && t.rows.length < first ? `the top ${t.rows.length}` : cars(t.rows.length)}</small></h4>${crewTable(t, { edge })}`)
         .join('');
       return { tab: [`${name} · ${cars(first)}`], body };
     });
     return { hint: `A class at a time: ${u.sessions.map(s => s.label).join(', then ')}`, body: resultTabs(panels) };
   }
   const s = u.sessions[0];
-  const panels = s ? viewsOf(s).map(v => ({ tab: [tabName(v)], body: crewTable(v.table) })) : [];
+  const panels = s ? viewsOf(s).map(v => ({ tab: [tabName(v)], body: crewTable(v.table, { edge }) })) : [];
   const what = u.kind === 'race' ? 'Every car, as classified' : 'Every car’s best lap';
   return { hint: `${what}, ${cup ? 'overall or a cup' : 'a class'} at a time`, body: resultTabs(panels) };
 }
