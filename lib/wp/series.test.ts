@@ -136,6 +136,14 @@ describe('seriesOverview', () => {
     expect(unseasoned).not.toContain('round-1/');
   });
 
+  it("opens the season's page beside the full calendar, where the weekends have pages (the operator, 17 Nov)", () => {
+    expect(body).toContain('<div class="pd-sh"><h2>Season</h2><p class="pd-sh-links"><a href="/series/f1/2026/">The 2026 season →</a><a href="/calendar/#f1">Full calendar →</a></p></div>');
+    // The season's page needs the season in its address.
+    const unseasoned = seriesOverview({ ...f1, season: undefined }).body;
+    expect(unseasoned).toContain('<div class="pd-sh"><h2>Season</h2><p><a href="/calendar/#f1">Full calendar →</a></p></div>');
+    expect(unseasoned).not.toContain('season →');
+  });
+
   it('shows the top ten drivers with bars against the leader and race wins, and every constructor', () => {
     // The count opens the Standings page (O16).
     expect(body).toContain('<h2>Drivers</h2><p><a href="/series/f1/standings/">All 12 →</a></p>');
@@ -237,7 +245,8 @@ describe('seriesResults', () => {
   it('is the Results address on the Wide template, its tab current', () => {
     expect(page).toMatchObject({ path: '/series/f1/results/', title: 'Formula 1 results', template: 'page-wide' });
     expect(b).toContain('<a href="/series/f1/results/" aria-current="page">Results</a>');
-    expect(b).toContain('<div class="pd-sh"><h2>Results</h2><p>2026 · 1 of 3 rounds run · the latest first</p></div>');
+    // The season's door beside the line, its weekends having pages ("R1 · In the head", the operator, 17 Nov).
+    expect(b).toContain('<div class="pd-sh"><h2>Results</h2><p class="pd-sh-links"><span>2026 · 1 of 3 rounds run · the latest first</span><a href="/series/f1/2026/">The 2026 season →</a></p></div>');
   });
 
   it('rows a round that has raced in its winner’s colour, the latest first and open, each with its id for a link', () => {
@@ -1117,6 +1126,9 @@ describe("a series' setting: only the pages it lists (O33)", () => {
     expect(b).toContain('<a href="/series/f2/standings/">All 12 →</a>');
     expect(b).not.toContain('/series/f2/results/');
     expect(b).not.toContain('/series/f2/2026/');
+    // No weekend pages, no season's page: the heads as before.
+    expect(b).toContain('<div class="pd-sh"><h2>Season</h2><p><a href="/calendar/#f2">Full calendar →</a></p></div>');
+    expect(seriesResults({ ...f2, sites: { f2: { family: 'A', pages: ['results'] } } }).body).toContain('<div class="pd-sh"><h2>Results</h2><p>2026 · 1 of 3 rounds run · the latest first</p></div>');
     // A finished round without a weekend page or a Results page opens its month on the Calendar.
     expect(b).toContain('<a class="pd-sr-tile" href="/calendar/2026-09/#f2"><small>R1</small><b>Singapore</b>');
     const list = seriesList([{ ...f2, category: 'formula', colour: '#38bdf8' }], new Date('2026-10-20T00:00:00Z')).body;

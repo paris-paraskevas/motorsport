@@ -43,6 +43,10 @@ export const col = (columns: string[], ...names: string[]): number => columns.fi
 /** A series' weekend page for a round, when its weekends have pages (O19); null for the others. */
 const weekendOf = (d: SeriesData, round: number): string | null => (built(d, 'weekends') && d.season ? weekendPath(d.slug, d.season, round) : null);
 
+/** The door to the season's page from the Overview and Results, where its weekends have pages (the operator's "A link
+ *  now, chooser later", 17 Nov); '' for the others. */
+const seasonLink = (d: SeriesData): string => (built(d, 'weekends') && d.season ? `<a href="${seasonPath(d.slug, d.season)}">The ${d.season} season →</a>` : '');
+
 /** "23–25 Oct", "30 Oct–1 Nov" across two months, or "25 Oct" for a one-day round. */
 export function dates(from: string, to: string): string {
   if (from === to) return dayLabel(to);
@@ -304,8 +308,9 @@ export function seriesOverview(d: SeriesData, standingsBlock?: FamilyKit['overvi
     (d.cancelled ?? [])
       .map(c => `<span class="pd-sr-tile is-off"><small>—</small><b><s>${escapeHtml(c.place ?? c.name)}</s></b><span class="pd-sr-when">Cancelled · was round ${c.round}</span></span>`)
       .join('');
+  const door = seasonLink(d);
   const season = rounds.length
-    ? `<section class="pd-sr-sec"><div class="pd-sh"><h2>Season</h2><p><a href="/calendar/#${escapeHtml(d.slug)}">Full calendar →</a></p></div><div class="pd-sr-grid">${tiles}</div></section>`
+    ? `<section class="pd-sr-sec"><div class="pd-sh"><h2>Season</h2><p${door ? ' class="pd-sh-links"' : ''}>${door}<a href="/calendar/#${escapeHtml(d.slug)}">Full calendar →</a></p></div><div class="pd-sr-grid">${tiles}</div></section>`
     : '';
   const main =
     `<div class="pd-sr pd-s-${escapeHtml(d.slug)}">${band(d, wins, current)}${tabs(d, 'overview')}` +
@@ -414,9 +419,12 @@ export function seriesResults(d: SeriesData, fold?: FamilyKit['resultsFold']): P
   const list = raced.length
     ? `<div class="pd-rs">${raced.map(({ r, race }, i) => resultRow(d, r, race, wins.get(r.round), i === 0, fold)).join('')}</div>`
     : '<p class="pd-mut">No results yet this season.</p>';
+  // The season's door in the head, beside the line (the operator's "R1 · In the head", 17 Nov).
+  const door = seasonLink(d);
+  const head = door ? `<p class="pd-sh-links"><span>${escapeHtml(line)}</span>${door}</p>` : `<p>${escapeHtml(line)}</p>`;
   const main =
     `<div class="pd-sr pd-s-${escapeHtml(d.slug)}">${band(d, wins, current)}${tabs(d, 'results')}` +
-    `<div class="pd-sr-main"><section class="pd-sr-sec pd-rs-page"><div class="pd-sh"><h2>Results</h2><p>${escapeHtml(line)}</p></div>${list}</section></div></div>`;
+    `<div class="pd-sr-main"><section class="pd-sr-sec pd-rs-page"><div class="pd-sh"><h2>Results</h2>${head}</div>${list}</section></div></div>`;
   return { path: seriesPath(d.slug, 'results'), title: `${d.name} results`, body: htmlBlock(main), template: 'page-wide' };
 }
 

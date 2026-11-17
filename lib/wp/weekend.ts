@@ -14,6 +14,7 @@
 
 import { stepFor, symbolLabel, type ForecastStep } from '@/lib/met-norway';
 import { isMap, trackDay as trackDate, trackTimeToUtc, type DriverStints, type SessionExtras } from '@/lib/openf1/weekend';
+import { slugify } from '@/lib/slug';
 import { built, escapeHtml, isRaceLaps, seasonPath, seriesPath, sessionSlug, weekendPath, type CalendarEntry, type CalendarRound, type Page, type ResultRound, type SeriesData, type Table } from './render';
 import { band, codeOf, col, colourOf, dates, htmlBlock, numberOf, outline, pointsTable, raceWins, sameDriver, seatOf, sprintWeekend, tabs, teamLabel, tick, weekendPoints, winnerLine, wk } from './series';
 
@@ -914,6 +915,12 @@ export function resultTabs(panels: readonly TabPanel[], o: { rows?: readonly str
   const items = panels.map((p, i) => `<section class="pd-rt-p" data-pd-tab="${esc(keys[i])}"><h3 class="pd-rt-h">${esc(p.title ?? p.tab.map(name).join(' · '))}</h3>${p.body}</section>`);
   return `<div class="pd-rt"${rows}${open}>${items.join('')}</div>`;
 }
+
+/** A tab's name in an address, for a link that opens its page on that tab (O34's check, 17 Nov): each row's name before
+ *  its " · ", slugified, the rows joined by "-" ("LMGT3 · 18 cars" → "lmgt3"; "Race 1 · Sat", "Overall" →
+ *  "race-1-overall"). The theme's script reads a page's address the same way (paddock.js, the tabs); a page opened
+ *  without one opens as `open` says. */
+export const tabAnchor = (tab: readonly string[]): string => tab.map(t => slugify(t.replace(/\|/g, '/').split(' · ')[0])).join('-');
 
 // ── The pages ────────────────────────────────────────────────────────────────
 

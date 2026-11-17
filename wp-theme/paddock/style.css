@@ -4,7 +4,7 @@ Theme URI: https://paddock-tracker.com/
 Description: Paddock Tracker's look (round 2) on Twenty Twenty-Five: Archivo, square corners, orange only for now, next and the main action, a designed Night, and the parts the publisher's pages use.
 Author: Paris Paraskevas
 Template: twentytwentyfive
-Version: 0.1.24
+Version: 0.1.25
 Requires at least: 6.7
 Requires PHP: 7.2
 License: GNU General Public License v2 or later
@@ -177,6 +177,9 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 .pd-sh p { margin: 0; font-size: .84rem; font-weight: 700; }
 .pd-sh p a { text-decoration: none; }
 .pd-sh p .is-off { color: var(--pd-muted); opacity: .55; }
+/* A head's line and its link, or two links (the season's door, O34): one row that wraps, a link never split. */
+.pd-sh .pd-sh-links { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+.pd-sh-links a { white-space: nowrap; }
 
 /* Cards */
 .pd-cards { display: grid !important; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px !important; }
@@ -1474,7 +1477,41 @@ a.pd-sn-t:hover { border-color: var(--pd-ink); border-top-color: var(--t, var(--
 .pd-ec-rows .c { font-size: .72rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: var(--pd-muted); white-space: nowrap; }
 .pd-ec-rows b { font-stretch: 80%; }
 @media (max-width: 699px) {
-	.pd-ec-tbl td.crew { min-width: 160px; }
 	/* The crew is hidden on a phone, as a driver's name is on Formula 1's cards: the car, then its lap at the edge. */
 	.pd-sc-rows.pd-ec-rows { grid-template-columns: max-content minmax(0, 1fr) max-content; }
+}
+/* Every table fits its box at every width (the operator's check, 17 Nov; "A · Under the crew"): the box is a container.
+   Below 560 px a table here drops the team and the crew takes what the other columns leave; one with figures that can
+   move (.mv) does so below 720 px, a wide one (four figures or more) below 940 px. Below 530 px, a wide one's 780 px,
+   the moved figures leave their columns for the line under the crew, each named. */
+.pd-wk-scroll:has(> .pd-ec-tbl) { container-type: inline-size; }
+.pd-ec-sub { display: none; margin-top: 3px; font-size: .78rem; line-height: 1.35; color: var(--pd-muted); font-variant-numeric: tabular-nums; }
+@container (max-width: 559px) {
+	.pd-ec-tbl .tm { display: none; }
+	/* A surname longer than the column ("Sathienthirakul,") breaks rather than push the table past its box; a Results
+	   fold's "Race 2 · Pro Cup" takes two lines. */
+	.pd-ec-tbl td.crew { min-width: 0; overflow-wrap: anywhere; }
+	.pd-ec-tbl th.crew { width: 100%; }
+	.pd-ec-tbl :is(th.no, th.t, th.n, th.cup) { width: auto; }
+	.pd-ec-wins td:first-child { white-space: normal; }
+}
+@container (max-width: 719px) {
+	.pd-ec-tbl:has(.mv) .tm { display: none; }
+	.pd-ec-tbl:has(.mv) td.crew { min-width: 0; }
+	.pd-ec-tbl:has(.mv) th.crew { width: 100%; }
+	.pd-ec-tbl:has(.mv) :is(th.no, th.t, th.n, th.cup) { width: auto; }
+}
+@container (max-width: 939px) {
+	.pd-ec-tbl.is-wide .tm { display: none; }
+	.pd-ec-tbl.is-wide td.crew { min-width: 0; }
+	.pd-ec-tbl.is-wide th.crew { width: 100%; }
+	.pd-ec-tbl.is-wide :is(th.no, th.t, th.n, th.cup) { width: auto; }
+}
+@container (max-width: 529px) {
+	.pd-ec-tbl .mv { display: none; }
+	.pd-ec-tbl .pd-ec-sub { display: block; }
+}
+@container (max-width: 779px) {
+	.pd-ec-tbl.is-wide .mv { display: none; }
+	.pd-ec-tbl.is-wide .pd-ec-sub { display: block; }
 }

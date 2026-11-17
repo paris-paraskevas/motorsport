@@ -1354,7 +1354,15 @@
 // shows one panel and hides the headings. The first row always switches; a later row keeps its tab where a panel holds
 // the pair, else takes its first that does, and greys the tabs no panel holds beside the first row's. The roles and
 // states are set here: WordPress keeps no aria-selected or aria-controls in a saved page.
+// A link may name a tab in its address (O34's check, 17 Nov; lib/wp/weekend.ts tabAnchor): "…/race/#lmgt3" opens the
+// page on LMGT3's tab, each row's name before its " · " slugified as lib/slug.ts does, the rows joined by "-". A page
+// opened without one opens as data-pd-open says.
 ( function () {
+	// The combining marks U+0300 to U+036F, which lib/slug.ts strips after NFD.
+	var marks = new RegExp( '[' + String.fromCharCode( 0x300 ) + '-' + String.fromCharCode( 0x36f ) + ']', 'g' );
+	var slugOf = function ( s ) { return s.toLowerCase().normalize( 'NFD' ).replace( marks, '' ).replace( /[^a-z0-9]+/g, '-' ).replace( /^-+|-+$/g, '' ); };
+	var wanted = '';
+	try { wanted = slugOf( decodeURIComponent( location.hash.slice( 1 ) ) ); } catch { /* a bad escape names no tab */ }
 	document.querySelectorAll( '.pd-rt' ).forEach( function ( rt, n ) {
 		var panels = Array.prototype.filter.call( rt.children, function ( el ) { return el.classList.contains( 'pd-rt-p' ); } );
 		var keys = panels.map( function ( p ) { return ( p.getAttribute( 'data-pd-tab' ) || '' ).split( '|' ); } );
@@ -1376,7 +1384,8 @@
 			}
 			return pick;
 		};
-		var sel = settle( names.map( function ( list, i ) { return list.indexOf( open[ i ] ) >= 0 ? open[ i ] : list[ 0 ]; } ), 0 );
+		var named = wanted ? keys.findIndex( function ( k ) { return k.map( function ( x ) { return slugOf( x.split( ' · ' )[ 0 ] ); } ).join( '-' ) === wanted; } ) : -1;
+		var sel = named >= 0 ? keys[ named ].slice() : settle( names.map( function ( list, i ) { return list.indexOf( open[ i ] ) >= 0 ? open[ i ] : list[ 0 ]; } ), 0 );
 		if ( index( sel ) < 0 ) { sel = keys[ 0 ].slice(); }
 		var usable = function ( i, name ) { var p = sel.slice(); p[ i ] = name; return i === 0 || index( p ) >= 0; };
 		var rows;

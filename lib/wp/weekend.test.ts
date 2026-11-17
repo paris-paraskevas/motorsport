@@ -20,6 +20,7 @@ import {
   sessionBand,
   sessionCard,
   strip,
+  tabAnchor,
   tableOf,
   weekendBand,
   weekendOf,
@@ -1049,6 +1050,17 @@ describe('the results table with tabs (O33), from the saved document', () => {
     expect(() => resultTabs([{ tab: ['A'], body: '' }, { tab: ['A '], body: '' }])).toThrow('two panels named A');
     expect(() => resultTabs([{ tab: ['A'], body: '' }, { tab: [' '], body: '' }])).toThrow('a tab without a name');
     expect(() => resultTabs([{ tab: ['Race 1', ''], body: '' }])).toThrow('a tab without a name');
+  });
+
+  it('names a tab in an address for a link that opens its page on it: the name before " · ", slugified, the rows joined (O34)', () => {
+    expect(tabAnchor(['Hypercar · 17 cars'])).toBe('hypercar');
+    expect(tabAnchor(['GTD PRO · 15 cars'])).toBe('gtd-pro');
+    expect(tabAnchor(['GTD · 21 cars'])).toBe('gtd');
+    expect(tabAnchor(['Race 1 · Sat', 'Overall'])).toBe('race-1-overall');
+    expect(tabAnchor(['Pro-AM'])).toBe('pro-am');
+    expect(tabAnchor(['Évreux · 3 cars'])).toBe('evreux');
+    // resultTabs writes a "|" in a name as "/", which the slug turns into a dash.
+    expect(tabAnchor(['A|B'])).toBe('a-b');
   });
 
   it("escapes a section's id", () => {

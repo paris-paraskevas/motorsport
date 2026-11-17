@@ -3,7 +3,7 @@ import path from 'node:path';
 import { describe, it, expect } from 'vitest';
 import type { CalendarEntry, CalendarRound, Page, ResultRound, ResultSession, SeriesData, Table } from './render';
 import { seriesFamily } from './series';
-import { weekendOf } from './weekend';
+import { tabAnchor, weekendOf } from './weekend';
 import {
   alkamelSession,
   calledOffLine,
@@ -640,10 +640,11 @@ describe("family C's weekend pages (O34), as drawn on Endurance Weekend Drafts",
     expect(hypercar).toContain('<tr><td class="p">1</td><td class="no">#8</td><td class="crew">Brendon Hartley, Ryo Hirakawa, Sébastien Buemi</td><td class="tm">TOYOTA RACING</td><td class="t">–</td></tr>');
     expect(hypercar).toContain('<tr><td class="p">2</td><td class="no">#36</td><td class="crew">Jules Gounon, Victor Martins</td><td class="tm">Alpine Endurance Team</td><td class="t">0.591</td></tr>');
     expect(rowsIn(hypercar)).toBe(10);
-    expect(hypercar).toContain('<p class="pd-wk-links pd-ec-all"><a class="pd-wk-link" href="/series/wec/2026/round-6/race/">All 17 on the race\'s page</a></p>');
+    // The link under a class's table opens the race's page on that class (the operator's check, 17 Nov).
+    expect(hypercar).toContain('<p class="pd-wk-links pd-ec-all"><a class="pd-wk-link" href="/series/wec/2026/round-6/race/#hypercar">All 17 on the race\'s page</a></p>');
     const lmgt3 = panel(html, 'LMGT3 · 18 cars');
     expect(lmgt3).toContain('<tr><td class="p">1</td><td class="no">#32</td><td class="crew">Darren Leung, Sean Gelael, Augusto Farfus</td><td class="tm">Team WRT</td><td class="t">–</td></tr>');
-    expect(lmgt3).toContain("All 18 on the race's page");
+    expect(lmgt3).toContain('<a class="pd-wk-link" href="/series/wec/2026/round-6/race/#lmgt3">All 18 on the race\'s page</a>');
   });
 
   it("O: each class's fastest car on a practice's card, the top class's drivers as they stand, the race's length and the classes", () => {
@@ -676,7 +677,8 @@ describe("family C's weekend pages (O34), as drawn on Endurance Weekend Drafts",
     const lmp2 = panel(html, 'LMP2 · 19 cars');
     expect([...lmp2.matchAll(/<h4 class="pd-ec-part">(.*?)<\/h4>/g)].map(m => m[1])).toEqual(['Qualifying <small>19 cars</small>', 'Hyperpole 1 <small>the top 15</small>', 'Hyperpole 2 <small>the top 10</small>']);
     expect(rowsIn(lmp2)).toBe(19 + 15 + 10);
-    expect(lmp2).toContain('<th class="tm">Team</th><th class="t">Time</th><th class="n">Laps</th><th class="t">Gap</th>');
+    // A narrow box keeps a qualifying's time at the edge; its laps and gap may move under the crew.
+    expect(lmp2).toContain('<th class="tm">Team</th><th class="t">Time</th><th class="n mv">Laps</th><th class="t mv">Gap</th>');
     expect(barOf(html)[2]).toBe('Qualifying | Wed · #15');
     expect(html).toContain(`<a href="${LE_MANS}qualifying/" aria-current="page">Qualifying<small>Wed · #15</small></a>`);
   });
@@ -717,7 +719,7 @@ describe("family C's weekend pages (O34), as drawn on Endurance Weekend Drafts",
     expect(overall).toContain('<th class="tm">Team</th><th class="cup">Cup</th></tr>');
     expect(overall).toContain('<tr><td class="p">1</td><td class="no">#69</td><td class="crew">Thierry Vermeulen, Ben Green</td><td class="tm">Emil Frey Racing</td><td class="cup">Pro Cup</td></tr>');
     expect(rowsIn(overall)).toBe(10);
-    expect(overall).toContain(`<a class="pd-wk-link" href="${ZANDVOORT}race-2/">All 45 on the race's page</a>`);
+    expect(overall).toContain(`<a class="pd-wk-link" href="${ZANDVOORT}race-2/#overall">All 45 on the race's page</a>`);
     const gold = panel(html, 'Race 2 · Sun|Gold');
     expect(gold).toContain('<th class="tm">Team</th><th class="cup">Overall</th></tr>');
     expect(gold).toContain('<tr><td class="p">1</td><td class="no">#51</td><td class="crew">Tommaso Mosca, Matias Zagazeta</td><td class="tm">AF Corse</td><td class="cup">P6 overall</td></tr>');
@@ -746,7 +748,10 @@ describe("family C's weekend pages (O34), as drawn on Endurance Weekend Drafts",
       'Group B|Silver',
       'Group B|Bronze',
     ]);
-    expect(panel(q1, 'Combined|Overall')).toContain('<tr><td class="p">1</td><td class="no">#2</td><td class="crew">Morris Schuring, Dorian Boccolacci</td><td class="tm">Boutsen VDS</td><td class="cup">Pro Cup</td><td class="t">–</td></tr>');
+    // With no time in the combined order, its gap stays at the edge and the cup may move under the crew, bare.
+    expect(panel(q1, 'Combined|Overall')).toContain(
+      '<tr><td class="p">1</td><td class="no">#2</td><td class="crew">Morris Schuring, Dorian Boccolacci<span class="pd-ec-sub">Pro Cup</span></td><td class="tm">Boutsen VDS</td><td class="cup mv">Pro Cup</td><td class="t">–</td></tr>',
+    );
     // A group's pole on its card: the combined order gives no lap, the car's group does.
     expect(body(gtwPages, ZANDVOORT)).toContain('<li><span class="c">Pro</span><b>#2</b><span class="nm">Morris Schuring, Dorian Boccolacci</span><span class="tt">1:33.730</span></li>');
     expect(body(gtwPages, ZANDVOORT)).toContain(`<a class="pd-sc-go" href="${ZANDVOORT}qualifying-1/">All 45 on its page →</a>`);
@@ -754,7 +759,14 @@ describe("family C's weekend pages (O34), as drawn on Endurance Weekend Drafts",
     const spa = body(gtwPages, `${SPA}qualifying/`);
     expect([...new Set(tabsOf(spa).map(t => t.split('|')[0]))]).toEqual(['Combined', 'Qualifying 1', 'Qualifying 2', 'Qualifying 3', 'Qualifying 4', 'Superpole', 'Superpole 1', 'Superpole 2', 'Superpole 3', 'Superpole 4']);
     expect([...new Set(tabsOf(spa).map(t => t.split('|')[1]))]).toEqual(['Overall', 'Pro', 'Gold', 'Silver', 'Bronze', 'Pro-AM']);
-    expect(panel(spa, 'Combined|Overall')).toContain('<th class="cup">Cup</th><th class="t">Time</th><th class="t">Time 1</th><th class="t">Time 2</th><th class="t">Time 3</th><th class="t">Time 4</th></tr>');
+    // Six figures: a wide table, its combined time at the edge, each driver's time and the cup moving first; a time not
+    // set is left off the line under the crew.
+    const combined = panel(spa, 'Combined|Overall');
+    expect(combined).toContain('<table class="pd-wk-tbl pd-ec-tbl is-wide">');
+    expect(combined).toContain('<th class="cup mv">Cup</th><th class="t">Time</th><th class="t mv">Time 1</th><th class="t mv">Time 2</th><th class="t mv">Time 3</th><th class="t mv">Time 4</th></tr>');
+    expect(combined).toContain(
+      '<td class="crew">Alessio Rovera, Tommaso Mosca, Nicklas Nielsen<span class="pd-ec-sub">Pro Cup · Time 2&nbsp;2:17.012 · Time 3&nbsp;2:17.156 · Time 4&nbsp;2:17.038</span></td><td class="tm">AF Corse</td><td class="cup mv">Pro Cup</td><td class="t">2:17.068</td><td class="t mv">–</td>',
+    );
   });
 
   it("an Endurance Cup round (Spa): its cup in the crumb, each cup's winner in the strip, the pole from the Superpole with the lap of its last part", () => {
@@ -785,8 +797,14 @@ describe("family C's weekend pages (O34), as drawn on Endurance Weekend Drafts",
     expect(race).toContain('<p class="pd-wk-crumb"><a href="/series/wec/">FIA WEC</a> › <a href="/series/wec/2026/">2026</a> › <a href="/series/wec/2026/round-6/">Round 6 · 6 Hours of Fuji</a></p><h1>Race</h1>');
     expect(race).toContain('<h2>Classification</h2><p class="pd-wk-hint">Every car, as classified, a class at a time</p>');
     const hypercar = panel(race, 'Hypercar · 17 cars');
-    expect(hypercar).toContain('<th class="tm">Team</th><th class="n">Laps</th><th class="t">Time</th><th class="t">Gap</th></tr>');
-    expect(hypercar).toContain('<td class="tm">TOYOTA RACING</td><td class="n">203</td><td class="t">6:01:01.299</td><td class="t">–</td></tr>');
+    // A narrow box keeps a race's gap at the edge and puts its laps and time under the crew, each named ("A · Under the
+    // crew", 17 Nov); the theme decides when, by the box's width.
+    expect(hypercar).toContain('<th class="tm">Team</th><th class="n mv">Laps</th><th class="t mv">Time</th><th class="t">Gap</th></tr>');
+    expect(hypercar).toContain(
+      '<td class="crew">Brendon Hartley, Ryo Hirakawa, Sébastien Buemi<span class="pd-ec-sub">Laps&nbsp;203 · Time&nbsp;6:01:01.299</span></td>' +
+        '<td class="tm">TOYOTA RACING</td><td class="n mv">203</td><td class="t mv">6:01:01.299</td><td class="t">–</td></tr>',
+    );
+    expect(hypercar).toContain('<table class="pd-wk-tbl pd-ec-tbl"><thead>');
     expect(rowsIn(hypercar)).toBe(17);
     expect(rowsIn(panel(race, 'LMGT3 · 18 cars'))).toBe(18);
     expect(race).toContain(`<a href="${FUJI}race/" aria-current="page">Race<small>Sun · #8</small></a>`);
@@ -794,16 +812,46 @@ describe("family C's weekend pages (O34), as drawn on Endurance Weekend Drafts",
     const gt = body(gtwPages, `${ZANDVOORT}race-2/`);
     expect(tabsOf(gt)).toEqual(['Overall', 'Pro', 'Gold', 'Silver', 'Bronze']);
     expect(rowsIn(panel(gt, 'Overall'))).toBe(45);
-    expect(panel(gt, 'Overall')).toContain('<th class="cup">Cup</th><th class="t">Best lap</th><th class="n">Laps</th><th class="t">Gap</th></tr>');
+    expect(panel(gt, 'Overall')).toContain('<table class="pd-wk-tbl pd-ec-tbl is-wide"><thead>');
+    expect(panel(gt, 'Overall')).toContain('<th class="cup mv">Cup</th><th class="t mv">Best lap</th><th class="n mv">Laps</th><th class="t">Gap</th></tr>');
+    expect(panel(gt, 'Overall')).toContain('<td class="crew">Thierry Vermeulen, Ben Green<span class="pd-ec-sub">Pro Cup · Best lap&nbsp;1:35.182 · Laps&nbsp;36</span></td>');
     const gold = panel(gt, 'Gold');
-    expect(gold).toContain('<th class="cup">Overall</th><th class="t">Best lap</th><th class="n">Laps</th></tr>');
-    expect(gold).toContain('<td class="cup">P6 overall</td><td class="t">1:35.476</td><td class="n">36</td></tr>');
+    // A cup's own table keeps the overall place at the edge.
+    expect(gold).toContain('<th class="cup">Overall</th><th class="t mv">Best lap</th><th class="n mv">Laps</th></tr>');
+    expect(gold).toContain(
+      '<td class="crew">Tommaso Mosca, Matias Zagazeta<span class="pd-ec-sub">Best lap&nbsp;1:35.476 · Laps&nbsp;36</span></td><td class="tm">AF Corse</td><td class="cup">P6 overall</td><td class="t mv">1:35.476</td><td class="n mv">36</td></tr>',
+    );
     expect(gold).not.toContain('>Gap<');
 
     const practice = body(imsaPages, `${DAYTONA}practice-3/`);
     expect(practice).toContain('<h1>Practice 3</h1>');
     expect(practice).toContain('<p class="pd-wk-hint">Every car’s best lap, a class at a time</p>');
     expect(tabsOf(practice)).toEqual(['GTP · 11 cars', 'LMP2 · 13 cars', 'GTD PRO · 15 cars', 'GTD · 21 cars']);
+    // A practice keeps its time at the edge; the leader's empty gap is left off the line under the crew.
+    expect(panel(practice, 'GTP · 11 cars')).toContain('<th class="tm">Team</th><th class="t">Time</th><th class="n mv">Laps</th><th class="t mv">Gap</th></tr>');
+    const fp1 = panel(body(wecPages, `${FUJI}free-practice-1/`), 'Hypercar · 17 cars');
+    expect(fp1).toContain('<td class="crew">Brendon Hartley, Ryo Hirakawa, Sébastien Buemi<span class="pd-ec-sub">Laps&nbsp;50</span></td><td class="tm">TOYOTA RACING</td><td class="t">1:29.694</td>');
+    expect(fp1).toContain('<td class="crew">Will Stevens, Norman Nato<span class="pd-ec-sub">Laps&nbsp;49 · Gap&nbsp;+0.343</span></td>');
+  });
+
+  it("the link under a class's table names its tab on the race's page, and every Overview table keeps its columns (the operator's check, 17 Nov)", () => {
+    expect(body(imsaPages, DAYTONA)).toContain(`<a class="pd-wk-link" href="${DAYTONA}race/#gtd-pro">All 15 on the race's page</a>`);
+    expect(body(gtwPages, ZANDVOORT)).toContain(`<a class="pd-wk-link" href="${ZANDVOORT}race-1/#overall">All 45 on the race's page</a>`);
+    // Every such link on every saved Overview: its page exists and its fragment names one of that page's tabs.
+    let links = 0;
+    for (const pages of [wecPages, imsaPages, gtwPages]) {
+      for (const [at, p] of pages) {
+        for (const m of p.body.matchAll(/<a class="pd-wk-link" href="([^"#]+)#([^"]+)">All \d+ on the race's page<\/a>/g)) {
+          links++;
+          const target = pages.get(m[1]);
+          expect(target, `${at} links ${m[1]}`).toBeDefined();
+          expect(tabsOf(target?.body ?? '').map(t => tabAnchor(t.split('|'))), `${at} → ${m[1]}#${m[2]}`).toContain(m[2]);
+        }
+        // An Overview's tables hold one figure each: nothing moves, as before.
+        if (/\/round-\d+\/$/.test(at)) expect(p.body).not.toMatch(/ mv"|pd-ec-sub|is-wide/);
+      }
+    }
+    expect(links).toBe(8 * 2 + 1 + 4 + 1 + 2);
   });
 
   it("S, the season page: a car's win by its number and team, the rounds called off struck through with where they were first set and when they were called off", () => {
@@ -921,6 +969,13 @@ describe("family C's weekend pages (O34), as drawn on Endurance Weekend Drafts",
     expect(html).toContain('<td class="no">#&lt;8&gt;</td><td class="crew">A &lt;i&gt;B&lt;/i&gt;, C &quot;D&quot; E</td><td class="tm">T&amp;C &lt;script&gt;</td>');
     expect(html).toContain('data-pd-tab="Hyper&lt;b&gt;car · 17 cars"');
     expect(html).toContain('<span class="c">Hyper&lt;b&gt;car</span><b>#&lt;8&gt;</b>');
+    // The line under the crew, from a feed's figures, is text too; the link's fragment holds no markup.
+    const odd = (s: ResultSession): ResultSession => ({ ...s, tables: s.tables.map(t => ({ ...t, rows: t.rows.map((r, i) => (i === 0 ? [...r.slice(0, 4), '<203>', 'a&b "c"', r[6]] : r)) })) });
+    const d2 = seriesOf('wec', { results: [...(wec.results ?? []).filter(r => r.round !== 6), { ...fuji, sessions: fuji.sessions.map(odd) }] });
+    const race = body(pagesOf(d2), `${FUJI}race/`);
+    expect(race).toContain('<span class="pd-ec-sub">Laps&nbsp;&lt;203&gt; · Time&nbsp;a&amp;b &quot;c&quot;</span>');
+    expect(race).not.toContain('<203>');
+    expect(body(pagesOf(d), FUJI)).toContain('race/#hyper-b-car">All 17 on the race');
   });
 
   it("names a driver by the surname with its particle, for the strip's crew", () => {
@@ -998,7 +1053,9 @@ describe("family C's pages: what #1201's review found", () => {
 
   it("keeps an unclassified car's mark in a cup's tab, in its place and beside it", () => {
     const pro = panel(body(gtwPages, `${ZANDVOORT}race-2/`), 'Pro');
-    expect(pro).toContain('<tr><td class="p">NC</td><td class="no">#7</td><td class="crew">Nicki Thiim, Kobe Pauwels</td><td class="tm">Comtoyou Racing</td><td class="cup">NC</td>');
+    expect(pro).toContain(
+      '<tr><td class="p">NC</td><td class="no">#7</td><td class="crew">Nicki Thiim, Kobe Pauwels<span class="pd-ec-sub">Best lap&nbsp;1:38.794 · Laps&nbsp;9</span></td><td class="tm">Comtoyou Racing</td><td class="cup">NC</td>',
+    );
     expect(pro).toContain('<tr><td class="p">1</td><td class="no">#69</td>');
   });
 
