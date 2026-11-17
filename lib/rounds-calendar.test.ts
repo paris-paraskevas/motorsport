@@ -124,6 +124,14 @@ describe('IndyCar 2026 calendar', () => {
     expect(rounds.find(r => r.round === 12)?.name).toMatch(/Music City/);
   });
 
+  // Each event's own heading on indycar.com (Schedule/2026/<event>, read 2026-11-17): "May 29 - 31", "July 18 - 20",
+  // "August 14 - 16", "August 22 - 23", "August 28 - 30". A round starts on the day its heading gives, which for Markham
+  // is the Friday before its first session (the operator, 17 Nov).
+  it('starts Detroit, Nashville, Markham, Washington and Milwaukee’s first race on the day indycar.com heads each event', () => {
+    const start = (round: number) => rounds.find(r => r.round === round)?.startDate;
+    expect([8, 12, 14, 15, 16].map(start)).toEqual(['2026-05-29', '2026-07-18', '2026-08-14', '2026-08-22', '2026-08-28']);
+  });
+
   // An override block names its round; a block whose matchDate falls outside that
   // round's window would inject sessions the weekend grouping numbers differently.
   it('keeps every session override’s match date inside its own round’s dates', () => {
