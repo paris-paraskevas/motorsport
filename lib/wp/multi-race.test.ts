@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { FomResultRow } from '../results/fom-api';
 import {
   answered,
+  datedByLastDay,
   DTM_QUALIFYING_POINTS,
   dtmAsk,
   dtmEvents,
@@ -140,6 +141,31 @@ describe('family A: an answer, none, or no answer at all (O33)', () => {
     expect(roundOver('2026-10-11', new Date('2026-10-12T23:00:00Z'))).toBe(false);
     expect(roundOver('2026-10-11', new Date('2026-10-13T00:00:00Z'))).toBe(true);
     expect(roundOver(null, new Date('2026-10-13T00:00:00Z'))).toBe(false);
+  });
+});
+
+describe('family A: a round dated by its last day (O33)', () => {
+  it('dates each round rounds.json names by its last day, and leaves the others as they are', () => {
+    const rounds: ResultRound[] = [
+      { round: 9, name: 'France', date: '2026-09-04', sessions: [] },
+      { round: null, name: 'A test', date: '2026-01-10', sessions: [] },
+      { round: 13, name: 'Not in rounds.json', date: null, sessions: [] },
+    ];
+    const got = datedByLastDay(rounds, [{ round: 9, endDate: '2026-09-06' }]);
+    expect(got.map(r => r.date)).toEqual(['2026-09-06', '2026-01-10', null]);
+    expect(got[1]).toBe(rounds[1]);
+    expect(rounds[0].date).toBe('2026-09-04');
+  });
+
+  it("is the day WorldSBK's and DTM's timetables run each round's last race", async () => {
+    const { readFileSync } = await import('node:fs');
+    for (const slug of ['wsbk', 'dtm']) {
+      const rounds = (JSON.parse(readFileSync(`content/series/${slug}/rounds.json`, 'utf8')) as { rounds: { round: number; endDate: string }[] }).rounds;
+      const timetable = (JSON.parse(readFileSync(`content/series/${slug}/sessions.json`, 'utf8')) as { overrides: { round: number; sessions: { title: string; start: string }[] }[] }).overrides;
+      const lastRace = timetable.flatMap(o => o.sessions.filter(s => /- Race 2$/.test(s.title)).map(s => [o.round, s.start.slice(0, 10)] as const));
+      expect(lastRace.length).toBeGreaterThan(0);
+      for (const [round, day] of lastRace) expect([slug, round, rounds.find(r => r.round === round)?.endDate]).toEqual([slug, round, day]);
+    }
   });
 });
 

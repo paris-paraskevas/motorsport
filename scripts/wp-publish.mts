@@ -125,6 +125,7 @@ import { MOTOGP_API_BASE, MOTOGP_CATEGORY_UUID_EXPORT, resolveMotoGPSeasonUuid }
 import { parseSessionClassification } from '../lib/results/wsbk';
 import {
   answered,
+  datedByLastDay,
   dtmAsk,
   dtmEvents,
   dtmQualifyingPoints,
@@ -1287,7 +1288,7 @@ async function wsbkRaces(out: Fetched, api: WsbkEvents, entries: SeriesRoundEntr
   const fresh = out.results.get('wsbk');
   if (!fresh?.data) return;
   const fetched = fresh.data;
-  let rounds = wsbkCarried(fetched, readStored<ResultRound[]>(relOf('wsbk', 'results')), api.season);
+  let rounds = datedByLastDay(wsbkCarried(fetched, readStored<ResultRound[]>(relOf('wsbk', 'results')), api.season), entries);
   // What is known already goes in first: a failure below leaves a restarted race as it was stored.
   out.results.set('wsbk', { ...fresh, data: wsbkScored(rounds) });
   const put = (round: number | null, label: string, patch: Partial<ResultSession>) => {
@@ -1369,10 +1370,11 @@ async function dtmData(out: Fetched, season: number, entries: SeriesRoundEntry[]
     return { ...t, rows: t.rows.map(r => r.map((v, i) => (i === name ? spell(v) : i === time ? dtmTime(v) : v))) };
   };
   const stored = readStored<ResultRound[]>(relOf('dtm', 'results'));
-  const dated = carrySessions(fresh.data, stored, season).map(r => {
-    const end = entries.find(e => e.round === r.round)?.endDate;
-    return { ...r, ...(end ? { date: end } : {}), sessions: r.sessions.map(s => ({ ...s, tables: s.tables.map(tidy) })), ...(r.others ? { others: r.others.map(s => ({ ...s, tables: s.tables.map(tidy) })) } : {}) };
-  });
+  const dated = datedByLastDay(carrySessions(fresh.data, stored, season), entries).map(r => ({
+    ...r,
+    sessions: r.sessions.map(s => ({ ...s, tables: s.tables.map(tidy) })),
+    ...(r.others ? { others: r.others.map(s => ({ ...s, tables: s.tables.map(tidy) })) } : {}),
+  }));
   const standings = out.standings.get('dtm');
   if (standings?.data) out.standings.set('dtm', { ...standings, data: standings.data.map(t => (t.columns.includes('Driver') ? tidy(t) : t)) });
   // A winner's time an earlier run read goes in without a page. What is held goes into the run first: a failure

@@ -58,6 +58,16 @@ export function fomQualifyingLabel(shortName: string | undefined, n: number): st
  *  "no classification" and not asked for again. */
 export const roundOver = (endDate: string | null | undefined, now: Date): boolean => Boolean(endDate) && Date.parse(`${endDate}T23:59:59Z`) + 86_400_000 < now.getTime();
 
+/** Each round dated by its last day, as the series' rounds.json gives it; a round it does not name keeps its date.
+ *  A round's date is its last race's, and two fetchers give another: DTM's a placeholder, WorldSBK's every race its
+ *  round's first day (lib/results/wsbk.ts). */
+export function datedByLastDay(rounds: readonly ResultRound[], entries: readonly { round: number; endDate: string }[]): ResultRound[] {
+  return rounds.map(r => {
+    const end = entries.find(e => e.round === r.round)?.endDate;
+    return end ? { ...r, date: end } : r;
+  });
+}
+
 /** An API's answer for a session's classification as its table: undefined when there was no answer, or none in the
  *  shape of a list (a call that failed reaches here as null); null when the API answered with an empty list, its
  *  own word for no classification; else the table `draw` makes of the rows, undefined when it can make none. */

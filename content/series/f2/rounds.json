@@ -12,7 +12,7 @@
     { "round": 9, "startDate": "2026-07-24", "endDate": "2026-07-26", "name": "Hungarian Grand Prix" },
     { "round": 10, "startDate": "2026-09-04", "endDate": "2026-09-06", "name": "Italian Grand Prix" },
     { "round": 11, "startDate": "2026-09-11", "endDate": "2026-09-13", "name": "Spanish Grand Prix (Madrid)" },
-    { "round": 12, "startDate": "2026-09-24", "endDate": "2026-09-27", "name": "Azerbaijan Grand Prix" },
+    { "round": 12, "startDate": "2026-09-24", "endDate": "2026-09-26", "name": "Azerbaijan Grand Prix" },
     { "round": 13, "startDate": "2026-11-27", "endDate": "2026-11-29", "name": "Qatar Grand Prix" },
     { "round": 14, "startDate": "2026-12-04", "endDate": "2026-12-06", "name": "Abu Dhabi Grand Prix" }
   ]
