@@ -29,6 +29,11 @@ export interface ResultSession {
   /** Why a timed session holds no table (family A, O33): "called off" when its source lists it cancelled, "no
    *  classification" when it ran and its source published none. Kept so a run does not ask for it again. */
   none?: string;
+  /** WorldSBK's races (family A, O33): how many sessions its API holds for the race, once its round's list was read:
+   *  1, or 2 where the race was stopped and restarted, and then the table is the restart's. Kept so a run reads a
+   *  round's list again only while the round is being run, and a restarted race keeps its result on a run its API
+   *  does not answer. */
+  parts?: number;
 }
 
 export interface ResultRound {
@@ -38,8 +43,9 @@ export interface ResultRound {
   date: string | null;
   sessions: ResultSession[];
   /** The round's sessions that are not races, as classified (slot O15): Formula 1's qualifying from jolpi.ca, its
-   *  practices and sprint qualifying from OpenF1, in running order. Apart from `sessions`, whose last is the round's
-   *  main race (latestRace) and whose count the health check compares. */
+   *  practices and sprint qualifying from OpenF1, in running order. Family A's (O33) are in the order they were
+   *  fetched, not the order they ran: a page orders them by the timetable. Apart from `sessions`, whose last is the
+   *  round's main race (latestRace) and whose count the health check compares. */
   others?: ResultSession[];
 }
 
@@ -1010,7 +1016,8 @@ function standingsPage(d: SeriesData, tables: Table[]): Page {
 function resultsPage(d: SeriesData, rounds: ResultRound[]): Page {
   const parts: string[] = [];
   for (const r of [...rounds].reverse()) {
-    // A round holding only its practice and qualifying so far (family A, O33) waits for its first race.
+    // A round holding only its practice and qualifying so far waits for its first race, whichever series it is
+    // (families A and B store a weekend's sessions as they run, O33 and O35): a heading over no table says nothing.
     if (!r.sessions.length) continue;
     parts.push(heading(roundTitle(r)));
     if (r.date) parts.push(paragraph(formatDay(r.date)));
