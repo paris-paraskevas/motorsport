@@ -114,7 +114,7 @@ export interface FomSessionResponse {
 
 // ---- Fetch --------------------------------------------------------------
 
-async function fetchFomJson<T>(brand: FomBrand, path: string): Promise<T | null> {
+export async function fetchFomJson<T>(brand: FomBrand, path: string): Promise<T | null> {
   try {
     const res = await fetchUpstream(`${API_BASE}/${brand}${path}`, {
       headers: {

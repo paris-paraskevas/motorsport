@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.312 — 2026-11-17
+
+Facts put right on the Formula 2, Formula 3, MotoGP, WorldSBK and DTM pages: DTM's results carry each race weekend's real dates, every driver's full name and race times written the usual way; Oschersleben's second race shows its winner's own time; WorldSBK's points match the official standings, Magny-Cours' restarted first race counted as it finished, and each of its rounds carries the day of its last race; Formula 2 and 3 race times read as an hour should; Formula 2's Monaco and Baku timetables are complete, and its Baku round ends on the Saturday it was raced; and MotoGP's Australian Grand Prix shows as called off. Behind the scenes, every practice and qualifying session of these five championships is now kept, ready for their new pages.
+
 ## 1.0.311 — 2026-11-17
 
 Behind the scenes: four IndyCar race weekends now start on the right day on the calendar. Detroit begins on the Friday of its first practice, Nashville and Washington, D.C. on the Saturday each began, and the first Milwaukee race on the Friday of its practice.

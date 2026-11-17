@@ -26,6 +26,14 @@ export interface Table {
 export interface ResultSession {
   label: string;
   tables: Table[];
+  /** Why a timed session holds no table (family A, O33): "called off" when its source lists it cancelled, "no
+   *  classification" when it ran and its source published none. Kept so a run does not ask for it again. */
+  none?: string;
+  /** WorldSBK's races (family A, O33): how many sessions its API holds for the race, once its round's list was read:
+   *  1, or 2 where the race was stopped and restarted, and then the table is the restart's. Kept so a run reads a
+   *  round's list again only while the round is being run, and a restarted race keeps its result on a run its API
+   *  does not answer. */
+  parts?: number;
 }
 
 export interface ResultRound {
@@ -35,8 +43,9 @@ export interface ResultRound {
   date: string | null;
   sessions: ResultSession[];
   /** The round's sessions that are not races, as classified (slot O15): Formula 1's qualifying from jolpi.ca, its
-   *  practices and sprint qualifying from OpenF1, in running order. Apart from `sessions`, whose last is the round's
-   *  main race (latestRace) and whose count the health check compares. */
+   *  practices and sprint qualifying from OpenF1, in running order. Family A's (O33) are in the order they were
+   *  fetched, not the order they ran: a page orders them by the timetable. Apart from `sessions`, whose last is the
+   *  round's main race (latestRace) and whose count the health check compares. */
   others?: ResultSession[];
 }
 
@@ -188,6 +197,10 @@ function sessionRank(label: string): number {
   return 2;
 }
 
+/** A race time written with a one-digit minute after the hour, as FOM's feed writes Formula 2's and 3's ("1:3:29.190"),
+ *  with its zero restored ("1:03:29.190"); every other time as it is. */
+export const padHour = (time: string): string => time.replace(/^(\d+):(\d):(\d\d(?:\.\d+)?)$/, '$1:0$2:$3');
+
 /** A single-class race's classified finishers, every one (the pages cut to ten when they draw). Position 0
  *  (IndyCar's non-finishers) and 90+ (DTM's synthetic DNF slots) are not classified places. A lapped car reads
  *  Lapped: jolpi.ca gives it a time behind the winner over a lap fewer ("+2.171" for Singapore 2026's eleventh,
@@ -196,7 +209,7 @@ function raceTable(title: string, entries: unknown, person: string): Table | nul
   if (!Array.isArray(entries)) return null;
   const lines = entries
     .filter(isObj)
-    .map(e => ({ pos: num(e.position), name: str(e.driverName), team: str(e.team), time: /^lapped$/i.test(str(e.status)) ? 'Lapped' : str(e.time) || str(e.status), points: num(e.points) }))
+    .map(e => ({ pos: num(e.position), name: str(e.driverName), team: str(e.team), time: /^lapped$/i.test(str(e.status)) ? 'Lapped' : padHour(str(e.time)) || str(e.status), points: num(e.points) }))
     .filter((l): l is typeof l & { pos: number } => l.pos !== null && l.pos >= 1 && l.pos < 90 && l.name !== '')
     .sort((a, b) => a.pos - b.pos);
   if (lines.length === 0) return null;
@@ -1003,8 +1016,12 @@ function standingsPage(d: SeriesData, tables: Table[]): Page {
 function resultsPage(d: SeriesData, rounds: ResultRound[]): Page {
   const parts: string[] = [];
   for (const r of [...rounds].reverse()) {
+    // A round holding only its practice and qualifying so far waits for its first race, whichever series it is
+    // (families A and B store a weekend's sessions as they run, O33 and O35): a heading over no table says nothing.
+    if (!r.sessions.length) continue;
     parts.push(heading(roundTitle(r)));
     if (r.date) parts.push(paragraph(formatDay(r.date)));
+    for (const c of d.rounds?.find(x => x.round === r.round)?.calledOff ?? []) parts.push(paragraph(c.note));
     for (const s of r.sessions) {
       if (r.sessions.length > 1) parts.push(heading(s.label, 3));
       for (const t of s.tables) {
@@ -1064,6 +1081,25 @@ export interface CalendarRound {
   country?: string;
   /** A round moved from its first dates (rounds.json rescheduleNote, previousStartDate, previousEndDate). */
   moved?: { note: string; from?: string; to?: string };
+  /** Its sessions called off once the calendar was set (rounds.json calledOff, O33): MotoGP's Australian race. */
+  calledOff?: CalledOff[];
+}
+
+/** A session called off: the timetable's name for it, the sentence readers see, and the page that says so. */
+export interface CalledOff {
+  session: string;
+  note: string;
+  source: string;
+}
+
+/** rounds.json's `calledOff` for a round: each entry whole, with an https source, or left out. */
+export function calledOffOf(raw: unknown): CalledOff[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.flatMap(c =>
+    isObj(c) && typeof c.session === 'string' && typeof c.note === 'string' && typeof c.source === 'string' && /^https:\/\/\S+$/.test(c.source)
+      ? [{ session: c.session, note: c.note, source: c.source }]
+      : [],
+  );
 }
 
 /** How far the calendar reaches either side of the current month. */

@@ -4,7 +4,22 @@
     { "round": 1, "startDate": "2026-04-24", "endDate": "2026-04-26", "name": "Red Bull Ring Round" },
     { "round": 2, "startDate": "2026-05-22", "endDate": "2026-05-24", "name": "Zandvoort Round" },
     { "round": 3, "startDate": "2026-06-19", "endDate": "2026-06-21", "name": "Lausitzring Round" },
-    { "round": 4, "startDate": "2026-07-03", "endDate": "2026-07-05", "name": "Norisring Round" },
+    {
+      "round": 4,
+      "startDate": "2026-07-03",
+      "endDate": "2026-07-05",
+      "name": "Norisring Round",
+      "qualifyingGroups": {
+        "_comment": "Each qualifying ran in two groups. Which of motorsport.com's session pages (?st=Q1 to Q4) holds each group: Saturday's Group A was Engel's first group (48.463) and Group B Thiim's (48.449); Sunday's Group A was Wiebelhaus's (48.694) and Group B Thiim's (48.583).",
+        "Qualifying 1": { "A": "Q1", "B": "Q2" },
+        "Qualifying 2": { "A": "Q4", "B": "Q3" },
+        "sources": [
+          "https://www.motorsport.com/dtm/news/dtm-qualifying-norisring-1-pole-for-thiim-debacle-for-porsche-and-bmw/10836095/",
+          "https://www.gt-report.com/2026/07/04/dtm-norisring-thiim-breaks-norisring-qualifying-record-to-claim-dtm-pole/",
+          "https://www.gt-report.com/2026/07/05/dtm-norisring-thiim-seals-second-pole-of-the-weekend-as-wiebelhaus-joins-the-front-row/"
+        ]
+      }
+    },
     { "round": 5, "startDate": "2026-07-24", "endDate": "2026-07-26", "name": "Motorsport Arena Oschersleben Round" },
     { "round": 6, "startDate": "2026-08-14", "endDate": "2026-08-16", "name": "Nürburgring Round" },
     { "round": 7, "startDate": "2026-09-11", "endDate": "2026-09-13", "name": "Sachsenring Round" },
