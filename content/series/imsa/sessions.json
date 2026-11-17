@@ -28,7 +28,9 @@
       "matchDate": "2026-03-19",
       "round": 2,
       "sessions": [
-        { "title": "IMSA - Practice 1", "start": "2026-03-19T14:05:00Z", "end": "2026-03-19T15:35:00Z", "location": "Sebring International Raceway" }
+        { "title": "IMSA - Practice 1", "start": "2026-03-19T14:05:00Z", "end": "2026-03-19T15:35:00Z", "location": "Sebring International Raceway" },
+        { "title": "IMSA - Practice 2", "start": "2026-03-19T20:00:00Z", "end": "2026-03-19T21:45:00Z", "location": "Sebring International Raceway" },
+        { "title": "IMSA - Practice 3", "start": "2026-03-19T23:45:00Z", "end": "2026-03-20T01:15:00Z", "location": "Sebring International Raceway" }
       ]
     },
     {
@@ -96,6 +98,7 @@
       "matchDate": "2026-05-30",
       "round": 5,
       "sessions": [
+        { "title": "IMSA - Practice 3", "start": "2026-05-30T15:10:00Z", "end": "2026-05-30T15:30:00Z", "location": "Detroit Street Circuit" },
         { "title": "IMSA - Chevrolet Detroit Sports Car Classic (Race)", "start": "2026-05-30T20:10:00Z", "end": "2026-05-30T21:50:00Z", "location": "Detroit Street Circuit" }
       ]
     },
@@ -144,9 +147,17 @@
       ]
     },
     {
+      "matchDate": "2026-07-31",
+      "round": 8,
+      "sessions": [
+        { "title": "IMSA - Practice 1", "start": "2026-07-31T16:25:00Z", "end": "2026-07-31T17:55:00Z", "location": "Road America" }
+      ]
+    },
+    {
       "matchDate": "2026-08-01",
       "round": 8,
       "sessions": [
+        { "title": "IMSA - Practice 2", "start": "2026-08-01T14:50:00Z", "end": "2026-08-01T16:35:00Z", "location": "Road America" },
         { "title": "IMSA - Qualifying", "start": "2026-08-01T20:25:00Z", "end": "2026-08-01T21:00:00Z", "location": "Road America" }
       ]
     },
@@ -158,9 +169,17 @@
       ]
     },
     {
+      "matchDate": "2026-08-21",
+      "round": 9,
+      "sessions": [
+        { "title": "IMSA - Practice 1", "start": "2026-08-21T19:10:00Z", "end": "2026-08-21T20:40:00Z", "location": "Virginia International Raceway" }
+      ]
+    },
+    {
       "matchDate": "2026-08-22",
       "round": 9,
       "sessions": [
+        { "title": "IMSA - Practice 2", "start": "2026-08-22T14:30:00Z", "end": "2026-08-22T16:00:00Z", "location": "Virginia International Raceway" },
         { "title": "IMSA - Qualifying", "start": "2026-08-22T20:50:00Z", "end": "2026-08-22T21:05:00Z", "location": "Virginia International Raceway" }
       ]
     },
@@ -169,6 +188,13 @@
       "round": 9,
       "sessions": [
         { "title": "IMSA - Michelin GT Challenge at VIR (Race)", "start": "2026-08-23T16:10:00Z", "end": "2026-08-23T18:50:00Z", "location": "Virginia International Raceway" }
+      ]
+    },
+    {
+      "matchDate": "2026-09-18",
+      "round": 10,
+      "sessions": [
+        { "title": "IMSA - Practice 1", "start": "2026-09-18T19:25:00Z", "end": "2026-09-18T20:55:00Z", "location": "Indianapolis Motor Speedway" }
       ]
     },
     {
@@ -184,6 +210,15 @@
       "round": 10,
       "sessions": [
         { "title": "IMSA - TireRack.com Battle on the Bricks (Race)", "start": "2026-09-20T19:10:00Z", "end": "2026-09-20T21:50:00Z", "location": "Indianapolis Motor Speedway" }
+      ]
+    },
+    {
+      "matchDate": "2026-10-01",
+      "round": 11,
+      "sessions": [
+        { "title": "IMSA - Practice 1", "start": "2026-10-01T14:40:00Z", "end": "2026-10-01T16:10:00Z", "location": "Michelin Raceway Road Atlanta" },
+        { "title": "IMSA - Practice 2", "start": "2026-10-01T19:20:00Z", "end": "2026-10-01T21:05:00Z", "location": "Michelin Raceway Road Atlanta" },
+        { "title": "IMSA - Practice 3", "start": "2026-10-01T23:30:00Z", "end": "2026-10-02T01:00:00Z", "location": "Michelin Raceway Road Atlanta" }
       ]
     },
     {

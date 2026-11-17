@@ -53,7 +53,9 @@ import { seriesFamily, seriesList } from '../lib/wp/series';
 import { lapChartNotes, weekendPages } from '../lib/wp/weekend';
 import {
   alkamelSession,
+  calledOffLine,
   emptyCrews,
+  enduranceKit,
   fetchedRound,
   gtSessionOptions,
   gtTable,
@@ -61,6 +63,7 @@ import {
   nameSpeller,
   respell,
   roundsDue,
+  sessionsCalledOff,
   teamSpeller,
   WEC_CLASSES,
   wecCarCrew,
@@ -69,6 +72,7 @@ import {
   wecDriversDue,
   wecSession,
   wecTable,
+  withResultTeams,
   withWecCrews,
   type WecClass,
   type WecCrews,
@@ -1855,6 +1859,14 @@ async function familyBResults(out: Fetched, now: Date, roundsOf: (slug: string) 
  *  here. */
 const KITS: Partial<Record<Family, FamilyKit>> = {
   F1: { weekendPages },
+  // Family C (O34): a called-off round's tile says where it was first set and when it was called off (C5), and a
+  // weekend names its sessions called off; rounds.json holds both beyond d.cancelled and d.rounds. Its log names a
+  // weekend's sessions the timetable and the store do not share.
+  C: enduranceKit({
+    offLine: (slug, c) => calledOffLine(roundsFile(slug).cancelled.find(x => x.originalRound === c.round && x.name === c.name)) || (c.reason ?? `Round ${c.round}`),
+    calledOff: (slug, round) => sessionsCalledOff(roundsFile(slug).rounds.find(r => r.round === round)),
+    log: line => log('R', `weekend ${line}`),
+  }),
 };
 
 // ── Main ─────────────────────────────────────────────────────────────────────
@@ -2031,6 +2043,8 @@ async function build(now: Date): Promise<{ pages: Page[]; health: FeedHealth[] }
         colour: t.color,
         drivers: t.drivers.map(x => ({ name: x.name, code: x.code, ...(typeof x.number === 'number' ? { number: x.number } : {}) })),
       }));
+      // Family C (O34): a result names a team as the series writes it, drivers.json by its car; joined by the car.
+      if (site.family === 'C') d.teams = withResultTeams(d.teams, d.results);
       d.cancelled = file.cancelled.flatMap(c =>
         typeof c?.originalRound === 'number' && typeof c.name === 'string'
           ? [

@@ -4,9 +4,13 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
-## 1.0.310 — 2026-11-17
+## 1.0.311 — 2026-11-17
 
 Facts put right on the Formula 2, Formula 3, MotoGP, WorldSBK and DTM pages: DTM's results carry each race weekend's real dates, every driver's full name and race times written the usual way; Oschersleben's second race shows its winner's own time; WorldSBK's points match the official standings, Magny-Cours' restarted first race counted as it finished, and each of its rounds carries the day of its last race; Formula 2 and 3 race times read as an hour should; Formula 2's Monaco and Baku timetables are complete, and its Baku round ends on the Saturday it was raced; and MotoGP's Australian Grand Prix shows as called off. Behind the scenes, every practice and qualifying session of these five championships is now kept, ready for their new pages.
+
+## 1.0.310 — 2026-11-17
+
+Behind the scenes: the endurance and GT championships get their weekend pages, the FIA World Endurance Championship, IMSA and GT World Challenge Europe. Every round has a page for the weekend and one for each session: the results a class at a time, each car with its number, its whole crew and its team; one qualifying page a round, the WEC's with Qualifying and Hyperpole; GT World's sprint rounds with both races, overall or a cup at a time. A session called off says so and why, as at Fuji, where rain stopped qualifying, and the WEC's two called-off rounds, Qatar and Bahrain, stand struck through on its season page. On the calendar, the WEC's Barcelona and Monza weekends and eleven IMSA practice sessions get their times. Nothing changes for readers yet.
 
 ## 1.0.309 — 2026-11-12
 
