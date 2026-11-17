@@ -1175,6 +1175,21 @@ describe("the shared parts' options (O33), Formula 1's by default", () => {
     expect(seasonPage({ ...three, cancelled: [off] }, 2026).body).toContain('<b>Qatar &lt;1812&gt; km</b><span>the situation</span>');
   });
 
+  it("seasonPage: a car's win names the car and its team, as the Endurance drafts' S draws it (O34)", () => {
+    const fuji: ResultRound = {
+      round: 11,
+      name: '6 Hours of Fuji',
+      date: '2026-09-13',
+      sessions: [{ label: 'Race', tables: [{ title: 'Hypercar', columns: ['Pos', 'No.', 'Crew', 'Team', 'Laps', 'Time', 'Gap'], rows: [['1', '8', 'Brendon Hartley, Ryo Hirakawa, Sébastien Buemi', 'TOYOTA <RACING>', '203', '6:01:01.299', '']] }] }],
+    };
+    const body = seasonPage({ ...three, results: [fuji] }, 2026).body;
+    expect(body).toContain('<span><i class="pd-tc" style="--t:#9aa3b2"></i>#8 TOYOTA &lt;RACING&gt;</span>');
+    expect(body).not.toContain('Brendon Hartley');
+    // A car without its team: the car alone.
+    const teamless: ResultRound = { ...fuji, sessions: [{ label: 'Race', tables: [{ ...fuji.sessions[0].tables[0], rows: [['1', '8', 'Brendon Hartley, Ryo Hirakawa, Sébastien Buemi', '', '203', '6:01:01.299', '']] }] }] };
+    expect(seasonPage({ ...three, results: [teamless] }, 2026).body).toContain('<span><i class="pd-tc" style="--t:#9aa3b2"></i>#8</span>');
+  });
+
   it("reads a motorcycle series' riders", () => {
     expect(cols(saved.wsbk.result.sessions[0].tables[0])).toEqual({ pos: 0, name: 1, team: 2, time: 3, pts: 4 });
     const riders = seriesOf('wsbk', 'WorldSBK', { standings: [{ title: 'Riders', columns: ['Pos', 'Rider', 'Team', 'Pts'], rows: [['1', 'Nicolo Bulega', 'Aruba.it Racing - Ducati', '600']] }] });

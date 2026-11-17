@@ -10,6 +10,7 @@ import {
   ordinal,
   pointsLeft,
   prose,
+  raceWins,
   recordLists,
   seriesChampions,
   seriesFamily,
@@ -1130,5 +1131,86 @@ describe("a series' setting: only the pages it lists (O33)", () => {
     expect(folded).toContain('<div class="pd-rs-fold"><p class="fold">f2 round 1</p></div>');
     expect(folded).not.toContain('pd-wk-pts');
     expect(seriesResults(listed).body).toContain('<div class="pd-rs-fold"><table class="pd-wk-tbl pd-wk-pts">');
+  });
+
+  it("draws the Overview's standings block as its family does, Formula 1's by default", () => {
+    const kit = { weekendPages: () => [], overviewStandings: (d: SeriesData) => `<section class="by-class">${d.slug}</section>` };
+    const own = seriesFamily(f2, kit)[0].body;
+    expect(own).toContain('<section class="by-class">f2</section>');
+    expect(own).not.toContain('pd-sr-two');
+    expect(seriesFamily(f2, { ...kit, overviewStandings: () => '' })[0].body).not.toContain('pd-sr-two');
+    expect(seriesFamily(f2)[0].body).toContain('<section class="pd-sr-sec pd-sr-two">');
+  });
+});
+
+// ── A race that classifies cars (family C, O34) ──────────────────────────────
+
+describe('a race that classifies cars, a crew to a car (O34)', () => {
+  // WEC's Fuji race as #1194's fetch step stores it (a local fill of paddock-data, 12 Nov, from fiawec.com), cut to its
+  // first rows: a table a class, the top class first, C2's columns.
+  const crewRace: ResultRound = {
+    round: 1,
+    name: '6 Hours of Fuji',
+    date: '2026-09-27',
+    sessions: [
+      {
+        label: 'Race',
+        tables: [
+          {
+            title: 'Hypercar',
+            columns: ['Pos', 'No.', 'Crew', 'Team', 'Laps', 'Time', 'Gap'],
+            rows: [
+              ['1', '8', 'Brendon Hartley, Ryo Hirakawa, Sébastien Buemi', 'TOYOTA RACING', '203', '6:01:01.299', ''],
+              ['2', '36', 'Jules Gounon, Victor Martins', 'Alpine Endurance Team', '203', '6:01:01.890', '0.591'],
+            ],
+          },
+          { title: 'LMGT3', columns: ['Pos', 'No.', 'Crew', 'Team', 'Laps', 'Time', 'Gap'], rows: [['1', '32', 'Darren Leung, Sean Gelael, Augusto Farfus', 'Team WRT', '187', '6:01:38.504', '']] },
+        ],
+      },
+    ],
+  };
+  /** The same race with its winning row replaced. */
+  const won = (row: string[]): ResultRound => ({ ...crewRace, sessions: [{ label: 'Race', tables: [{ ...crewRace.sessions[0].tables[0], rows: [row] }] }] });
+  const wec: SeriesData = { ...f1, slug: 'wec', name: 'FIA WEC', results: [crewRace], sites: { wec: { family: 'C', pages: ['results', 'weekends'] } } };
+
+  it('names the crew, the team and the car of the top class, a driver race no car', () => {
+    expect(raceWins(wec).get(1)).toEqual({ round: 1, title: '6 Hours of Fuji', date: '2026-09-27', winner: 'Brendon Hartley, Ryo Hirakawa, Sébastien Buemi', team: 'TOYOTA RACING', margin: '', car: '8' });
+    expect(raceWins(f1).get(1)).not.toHaveProperty('car');
+  });
+
+  it('counts the round as run and names the car, not the crew, wherever a winner is shown', () => {
+    const o = seriesOverview(wec).body;
+    expect(o).toContain('<p>2026 season · 3 rounds · 1 run · ');
+    // The car beside its team on the Last race card and a Results row; the car with its team on a tile, as the plan for
+    // family C's pages (12 Nov) has it.
+    expect(o).toContain('<span class="pd-sr-win" style="--t:#9aa3b2"><b>#8</b></span> <span class="pd-mut">TOYOTA RACING</span>');
+    expect(o).toContain('<span class="pd-sr-win" style="--t:#9aa3b2"><b>#8 TOYOTA RACING</b>27 Sep</span>');
+    const results = seriesResults(wec).body;
+    expect(results).toContain('<span class="pd-rs-win"><i class="pd-tc" style="--t:#9aa3b2"></i><b>#8</b><small>TOYOTA RACING</small></span>');
+    // Every class's cars, not the top class's alone.
+    expect(results).toContain('<a class="pd-rs-all" href="/series/wec/2026/round-1/">All 3 and every session on the weekend page →</a>');
+  });
+
+  it('counts a race whose crew was not read by its car: a WEC crew is whole or empty', () => {
+    const unread = { ...wec, results: [won(['1', '8', '', 'TOYOTA RACING', '203', '6:01:01.299', ''])] };
+    expect(raceWins(unread).get(1)).toMatchObject({ winner: '', team: 'TOYOTA RACING', car: '8' });
+    const o = seriesOverview(unread).body;
+    expect(o).toContain('<p>2026 season · 3 rounds · 1 run · ');
+    expect(o).toContain('<b>#8 TOYOTA RACING</b>27 Sep</span>');
+  });
+
+  it('keeps no car for a race that classifies drivers, whatever its other columns', () => {
+    const numbered: ResultRound = { ...crewRace, sessions: [{ label: 'Race', tables: [{ title: 'Race', columns: ['Pos', 'No.', 'Driver', 'Team', 'Time'], rows: [['1', '1', 'Max Verstappen', 'Red Bull Racing', '1:42:00.785']] }] }] };
+    expect(raceWins({ ...f1, results: [numbered] }).get(1)).toEqual({ round: 1, title: '6 Hours of Fuji', date: '2026-09-27', winner: 'Max Verstappen', team: 'Red Bull Racing', margin: '' });
+  });
+
+  it("keeps a feed's car, crew and team as text", () => {
+    const odd = { ...wec, results: [won(['1', '<8>', '<i>X</i> & Y', 'T&C "q"', '1', '1:00.000', ''])] };
+    const o = seriesOverview(odd).body;
+    const results = seriesResults(odd).body;
+    expect(o).toContain('<b>#&lt;8&gt;</b></span> <span class="pd-mut">T&amp;C &quot;q&quot;</span>');
+    expect(o).toContain('<b>#&lt;8&gt; T&amp;C &quot;q&quot;</b>27 Sep</span>');
+    expect(results).toContain('<b>#&lt;8&gt;</b><small>T&amp;C &quot;q&quot;</small>');
+    expect(o + results).not.toContain('<i>X</i>');
   });
 });

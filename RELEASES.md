@@ -4,9 +4,21 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
-## 1.0.307 — 2026-11-12
+## 1.0.310 — 2026-11-12
 
 Facts put right on the Formula 2, Formula 3, MotoGP, WorldSBK and DTM pages: DTM's results carry each race weekend's real dates, every driver's full name and race times written the usual way; Oschersleben's second race shows its winner's own time; WorldSBK's points match the official standings, Magny-Cours' restarted first race counted as it finished; Formula 2 and 3 race times read as an hour should; Formula 2's Monaco and Baku timetables are complete; and MotoGP's Australian Grand Prix shows as called off. Behind the scenes, every practice and qualifying session of these five championships is now kept, ready for their new pages.
+
+## 1.0.309 — 2026-11-12
+
+Behind the scenes: IndyCar's, NASCAR's and Formula E's results now come from each series' own results, every session of a race weekend: practice and qualifying as well as the race, with laps and gaps, NASCAR's stages and the Daytona Duels, and every point as the series awards it. Nothing changes for readers yet.
+
+## 1.0.308 — 2026-11-12
+
+Behind the scenes: the calendar now carries IndyCar's last race weekends in full, Portland to Laguna Seca with Milwaukee's practice and qualifying, and every NASCAR Cup race's practice and qualifying through the season, each at the time the series published; the Daytona 500, Pocono and New Hampshire races now start when NASCAR's own schedule says. IndyCar's season finale goes by its own name, the Mission Foods Grand Prix of Monterey, and the Daytona Duels by theirs. Nothing changes for readers yet.
+
+## 1.0.307 — 2026-11-12
+
+Behind the scenes: the series pages learn to name a win by the car and its team, for the endurance and GT championships, where a crew shares each car. Nothing changes for readers yet.
 
 ## 1.0.306 — 2026-11-12
 
