@@ -98,13 +98,13 @@ describe('crew title counting', () => {
       'a first FIA WEC title for **Fernando Alonso** and **Kazuki Nakajima**,',
     );
     // Buemi's 2014 title with Anthony Davidson has to be counted, not erased.
-    expect(e!.bodyMarkdown).toMatch(/\*\*Sébastien Buemi\*\*’s 2nd of 4 \(2014, 2019, 2022, 2023\)/);
+    expect(e!.bodyMarkdown).toMatch(/\*\*Sébastien Buemi\*\*’s 2nd of 5 \(2014, 2019, 2022, 2023, 2026\)/);
   });
 
   it('states the all-time record per person, not per crew', async () => {
     const g = await generateInfoEntries();
     const e = g.find((x) => x.slug === 'who-won-the-2019-fia-wec-championship');
-    expect(e!.bodyMarkdown).toContain('record is **4** titles');
+    expect(e!.bodyMarkdown).toContain('record is **5** titles');
     expect(e!.bodyMarkdown).toContain('Brendon Hartley and Sébastien Buemi');
   });
 

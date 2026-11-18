@@ -834,7 +834,7 @@ export function championColour(d: SeriesData, team: string): string {
 }
 
 /** Dark enough that the reigning card's text turns light (WCAG relative luminance under 0.18). */
-function darkColour(hex: string): boolean {
+export function darkColour(hex: string): boolean {
   const h = hex.length === 4 ? hex.replace(/^#(.)(.)(.)$/, '#$1$1$2$2$3$3') : hex;
   const [r, g, b] = [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255).map(c => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
   return 0.2126 * r + 0.7152 * g + 0.0722 * b < 0.18;
@@ -1046,13 +1046,25 @@ export function seriesChampions(d: SeriesData): Page {
         ? `${escapeHtml(surname(drivers[0].name))} leads by ${gap}${rounds && left > 0 ? ` with ${left} points left` : ''}.`
         : `${escapeHtml(surname(drivers[0].name))} and ${escapeHtml(surname(drivers[1].name))} are level on ${escapeHtml(drivers[0].shown)}.`;
   }
+
+  const inner = `<div class="pd-sr-sec pd-chp">${mast}${reigningCard(d, seasons[0], marks, seasons)}${jump}<div class="pd-ch-decs">${decs}</div>${foot}${teamsSec}${recs}${championsFoot(d, standLine)}</div>`;
+  return { path, title, body: frame(inner), template: 'page-wide' };
+}
+
+/** A Champions page's doorways (More <series>, Around the site) and the calendar call, as the operator chose them on 21
+ *  Oct. `standLine` is the Standings door's line, markup with its text escaped. A family that draws its own Champions
+ *  page (FamilyKit.championsPage, family C) ends it with these; `blog: false` greys the blog's door where the site has
+ *  no category for the series yet. */
+export function championsFoot(d: SeriesData, standLine: string, o: { blog?: boolean } = {}): string {
+  const name = escapeHtml(d.name);
+  const rounds = (d.rounds ?? []).length;
   const category = `/category/${categorySlug(d.name)}/`;
   const more = [
     door(seriesPath(d.slug), seriesPath(d.slug), d.name, `The season at a glance: next race, last race${rounds > 1 ? `, all ${rounds} rounds` : ''}.`, true),
     built(d, 'standings') ? door(seriesPath(d.slug, 'standings'), seriesPath(d.slug, 'standings'), `${d.name} standings`, standLine, true) : '',
     built(d, 'results') ? door(seriesPath(d.slug, 'results'), seriesPath(d.slug, 'results'), `${d.name} results`, "Every round's weekend, session by session.", true) : '',
     door(`/calendar/#${d.slug}`, `/calendar/#${d.slug}`, `${d.name} on the calendar`, 'Every session in your own time zone.', true),
-    door(category, 'From the blog', `${d.name} posts`, 'Our race reports and analysis, newest first.', true),
+    door(category, 'From the blog', `${d.name} posts`, 'Our race reports and analysis, newest first.', o.blog ?? true),
   ].join('');
   // Around the site, as the operator chose it on 21 Oct; a page the new site does not have yet waits greyed.
   const around = [
@@ -1071,9 +1083,7 @@ export function seriesChampions(d: SeriesData): Page {
   const call =
     `<section class="pd-ch-call"><div><b>Every ${escapeHtml(d.short ?? d.name)} session in your time zone</b><span>Follow the ${typeof d.season === 'number' ? `${d.season} ` : ''}season on the calendar. No account needed.</span></div>` +
     `<a href="/calendar/#${escapeHtml(d.slug)}">Open calendar</a></section>`;
-
-  const inner = `<div class="pd-sr-sec pd-chp">${mast}${reigningCard(d, seasons[0], marks, seasons)}${jump}<div class="pd-ch-decs">${decs}</div>${foot}${teamsSec}${recs}${doors}${call}</div>`;
-  return { path, title, body: frame(inner), template: 'page-wide' };
+  return `${doors}${call}`;
 }
 
 // ── The title race (O29) ─────────────────────────────────────────────────────
@@ -1384,14 +1394,14 @@ export function seriesList(all: SeriesData[], now: Date): Page {
 }
 
 /** A series' pages in round 2's design: the Overview, and Results, Standings and Champions as its setting lists them, the
- *  Overview's standings block and the Results fold its family's where its kit draws them (the weekend pages are the
- *  family's own, FamilyKit.weekendPages). */
+ *  Overview's standings block, the Results fold and the Standings and Champions pages its family's where its kit draws
+ *  them (the weekend pages are the family's own, FamilyKit.weekendPages). */
 export function seriesFamily(d: SeriesData, kit?: FamilyKit): Page[] {
   return [
     seriesOverview(d, kit?.overviewStandings),
     ...(built(d, 'results') ? [seriesResults(d, kit?.resultsFold)] : []),
-    ...(built(d, 'standings') ? [seriesStandings(d)] : []),
-    ...(built(d, 'champions') ? [seriesChampions(d)] : []),
+    ...(built(d, 'standings') ? [kit?.standingsPage ? kit.standingsPage(d) : seriesStandings(d)] : []),
+    ...(built(d, 'champions') ? [kit?.championsPage ? kit.championsPage(d) : seriesChampions(d)] : []),
     ...titleRacesOf(d).map(t => seriesTitleRace(d, t)),
   ];
 }

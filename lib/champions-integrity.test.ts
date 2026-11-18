@@ -118,4 +118,23 @@ describe('champions.json integrity', () => {
       if (r.points != null) expect(r.sources.some((s) => officialHosts(_slug).some((h) => s.includes(`${h}/`))), `${r.year}: points without an official source`).toBe(true);
     }
   });
+
+  // O34: a season's other classes (family C's Champions page draws each under its season, and a Standings box says
+  // "champions" for a class only where a line names it). A line names its title and its champions, its team if any, and
+  // a season names a title once.
+  it.each(files.map((f) => [f.slug, f.rows] as const))('%s: each other class’s line names its title and its champions, a title once a season', (_slug, rows) => {
+    for (const r of rows) {
+      const others = (r as Champion & { others?: unknown }).others;
+      if (others === undefined) continue;
+      expect(Array.isArray(others), `${r.year}: others is not a list`).toBe(true);
+      const lines = others as { title?: unknown; champions?: unknown; team?: unknown }[];
+      for (const l of lines) {
+        expect(typeof l.title === 'string' && l.title.trim().length > 0, `${r.year}: a line without its title`).toBe(true);
+        expect(typeof l.champions === 'string' && l.champions.trim().length > 0, `${r.year}: ${String(l.title)} without its champions`).toBe(true);
+        if (l.team !== undefined) expect(typeof l.team === 'string' && l.team.trim().length > 0, `${r.year}: ${String(l.title)}'s team`).toBe(true);
+      }
+      const titles = lines.map((l) => String(l.title).toLowerCase());
+      expect(new Set(titles).size, `${r.year}: a title named twice`).toBe(titles.length);
+    }
+  });
 });

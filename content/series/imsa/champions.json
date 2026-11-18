@@ -1,5 +1,5 @@
 [
-  { "year": 2026, "driver": "Jack Aitken", "constructor": "Cadillac Whelen — Cadillac V-Series.R (GTP)", "constructorChampion": "Cadillac" },
+  { "year": 2026, "driver": "Jack Aitken", "constructor": "Cadillac Whelen — Cadillac V-Series.R (GTP)", "constructorChampion": "Cadillac", "points": 3020, "wins": 2, "runnerUp": "Laurin Heinrich", "runnerUpPoints": 2859, "others": [{ "title": "LMP2", "champions": "George Kurtz, Alex Quinn", "team": "#04 CrowdStrike Racing by APR" }, { "title": "GTD PRO", "champions": "Connor De Phillippi, Neil Verhagen", "team": "#1 Paul Miller Racing" }, { "title": "GTD", "champions": "Philip Ellis, Russell Ward", "team": "#57 Winward Racing" }] },
   { "year": 2025, "driver": "Matt Campbell, Mathieu Jaminet", "constructor": "Porsche Penske Motorsport — Porsche 963 (GTP)", "constructorChampion": "Porsche" },
   { "year": 2024, "driver": "Dane Cameron, Felipe Nasr", "constructor": "Porsche Penske Motorsport — Porsche 963 (GTP)", "constructorChampion": "Porsche" },
   { "year": 2023, "driver": "Pipo Derani, Alexander Sims", "constructor": "Whelen Cadillac Racing — Cadillac V-LMDh (GTP)", "constructorChampion": "Cadillac" },

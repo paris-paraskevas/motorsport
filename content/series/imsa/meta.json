@@ -13,5 +13,5 @@
   "officialStandingsUrl": "https://www.imsa.com/standings",
   "officialSite": "https://www.imsa.com/",
   "watch": { "service": "IMSA", "url": "https://www.imsa.com/" },
-  "site": { "family": "C", "pages": ["results", "weekends"] }
+  "site": { "family": "C", "pages": ["results", "standings", "champions", "weekends"] }
 }

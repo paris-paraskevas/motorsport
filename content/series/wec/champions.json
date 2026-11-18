@@ -1,4 +1,5 @@
 [
+  { "year": 2026, "driver": "Sébastien Buemi, Brendon Hartley, Ryō Hirakawa", "constructor": "TOYOTA RACING — Toyota TR010 Hybrid", "constructorChampion": "Toyota", "points": 115, "wins": 3, "runnerUp": "Kamui Kobayashi, Mike Conway, Nyck de Vries", "runnerUpPoints": 97, "others": [{ "title": "LMGT3", "champions": "Jonny Edgar", "team": "#33 TF Sport" }, { "title": "LMGT3 teams", "champions": "#33 TF Sport", "team": "Corvette" }] },
   { "year": 2025, "driver": "James Calado, Antonio Giovinazzi, Alessandro Pier Guidi", "constructor": "Ferrari AF Corse — Ferrari 499P", "constructorChampion": "Ferrari" },
   { "year": 2024, "driver": "Kévin Estre, André Lotterer, Laurens Vanthoor", "constructor": "Porsche Penske Motorsport — Porsche 963", "constructorChampion": "Toyota" },
   { "year": 2023, "driver": "Sébastien Buemi, Brendon Hartley, Ryō Hirakawa", "constructor": "Toyota Gazoo Racing — Toyota GR010 Hybrid", "constructorChampion": "Toyota" },

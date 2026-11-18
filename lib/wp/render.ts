@@ -928,6 +928,13 @@ export interface FamilyKit {
   /** The fold under a round's row on the Results page: the weekend's points as the family counts them, '' for none;
    *  without it, Formula 1's sprint and race points. */
   resultsFold?(d: SeriesData, r: ResultRound): string;
+  /** The Standings page, where the series' setting lists it; without it, Formula 1's (series.ts seriesStandings), which
+   *  reads the first two stored tables as the drivers and the constructors. A family whose tables are kept otherwise (a
+   *  class at a time, family C, O34) draws its own; one whose tables are Formula 1's shape may pass Formula 1's page its
+   *  own options. */
+  standingsPage?(d: SeriesData): Page;
+  /** The Champions page, where the setting lists it; without it, Formula 1's (series.ts seriesChampions). */
+  championsPage?(d: SeriesData): Page;
   /** The Overview's standings block as markup, its text escaped by the kit, '' for none; without it, Formula 1's
    *  drivers' top ten beside the constructors, which a series whose standings are kept by class does not fit (family C,
    *  O34). */

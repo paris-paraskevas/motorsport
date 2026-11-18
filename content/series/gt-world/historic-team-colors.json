@@ -1,0 +1,7 @@
+{
+  "_comment": "Colours for GT World's past champion teams that no team racing today colours, read by the Champions page (O34, lib/wp/endurance.ts) after the season's own cars and today's roster. Keys are the slugified name as champions.json writes it, without a trailing bracket such as \"(Blancpain GT Series)\" (lib/slug.ts). A colour is taken only from a team Paddock already colours today, named in `note` (the operator's answer P2, 18 Nov 2026); SMP Racing by AKKA ASP, Black Falcon, Orange1 FFF Racing Team, GRT Grasser Racing Team, Bentley Team M-Sport and HTP Motorsport have no such match and stay grey. `note` is ignored by code.",
+  "teams": {
+    "akkodis-asp-team": { "color": "#CE1126", "note": "Akkodis ASP Team's colour in Paddock's FIA WEC list (content/series/wec/drivers.json); 2022 and 2023." },
+    "belgian-audi-club-team-wrt": { "color": "#1C69D4", "note": "Team WRT's colour in Paddock's lists today; 2014, 2015 and 2020." }
+  }
+}

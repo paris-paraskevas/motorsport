@@ -1153,6 +1153,21 @@ describe("a series' setting: only the pages it lists (O33)", () => {
     expect(seriesFamily(f2, { ...kit, overviewStandings: () => '' })[0].body).not.toContain('pd-sr-two');
     expect(seriesFamily(f2)[0].body).toContain('<section class="pd-sr-sec pd-sr-two">');
   });
+
+  it('draws the Standings and Champions pages as its family does where its kit has them, Formula 1’s otherwise (O34)', () => {
+    const listed: SeriesData = { ...f2, sites: { f2: { family: 'A', pages: ['standings', 'champions'] } } };
+    const own = (what: string) => (d: SeriesData) => ({ path: `/series/${d.slug}/${what}/`, title: what, body: `<p class="by-class">${what}</p>` });
+    const kit = { weekendPages: () => [], standingsPage: own('standings'), championsPage: own('champions') };
+    const pages = new Map(seriesFamily(listed, kit).map(p => [p.path, p.body]));
+    expect(pages.get('/series/f2/standings/')).toBe('<p class="by-class">standings</p>');
+    expect(pages.get('/series/f2/champions/')).toBe('<p class="by-class">champions</p>');
+    // Without them, the pages are Formula 1's, as they were before the hook.
+    const plain = new Map(seriesFamily(listed, { weekendPages: () => [] }).map(p => [p.path, p.body]));
+    expect(plain.get('/series/f2/standings/')).toBe(seriesStandings(listed).body);
+    expect(plain.get('/series/f2/champions/')).toBe(seriesChampions(listed).body);
+    // A page the setting does not list is not built, whatever the kit draws.
+    expect(seriesFamily({ ...f2, sites: { f2: { family: 'A', pages: [] } } }, kit).map(p => p.path)).toEqual(['/series/f2/']);
+  });
 });
 
 // ── A race that classifies cars (family C, O34) ──────────────────────────────
