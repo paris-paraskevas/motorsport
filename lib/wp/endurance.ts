@@ -1403,22 +1403,35 @@ function crewOfCell(text: string, match: (text: string, strict?: boolean) => str
   return runTogether(text, match);
 }
 
-/** The car and team a crew raced in the class: its first known driver's pair raced most often, the latest first seen
- *  when level, both from one row (never a car from one race and a team from another). */
-function carOf(races: readonly ClassRace[], names: readonly CrewName[]): { car: string; team: string } {
+/** Of entries counted in the order first seen, the one counted most; the latest first seen when level. */
+function mostOf<T>(entries: readonly (readonly [T, number])[]): T | undefined {
+  const most = Math.max(0, ...entries.map(([, n]) => n));
+  return entries.filter(([, n]) => n === most).pop()?.[0];
+}
+
+/** The cars a crew raced in the class, its first known driver's: the car raced most first, under the team name it ran
+ *  most with that car (a team never taken from another car's rows), then every other car it raced, the most raced
+ *  first. A driver's points can come from more than one car (IMSA's Heinrich: the #5, and both his wins in the #7), so a
+ *  row names them all (the operator's "Every car", 18 Nov). */
+function carOf(races: readonly ClassRace[], names: readonly CrewName[]): { car: string; team: string; also: string[] } {
   const first = names.find(n => n.known)?.name;
-  if (!first) return { car: '', team: '' };
-  const seen = new Map<string, number>();
+  if (!first) return { car: '', team: '', also: [] };
+  const cars = new Map<string, Map<string, number>>();
   for (const r of races) {
     const row = r.table.rows.find(x => inCrew(r.table, x, first));
     if (!row) continue;
-    const pair = JSON.stringify([cell(r.table, row, 'No.'), cell(r.table, row, 'Team')]);
-    seen.set(pair, (seen.get(pair) ?? 0) + 1);
+    const teams = cars.get(cell(r.table, row, 'No.')) ?? new Map<string, number>();
+    teams.set(cell(r.table, row, 'Team'), (teams.get(cell(r.table, row, 'Team')) ?? 0) + 1);
+    cars.set(cell(r.table, row, 'No.'), teams);
   }
-  const most = Math.max(0, ...seen.values());
-  const pick = [...seen].filter(([, n]) => n === most).pop()?.[0];
-  const [car, team] = pick ? (JSON.parse(pick) as [string, string]) : ['', ''];
-  return { car, team };
+  const raced = [...cars].map(([no, teams]) => [no, [...teams.values()].reduce((n, x) => n + x, 0)] as const);
+  const car = mostOf(raced) ?? '';
+  const team = mostOf([...(cars.get(car) ?? new Map<string, number>())]) ?? '';
+  const also = raced
+    .filter(([no]) => no !== '' && no !== car)
+    .sort((a, b) => b[1] - a[1])
+    .map(([no]) => no);
+  return { car, team, also };
 }
 
 /** A crew's class wins: the races its every driver won together. A crew with a name the results do not hold has none. */
@@ -1450,6 +1463,8 @@ export interface CrewRow {
   /** The car's number without its "#", and its team, as the crew raced most often in the class; '' when not found. */
   car: string;
   team: string;
+  /** Every other car the crew raced in the class, the most raced first ("7", "6"). */
+  also: string[];
   wins: number;
   colour: string;
 }
@@ -1504,17 +1519,30 @@ function capsName(s: string): string {
 function crewRows(t: Table | undefined, races: readonly ClassRace[], known: ReadonlyMap<string, string>, colours: ReadonlyMap<string, string>, single: boolean): CrewRow[] {
   if (!t) return [];
   const match = matcherOf(known, races);
-  const rows: { pos: string; crew: CrewName[]; shown: string; car: string; team: string }[] = [];
+  const rows: { pos: string; crew: CrewName[]; shown: string; car: string; team: string; also: string[] }[] = [];
   for (const row of t.rows) {
     const pos = cell(t, row, 'Pos');
     const shown = cell(t, row, 'Pts') || cell(t, row, 'Points');
     const crew = crewOfCell(cell(t, row, 'Driver'), match, single);
-    const { car, team } = carOf(races, crew);
+    const { car, team, also } = carOf(races, crew);
     const mate = car ? rows.find(x => x.car === car && x.pos === pos && x.shown === shown) : undefined;
-    if (mate) mate.crew.push(...crew);
-    else rows.push({ pos, crew, shown, car, team });
+    if (mate) {
+      mate.crew.push(...crew);
+      // A crew-mate's own other cars join the row's.
+      mate.also.push(...also.filter(no => !mate.also.includes(no)));
+    } else rows.push({ pos, crew, shown, car, team, also: [...also] });
   }
-  return rows.map(x => ({ pos: x.pos, names: x.crew.map(n => n.name), shown: x.shown, pts: num(x.shown), car: x.car, team: x.team, wins: winsOf(races, x.crew), colour: colours.get(x.car) ?? NEUTRAL }));
+  return rows.map(x => ({
+    pos: x.pos,
+    names: x.crew.map(n => n.name),
+    shown: x.shown,
+    pts: num(x.shown),
+    car: x.car,
+    team: x.team,
+    also: x.also,
+    wins: winsOf(races, x.crew),
+    colour: colours.get(x.car) ?? NEUTRAL,
+  }));
 }
 
 /** A class's teams: IMSA's "#31 Cadillac Whelen" with its car beside it; WEC's "CORVETTE #33 TF SPORT" as the latest race
@@ -1661,13 +1689,15 @@ interface StandingsHead {
 function standingsHead(d: SeriesData): StandingsHead {
   const rounds = d.rounds ?? [];
   const stored = new Map((d.results ?? []).flatMap(r => (r.round === null ? [] : [[r.round, r] as const])));
-  const run = rounds.filter(r => roundRun(stored.get(r.round)));
+  // The rounds run in order: one stored after a round still missing waits for it (its fetch is outstanding).
+  const gap = rounds.findIndex(r => !roundRun(stored.get(r.round)));
+  const run = gap === -1 ? rounds : rounds.slice(0, gap);
   const last = run[run.length - 1];
   if (!last) return { final: false, after: 0, title: 'Standings', line: 'No race has run yet this season.' };
   const day = dayMonth(stored.get(last.round)?.date ?? last.endDate);
   const named = [esc(last.name), day].filter(Boolean).join(', ');
-  if (run.length === rounds.length) return { final: true, after: last.round, title: 'Final standings', line: `All ${rounds.length} rounds run. The last: ${named}.` };
-  const next = rounds.find(r => !roundRun(stored.get(r.round)));
+  if (gap === -1) return { final: true, after: last.round, title: 'Final standings', line: `All ${rounds.length} rounds run. The last: ${named}.` };
+  const next = rounds[gap];
   const race = next ? (d.calendar ?? []).filter(e => e.round === next.round && !e.dateOnly && /\brace\b/i.test(e.session) && !/qualif|practice|warm/i.test(e.session)).sort(byStart)[0] : undefined;
   let weekday = '';
   if (next && race) {
@@ -1694,12 +1724,14 @@ const width = (pts: number, lead: number): string => (lead > 0 ? Math.max(0, Mat
 /** A crew by its surnames on a phone ("Hartley, Hirakawa, Buemi"); one driver by the whole name. */
 const surnames = (names: readonly string[]): string => (names.length > 1 ? names.map(surnameOf).join(', ') : (names[0] ?? ''));
 const carAndTeam = (car: string, team: string): string => [car ? `#${car}` : '', team].filter(Boolean).join(' ');
+/** "#5 JDC-Miller MotorSports, also #7 and #6": the car the crew raced most, then every other car it raced. */
+const carsOf = (x: CrewRow): string => [carAndTeam(x.car, x.team), andList(x.also.map(no => `#${no}`))].filter(Boolean).join(', also ');
 
 function crewLi(x: CrewRow, i: number, lead: number, champion: boolean): string {
   const tag = champion ? ` <em>${x.names.length > 1 ? 'Champions' : 'Champion'}</em>` : '';
   return (
     `<li${i === 0 ? ' class="lead"' : ''} style="--t:${x.colour}"><span class="p">${esc(x.pos)}</span><i class="tb"></i>` +
-    `<span class="d"><b><span class="fn">${esc(x.names.join(', '))}</span><span class="sn">${esc(surnames(x.names))}</span></b><small>${esc(carAndTeam(x.car, x.team))}${tag}</small></span>` +
+    `<span class="d"><b><span class="fn">${esc(x.names.join(', '))}</span><span class="sn">${esc(surnames(x.names))}</span></b><small>${esc(carsOf(x))}${tag}</small></span>` +
     `<i class="bar"><i style="width:${width(x.pts, lead)}%"></i></i><span class="pt">${esc(x.shown)}</span><span class="g">${i === 0 ? '—' : gapOf(lead - x.pts)}</span><span class="w">${x.wins || ''}</span></li>`
   );
 }
@@ -1721,17 +1753,18 @@ function titleBox(d: SeriesData, c: ClassStanding, champions: boolean, clinched:
   const who = (label: string, name: string, line: string, colour: string): string => `<div class="who" style="--t:${colour}"><small>${label}</small><b>${name}</b><span>${esc(line)}</span></div>`;
   const parts: string[] = [];
   const top = c.drivers[0];
-  if (top) parts.push(who('Drivers', top.names.map(esc).join('<br>'), [carAndTeam(top.car, top.team), `${points(top)}${clear(c.drivers)}${wins(top.wins)}`].filter(Boolean).join(' · '), top.colour));
+  if (top) parts.push(who('Drivers', top.names.map(esc).join('<br>'), [carsOf(top), `${points(top)}${clear(c.drivers)}${wins(top.wins)}`].filter(Boolean).join(' · '), top.colour));
   const make = c.makes[0];
   if (make) parts.push(who('Manufacturers', esc(make.name), `${points(make)}${clear(c.makes)}${c.makes[1] ? ` of ${c.makes[1].name}` : ''}${wins(make.wins)}`, make.colour));
   const team = c.teams[0];
   if (team) parts.push(who('Teams', esc(carAndTeam(team.car, team.name)), [team.small, `${points(team)}${clear(c.teams)}${wins(team.wins)}`].filter(Boolean).join(' · '), team.colour));
-  const season = d.season ? `${d.season} ` : '';
-  const head = champions ? `${season}champions · ${c.label}` : `${d.season ?? ''} · ${c.label}`;
+  const season = d.season ? String(d.season) : '';
+  const head = champions ? `${[season, 'champions'].filter(Boolean).join(' ')} · ${c.label}` : [season, c.label].filter(Boolean).join(' · ');
   return `<section class="pd-ec-title"><p class="k">${esc(head)}</p>${parts.join('')}${champions && clinched ? `<p class="sum"><b>Clinched</b> ${esc(clinched)}</p>` : ''}</section>`;
 }
 
-const FOOT = 'A row is the drivers who scored the same points in the same car: a driver who missed a round, or drove another car, has a row of their own. Wins are class wins.';
+const FOOT =
+  'A row is the drivers level on points who raced together: a driver who missed a round has a row of their own, and a driver who raced more than one car has each car named, the one raced most first. Wins are class wins.';
 
 /** One class's tab: its drivers on the left; the box, then the manufacturers' and the teams' tables on the right. */
 function classPanel(d: SeriesData, c: ClassStanding, head: StandingsHead, top: boolean): string {
@@ -1795,7 +1828,7 @@ export function classBlock(d: SeriesData): string {
     const lead = c.drivers[0]?.pts ?? 0;
     const crews = c.drivers
       .slice(0, 5)
-      .map(x => row(x, lead, `<span class="fn">${esc(x.names.join(', '))}</span><span class="sn">${esc(surnames(x.names))}</span>`, carAndTeam(x.car, x.team)))
+      .map(x => row(x, lead, `<span class="fn">${esc(x.names.join(', '))}</span><span class="sn">${esc(surnames(x.names))}</span>`, carsOf(x)))
       .join('');
     const side = c.makes.length ? { title: 'Manufacturers', what: 'Manufacturer', rows: c.makes } : { title: 'Teams', what: 'Team', rows: c.teams };
     const others = side.rows

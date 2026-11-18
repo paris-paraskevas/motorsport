@@ -1158,7 +1158,7 @@ describe("family C's Standings and Champions (O34, PR 3), as drawn on Endurance 
     const [hyper, gt3] = classStandings(full('wec'));
     expect([hyper.label, gt3.label]).toEqual(['Hypercar', 'LMGT3']);
     expect(hyper.drivers).toHaveLength(29);
-    expect(hyper.drivers[0]).toEqual({ pos: '1', names: ['Brendon Hartley', 'Ryo Hirakawa', 'Sébastien Buemi'], shown: '115', pts: 115, car: '8', team: 'TOYOTA RACING', wins: 3, colour: '#EB0A1E' });
+    expect(hyper.drivers[0]).toEqual({ pos: '1', names: ['Brendon Hartley', 'Ryo Hirakawa', 'Sébastien Buemi'], shown: '115', pts: 115, car: '8', team: 'TOYOTA RACING', also: [], wins: 3, colour: '#EB0A1E' });
     expect(hyper.drivers[3]).toMatchObject({ names: ['Earl Bamber', 'Sébastien Bourdais'], car: '38', team: 'Cadillac Hertz Team JOTA', wins: 1 });
     expect(hyper.makes.slice(0, 3).map(m => `${m.name} ${m.shown} ${m.wins}`)).toEqual(['Toyota 215 4', 'BMW 172 2', 'Ferrari 150 1']);
     expect(hyper.teams).toEqual([]);
@@ -1182,6 +1182,20 @@ describe("family C's Standings and Champions (O34, PR 3), as drawn on Endurance 
     expect(gtp.teams[0]).toMatchObject({ car: '31', name: 'Cadillac Whelen', small: 'Cadillac V-Series.R', wins: 2 });
     expect(gtd.makes[0]).toMatchObject({ name: 'Mercedes-AMG', shown: '3339', wins: 5 });
     expect(lmp2.makes).toEqual([]);
+  });
+
+  it('names every car a driver raced in the class, the one raced most first (the operator’s “Every car”, 18 Nov)', () => {
+    // Heinrich raced the #5 most, won in the #7 and raced the #6 once: one row, its points from every car.
+    const [gtp] = classStandings(full('imsa'));
+    expect(gtp.drivers[1]).toMatchObject({ pos: '2', names: ['Laurin Heinrich'], car: '5', team: 'JDC-Miller MotorSports', also: ['7', '6'], wins: 3 });
+    const page = enduranceStandings(full('imsa')).body;
+    expect(tab(page, 'GTP')).toContain('<span class="sn">Laurin Heinrich</span></b><small>#5 JDC-Miller MotorSports, also #7 and #6</small>');
+    expect(tab(classBlock(full('imsa')), 'GTP')).toContain('<small>#5 JDC-Miller MotorSports, also #7 and #6</small>');
+    const [overall] = classStandings(full('gt-world'));
+    expect(overall.drivers.find(x => x.names.join() === 'Fabian Schiller')).toMatchObject({ car: '12', also: ['17'] });
+    expect(page).toContain(
+      '<p class="pd-st-foot">A row is the drivers level on points who raced together: a driver who missed a round has a row of their own, and a driver who raced more than one car has each car named, the one raced most first. Wins are class wins.</p>',
+    );
   });
 
   it("joins GT World's crew-mates into one row by place, points and car, never two cars level on points", () => {
@@ -1255,6 +1269,16 @@ describe("family C's Standings and Champions (O34, PR 3), as drawn on Endurance 
     const g = full('gt-world');
     const half = (g.results ?? []).map(r => (r.round === 9 ? { ...r, sessions: r.sessions.filter(s => s.label === 'Race 1') } : r)).filter(r => r.round !== 10);
     expect(enduranceStandings({ ...g, results: half }).body).toContain('<h2 class="pd-st-h">Standings after round 8 of 10</h2>');
+    // A round stored while an earlier one is still missing waits for it.
+    const gap = enduranceStandings({ ...d, results: (d.results ?? []).filter(r => r.round !== 7) }).body;
+    expect(gap).toContain('<h2 class="pd-st-h">Standings after round 6 of 8</h2>');
+    expect(gap).toContain('<span class="pd-st-next"> · next update after Sunday’s 6 Hours of Barcelona</span>');
+  });
+
+  it('heads the box with the class alone when the series names no season', () => {
+    const hyper = tab(enduranceStandings({ ...full('wec'), season: undefined }).body, 'Hypercar');
+    expect(hyper).toContain('<p class="k">Hypercar</p>');
+    expect(hyper).not.toContain('Clinched');
   });
 
   it('escapes what a table holds', () => {
