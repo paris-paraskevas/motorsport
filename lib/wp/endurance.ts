@@ -1000,9 +1000,9 @@ function aheadRows(w: Weekend, units: readonly Unit[], used: Used): string {
   return [...days].map(([day, rows]) => `<h3 class="pd-wk-day">${esc(day)}</h3><div class="pd-wk-rows">${rows.join('')}</div>`).join('');
 }
 
-/** A standings cell's drivers: WEC's in capitals and ", " apart, IMSA's run together (Wikipedia's, "Nick Yelloly Renger
- *  van der Zande"), each spelled as the season's results spell it; a name the results do not hold kept, its capitals
- *  tidied. */
+/** A standings cell's drivers: WEC's in capitals and ", " apart; IMSA's one a cell (its official points files), or run
+ *  together in the Wikipedia tables stored before them ("Nick Yelloly Renger van der Zande"); each spelled as the
+ *  season's results spell it; a name the results do not hold kept, its capitals tidied. */
 function driversIn(text: string, known: ReadonlyMap<string, string>): string[] {
   const spell = (n: string): string => known.get(nameKey(n)) ?? tidyCaps(n);
   if (text.includes(',')) return text.split(',').map(clean).filter(Boolean).map(spell);

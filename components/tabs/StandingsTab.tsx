@@ -809,8 +809,8 @@ export async function StandingsTab({ series }: { series: Series }) {
           ];
         })}
         <SourceLink
-          href="https://en.wikipedia.org/wiki/2026_IMSA_SportsCar_Championship"
-          label="en.wikipedia.org (2026 IMSA)"
+          href="https://imsa.results.alkamelcloud.com/"
+          label="IMSA official points (Al Kamel)"
         />
       </div>
     );

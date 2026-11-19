@@ -181,7 +181,7 @@ export async function fetchImsaRoundResults(
   }
 
   try {
-    const data = JSON.parse(raw.replace(/^﻿/, '')) as AlkamelJson;
+    const data = JSON.parse(raw.replace(/^\uFEFF/, '')) as AlkamelJson;
     if (!data?.session || !Array.isArray(data.classifications)) return null;
 
     const perClass: Partial<Record<ImsaClass, ImsaRaceEntry[]>> = {};
