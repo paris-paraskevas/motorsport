@@ -1,6 +1,8 @@
-import * as cheerio from 'cheerio';
 import { fetchUpstream } from '@/lib/fetch-upstream';
 import { withSourceSnapshot } from '@/lib/source-snapshot';
+import { fetchImsaRoundResults } from '@/lib/results/imsa';
+import { loadTeamNames, officialTeamName } from '@/lib/series-content';
+import manifest from '@/content/series/imsa/alkamel-rounds.json';
 
 // IMSA WeatherTech SportsCar Championship has four classes that each award
 // their own drivers' / teams' / manufacturers' titles. LMP2 is privateer-only
@@ -23,19 +25,18 @@ export const IMSA_MANUFACTURER_CLASSES: readonly ImsaClass[] = [
 
 export interface ImsaDriverStanding {
   position: number;
-  // Multi-driver entries are common in endurance racing (a single car has 2-4
-  // drivers sharing the points). Wikipedia separates names with a space; we
-  // preserve them as a single space-joined string for display, matching the
-  // shape the rest of the codebase uses for single-driver entries.
+  // One driver a row, as IMSA's points files list them: a car's crew-mates
+  // share a place while their points are level; a page joins them into a crew
+  // by their car (lib/wp/endurance.ts).
   driverName: string;
   points: number;
 }
 
 export interface ImsaTeamStanding {
   position: number;
-  // e.g. "#7 Porsche Penske Motorsport" — Wikipedia bakes the car number into
-  // the team cell. We keep the prefix intact since IMSA's own official points
-  // PDFs use the same "#NN <Team>" notation.
+  // e.g. "#7 Porsche Penske Motorsport": the car number and the team as the
+  // points files name them, spelled by team-names.json; `car` is the model
+  // that number last raced in the class, from the season's race files.
   team: string;
   car?: string;
   points: number;
@@ -56,255 +57,189 @@ export interface ImsaStandings {
   manufacturers: Partial<Record<ImsaClass, ImsaManufacturerStanding[]>>;
 }
 
-// Sanity floor across all four drivers' standings tables. A complete IMSA
-// standings page (drivers across GTP + LMP2 + GTD Pro + GTD) totals ~80
-// entries — Wikipedia lists one row per *driver-line* in a car, so a 22-car
-// GTD field with 2-3 drivers each produces ~50 GTD rows alone. 30 is the
-// floor before we fail closed and let the StandingsTab render its placeholder
-// rather than ship a misleadingly-partial table.
+// Sanity floor across all four drivers' tables. IMSA's points files list a
+// driver a row, crew-mates sharing a place: about 265 rows in 2026, 40 in GTP
+// alone. 30 is the floor before we fail closed and let the StandingsTab render
+// its placeholder rather than ship a misleadingly-partial table.
 const MIN_TOTAL_DRIVER_ROWS = 30;
 
-// Wikipedia is the canonical source: HTML table, no auth, ICR-license. The
-// audit (§8) flagged imsa.com as a PDF distributor and Al Kamel's timing
-// portal as the upstream of those PDFs — both impose heavy server-side
-// dependencies (PDF parser, directory listing scrape). Wikipedia's standings
-// tables refresh within ~24h of each round and have a stable schema across
-// seasons.
-const STANDINGS_URL =
-  'https://en.wikipedia.org/wiki/2026_IMSA_SportsCar_Championship';
-
+// IMSA's own championship points, as the data files its timing provider Al
+// Kamel files beside the official points PDF after every round, on the open
+// Apache index the results loader reads (lib/results/imsa.ts): in each event's
+// WeatherTech folder, "POINTS DATA - Official/IWSC 08 GTDPRO Drivers.csv" and
+// its ten siblings, "Pos;Participant;Points;…" a row; a teams file adds a Team
+// column. No file names a car's model: the season's race files give it.
 const FETCH_HEADERS = {
   'User-Agent':
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36',
-  Accept: 'text/html',
+  Accept: 'text/csv,text/html,*/*',
 };
 
-// Map the H4 subheading text to our canonical class label. Wikipedia uses
-// "Standings: Grand Touring Prototype (GTP)" etc. — we match on the trailing
-// parenthetical code.
-function classFromHeading(text: string): ImsaClass | null {
-  if (/\(GTP\)/.test(text)) return 'GTP';
-  if (/\(LMP2\)/.test(text)) return 'LMP2';
-  if (/\(GTD Pro\)/.test(text)) return 'GTD Pro';
-  if (/\(GTD\)/.test(text)) return 'GTD';
-  return null;
-}
+/** Each class's files (IMSA awards no LMP2 manufacturers' title). */
+const POINTS_FILES: Record<ImsaClass, { drivers: string; teams: string; manufacturers?: string }> = {
+  GTP: { drivers: 'IWSC 01 GTP Drivers', teams: 'IWSC 02 GTP Teams', manufacturers: 'IWSC 03 GTP Manufacturers' },
+  LMP2: { drivers: 'IWSC 04 LMP2 Drivers', teams: 'IWSC 05 LMP2 Teams' },
+  'GTD Pro': { drivers: 'IWSC 08 GTDPRO Drivers', teams: 'IWSC 09 GTDPRO Teams', manufacturers: 'IWSC 10 GTDPRO Manufacturers' },
+  GTD: { drivers: 'IWSC 11 GTD Drivers', teams: 'IWSC 12 GTD Teams', manufacturers: 'IWSC 13 GTD Manufacturers' },
+};
+const FILE_NAMES: string[] = IMSA_CLASSES.flatMap(c => [POINTS_FILES[c].drivers, POINTS_FILES[c].teams, ...(POINTS_FILES[c].manufacturers ? [POINTS_FILES[c].manufacturers] : [])]);
 
-// Find the Points column index in a wikitable header. Wikipedia's IMSA tables
-// put per-round finishing position columns between Drivers/Team and Points,
-// and an optional trailing MEC column. We anchor on the literal "Points"
-// header to stay robust against added/removed rounds during the season.
-function findPointsColumn(headerCells: string[]): number {
-  return headerCells.findIndex(c => c.trim().toLowerCase() === 'points');
-}
-
-// Walk DOM linearly, collecting every heading + wikitable in order, then
-// group by section. Mirrors how the source page is laid out: H2
-// "Championship standings" → H3 "Drivers' Championships" / "Teams'
-// Championships" / "Manufacturers' Championships" → H4 per class → one table.
-function collectStandingsTables(
-  $: cheerio.CheerioAPI,
-): Array<{
-  section: 'drivers' | 'teams' | 'manufacturers';
-  cls: ImsaClass;
-  // The Cheerio.Element type is loose across versions; we expose the wrapped
-  // selection rather than the raw element so downstream code can $-traverse
-  // it directly.
-  table: ReturnType<cheerio.CheerioAPI>;
-}> {
-  const out: Array<{
-    section: 'drivers' | 'teams' | 'manufacturers';
-    cls: ImsaClass;
-    table: ReturnType<cheerio.CheerioAPI>;
-  }> = [];
-  let lastH3 = '';
-  let lastH4 = '';
-  let inChampionshipStandings = false;
-
-  $('h2, h3, h4, table.wikitable').each((_, el) => {
-    const $el = $(el);
-    const tag = (el as { tagName?: string }).tagName?.toLowerCase?.() ?? '';
-
-    if (tag === 'h2') {
-      const text = $el.text().replace(/\[edit\]/g, '').trim();
-      inChampionshipStandings = /championship standings/i.test(text);
-      lastH3 = '';
-      lastH4 = '';
-      return;
-    }
-    if (!inChampionshipStandings) return;
-    if (tag === 'h3') {
-      lastH3 = $el.text().replace(/\[edit\]/g, '').trim();
-      lastH4 = '';
-      return;
-    }
-    if (tag === 'h4') {
-      lastH4 = $el.text().replace(/\[edit\]/g, '').trim();
-      return;
-    }
-    // It's a wikitable
-    let section: 'drivers' | 'teams' | 'manufacturers' | null = null;
-    if (/drivers'? championship/i.test(lastH3)) section = 'drivers';
-    else if (/teams'? championship/i.test(lastH3)) section = 'teams';
-    else if (/manufacturers'? championship/i.test(lastH3)) section = 'manufacturers';
-    if (!section) return;
-    const cls = classFromHeading(lastH4);
-    if (!cls) return;
-    out.push({ section, cls, table: $el });
-  });
-
-  return out;
-}
-
-function parsePoints(raw: string): number {
-  // Wikipedia sometimes wraps points in italics for in-progress totals;
-  // .text() already strips the tags. Strip thousands separators just in case.
-  return Number(raw.replace(/[,\s]/g, ''));
-}
-
-function parseDriverRow(
-  cells: string[],
-  pointsCol: number,
-): ImsaDriverStanding | null {
-  if (pointsCol < 2) return null;
-  const position = Number(cells[0]);
-  const driverName = cells[1];
-  const points = parsePoints(cells[pointsCol] ?? '');
-  if (!Number.isFinite(position) || !Number.isFinite(points) || !driverName) {
-    return null;
-  }
-  return { position, driverName, points };
-}
-
-function parseTeamRow(
-  cells: string[],
-  pointsCol: number,
-): ImsaTeamStanding | null {
-  if (pointsCol < 3) return null;
-  const position = Number(cells[0]);
-  const team = cells[1];
-  const car = cells[2] || undefined;
-  const points = parsePoints(cells[pointsCol] ?? '');
-  if (!Number.isFinite(position) || !Number.isFinite(points) || !team) {
-    return null;
-  }
-  return { position, team, car, points };
-}
-
-function parseManufacturerRow(
-  cells: string[],
-  pointsCol: number,
-): ImsaManufacturerStanding | null {
-  if (pointsCol < 2) return null;
-  const position = Number(cells[0]);
-  const manufacturer = cells[1];
-  const points = parsePoints(cells[pointsCol] ?? '');
-  if (!Number.isFinite(position) || !Number.isFinite(points) || !manufacturer) {
-    return null;
-  }
-  return { position, manufacturer, points };
-}
-
-function readTable(
-  $: cheerio.CheerioAPI,
-  table: ReturnType<cheerio.CheerioAPI>,
-): { header: string[]; rows: string[][] } {
-  const rows: string[][] = [];
-  let header: string[] = [];
-  table.find('tr').each((idx, tr) => {
-    const cells: string[] = [];
-    $(tr)
-      .find('th, td')
-      .each((_, cell) => {
-        cells.push($(cell).text().replace(/\s+/g, ' ').trim());
-      });
-    if (idx === 0) header = cells;
-    else rows.push(cells);
-  });
-  return { header, rows };
-}
-
-async function fetchImsaStandingsLive(): Promise<ImsaStandings | null> {
-  let html: string;
+const safeDecode = (s: string): string => {
   try {
-    const res = await fetchUpstream(STANDINGS_URL, {
+    return decodeURIComponent(s);
+  } catch {
+    return s;
+  }
+};
+
+/** A round's WeatherTech folder: its results URL cut after the championship's own segment
+ *  (".../21_Road%20Atlanta/01_IMSA%20WeatherTech%20SportsCar%20Championship/"). Found by the
+ *  championship's name, not by "WeatherTech": Laguna Seca's event folder is "09_Weathertech Raceway
+ *  Laguna Seca". */
+export function championshipFolder(url: string): string | null {
+  const parts = url.split('/');
+  const i = parts.findIndex(p => /sportscar championship/i.test(safeDecode(p)));
+  return i < 0 ? null : `${parts.slice(0, i + 1).join('/')}/`;
+}
+
+/** The folders an Apache index lists, decoded ("POINTS DATA - Official"); not its parent or its sort links. */
+export function indexFolders(html: string): string[] {
+  return [...html.matchAll(/href="([^"?/][^"]*)\/"/g)].map(m => safeDecode(m[1]));
+}
+
+/** The points folder among a round's folders: the official one (VIR's is spelt "Offiical"), else the
+ *  provisional one, else a plain "POINTS DATA" (Daytona's and Laguna Seca's); null before either is filed.
+ *  An "Unofficial" folder is not the official one. */
+export function pointsFolderOf(folders: readonly string[]): string | null {
+  const points = folders.filter(f => /^points\s*data\b/i.test(f));
+  return points.find(f => /\boffi/i.test(f)) ?? points.find(f => /provisional/i.test(f)) ?? points.find(f => /^points\s*data$/i.test(f.trim())) ?? null;
+}
+
+export interface PointsRow {
+  position: number;
+  /** A driver, a car number ("068") or a make, as the file writes it. */
+  name: string;
+  points: number;
+  /** A teams file's Team column ("Car Blanche"); '' in the other files. */
+  team: string;
+}
+
+/** A points file: a byte-order mark, the head "Pos;Participant;Points;…", then a participant a row. Null
+ *  when the head or any row is not that: a file read wrongly (an error page answered with a 200) is no file. */
+export function parsePointsCsv(text: string): PointsRow[] | null {
+  const lines = text
+    .replace(/^\uFEFF/, '')
+    .split(/\r?\n/)
+    .filter(l => l.trim() !== '');
+  const head = (lines[0] ?? '').split(';');
+  if (head[0] !== 'Pos' || head[1] !== 'Participant' || head[2] !== 'Points') return null;
+  const teamAt = head.indexOf('Team');
+  const rows: PointsRow[] = [];
+  for (const line of lines.slice(1)) {
+    const cells = line.split(';');
+    const [pos = '', name = '', points = ''] = cells;
+    const position = Number(pos);
+    const value = Number(points);
+    if (!Number.isInteger(position) || position < 1 || points.trim() === '' || !Number.isFinite(value) || name.trim() === '') return null;
+    rows.push({ position, name: name.trim(), points: value, team: teamAt < 0 ? '' : (cells[teamAt] ?? '').trim() });
+  }
+  return rows.length ? rows : null;
+}
+
+/** Each class's car models by number ("68" → "Aston Martin Vantage GT3 Evo"). */
+type CarModels = Partial<Record<ImsaClass, ReadonlyMap<string, string>>>;
+
+const byPosition = (a: { position: number }, b: { position: number }): number => a.position - b.position;
+
+/** The standings from the eleven files as parsed (by name), each team spelled by `spell` (team-names.json) and given
+ *  its car model; null unless every class reads whole. */
+function standingsFromPoints(files: Readonly<Record<string, PointsRow[] | null>>, models: CarModels, spell: (team: string) => string): ImsaStandings | null {
+  const drivers = {} as Record<ImsaClass, ImsaDriverStanding[]>;
+  const teams = {} as Record<ImsaClass, ImsaTeamStanding[]>;
+  const manufacturers: Partial<Record<ImsaClass, ImsaManufacturerStanding[]>> = {};
+  for (const cls of IMSA_CLASSES) {
+    const f = POINTS_FILES[cls];
+    const d = files[f.drivers];
+    const t = files[f.teams];
+    if (!d || !t) return null;
+    drivers[cls] = d.map(x => ({ position: x.position, driverName: x.name, points: x.points })).sort(byPosition);
+    teams[cls] = t
+      .map(x => ({ position: x.position, team: x.team ? `#${x.name} ${spell(x.team)}` : `#${x.name}`, car: models[cls]?.get(x.name) || undefined, points: x.points }))
+      .sort(byPosition);
+    if (f.manufacturers) {
+      const m = files[f.manufacturers];
+      if (!m) return null;
+      manufacturers[cls] = m.map(x => ({ position: x.position, manufacturer: x.name, points: x.points })).sort(byPosition);
+    }
+  }
+  if (IMSA_CLASSES.reduce((n, c) => n + drivers[c].length, 0) < MIN_TOTAL_DRIVER_ROWS) return null;
+  return { drivers, teams, manufacturers };
+}
+
+async function readText(url: string): Promise<string | null> {
+  try {
+    const res = await fetchUpstream(url, {
       headers: FETCH_HEADERS,
-      // Hourly revalidate matches the IndyCar loader; Wikipedia updates
-      // within ~24h of each round, an hour is more than fine.
+      // Hourly, as the results loader: a round's official files are frozen once filed.
       next: { revalidate: 3600 },
     });
-    if (!res.ok) return null;
-    html = await res.text();
+    return res.ok ? await res.text() : null;
   } catch {
     return null;
   }
+}
 
-  try {
-    const $ = cheerio.load(html);
-    const tables = collectStandingsTables($);
+/** The newest round's points folder: the season's rounds newest first, the first whose WeatherTech folder
+ *  lists one (a round just raced files its points hours later). An index that cannot be read, or a round whose
+ *  URL names no WeatherTech folder, ends the search, so an older round's points never stand in for the newest's. */
+async function latestPointsFolder(): Promise<string | null> {
+  const rounds = [...(manifest.rounds ?? [])].sort((a, b) => b.round - a.round);
+  for (const r of rounds) {
+    const base = championshipFolder(r.url);
+    if (!base) return null;
+    const html = await readText(base);
+    if (html === null) return null;
+    const folder = pointsFolderOf(indexFolders(html));
+    if (folder) return `${base}${encodeURIComponent(folder)}/`;
+  }
+  return null;
+}
 
-    const drivers: Partial<Record<ImsaClass, ImsaDriverStanding[]>> = {};
-    const teams: Partial<Record<ImsaClass, ImsaTeamStanding[]>> = {};
-    const manufacturers: Partial<Record<ImsaClass, ImsaManufacturerStanding[]>> = {};
-
-    for (const { section, cls, table } of tables) {
-      const { header, rows } = readTable($, table);
-      const pointsCol = findPointsColumn(header);
-      if (pointsCol < 0) continue;
-
-      if (section === 'drivers') {
-        const parsed: ImsaDriverStanding[] = [];
-        for (const r of rows) {
-          const entry = parseDriverRow(r, pointsCol);
-          if (entry) parsed.push(entry);
-        }
-        if (parsed.length > 0) {
-          parsed.sort((a, b) => a.position - b.position);
-          drivers[cls] = parsed;
-        }
-      } else if (section === 'teams') {
-        const parsed: ImsaTeamStanding[] = [];
-        for (const r of rows) {
-          const entry = parseTeamRow(r, pointsCol);
-          if (entry) parsed.push(entry);
-        }
-        if (parsed.length > 0) {
-          parsed.sort((a, b) => a.position - b.position);
-          teams[cls] = parsed;
-        }
-      } else {
-        const parsed: ImsaManufacturerStanding[] = [];
-        for (const r of rows) {
-          const entry = parseManufacturerRow(r, pointsCol);
-          if (entry) parsed.push(entry);
-        }
-        if (parsed.length > 0) {
-          parsed.sort((a, b) => a.position - b.position);
-          manufacturers[cls] = parsed;
-        }
+/** Each class's car models for the numbers its teams file lists, from the season's race files read one at a time,
+ *  newest first, until every number has one: the model each number last raced, without a burst of requests (the
+ *  politeness scripts/warm-live-data.mts keeps for these hosts). Null when no race file answers, so a run that
+ *  cannot read them keeps the stored tables rather than store teams without their cars. */
+async function carModels(wanted: Readonly<Record<ImsaClass, readonly string[]>>): Promise<CarModels | null> {
+  const out: Partial<Record<ImsaClass, Map<string, string>>> = {};
+  const complete = (): boolean => IMSA_CLASSES.every(c => wanted[c].every(no => out[c]?.has(no)));
+  let answered = false;
+  for (const r of [...(manifest.rounds ?? [])].sort((a, b) => b.round - a.round)) {
+    if (answered && complete()) break;
+    const race = await fetchImsaRoundResults(r.url, r.round);
+    if (!race) continue;
+    answered = true;
+    for (const cls of IMSA_CLASSES) {
+      for (const e of race.perClass[cls] ?? []) {
+        const known = (out[cls] ??= new Map<string, string>());
+        if (e.vehicle && !known.has(e.carNumber)) known.set(e.carNumber, e.vehicle);
       }
     }
+  }
+  return answered ? out : null;
+}
 
-    // Fail closed unless every class populated. Missing a class = upstream
-    // page mid-edit, partial table, or structural change; better to render
-    // the placeholder than ship a misleadingly-incomplete view.
-    const driverCounts = IMSA_CLASSES.map(c => drivers[c]?.length ?? 0);
-    if (driverCounts.some(n => n === 0)) return null;
-    const totalDriverRows = driverCounts.reduce((a, b) => a + b, 0);
-    if (totalDriverRows < MIN_TOTAL_DRIVER_ROWS) return null;
-
-    for (const c of IMSA_CLASSES) {
-      if (!teams[c] || teams[c]!.length === 0) return null;
-    }
-    for (const c of IMSA_MANUFACTURER_CLASSES) {
-      if (!manufacturers[c] || manufacturers[c]!.length === 0) return null;
-    }
-
-    return {
-      drivers: drivers as Record<ImsaClass, ImsaDriverStanding[]>,
-      teams: teams as Record<ImsaClass, ImsaTeamStanding[]>,
-      manufacturers,
-    };
+async function fetchImsaStandingsLive(): Promise<ImsaStandings | null> {
+  const folder = await latestPointsFolder();
+  if (!folder) return null;
+  const texts = await Promise.all(FILE_NAMES.map(n => readText(`${folder}${encodeURIComponent(`${n}.csv`)}`)));
+  const files = Object.fromEntries(FILE_NAMES.map((n, i) => [n, texts[i] === null ? null : parsePointsCsv(texts[i])]));
+  if (FILE_NAMES.some(n => files[n] === null)) return null;
+  try {
+    const wanted = Object.fromEntries(IMSA_CLASSES.map(c => [c, (files[POINTS_FILES[c].teams] ?? []).map(x => x.name)])) as Record<ImsaClass, string[]>;
+    const [models, names] = await Promise.all([carModels(wanted), loadTeamNames('imsa')]);
+    if (!models) return null;
+    const season = String(manifest.season);
+    return standingsFromPoints(files, models, team => officialTeamName(names, season, team));
   } catch {
     return null;
   }

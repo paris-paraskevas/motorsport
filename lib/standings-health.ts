@@ -37,7 +37,7 @@ function buildChecks(season: number): Check[] {
     { slug: 'wrc',        label: 'WRC',        source: 'Wikipedia / wrc.com', run: () => fetchWRCStandings(),           min: 5 },
     { slug: 'nascar-cup', label: 'NASCAR Cup', source: 'motorsport.com',      run: () => fetchNascarCupStandings(),    min: 15 },
     { slug: 'gt-world',   label: 'GT World',   source: 'motorsport.com',      run: () => fetchGtWorldStandings(season), min: 10 },
-    { slug: 'imsa',       label: 'IMSA',       source: 'imsa.com',            run: () => fetchImsaStandings(),         min: 8 },
+    { slug: 'imsa',       label: 'IMSA',       source: 'IMSA points (Al Kamel)', run: () => fetchImsaStandings(),      min: 8 },
     { slug: 'wec',        label: 'WEC',        source: 'fiawec.com',          run: () => fetchWecStandings(),          min: 8 },
   ];
 }
