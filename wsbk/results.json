@@ -2542,6 +2542,730 @@
         ],
         "parts": 1
       }
+    ],
+    "others": [
+      {
+        "label": "Warm Up",
+        "tables": [
+          {
+            "title": "Warm Up",
+            "columns": [
+              "Pos",
+              "Rider",
+              "Team",
+              "Time"
+            ],
+            "rows": [
+              [
+                "1",
+                "Iker Lecuona",
+                "Aruba.it Racing - Ducati",
+                "2:10.481"
+              ],
+              [
+                "2",
+                "Nicolo Bulega",
+                "Aruba.it Racing - Ducati",
+                "+0.211s"
+              ],
+              [
+                "3",
+                "Lorenzo Baldassarri",
+                "Team Goeleven",
+                "+0.431s"
+              ],
+              [
+                "4",
+                "Sam Lowes",
+                "ELF Marc VDS Racing Team",
+                "+0.492s"
+              ],
+              [
+                "5",
+                "Axel Bassani",
+                "bimota by Kawasaki Racing Team",
+                "+0.504s"
+              ],
+              [
+                "6",
+                "Alberto Surra",
+                "Motocorsa Racing",
+                "+0.533s"
+              ],
+              [
+                "7",
+                "Yari Montella",
+                "Barni Spark Racing Team",
+                "+0.713s"
+              ],
+              [
+                "8",
+                "Garrett Gerloff",
+                "Kawasaki WorldSBK Team",
+                "+0.714s"
+              ],
+              [
+                "9",
+                "Alex Lowes",
+                "bimota by Kawasaki Racing Team",
+                "+0.796s"
+              ],
+              [
+                "10",
+                "Tarran Mackenzie",
+                "MGM Optical Express Racing",
+                "+0.963s"
+              ],
+              [
+                "11",
+                "Stefano Manzi",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+1.020s"
+              ],
+              [
+                "12",
+                "Xavi Vierge",
+                "Pata Maxus Yamaha",
+                "+1.042s"
+              ],
+              [
+                "13",
+                "Michael van der Mark",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+1.096s"
+              ],
+              [
+                "14",
+                "Andrea Locatelli",
+                "Pata Maxus Yamaha",
+                "+1.116s"
+              ],
+              [
+                "15",
+                "Remy Gardner",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+1.269s"
+              ],
+              [
+                "16",
+                "Bahattin Sofuoglu",
+                "Motoxracing WorldSBK Team",
+                "+1.277s"
+              ],
+              [
+                "17",
+                "Thomas Bridewell",
+                "Superbike Advocates",
+                "+1.349s"
+              ],
+              [
+                "18",
+                "Somkiat Chantra",
+                "Honda HRC",
+                "+1.953s"
+              ],
+              [
+                "19",
+                "Mattia Rato",
+                "Motoxracing WorldSBK Team",
+                "+2.074s"
+              ],
+              [
+                "20",
+                "Yuki Kunii",
+                "Honda HRC",
+                "+3.260s"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Superpole",
+        "tables": [
+          {
+            "title": "Superpole",
+            "columns": [
+              "Pos",
+              "Rider",
+              "Team",
+              "Time"
+            ],
+            "rows": [
+              [
+                "1",
+                "Nicolo Bulega",
+                "Aruba.it Racing - Ducati",
+                "2:09.616"
+              ],
+              [
+                "2",
+                "Yari Montella",
+                "Barni Spark Racing Team",
+                "+0.280s"
+              ],
+              [
+                "3",
+                "Iker Lecuona",
+                "Aruba.it Racing - Ducati",
+                "+0.495s"
+              ],
+              [
+                "4",
+                "Sam Lowes",
+                "ELF Marc VDS Racing Team",
+                "+0.723s"
+              ],
+              [
+                "5",
+                "Alberto Surra",
+                "Motocorsa Racing",
+                "+0.772s"
+              ],
+              [
+                "6",
+                "Garrett Gerloff",
+                "Kawasaki WorldSBK Team",
+                "+0.801s"
+              ],
+              [
+                "7",
+                "Axel Bassani",
+                "bimota by Kawasaki Racing Team",
+                "+0.851s"
+              ],
+              [
+                "8",
+                "Lorenzo Baldassarri",
+                "Team Goeleven",
+                "+0.877s"
+              ],
+              [
+                "9",
+                "Danilo Petrucci",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+1.055s"
+              ],
+              [
+                "10",
+                "Stefano Manzi",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+1.142s"
+              ],
+              [
+                "11",
+                "Xavi Vierge",
+                "Pata Maxus Yamaha",
+                "+1.220s"
+              ],
+              [
+                "12",
+                "Michael van der Mark",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+1.227s"
+              ],
+              [
+                "13",
+                "Tarran Mackenzie",
+                "MGM Optical Express Racing",
+                "+1.299s"
+              ],
+              [
+                "14",
+                "Andrea Locatelli",
+                "Pata Maxus Yamaha",
+                "+1.341s"
+              ],
+              [
+                "15",
+                "Alex Lowes",
+                "bimota by Kawasaki Racing Team",
+                "+1.476s"
+              ],
+              [
+                "16",
+                "Thomas Bridewell",
+                "Superbike Advocates",
+                "+1.558s"
+              ],
+              [
+                "17",
+                "Bahattin Sofuoglu",
+                "Motoxracing WorldSBK Team",
+                "+1.593s"
+              ],
+              [
+                "18",
+                "Remy Gardner",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+1.757s"
+              ],
+              [
+                "19",
+                "Mattia Rato",
+                "Motoxracing WorldSBK Team",
+                "+2.344s"
+              ],
+              [
+                "20",
+                "Somkiat Chantra",
+                "Honda HRC",
+                "+2.412s"
+              ],
+              [
+                "21",
+                "Yuki Kunii",
+                "Honda HRC",
+                "+3.469s"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "FP3",
+        "tables": [
+          {
+            "title": "FP3",
+            "columns": [
+              "Pos",
+              "Rider",
+              "Team",
+              "Time"
+            ],
+            "rows": [
+              [
+                "1",
+                "Iker Lecuona",
+                "Aruba.it Racing - Ducati",
+                "2:10.330"
+              ],
+              [
+                "2",
+                "Yari Montella",
+                "Barni Spark Racing Team",
+                "+0.342s"
+              ],
+              [
+                "3",
+                "Garrett Gerloff",
+                "Kawasaki WorldSBK Team",
+                "+0.461s"
+              ],
+              [
+                "4",
+                "Nicolo Bulega",
+                "Aruba.it Racing - Ducati",
+                "+0.520s"
+              ],
+              [
+                "5",
+                "Danilo Petrucci",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+0.539s"
+              ],
+              [
+                "6",
+                "Sam Lowes",
+                "ELF Marc VDS Racing Team",
+                "+0.603s"
+              ],
+              [
+                "7",
+                "Alex Lowes",
+                "bimota by Kawasaki Racing Team",
+                "+0.736s"
+              ],
+              [
+                "8",
+                "Xavi Vierge",
+                "Pata Maxus Yamaha",
+                "+0.795s"
+              ],
+              [
+                "9",
+                "Axel Bassani",
+                "bimota by Kawasaki Racing Team",
+                "+0.815s"
+              ],
+              [
+                "10",
+                "Alvaro Bautista",
+                "Barni Spark Racing Team",
+                "+0.901s"
+              ],
+              [
+                "11",
+                "Lorenzo Baldassarri",
+                "Team Goeleven",
+                "+0.958s"
+              ],
+              [
+                "12",
+                "Michael van der Mark",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+1.024s"
+              ],
+              [
+                "13",
+                "Tarran Mackenzie",
+                "MGM Optical Express Racing",
+                "+1.041s"
+              ],
+              [
+                "14",
+                "Alberto Surra",
+                "Motocorsa Racing",
+                "+1.225s"
+              ],
+              [
+                "15",
+                "Remy Gardner",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+1.333s"
+              ],
+              [
+                "16",
+                "Andrea Locatelli",
+                "Pata Maxus Yamaha",
+                "+1.358s"
+              ],
+              [
+                "17",
+                "Thomas Bridewell",
+                "Superbike Advocates",
+                "+1.417s"
+              ],
+              [
+                "18",
+                "Stefano Manzi",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+1.433s"
+              ],
+              [
+                "19",
+                "Bahattin Sofuoglu",
+                "Motoxracing WorldSBK Team",
+                "+1.560s"
+              ],
+              [
+                "20",
+                "Mattia Rato",
+                "Motoxracing WorldSBK Team",
+                "+2.159s"
+              ],
+              [
+                "21",
+                "Somkiat Chantra",
+                "Honda HRC",
+                "+2.376s"
+              ],
+              [
+                "22",
+                "Yuki Kunii",
+                "Honda HRC",
+                "+3.145s"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "FP2",
+        "tables": [
+          {
+            "title": "FP2",
+            "columns": [
+              "Pos",
+              "Rider",
+              "Team",
+              "Time"
+            ],
+            "rows": [
+              [
+                "1",
+                "Garrett Gerloff",
+                "Kawasaki WorldSBK Team",
+                "2:10.791"
+              ],
+              [
+                "2",
+                "Nicolo Bulega",
+                "Aruba.it Racing - Ducati",
+                "+0.066s"
+              ],
+              [
+                "3",
+                "Sam Lowes",
+                "ELF Marc VDS Racing Team",
+                "+0.142s"
+              ],
+              [
+                "4",
+                "Iker Lecuona",
+                "Aruba.it Racing - Ducati",
+                "+0.208s"
+              ],
+              [
+                "5",
+                "Alex Lowes",
+                "bimota by Kawasaki Racing Team",
+                "+0.275s"
+              ],
+              [
+                "6",
+                "Danilo Petrucci",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+0.426s"
+              ],
+              [
+                "7",
+                "Axel Bassani",
+                "bimota by Kawasaki Racing Team",
+                "+0.453s"
+              ],
+              [
+                "8",
+                "Yari Montella",
+                "Barni Spark Racing Team",
+                "+0.458s"
+              ],
+              [
+                "9",
+                "Lorenzo Baldassarri",
+                "Team Goeleven",
+                "+0.497s"
+              ],
+              [
+                "10",
+                "Michael van der Mark",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+0.563s"
+              ],
+              [
+                "11",
+                "Xavi Vierge",
+                "Pata Maxus Yamaha",
+                "+0.752s"
+              ],
+              [
+                "12",
+                "Alberto Surra",
+                "Motocorsa Racing",
+                "+0.764s"
+              ],
+              [
+                "13",
+                "Alvaro Bautista",
+                "Barni Spark Racing Team",
+                "+0.847s"
+              ],
+              [
+                "14",
+                "Andrea Locatelli",
+                "Pata Maxus Yamaha",
+                "+0.897s"
+              ],
+              [
+                "15",
+                "Stefano Manzi",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+0.972s"
+              ],
+              [
+                "16",
+                "Remy Gardner",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+1.030s"
+              ],
+              [
+                "17",
+                "Tarran Mackenzie",
+                "MGM Optical Express Racing",
+                "+1.050s"
+              ],
+              [
+                "18",
+                "Bahattin Sofuoglu",
+                "Motoxracing WorldSBK Team",
+                "+1.099s"
+              ],
+              [
+                "19",
+                "Thomas Bridewell",
+                "Superbike Advocates",
+                "+1.250s"
+              ],
+              [
+                "20",
+                "Mattia Rato",
+                "Motoxracing WorldSBK Team",
+                "+1.845s"
+              ],
+              [
+                "21",
+                "Somkiat Chantra",
+                "Honda HRC",
+                "+1.915s"
+              ],
+              [
+                "22",
+                "Yuki Kunii",
+                "Honda HRC",
+                "+2.989s"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "FP1",
+        "tables": [
+          {
+            "title": "FP1",
+            "columns": [
+              "Pos",
+              "Rider",
+              "Team",
+              "Time"
+            ],
+            "rows": [
+              [
+                "1",
+                "Nicolo Bulega",
+                "Aruba.it Racing - Ducati",
+                "2:11.130"
+              ],
+              [
+                "2",
+                "Sam Lowes",
+                "ELF Marc VDS Racing Team",
+                "+0.258s"
+              ],
+              [
+                "3",
+                "Iker Lecuona",
+                "Aruba.it Racing - Ducati",
+                "+0.313s"
+              ],
+              [
+                "4",
+                "Yari Montella",
+                "Barni Spark Racing Team",
+                "+0.430s"
+              ],
+              [
+                "5",
+                "Lorenzo Baldassarri",
+                "Team Goeleven",
+                "+0.589s"
+              ],
+              [
+                "6",
+                "Axel Bassani",
+                "bimota by Kawasaki Racing Team",
+                "+0.597s"
+              ],
+              [
+                "7",
+                "Bahattin Sofuoglu",
+                "Motoxracing WorldSBK Team",
+                "+0.864s"
+              ],
+              [
+                "8",
+                "Remy Gardner",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+0.870s"
+              ],
+              [
+                "9",
+                "Garrett Gerloff",
+                "Kawasaki WorldSBK Team",
+                "+0.880s"
+              ],
+              [
+                "10",
+                "Alvaro Bautista",
+                "Barni Spark Racing Team",
+                "+0.902s"
+              ],
+              [
+                "11",
+                "Alex Lowes",
+                "bimota by Kawasaki Racing Team",
+                "+0.927s"
+              ],
+              [
+                "12",
+                "Danilo Petrucci",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+1.031s"
+              ],
+              [
+                "13",
+                "Stefano Manzi",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+1.278s"
+              ],
+              [
+                "14",
+                "Xavi Vierge",
+                "Pata Maxus Yamaha",
+                "+1.306s"
+              ],
+              [
+                "15",
+                "Alberto Surra",
+                "Motocorsa Racing",
+                "+1.349s"
+              ],
+              [
+                "16",
+                "Michael van der Mark",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+1.394s"
+              ],
+              [
+                "17",
+                "Andrea Locatelli",
+                "Pata Maxus Yamaha",
+                "+1.673s"
+              ],
+              [
+                "18",
+                "Tarran Mackenzie",
+                "MGM Optical Express Racing",
+                "+1.687s"
+              ],
+              [
+                "19",
+                "Thomas Bridewell",
+                "Superbike Advocates",
+                "+1.692s"
+              ],
+              [
+                "20",
+                "Mattia Rato",
+                "Motoxracing WorldSBK Team",
+                "+2.191s"
+              ],
+              [
+                "21",
+                "Somkiat Chantra",
+                "Honda HRC",
+                "+2.930s"
+              ],
+              [
+                "22",
+                "Yuki Kunii",
+                "Honda HRC",
+                "+3.706s"
+              ]
+            ]
+          }
+        ]
+      }
     ]
   },
   {
@@ -3050,6 +3774,748 @@
           }
         ],
         "parts": 1
+      }
+    ],
+    "others": [
+      {
+        "label": "Warm Up",
+        "tables": [
+          {
+            "title": "Warm Up",
+            "columns": [
+              "Pos",
+              "Rider",
+              "Team",
+              "Time"
+            ],
+            "rows": [
+              [
+                "1",
+                "Nicolo Bulega",
+                "Aruba.it Racing - Ducati",
+                "2:27.903"
+              ],
+              [
+                "2",
+                "Sam Lowes",
+                "ELF Marc VDS Racing Team",
+                "+0.051s"
+              ],
+              [
+                "3",
+                "Yari Montella",
+                "Barni Spark Racing Team",
+                "+0.633s"
+              ],
+              [
+                "4",
+                "Iker Lecuona",
+                "Aruba.it Racing - Ducati",
+                "+0.744s"
+              ],
+              [
+                "5",
+                "Alberto Surra",
+                "Motocorsa Racing",
+                "+0.793s"
+              ],
+              [
+                "6",
+                "Garrett Gerloff",
+                "Kawasaki WorldSBK Team",
+                "+0.865s"
+              ],
+              [
+                "7",
+                "Lorenzo Baldassarri",
+                "Team Goeleven",
+                "+0.951s"
+              ],
+              [
+                "8",
+                "Alvaro Bautista",
+                "Barni Spark Racing Team",
+                "+0.955s"
+              ],
+              [
+                "9",
+                "Tarran Mackenzie",
+                "MGM Optical Express Racing",
+                "+1.191s"
+              ],
+              [
+                "10",
+                "Thomas Bridewell",
+                "Superbike Advocates",
+                "+1.256s"
+              ],
+              [
+                "11",
+                "Axel Bassani",
+                "bimota by Kawasaki Racing Team",
+                "+1.457s"
+              ],
+              [
+                "12",
+                "Xavi Vierge",
+                "Pata Maxus Yamaha",
+                "+1.480s"
+              ],
+              [
+                "13",
+                "Alex Lowes",
+                "bimota by Kawasaki Racing Team",
+                "+1.721s"
+              ],
+              [
+                "14",
+                "Jake Dixon",
+                "Honda HRC",
+                "+2.030s"
+              ],
+              [
+                "15",
+                "Stefano Manzi",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+2.048s"
+              ],
+              [
+                "16",
+                "Remy Gardner",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+2.369s"
+              ],
+              [
+                "17",
+                "Bahattin Sofuoglu",
+                "Motoxracing WorldSBK Team",
+                "+2.655s"
+              ],
+              [
+                "18",
+                "Mattia Rato",
+                "Motoxracing WorldSBK Team",
+                "+2.711s"
+              ],
+              [
+                "19",
+                "Somkiat Chantra",
+                "Honda HRC",
+                "+2.844s"
+              ],
+              [
+                "20",
+                "Hannes Soomer",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+2.860s"
+              ],
+              [
+                "21",
+                "Michael van der Mark",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+3.188s"
+              ],
+              [
+                "22",
+                "Andrea Locatelli",
+                "Pata Maxus Yamaha",
+                "+3.225s"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Superpole",
+        "tables": [
+          {
+            "title": "Superpole",
+            "columns": [
+              "Pos",
+              "Rider",
+              "Team",
+              "Time"
+            ],
+            "rows": [
+              [
+                "1",
+                "Nicolo Bulega",
+                "Aruba.it Racing - Ducati",
+                "2:26.836"
+              ],
+              [
+                "2",
+                "Iker Lecuona",
+                "Aruba.it Racing - Ducati",
+                "+0.476s"
+              ],
+              [
+                "3",
+                "Alberto Surra",
+                "Motocorsa Racing",
+                "+0.513s"
+              ],
+              [
+                "4",
+                "Sam Lowes",
+                "ELF Marc VDS Racing Team",
+                "+0.569s"
+              ],
+              [
+                "5",
+                "Alex Lowes",
+                "bimota by Kawasaki Racing Team",
+                "+0.939s"
+              ],
+              [
+                "6",
+                "Lorenzo Baldassarri",
+                "Team Goeleven",
+                "+0.993s"
+              ],
+              [
+                "7",
+                "Michael van der Mark",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+0.998s"
+              ],
+              [
+                "8",
+                "Thomas Bridewell",
+                "Superbike Advocates",
+                "+1.106s"
+              ],
+              [
+                "9",
+                "Yari Montella",
+                "Barni Spark Racing Team",
+                "+1.148s"
+              ],
+              [
+                "10",
+                "Axel Bassani",
+                "bimota by Kawasaki Racing Team",
+                "+1.276s"
+              ],
+              [
+                "11",
+                "Andrea Locatelli",
+                "Pata Maxus Yamaha",
+                "+1.369s"
+              ],
+              [
+                "12",
+                "Garrett Gerloff",
+                "Kawasaki WorldSBK Team",
+                "+1.380s"
+              ],
+              [
+                "13",
+                "Xavi Vierge",
+                "Pata Maxus Yamaha",
+                "+1.426s"
+              ],
+              [
+                "14",
+                "Jake Dixon",
+                "Honda HRC",
+                "+1.486s"
+              ],
+              [
+                "15",
+                "Remy Gardner",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+1.498s"
+              ],
+              [
+                "16",
+                "Alvaro Bautista",
+                "Barni Spark Racing Team",
+                "+1.547s"
+              ],
+              [
+                "17",
+                "Tarran Mackenzie",
+                "MGM Optical Express Racing",
+                "+1.555s"
+              ],
+              [
+                "18",
+                "Hannes Soomer",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+1.658s"
+              ],
+              [
+                "19",
+                "Somkiat Chantra",
+                "Honda HRC",
+                "+2.143s"
+              ],
+              [
+                "20",
+                "Stefano Manzi",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+2.297s"
+              ],
+              [
+                "21",
+                "Bahattin Sofuoglu",
+                "Motoxracing WorldSBK Team",
+                "+2.475s"
+              ],
+              [
+                "22",
+                "Mattia Rato",
+                "Motoxracing WorldSBK Team",
+                "+2.748s"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "FP3",
+        "tables": [
+          {
+            "title": "FP3",
+            "columns": [
+              "Pos",
+              "Rider",
+              "Team",
+              "Time"
+            ],
+            "rows": [
+              [
+                "1",
+                "Axel Bassani",
+                "bimota by Kawasaki Racing Team",
+                "2:28.169"
+              ],
+              [
+                "2",
+                "Nicolo Bulega",
+                "Aruba.it Racing - Ducati",
+                "+0.049s"
+              ],
+              [
+                "3",
+                "Alberto Surra",
+                "Motocorsa Racing",
+                "+0.082s"
+              ],
+              [
+                "4",
+                "Yari Montella",
+                "Barni Spark Racing Team",
+                "+0.105s"
+              ],
+              [
+                "5",
+                "Iker Lecuona",
+                "Aruba.it Racing - Ducati",
+                "+0.121s"
+              ],
+              [
+                "6",
+                "Alex Lowes",
+                "bimota by Kawasaki Racing Team",
+                "+0.186s"
+              ],
+              [
+                "7",
+                "Lorenzo Baldassarri",
+                "Team Goeleven",
+                "+0.237s"
+              ],
+              [
+                "8",
+                "Tarran Mackenzie",
+                "MGM Optical Express Racing",
+                "+0.267s"
+              ],
+              [
+                "9",
+                "Garrett Gerloff",
+                "Kawasaki WorldSBK Team",
+                "+0.280s"
+              ],
+              [
+                "10",
+                "Thomas Bridewell",
+                "Superbike Advocates",
+                "+0.296s"
+              ],
+              [
+                "11",
+                "Michael van der Mark",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+0.431s"
+              ],
+              [
+                "12",
+                "Andrea Locatelli",
+                "Pata Maxus Yamaha",
+                "+0.452s"
+              ],
+              [
+                "13",
+                "Xavi Vierge",
+                "Pata Maxus Yamaha",
+                "+0.742s"
+              ],
+              [
+                "14",
+                "Alvaro Bautista",
+                "Barni Spark Racing Team",
+                "+0.812s"
+              ],
+              [
+                "15",
+                "Jake Dixon",
+                "Honda HRC",
+                "+0.908s"
+              ],
+              [
+                "16",
+                "Somkiat Chantra",
+                "Honda HRC",
+                "+1.043s"
+              ],
+              [
+                "17",
+                "Remy Gardner",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+1.223s"
+              ],
+              [
+                "18",
+                "Hannes Soomer",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+1.263s"
+              ],
+              [
+                "19",
+                "Sam Lowes",
+                "ELF Marc VDS Racing Team",
+                "+1.382s"
+              ],
+              [
+                "20",
+                "Bahattin Sofuoglu",
+                "Motoxracing WorldSBK Team",
+                "+1.551s"
+              ],
+              [
+                "21",
+                "Stefano Manzi",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+1.680s"
+              ],
+              [
+                "22",
+                "Mattia Rato",
+                "Motoxracing WorldSBK Team",
+                "+2.842s"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "FP2",
+        "tables": [
+          {
+            "title": "FP2",
+            "columns": [
+              "Pos",
+              "Rider",
+              "Team",
+              "Time"
+            ],
+            "rows": [
+              [
+                "1",
+                "Nicolo Bulega",
+                "Aruba.it Racing - Ducati",
+                "2:28.916"
+              ],
+              [
+                "2",
+                "Iker Lecuona",
+                "Aruba.it Racing - Ducati",
+                "+0.022s"
+              ],
+              [
+                "3",
+                "Alex Lowes",
+                "bimota by Kawasaki Racing Team",
+                "+0.526s"
+              ],
+              [
+                "4",
+                "Axel Bassani",
+                "bimota by Kawasaki Racing Team",
+                "+0.940s"
+              ],
+              [
+                "5",
+                "Sam Lowes",
+                "ELF Marc VDS Racing Team",
+                "+0.635s"
+              ],
+              [
+                "6",
+                "Yari Montella",
+                "Barni Spark Racing Team",
+                "+0.693s"
+              ],
+              [
+                "7",
+                "Lorenzo Baldassarri",
+                "Team Goeleven",
+                "+0.779s"
+              ],
+              [
+                "8",
+                "Tarran Mackenzie",
+                "MGM Optical Express Racing",
+                "+0.853s"
+              ],
+              [
+                "9",
+                "Thomas Bridewell",
+                "Superbike Advocates",
+                "+1.411s"
+              ],
+              [
+                "10",
+                "Alberto Surra",
+                "Motocorsa Racing",
+                "+0.870s"
+              ],
+              [
+                "11",
+                "Alvaro Bautista",
+                "Barni Spark Racing Team",
+                "+1.000s"
+              ],
+              [
+                "12",
+                "Garrett Gerloff",
+                "Kawasaki WorldSBK Team",
+                "+1.075s"
+              ],
+              [
+                "13",
+                "Xavi Vierge",
+                "Pata Maxus Yamaha",
+                "+1.180s"
+              ],
+              [
+                "14",
+                "Somkiat Chantra",
+                "Honda HRC",
+                "+1.770s"
+              ],
+              [
+                "15",
+                "Andrea Locatelli",
+                "Pata Maxus Yamaha",
+                "+1.482s"
+              ],
+              [
+                "16",
+                "Remy Gardner",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+1.484s"
+              ],
+              [
+                "17",
+                "Jake Dixon",
+                "Honda HRC",
+                "+1.566s"
+              ],
+              [
+                "18",
+                "Michael van der Mark",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+2.086s"
+              ],
+              [
+                "19",
+                "Stefano Manzi",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+1.748s"
+              ],
+              [
+                "20",
+                "Hannes Soomer",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+1.793s"
+              ],
+              [
+                "21",
+                "Bahattin Sofuoglu",
+                "Motoxracing WorldSBK Team",
+                "+3.110s"
+              ],
+              [
+                "22",
+                "Mattia Rato",
+                "Motoxracing WorldSBK Team",
+                "+3.474s"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "FP1",
+        "tables": [
+          {
+            "title": "FP1",
+            "columns": [
+              "Pos",
+              "Rider",
+              "Team",
+              "Time"
+            ],
+            "rows": [
+              [
+                "1",
+                "Nicolo Bulega",
+                "Aruba.it Racing - Ducati",
+                "2:28.916"
+              ],
+              [
+                "2",
+                "Iker Lecuona",
+                "Aruba.it Racing - Ducati",
+                "+0.022s"
+              ],
+              [
+                "3",
+                "Alex Lowes",
+                "bimota by Kawasaki Racing Team",
+                "+0.526s"
+              ],
+              [
+                "4",
+                "Axel Bassani",
+                "bimota by Kawasaki Racing Team",
+                "+0.579s"
+              ],
+              [
+                "5",
+                "Sam Lowes",
+                "ELF Marc VDS Racing Team",
+                "+0.635s"
+              ],
+              [
+                "6",
+                "Yari Montella",
+                "Barni Spark Racing Team",
+                "+0.693s"
+              ],
+              [
+                "7",
+                "Lorenzo Baldassarri",
+                "Team Goeleven",
+                "+0.779s"
+              ],
+              [
+                "8",
+                "Tarran Mackenzie",
+                "MGM Optical Express Racing",
+                "+0.853s"
+              ],
+              [
+                "9",
+                "Thomas Bridewell",
+                "Superbike Advocates",
+                "+0.866s"
+              ],
+              [
+                "10",
+                "Alberto Surra",
+                "Motocorsa Racing",
+                "+0.870s"
+              ],
+              [
+                "11",
+                "Alvaro Bautista",
+                "Barni Spark Racing Team",
+                "+1.000s"
+              ],
+              [
+                "12",
+                "Garrett Gerloff",
+                "Kawasaki WorldSBK Team",
+                "+1.161s"
+              ],
+              [
+                "13",
+                "Xavi Vierge",
+                "Pata Maxus Yamaha",
+                "+1.180s"
+              ],
+              [
+                "14",
+                "Somkiat Chantra",
+                "Honda HRC",
+                "+1.439s"
+              ],
+              [
+                "15",
+                "Andrea Locatelli",
+                "Pata Maxus Yamaha",
+                "+1.482s"
+              ],
+              [
+                "16",
+                "Remy Gardner",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+1.484s"
+              ],
+              [
+                "17",
+                "Jake Dixon",
+                "Honda HRC",
+                "+1.570s"
+              ],
+              [
+                "18",
+                "Michael van der Mark",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+1.725s"
+              ],
+              [
+                "19",
+                "Stefano Manzi",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+1.748s"
+              ],
+              [
+                "20",
+                "Hannes Soomer",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+1.793s"
+              ],
+              [
+                "21",
+                "Bahattin Sofuoglu",
+                "Motoxracing WorldSBK Team",
+                "+2.860s"
+              ],
+              [
+                "22",
+                "Mattia Rato",
+                "Motoxracing WorldSBK Team",
+                "+3.146s"
+              ]
+            ]
+          }
+        ]
       }
     ]
   },
@@ -3574,6 +5040,748 @@
         ],
         "parts": 1
       }
+    ],
+    "others": [
+      {
+        "label": "Warm Up",
+        "tables": [
+          {
+            "title": "Warm Up",
+            "columns": [
+              "Pos",
+              "Rider",
+              "Team",
+              "Time"
+            ],
+            "rows": [
+              [
+                "1",
+                "Nicolo Bulega",
+                "Aruba.it Racing - Ducati",
+                "2:12.098"
+              ],
+              [
+                "2",
+                "Iker Lecuona",
+                "Aruba.it Racing - Ducati",
+                "+0.747s"
+              ],
+              [
+                "3",
+                "Axel Bassani",
+                "bimota by Kawasaki Racing Team",
+                "+0.784s"
+              ],
+              [
+                "4",
+                "Sam Lowes",
+                "ELF Marc VDS Racing Team",
+                "+0.994s"
+              ],
+              [
+                "5",
+                "Tarran Mackenzie",
+                "MGM Optical Express Racing",
+                "+1.040s"
+              ],
+              [
+                "6",
+                "Alberto Surra",
+                "Motocorsa Racing",
+                "+1.113s"
+              ],
+              [
+                "7",
+                "Yari Montella",
+                "Barni Spark Racing Team",
+                "+1.140s"
+              ],
+              [
+                "8",
+                "Alex Lowes",
+                "bimota by Kawasaki Racing Team",
+                "+1.211s"
+              ],
+              [
+                "9",
+                "Alvaro Bautista",
+                "Barni Spark Racing Team",
+                "+1.405s"
+              ],
+              [
+                "10",
+                "Garrett Gerloff",
+                "Kawasaki WorldSBK Team",
+                "+1.408s"
+              ],
+              [
+                "11",
+                "Lorenzo Baldassarri",
+                "Team Goeleven",
+                "+1.435s"
+              ],
+              [
+                "12",
+                "Andrea Locatelli",
+                "Pata Maxus Yamaha",
+                "+1.454s"
+              ],
+              [
+                "13",
+                "Xavi Vierge",
+                "Pata Maxus Yamaha",
+                "+1.532s"
+              ],
+              [
+                "14",
+                "Michael van der Mark",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+1.638s"
+              ],
+              [
+                "15",
+                "Thomas Bridewell",
+                "Superbike Advocates",
+                "+1.702s"
+              ],
+              [
+                "16",
+                "Remy Gardner",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+1.709s"
+              ],
+              [
+                "17",
+                "Stefano Manzi",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+1.712s"
+              ],
+              [
+                "18",
+                "Miguel Oliveira",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+2.003s"
+              ],
+              [
+                "19",
+                "Bahattin Sofuoglu",
+                "Motoxracing WorldSBK Team",
+                "+2.015s"
+              ],
+              [
+                "20",
+                "Ryan Vickers",
+                "Honda HRC",
+                "+2.028s"
+              ],
+              [
+                "21",
+                "Somkiat Chantra",
+                "Honda HRC",
+                "+2.036s"
+              ],
+              [
+                "22",
+                "Mattia Rato",
+                "Motoxracing WorldSBK Team",
+                "+3.362s"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Superpole",
+        "tables": [
+          {
+            "title": "Superpole",
+            "columns": [
+              "Pos",
+              "Rider",
+              "Team",
+              "Time"
+            ],
+            "rows": [
+              [
+                "1",
+                "Nicolo Bulega",
+                "Aruba.it Racing - Ducati",
+                "2:11.343"
+              ],
+              [
+                "2",
+                "Iker Lecuona",
+                "Aruba.it Racing - Ducati",
+                "+0.227s"
+              ],
+              [
+                "3",
+                "Alex Lowes",
+                "bimota by Kawasaki Racing Team",
+                "+0.657s"
+              ],
+              [
+                "4",
+                "Yari Montella",
+                "Barni Spark Racing Team",
+                "+0.710s"
+              ],
+              [
+                "5",
+                "Lorenzo Baldassarri",
+                "Team Goeleven",
+                "+0.875s"
+              ],
+              [
+                "6",
+                "Alberto Surra",
+                "Motocorsa Racing",
+                "+0.962s"
+              ],
+              [
+                "7",
+                "Axel Bassani",
+                "bimota by Kawasaki Racing Team",
+                "+1.066s"
+              ],
+              [
+                "8",
+                "Andrea Locatelli",
+                "Pata Maxus Yamaha",
+                "+1.236s"
+              ],
+              [
+                "9",
+                "Thomas Bridewell",
+                "Superbike Advocates",
+                "+1.241s"
+              ],
+              [
+                "10",
+                "Sam Lowes",
+                "ELF Marc VDS Racing Team",
+                "+1.284s"
+              ],
+              [
+                "11",
+                "Miguel Oliveira",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+1.294s"
+              ],
+              [
+                "12",
+                "Tarran Mackenzie",
+                "MGM Optical Express Racing",
+                "+1.339s"
+              ],
+              [
+                "13",
+                "Remy Gardner",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+1.447s"
+              ],
+              [
+                "14",
+                "Xavi Vierge",
+                "Pata Maxus Yamaha",
+                "+1.456s"
+              ],
+              [
+                "15",
+                "Stefano Manzi",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+1.460s"
+              ],
+              [
+                "16",
+                "Michael van der Mark",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+1.480s"
+              ],
+              [
+                "17",
+                "Alvaro Bautista",
+                "Barni Spark Racing Team",
+                "+1.777s"
+              ],
+              [
+                "18",
+                "Mattia Rato",
+                "Motoxracing WorldSBK Team",
+                "+2.044s"
+              ],
+              [
+                "19",
+                "Somkiat Chantra",
+                "Honda HRC",
+                "+2.060s"
+              ],
+              [
+                "20",
+                "Bahattin Sofuoglu",
+                "Motoxracing WorldSBK Team",
+                "+2.121s"
+              ],
+              [
+                "21",
+                "Ryan Vickers",
+                "Honda HRC",
+                "+2.751s"
+              ],
+              [
+                "22",
+                "Garrett Gerloff",
+                "Kawasaki WorldSBK Team",
+                ""
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "FP3",
+        "tables": [
+          {
+            "title": "FP3",
+            "columns": [
+              "Pos",
+              "Rider",
+              "Team",
+              "Time"
+            ],
+            "rows": [
+              [
+                "1",
+                "Sam Lowes",
+                "ELF Marc VDS Racing Team",
+                "2:11.929"
+              ],
+              [
+                "2",
+                "Yari Montella",
+                "Barni Spark Racing Team",
+                "+0.046s"
+              ],
+              [
+                "3",
+                "Nicolo Bulega",
+                "Aruba.it Racing - Ducati",
+                "+0.057s"
+              ],
+              [
+                "4",
+                "Alex Lowes",
+                "bimota by Kawasaki Racing Team",
+                "+0.333s"
+              ],
+              [
+                "5",
+                "Lorenzo Baldassarri",
+                "Team Goeleven",
+                "+0.479s"
+              ],
+              [
+                "6",
+                "Iker Lecuona",
+                "Aruba.it Racing - Ducati",
+                "+0.553s"
+              ],
+              [
+                "7",
+                "Axel Bassani",
+                "bimota by Kawasaki Racing Team",
+                "+0.643s"
+              ],
+              [
+                "8",
+                "Alberto Surra",
+                "Motocorsa Racing",
+                "+0.719s"
+              ],
+              [
+                "9",
+                "Xavi Vierge",
+                "Pata Maxus Yamaha",
+                "+1.074s"
+              ],
+              [
+                "10",
+                "Garrett Gerloff",
+                "Kawasaki WorldSBK Team",
+                "+1.091s"
+              ],
+              [
+                "11",
+                "Miguel Oliveira",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+1.112s"
+              ],
+              [
+                "12",
+                "Andrea Locatelli",
+                "Pata Maxus Yamaha",
+                "+1.125s"
+              ],
+              [
+                "13",
+                "Remy Gardner",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+1.284s"
+              ],
+              [
+                "14",
+                "Thomas Bridewell",
+                "Superbike Advocates",
+                "+1.341s"
+              ],
+              [
+                "15",
+                "Alvaro Bautista",
+                "Barni Spark Racing Team",
+                "+1.408s"
+              ],
+              [
+                "16",
+                "Bahattin Sofuoglu",
+                "Motoxracing WorldSBK Team",
+                "+1.464s"
+              ],
+              [
+                "17",
+                "Stefano Manzi",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+1.701s"
+              ],
+              [
+                "18",
+                "Michael van der Mark",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+1.909s"
+              ],
+              [
+                "19",
+                "Mattia Rato",
+                "Motoxracing WorldSBK Team",
+                "+2.379s"
+              ],
+              [
+                "20",
+                "Tarran Mackenzie",
+                "MGM Optical Express Racing",
+                "+2.476s"
+              ],
+              [
+                "21",
+                "Ryan Vickers",
+                "Honda HRC",
+                "+2.816s"
+              ],
+              [
+                "22",
+                "Somkiat Chantra",
+                "Honda HRC",
+                ""
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "FP2",
+        "tables": [
+          {
+            "title": "FP2",
+            "columns": [
+              "Pos",
+              "Rider",
+              "Team",
+              "Time"
+            ],
+            "rows": [
+              [
+                "1",
+                "Nicolo Bulega",
+                "Aruba.it Racing - Ducati",
+                "2:12.235"
+              ],
+              [
+                "2",
+                "Iker Lecuona",
+                "Aruba.it Racing - Ducati",
+                "+0.166s"
+              ],
+              [
+                "3",
+                "Yari Montella",
+                "Barni Spark Racing Team",
+                "+0.576s"
+              ],
+              [
+                "4",
+                "Sam Lowes",
+                "ELF Marc VDS Racing Team",
+                "+0.669s"
+              ],
+              [
+                "5",
+                "Axel Bassani",
+                "bimota by Kawasaki Racing Team",
+                "+0.768s"
+              ],
+              [
+                "6",
+                "Alberto Surra",
+                "Motocorsa Racing",
+                "+0.779s"
+              ],
+              [
+                "7",
+                "Alex Lowes",
+                "bimota by Kawasaki Racing Team",
+                "+0.867s"
+              ],
+              [
+                "8",
+                "Lorenzo Baldassarri",
+                "Team Goeleven",
+                "+1.020s"
+              ],
+              [
+                "9",
+                "Tarran Mackenzie",
+                "MGM Optical Express Racing",
+                "+1.093s"
+              ],
+              [
+                "10",
+                "Xavi Vierge",
+                "Pata Maxus Yamaha",
+                "+1.196s"
+              ],
+              [
+                "11",
+                "Thomas Bridewell",
+                "Superbike Advocates",
+                "+1.283s"
+              ],
+              [
+                "12",
+                "Alvaro Bautista",
+                "Barni Spark Racing Team",
+                "+1.319s"
+              ],
+              [
+                "13",
+                "Remy Gardner",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+1.329s"
+              ],
+              [
+                "14",
+                "Stefano Manzi",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+1.365s"
+              ],
+              [
+                "15",
+                "Andrea Locatelli",
+                "Pata Maxus Yamaha",
+                "+1.374s"
+              ],
+              [
+                "16",
+                "Miguel Oliveira",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+1.410s"
+              ],
+              [
+                "17",
+                "Garrett Gerloff",
+                "Kawasaki WorldSBK Team",
+                "+1.422s"
+              ],
+              [
+                "18",
+                "Michael van der Mark",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+1.592s"
+              ],
+              [
+                "19",
+                "Somkiat Chantra",
+                "Honda HRC",
+                "+1.767s"
+              ],
+              [
+                "20",
+                "Bahattin Sofuoglu",
+                "Motoxracing WorldSBK Team",
+                "+2.235s"
+              ],
+              [
+                "21",
+                "Ryan Vickers",
+                "Honda HRC",
+                "+2.458s"
+              ],
+              [
+                "22",
+                "Mattia Rato",
+                "Motoxracing WorldSBK Team",
+                "+3.325s"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "FP1",
+        "tables": [
+          {
+            "title": "FP1",
+            "columns": [
+              "Pos",
+              "Rider",
+              "Team",
+              "Time"
+            ],
+            "rows": [
+              [
+                "1",
+                "Nicolo Bulega",
+                "Aruba.it Racing - Ducati",
+                "2:12.733"
+              ],
+              [
+                "2",
+                "Iker Lecuona",
+                "Aruba.it Racing - Ducati",
+                "+0.059s"
+              ],
+              [
+                "3",
+                "Sam Lowes",
+                "ELF Marc VDS Racing Team",
+                "+0.306s"
+              ],
+              [
+                "4",
+                "Yari Montella",
+                "Barni Spark Racing Team",
+                "+0.382s"
+              ],
+              [
+                "5",
+                "Alberto Surra",
+                "Motocorsa Racing",
+                "+0.402s"
+              ],
+              [
+                "6",
+                "Lorenzo Baldassarri",
+                "Team Goeleven",
+                "+0.601s"
+              ],
+              [
+                "7",
+                "Xavi Vierge",
+                "Pata Maxus Yamaha",
+                "+0.713s"
+              ],
+              [
+                "8",
+                "Axel Bassani",
+                "bimota by Kawasaki Racing Team",
+                "+0.904s"
+              ],
+              [
+                "9",
+                "Garrett Gerloff",
+                "Kawasaki WorldSBK Team",
+                "+0.907s"
+              ],
+              [
+                "10",
+                "Remy Gardner",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+0.946s"
+              ],
+              [
+                "11",
+                "Alex Lowes",
+                "bimota by Kawasaki Racing Team",
+                "+0.954s"
+              ],
+              [
+                "12",
+                "Tarran Mackenzie",
+                "MGM Optical Express Racing",
+                "+1.059s"
+              ],
+              [
+                "13",
+                "Alvaro Bautista",
+                "Barni Spark Racing Team",
+                "+1.186s"
+              ],
+              [
+                "14",
+                "Andrea Locatelli",
+                "Pata Maxus Yamaha",
+                "+1.318s"
+              ],
+              [
+                "15",
+                "Michael van der Mark",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+1.359s"
+              ],
+              [
+                "16",
+                "Stefano Manzi",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+1.373s"
+              ],
+              [
+                "17",
+                "Miguel Oliveira",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+1.392s"
+              ],
+              [
+                "18",
+                "Thomas Bridewell",
+                "Superbike Advocates",
+                "+1.463s"
+              ],
+              [
+                "19",
+                "Somkiat Chantra",
+                "Honda HRC",
+                "+1.623s"
+              ],
+              [
+                "20",
+                "Bahattin Sofuoglu",
+                "Motoxracing WorldSBK Team",
+                "+1.816s"
+              ],
+              [
+                "21",
+                "Ryan Vickers",
+                "Honda HRC",
+                "+2.629s"
+              ],
+              [
+                "22",
+                "Mattia Rato",
+                "Motoxracing WorldSBK Team",
+                "+2.810s"
+              ]
+            ]
+          }
+        ]
+      }
     ]
   },
   {
@@ -4075,6 +6283,754 @@
           }
         ],
         "parts": 1
+      }
+    ],
+    "others": [
+      {
+        "label": "Warm Up",
+        "tables": [
+          {
+            "title": "Warm Up",
+            "columns": [
+              "Pos",
+              "Rider",
+              "Team",
+              "Time"
+            ],
+            "rows": [
+              [
+                "1",
+                "Nicolo Bulega",
+                "Aruba.it Racing - Ducati",
+                "2:05.052"
+              ],
+              [
+                "2",
+                "Iker Lecuona",
+                "Aruba.it Racing - Ducati",
+                "+0.142s"
+              ],
+              [
+                "3",
+                "Sam Lowes",
+                "ELF Marc VDS Racing Team",
+                "+0.201s"
+              ],
+              [
+                "4",
+                "Axel Bassani",
+                "bimota by Kawasaki Racing Team",
+                "+0.688s"
+              ],
+              [
+                "5",
+                "Yari Montella",
+                "Barni Spark Racing Team",
+                "+0.705s"
+              ],
+              [
+                "6",
+                "Alex Lowes",
+                "bimota by Kawasaki Racing Team",
+                "+0.709s"
+              ],
+              [
+                "7",
+                "Thomas Bridewell",
+                "Superbike Advocates",
+                "+0.753s"
+              ],
+              [
+                "8",
+                "Lorenzo Baldassarri",
+                "Team Goeleven",
+                "+0.956s"
+              ],
+              [
+                "9",
+                "Alvaro Bautista",
+                "Barni Spark Racing Team",
+                "+0.978s"
+              ],
+              [
+                "10",
+                "Stefano Manzi",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+1.009s"
+              ],
+              [
+                "11",
+                "Jonathan Rea",
+                "Honda HRC",
+                "+1.096s"
+              ],
+              [
+                "12",
+                "Xavi Vierge",
+                "Pata Maxus Yamaha",
+                "+1.115s"
+              ],
+              [
+                "13",
+                "Garrett Gerloff",
+                "Kawasaki WorldSBK Team",
+                "+1.117s"
+              ],
+              [
+                "14",
+                "Miguel Oliveira",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+1.144s"
+              ],
+              [
+                "15",
+                "Remy Gardner",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+1.186s"
+              ],
+              [
+                "16",
+                "Danilo Petrucci",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+1.204s"
+              ],
+              [
+                "17",
+                "Jake Dixon",
+                "Honda HRC",
+                "+1.248s"
+              ],
+              [
+                "18",
+                "Mattia Rato",
+                "Motoxracing WorldSBK Team",
+                "+1.583s"
+              ],
+              [
+                "19",
+                "Bahattin Sofuoglu",
+                "Motoxracing WorldSBK Team",
+                "+1.629s"
+              ],
+              [
+                "20",
+                "Andrea Locatelli",
+                "Pata Maxus Yamaha",
+                "+1.642s"
+              ],
+              [
+                "21",
+                "Somkiat Chantra",
+                "Honda HRC",
+                "+1.721s"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Superpole",
+        "tables": [
+          {
+            "title": "Superpole",
+            "columns": [
+              "Pos",
+              "Rider",
+              "Team",
+              "Time"
+            ],
+            "rows": [
+              [
+                "1",
+                "Nicolo Bulega",
+                "Aruba.it Racing - Ducati",
+                "2:04.410"
+              ],
+              [
+                "2",
+                "Iker Lecuona",
+                "Aruba.it Racing - Ducati",
+                "+0.052s"
+              ],
+              [
+                "3",
+                "Yari Montella",
+                "Barni Spark Racing Team",
+                "+0.198s"
+              ],
+              [
+                "4",
+                "Sam Lowes",
+                "ELF Marc VDS Racing Team",
+                "+0.298s"
+              ],
+              [
+                "5",
+                "Xavi Vierge",
+                "Pata Maxus Yamaha",
+                "+0.830s"
+              ],
+              [
+                "6",
+                "Lorenzo Baldassarri",
+                "Team Goeleven",
+                "+0.904s"
+              ],
+              [
+                "7",
+                "Alex Lowes",
+                "bimota by Kawasaki Racing Team",
+                "+0.963s"
+              ],
+              [
+                "8",
+                "Axel Bassani",
+                "bimota by Kawasaki Racing Team",
+                "+0.985s"
+              ],
+              [
+                "9",
+                "Thomas Bridewell",
+                "Superbike Advocates",
+                "+0.986s"
+              ],
+              [
+                "10",
+                "Jonathan Rea",
+                "Honda HRC",
+                "+1.019s"
+              ],
+              [
+                "11",
+                "Garrett Gerloff",
+                "Kawasaki WorldSBK Team",
+                "+1.058s"
+              ],
+              [
+                "12",
+                "Miguel Oliveira",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+1.070s"
+              ],
+              [
+                "13",
+                "Danilo Petrucci",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+1.142s"
+              ],
+              [
+                "14",
+                "Andrea Locatelli",
+                "Pata Maxus Yamaha",
+                "+1.253s"
+              ],
+              [
+                "15",
+                "Alvaro Bautista",
+                "Barni Spark Racing Team",
+                "+1.325s"
+              ],
+              [
+                "16",
+                "Somkiat Chantra",
+                "Honda HRC",
+                "+1.337s"
+              ],
+              [
+                "17",
+                "Jake Dixon",
+                "Honda HRC",
+                "+1.407s"
+              ],
+              [
+                "18",
+                "Bahattin Sofuoglu",
+                "Motoxracing WorldSBK Team",
+                "+1.511s"
+              ],
+              [
+                "19",
+                "Stefano Manzi",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+1.964s"
+              ],
+              [
+                "20",
+                "Mattia Rato",
+                "Motoxracing WorldSBK Team",
+                "+1.993s"
+              ],
+              [
+                "21",
+                "Remy Gardner",
+                "GYTR GRT Yamaha WorldSBK Team",
+                ""
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "FP3",
+        "tables": [
+          {
+            "title": "FP3",
+            "columns": [
+              "Pos",
+              "Rider",
+              "Team",
+              "Time"
+            ],
+            "rows": [
+              [
+                "1",
+                "Sam Lowes",
+                "ELF Marc VDS Racing Team",
+                "2:04.756"
+              ],
+              [
+                "2",
+                "Yari Montella",
+                "Barni Spark Racing Team",
+                "+0.202s"
+              ],
+              [
+                "3",
+                "Iker Lecuona",
+                "Aruba.it Racing - Ducati",
+                "+0.369s"
+              ],
+              [
+                "4",
+                "Nicolo Bulega",
+                "Aruba.it Racing - Ducati",
+                "+0.382s"
+              ],
+              [
+                "5",
+                "Alex Lowes",
+                "bimota by Kawasaki Racing Team",
+                "+0.544s"
+              ],
+              [
+                "6",
+                "Thomas Bridewell",
+                "Superbike Advocates",
+                "+0.859s"
+              ],
+              [
+                "7",
+                "Jake Dixon",
+                "Honda HRC",
+                "+0.889s"
+              ],
+              [
+                "8",
+                "Xavi Vierge",
+                "Pata Maxus Yamaha",
+                "+0.891s"
+              ],
+              [
+                "9",
+                "Alberto Surra",
+                "Motocorsa Racing",
+                "+0.898s"
+              ],
+              [
+                "10",
+                "Alvaro Bautista",
+                "Barni Spark Racing Team",
+                "+0.909s"
+              ],
+              [
+                "11",
+                "Lorenzo Baldassarri",
+                "Team Goeleven",
+                "+0.910s"
+              ],
+              [
+                "12",
+                "Garrett Gerloff",
+                "Kawasaki WorldSBK Team",
+                "+0.931s"
+              ],
+              [
+                "13",
+                "Remy Gardner",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+0.946s"
+              ],
+              [
+                "14",
+                "Miguel Oliveira",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+1.096s"
+              ],
+              [
+                "15",
+                "Axel Bassani",
+                "bimota by Kawasaki Racing Team",
+                "+1.102s"
+              ],
+              [
+                "16",
+                "Andrea Locatelli",
+                "Pata Maxus Yamaha",
+                "+1.461s"
+              ],
+              [
+                "17",
+                "Bahattin Sofuoglu",
+                "Motoxracing WorldSBK Team",
+                "+1.511s"
+              ],
+              [
+                "18",
+                "Jonathan Rea",
+                "Honda HRC",
+                "+1.519s"
+              ],
+              [
+                "19",
+                "Somkiat Chantra",
+                "Honda HRC",
+                "+1.667s"
+              ],
+              [
+                "20",
+                "Stefano Manzi",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+1.781s"
+              ],
+              [
+                "21",
+                "Mattia Rato",
+                "Motoxracing WorldSBK Team",
+                "+1.860s"
+              ],
+              [
+                "22",
+                "Danilo Petrucci",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+1.861s"
+              ],
+              [
+                "23",
+                "Tarran Mackenzie",
+                "MGM Optical Express Racing",
+                ""
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "FP2",
+        "tables": [
+          {
+            "title": "FP2",
+            "columns": [
+              "Pos",
+              "Rider",
+              "Team",
+              "Time"
+            ],
+            "rows": [
+              [
+                "1",
+                "Nicolo Bulega",
+                "Aruba.it Racing - Ducati",
+                "2:05.460"
+              ],
+              [
+                "2",
+                "Yari Montella",
+                "Barni Spark Racing Team",
+                "+0.207s"
+              ],
+              [
+                "3",
+                "Iker Lecuona",
+                "Aruba.it Racing - Ducati",
+                "+0.250s"
+              ],
+              [
+                "4",
+                "Alex Lowes",
+                "bimota by Kawasaki Racing Team",
+                "+0.270s"
+              ],
+              [
+                "5",
+                "Tarran Mackenzie",
+                "MGM Optical Express Racing",
+                "+0.528s"
+              ],
+              [
+                "6",
+                "Alvaro Bautista",
+                "Barni Spark Racing Team",
+                "+0.661s"
+              ],
+              [
+                "7",
+                "Lorenzo Baldassarri",
+                "Team Goeleven",
+                "+0.665s"
+              ],
+              [
+                "8",
+                "Garrett Gerloff",
+                "Kawasaki WorldSBK Team",
+                "+0.689s"
+              ],
+              [
+                "9",
+                "Thomas Bridewell",
+                "Superbike Advocates",
+                "+0.720s"
+              ],
+              [
+                "10",
+                "Jonathan Rea",
+                "Honda HRC",
+                "+0.781s"
+              ],
+              [
+                "11",
+                "Sam Lowes",
+                "ELF Marc VDS Racing Team",
+                "+0.793s"
+              ],
+              [
+                "12",
+                "Alberto Surra",
+                "Motocorsa Racing",
+                "+0.900s"
+              ],
+              [
+                "13",
+                "Axel Bassani",
+                "bimota by Kawasaki Racing Team",
+                "+0.952s"
+              ],
+              [
+                "14",
+                "Xavi Vierge",
+                "Pata Maxus Yamaha",
+                "+0.972s"
+              ],
+              [
+                "15",
+                "Remy Gardner",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+1.002s"
+              ],
+              [
+                "16",
+                "Jake Dixon",
+                "Honda HRC",
+                "+1.148s"
+              ],
+              [
+                "17",
+                "Danilo Petrucci",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+1.264s"
+              ],
+              [
+                "18",
+                "Andrea Locatelli",
+                "Pata Maxus Yamaha",
+                "+1.301s"
+              ],
+              [
+                "19",
+                "Stefano Manzi",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+1.305s"
+              ],
+              [
+                "20",
+                "Miguel Oliveira",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+1.380s"
+              ],
+              [
+                "21",
+                "Bahattin Sofuoglu",
+                "Motoxracing WorldSBK Team",
+                "+1.493s"
+              ],
+              [
+                "22",
+                "Somkiat Chantra",
+                "Honda HRC",
+                "+1.538s"
+              ],
+              [
+                "23",
+                "Mattia Rato",
+                "Motoxracing WorldSBK Team",
+                "+1.615s"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "label": "FP1",
+        "tables": [
+          {
+            "title": "FP1",
+            "columns": [
+              "Pos",
+              "Rider",
+              "Team",
+              "Time"
+            ],
+            "rows": [
+              [
+                "1",
+                "Nicolo Bulega",
+                "Aruba.it Racing - Ducati",
+                "2:05.870"
+              ],
+              [
+                "2",
+                "Iker Lecuona",
+                "Aruba.it Racing - Ducati",
+                "+0.085s"
+              ],
+              [
+                "3",
+                "Sam Lowes",
+                "ELF Marc VDS Racing Team",
+                "+0.156s"
+              ],
+              [
+                "4",
+                "Alex Lowes",
+                "bimota by Kawasaki Racing Team",
+                "+0.232s"
+              ],
+              [
+                "5",
+                "Lorenzo Baldassarri",
+                "Team Goeleven",
+                "+0.324s"
+              ],
+              [
+                "6",
+                "Yari Montella",
+                "Barni Spark Racing Team",
+                "+0.360s"
+              ],
+              [
+                "7",
+                "Alvaro Bautista",
+                "Barni Spark Racing Team",
+                "+0.428s"
+              ],
+              [
+                "8",
+                "Garrett Gerloff",
+                "Kawasaki WorldSBK Team",
+                "+0.454s"
+              ],
+              [
+                "9",
+                "Jonathan Rea",
+                "Honda HRC",
+                "+0.685s"
+              ],
+              [
+                "10",
+                "Alberto Surra",
+                "Motocorsa Racing",
+                "+0.783s"
+              ],
+              [
+                "11",
+                "Tarran Mackenzie",
+                "MGM Optical Express Racing",
+                "+0.827s"
+              ],
+              [
+                "12",
+                "Thomas Bridewell",
+                "Superbike Advocates",
+                "+0.867s"
+              ],
+              [
+                "13",
+                "Axel Bassani",
+                "bimota by Kawasaki Racing Team",
+                "+0.918s"
+              ],
+              [
+                "14",
+                "Remy Gardner",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+0.963s"
+              ],
+              [
+                "15",
+                "Xavi Vierge",
+                "Pata Maxus Yamaha",
+                "+0.989s"
+              ],
+              [
+                "16",
+                "Danilo Petrucci",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+1.153s"
+              ],
+              [
+                "17",
+                "Stefano Manzi",
+                "GYTR GRT Yamaha WorldSBK Team",
+                "+1.207s"
+              ],
+              [
+                "18",
+                "Jake Dixon",
+                "Honda HRC",
+                "+1.251s"
+              ],
+              [
+                "19",
+                "Miguel Oliveira",
+                "ROKiT BMW Motorrad WorldSBK Team",
+                "+1.292s"
+              ],
+              [
+                "20",
+                "Somkiat Chantra",
+                "Honda HRC",
+                "+1.416s"
+              ],
+              [
+                "21",
+                "Andrea Locatelli",
+                "Pata Maxus Yamaha",
+                "+1.653s"
+              ],
+              [
+                "22",
+                "Bahattin Sofuoglu",
+                "Motoxracing WorldSBK Team",
+                "+1.976s"
+              ],
+              [
+                "23",
+                "Mattia Rato",
+                "Motoxracing WorldSBK Team",
+                "+2.358s"
+              ]
+            ]
+          }
+        ]
       }
     ]
   },

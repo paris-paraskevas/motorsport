@@ -19,12 +19,17 @@
       ],
       [
         "3",
-        "Nick Yelloly Renger van der Zande",
+        "Nick Yelloly",
+        "2723"
+      ],
+      [
+        "3",
+        "Renger van der Zande",
         "2723"
       ],
       [
         "4",
-        "Kévin Estre",
+        "Kevin Estre",
         "2709"
       ],
       [
@@ -34,17 +39,32 @@
       ],
       [
         "6",
-        "Sheldon van der Linde Dries Vanthoor",
+        "Dries Vanthoor",
+        "2650"
+      ],
+      [
+        "6",
+        "Sheldon van der Linde",
         "2650"
       ],
       [
         "7",
-        "Julien Andlauer Felipe Nasr",
+        "Felipe Nasr",
+        "2638"
+      ],
+      [
+        "7",
+        "Julien Andlauer",
         "2638"
       ],
       [
         "8",
-        "Louis Delétraz Jordan Taylor",
+        "Jordan Taylor",
+        "2556"
+      ],
+      [
+        "8",
+        "Louis Deletraz",
         "2556"
       ],
       [
@@ -54,12 +74,22 @@
       ],
       [
         "10",
-        "Tom Blomqvist Colin Braun",
+        "Colin Braun",
+        "2465"
+      ],
+      [
+        "10",
+        "Tom Blomqvist",
         "2465"
       ],
       [
         "11",
-        "Filipe Albuquerque Ricky Taylor",
+        "Filipe Albuquerque",
+        "2448"
+      ],
+      [
+        "11",
+        "Ricky Taylor",
         "2448"
       ],
       [
@@ -69,12 +99,22 @@
       ],
       [
         "13",
-        "Philipp Eng Marco Wittmann",
+        "Marco Wittmann",
+        "2338"
+      ],
+      [
+        "13",
+        "Philipp Eng",
         "2338"
       ],
       [
         "14",
-        "Roman De Angelis Ross Gunn",
+        "Roman De Angelis",
+        "2242"
+      ],
+      [
+        "14",
+        "Ross Gunn",
         "2242"
       ],
       [
@@ -109,7 +149,7 @@
       ],
       [
         "21",
-        "Álex Palou",
+        "Alex Palou",
         "809"
       ],
       [
@@ -129,7 +169,7 @@
       ],
       [
         "25",
-        "Kakunoshin Ohta",
+        "Kaku Ohta",
         "643"
       ],
       [
@@ -139,7 +179,7 @@
       ],
       [
         "27",
-        "Nico Müller",
+        "Nico Mueller",
         "480"
       ],
       [
@@ -149,7 +189,7 @@
       ],
       [
         "29",
-        "René Rast",
+        "Rene Rast",
         "323"
       ],
       [
@@ -159,12 +199,12 @@
       ],
       [
         "31",
-        "A. J. Allmendinger",
+        "AJ Allmendinger",
         "248"
       ],
       [
         "32",
-        "Marco Sørensen",
+        "Marco Sorensen",
         "231"
       ]
     ]
@@ -179,22 +219,37 @@
     "rows": [
       [
         "1",
-        "George Kurtz Alex Quinn",
+        "Alex Quinn",
+        "2322"
+      ],
+      [
+        "1",
+        "George Kurtz",
         "2322"
       ],
       [
         "2",
-        "Jeremy Clarke Tom Dillmann",
+        "Jeremy Clarke",
+        "2302"
+      ],
+      [
+        "2",
+        "Tom Dillmann",
         "2302"
       ],
       [
         "3",
-        "Dan Goldburg",
+        "Daniel Goldburg",
         "2127"
       ],
       [
         "4",
-        "Dane Cameron P.J. Hyett",
+        "Dane Cameron",
+        "2087"
+      ],
+      [
+        "4",
+        "PJ Hyett",
         "2087"
       ],
       [
@@ -209,22 +264,32 @@
       ],
       [
         "7",
-        "Paul di Resta",
+        "Paul Di Resta",
         "1837"
       ],
       [
         "8",
-        "Phil Fayer Mikkel Jensen",
+        "Mikkel Jensen",
+        "1835"
+      ],
+      [
+        "8",
+        "Phil Fayer",
         "1835"
       ],
       [
         "9",
-        "Chris Cumming Pietro Fittipaldi",
+        "Chris Cumming",
+        "1782"
+      ],
+      [
+        "9",
+        "Pietro Fittipaldi",
         "1782"
       ],
       [
         "10",
-        "Tobias Lütke",
+        "Tobi Lutke",
         "1775"
       ],
       [
@@ -239,7 +304,7 @@
       ],
       [
         "13",
-        "Sebastián Álvarez",
+        "Sebastian Alvarez",
         "1666"
       ],
       [
@@ -269,7 +334,17 @@
       ],
       [
         "19",
-        "Jacob Abel Ferdinand Habsburg Naveen Rao",
+        "Ferdinand Habsburg",
+        "1420"
+      ],
+      [
+        "19",
+        "Jacob Abel",
+        "1420"
+      ],
+      [
+        "19",
+        "Naveen Rao",
         "1420"
       ],
       [
@@ -289,12 +364,17 @@
       ],
       [
         "23",
-        "Manuel Espírito Santo",
+        "Manuel Espirito Santo",
         "1225"
       ],
       [
         "24",
-        "Jon Field Oliver Jarvis",
+        "Jon Field",
+        "1182"
+      ],
+      [
+        "24",
+        "Oliver Jarvis",
         "1182"
       ],
       [
@@ -334,12 +414,27 @@
       ],
       [
         "32",
-        "António Félix da Costa",
+        "Antonio Felix da Costa",
         "355"
       ],
       [
         "33",
-        "Nick Cassidy Georgios Kolovos Nolan Siegel Jakub Śmiechowski",
+        "George Kolovos",
+        "325"
+      ],
+      [
+        "33",
+        "Jakub Smiechowski",
+        "325"
+      ],
+      [
+        "33",
+        "Nick Cassidy",
+        "325"
+      ],
+      [
+        "33",
+        "Nolan Siegel",
         "325"
       ],
       [
@@ -359,17 +454,32 @@
       ],
       [
         "37",
-        "Josh Burdon Sennan Fielding Gerry Kraut",
+        "Gerry Kraut",
+        "268"
+      ],
+      [
+        "37",
+        "Josh Burdon",
+        "268"
+      ],
+      [
+        "37",
+        "Sennan Fielding",
         "268"
       ],
       [
         "38",
-        "Job van Uitert",
+        "Job Van Uitert",
         "258"
       ],
       [
         "39",
-        "Sébastien Bourdais Kyffin Simpson",
+        "Kyffin Simpson",
+        "250"
+      ],
+      [
+        "39",
+        "Sebastien Bourdais",
         "250"
       ],
       [
@@ -384,7 +494,22 @@
       ],
       [
         "42",
-        "Dylan Murry Nicklas Nielsen François Perrodo Matthieu Vaxivière",
+        "Dylan Murry",
+        "199"
+      ],
+      [
+        "42",
+        "Francois Perrodo",
+        "199"
+      ],
+      [
+        "42",
+        "Matthieu Vaxiviere",
+        "199"
+      ],
+      [
+        "42",
+        "Nicklas Nielsen",
         "199"
       ]
     ]
@@ -399,47 +524,92 @@
     "rows": [
       [
         "1",
-        "Connor De Phillippi Neil Verhagen",
-        "3012"
+        "Connor De Phillippi",
+        "3017"
+      ],
+      [
+        "1",
+        "Neil Verhagen",
+        "3017"
       ],
       [
         "2",
-        "Andrea Caldarelli Sandy Mitchell",
+        "Andrea Caldarelli",
+        "2979"
+      ],
+      [
+        "2",
+        "Sandy Mitchell",
         "2979"
       ],
       [
         "3",
-        "Nicky Catsburg Tommy Milner",
+        "Nicky Catsburg",
+        "2949"
+      ],
+      [
+        "3",
+        "Tommy Milner",
         "2949"
       ],
       [
         "4",
-        "Harry King Nick Tandy",
+        "Harry King",
+        "2921"
+      ],
+      [
+        "4",
+        "Nick Tandy",
         "2921"
       ],
       [
         "5",
-        "Christopher Mies Frédéric Vervisch",
+        "Christopher Mies",
+        "2825"
+      ],
+      [
+        "5",
+        "Frederic Vervisch",
         "2825"
       ],
       [
         "6",
-        "Ben Barker Dennis Olsen",
+        "Ben Barker",
+        "2821"
+      ],
+      [
+        "6",
+        "Dennis Olsen",
         "2821"
       ],
       [
         "7",
-        "Ben Barnicoat Jack Hawksworth",
+        "Ben Barnicoat",
+        "2779"
+      ],
+      [
+        "7",
+        "Jack Hawksworth",
         "2779"
       ],
       [
         "8",
-        "Antonio García Alexander Sims",
+        "Alexander Sims",
+        "2776"
+      ],
+      [
+        "8",
+        "Antonio Garcia",
         "2776"
       ],
       [
         "9",
-        "Max Esterson Nikita Johnson",
+        "Max Esterson",
+        "2392"
+      ],
+      [
+        "9",
+        "Nikita Johnson",
         "2392"
       ],
       [
@@ -449,12 +619,22 @@
       ],
       [
         "11",
-        "Riccardo Agostini James Calado",
-        "1240"
+        "James Calado",
+        "1257"
+      ],
+      [
+        "11",
+        "Riccardo Agostini",
+        "1257"
       ],
       [
         "12",
-        "Davide Rigon Daniel Serra",
+        "Daniel Serra",
+        "1206"
+      ],
+      [
+        "12",
+        "Davide Rigon",
         "1206"
       ],
       [
@@ -464,8 +644,8 @@
       ],
       [
         "14",
-        "Valentin Hasse-Clot",
-        "1134"
+        "Valentin Hasse Clot",
+        "1144"
       ],
       [
         "15",
@@ -473,14 +653,14 @@
         "926"
       ],
       [
+        "16",
+        "Marco Sorensen",
+        "908"
+      ],
+      [
         "17",
         "Nico Varrone",
         "848"
-      ],
-      [
-        "18",
-        "Marco Sørensen",
-        "908"
       ],
       [
         "18",
@@ -495,7 +675,7 @@
       [
         "20",
         "Miguel Molina",
-        "707"
+        "717"
       ],
       [
         "21",
@@ -539,7 +719,17 @@
       ],
       [
         "29",
-        "Jason Hart Scott Noble Luca Stolz",
+        "Jason Hart",
+        "512"
+      ],
+      [
+        "29",
+        "Luca Stolz",
+        "512"
+      ],
+      [
+        "29",
+        "Scott Noble",
         "512"
       ],
       [
@@ -554,7 +744,17 @@
       ],
       [
         "32",
-        "Maro Engel Kenny Habul Will Power",
+        "Kenny Habul",
+        "350"
+      ],
+      [
+        "32",
+        "Maro Engel",
+        "350"
+      ],
+      [
+        "32",
+        "Will Power",
         "350"
       ],
       [
@@ -564,17 +764,32 @@
       ],
       [
         "34",
-        "Ayhancan Güven",
+        "Ayhancan Guven",
         "278"
       ],
       [
         "35",
-        "Mirko Bortolotti James Hinchcliffe",
+        "James Hinchcliffe",
+        "271"
+      ],
+      [
+        "35",
+        "Mirko Bortolotti",
         "271"
       ],
       [
         "36",
-        "Giacomo Altoè Sébastien Bourdais Casper Stevenson",
+        "Casper Stevenson",
+        "268"
+      ],
+      [
+        "36",
+        "Giacomo Altoè",
+        "268"
+      ],
+      [
+        "36",
+        "Sebastien Bourdais",
         "268"
       ],
       [
@@ -599,22 +814,42 @@
       ],
       [
         "41",
-        "Anthony Bartone Maximilian Götz Jules Gounon Fabian Schiller",
+        "Anthony Bartone",
+        "225"
+      ],
+      [
+        "41",
+        "Fabian Schiller",
+        "225"
+      ],
+      [
+        "41",
+        "Jules Gounon",
+        "225"
+      ],
+      [
+        "41",
+        "Maximilian Goetz",
         "225"
       ],
       [
         "42",
-        "Jüri Vips",
+        "Juri Vips",
         "222"
       ],
       [
         "43",
-        "Michael Christensen Loek Hartog",
+        "Loek Hartog",
+        "210"
+      ],
+      [
+        "43",
+        "Michael Christensen",
         "210"
       ],
       [
         "44",
-        "Benjamin Goethe",
+        "Benji Goethe",
         "192"
       ]
     ]
@@ -629,27 +864,47 @@
     "rows": [
       [
         "1",
-        "Philip Ellis Russell Ward",
+        "Philip Ellis",
+        "3078"
+      ],
+      [
+        "1",
+        "Russell Ward",
         "3078"
       ],
       [
         "2",
-        "Robby Foley Patrick Gallagher",
+        "Patrick Gallagher",
+        "2843"
+      ],
+      [
+        "2",
+        "Robby Foley",
         "2843"
       ],
       [
         "3",
-        "Eduardo Barrichello",
+        "Dudu Barrichello",
         "2742"
       ],
       [
         "4",
-        "Benjamin Pedersen Aaron Telitz",
+        "Aaron Telitz",
+        "2677"
+      ],
+      [
+        "4",
+        "Benjamin Pedersen",
         "2677"
       ],
       [
         "5",
-        "Matt Bell Orey Fidani",
+        "Matthew Bell",
+        "2414"
+      ],
+      [
+        "5",
+        "Orey Fidani",
         "2414"
       ],
       [
@@ -659,7 +914,12 @@
       ],
       [
         "7",
-        "Adam Adelson Callum Ilott",
+        "Adam Adelson",
+        "2387"
+      ],
+      [
+        "7",
+        "Callum Ilott",
         "2387"
       ],
       [
@@ -679,7 +939,12 @@
       ],
       [
         "11",
-        "Danny Formal Trent Hindman",
+        "Danny Formal",
+        "2215"
+      ],
+      [
+        "11",
+        "Trent Hindman",
         "2215"
       ],
       [
@@ -699,7 +964,12 @@
       ],
       [
         "15",
-        "Felipe Fraga Sheena Monk",
+        "Felipe Fraga",
+        "2011"
+      ],
+      [
+        "15",
+        "Sheena Monk",
         "2011"
       ],
       [
@@ -729,17 +999,27 @@
       ],
       [
         "21",
-        "Lin Hodenius James Roe",
+        "James Roe",
+        "1372"
+      ],
+      [
+        "21",
+        "Lin Hodenius",
         "1372"
       ],
       [
         "22",
-        "Antonio Fuoco Simon Mann",
+        "Antonio Fuoco",
+        "1318"
+      ],
+      [
+        "22",
+        "Simon Mann",
         "1318"
       ],
       [
         "23",
-        "Valentin Hasse-Clot",
+        "Valentin Hasse Clot",
         "1308"
       ],
       [
@@ -754,7 +1034,17 @@
       ],
       [
         "26",
-        "Kenton Koch Robert Megennis Onofrio Triarsi",
+        "Kenton Koch",
+        "1264"
+      ],
+      [
+        "26",
+        "Onofrio Triarsi",
+        "1264"
+      ],
+      [
+        "26",
+        "Robert Megennis",
         "1264"
       ],
       [
@@ -774,7 +1064,12 @@
       ],
       [
         "30",
-        "Ryan Hardwick Riccardo Pera",
+        "Riccardo Pera",
+        "1189"
+      ],
+      [
+        "30",
+        "Ryan Hardwick",
         "1189"
       ],
       [
@@ -784,7 +1079,7 @@
       ],
       [
         "32",
-        "Lilou Wadoux",
+        "Lilou Wadoux Ducellier",
         "1178"
       ],
       [
@@ -814,7 +1109,7 @@
       ],
       [
         "38",
-        "Salih Yoluç",
+        "Salih Yoluc",
         "928"
       ],
       [
@@ -869,7 +1164,12 @@
       ],
       [
         "49",
-        "Trenton Estep Marius Fossard",
+        "Marius Fossard",
+        "630"
+      ],
+      [
+        "49",
+        "Trenton Estep",
         "630"
       ],
       [
@@ -909,7 +1209,12 @@
       ],
       [
         "57",
-        "Madison Snow Nicki Thiim",
+        "Madison Snow",
+        "336"
+      ],
+      [
+        "57",
+        "Nicki Thiim",
         "336"
       ],
       [
@@ -929,12 +1234,12 @@
       ],
       [
         "61",
-        "Roman De Angelis",
+        "Tommaso Mosca",
         "285"
       ],
       [
         "62",
-        "Tommaso Mosca",
+        "Roman De Angelis",
         "285"
       ],
       [
@@ -969,7 +1274,7 @@
       ],
       [
         "69",
-        "Devlin DeFrancesco",
+        "Devlin Defrancesco",
         "234"
       ],
       [
@@ -989,7 +1294,12 @@
       ],
       [
         "73",
-        "Harry King Mikkel O. Pedersen",
+        "Harry King",
+        "202"
+      ],
+      [
+        "73",
+        "Mikkel Pedersen",
         "202"
       ],
       [
@@ -1009,7 +1319,17 @@
       ],
       [
         "77",
-        "Peter Ludwig Dave Musial Dave Musial Jr.",
+        "Dave Musial",
+        "172"
+      ],
+      [
+        "77",
+        "Dave Musial Jr.",
+        "172"
+      ],
+      [
+        "77",
+        "Peter Ludwig",
         "172"
       ],
       [
@@ -1034,7 +1354,12 @@
       ],
       [
         "82",
-        "Sven Müller Eric Zitza",
+        "Eric Zitza",
+        "111"
+      ],
+      [
+        "82",
+        "Sven Müller",
         "111"
       ]
     ]
@@ -1056,7 +1381,7 @@
       ],
       [
         "2",
-        "#93 Acura Meyer Shank Racing with Curb-Agajanian",
+        "#93 Acura Meyer Shank Racing w/Curb Agajanian",
         "Acura ARX-06",
         "2723"
       ],
@@ -1086,13 +1411,13 @@
       ],
       [
         "7",
-        "#5 JDC–Miller MotorSports",
+        "#5 JDC-Miller MotorSports",
         "Porsche 963",
         "2525"
       ],
       [
         "8",
-        "#60 Acura Meyer Shank Racing with Curb-Agajanian",
+        "#60 Acura Meyer Shank Racing w/Curb Agajanian",
         "Acura ARX-06",
         "2465"
       ],
@@ -1128,85 +1453,85 @@
       [
         "1",
         "#04 CrowdStrike Racing by APR",
-        "Oreca 07",
+        "ORECA LMP2 07",
         "2322"
       ],
       [
         "2",
         "#43 Inter Europol Competition",
-        "Oreca 07",
+        "ORECA LMP2 07",
         "2302"
       ],
       [
         "3",
         "#22 United Autosports USA",
-        "Oreca 07",
+        "ORECA LMP2 07",
         "2127"
       ],
       [
         "4",
         "#99 AO Racing",
-        "Oreca 07",
+        "ORECA LMP2 07",
         "2087"
       ],
       [
         "5",
         "#52 Bryan Herta Autosport with PR1/Mathiasen",
-        "Oreca 07",
+        "ORECA LMP2 07",
         "2021"
       ],
       [
         "6",
         "#8 Tower Motorsports",
-        "Oreca 07",
+        "ORECA LMP2 07",
         "1967"
       ],
       [
         "7",
         "#2 United Autosports USA",
-        "Oreca 07",
+        "ORECA LMP2 07",
         "1835"
       ],
       [
         "8",
         "#18 Era Motorsport",
-        "Oreca 07",
+        "ORECA LMP2 07",
         "1794"
       ],
       [
         "9",
         "#73 Pratt Miller Motorsports",
-        "Oreca 07",
+        "ORECA LMP2 07",
         "1782"
       ],
       [
         "10",
         "#11 TDS Racing",
-        "Oreca 07",
+        "ORECA LMP2 07",
         "1775"
       ],
       [
         "11",
         "#37 Intersport Racing",
-        "Oreca 07",
+        "ORECA LMP2 07",
         "1182"
       ],
       [
         "12",
         "#343 Inter Europol Competition",
-        "Oreca 07",
+        "ORECA LMP2 07",
         "325"
       ],
       [
         "13",
         "#79 JDC-Miller MotorSports",
-        "Oreca 07",
+        "ORECA LMP2 07",
         "268"
       ],
       [
         "14",
         "#83 AF Corse USA",
-        "Oreca 07",
+        "ORECA LMP2 07",
         "199"
       ]
     ]
@@ -1223,13 +1548,13 @@
       [
         "1",
         "#1 Paul Miller Racing",
-        "BMW M4 GT3 Evo",
+        "BMW M4 GT3 EVO",
         "3017"
       ],
       [
         "2",
         "#9 Pfaff Motorsports",
-        "Lamborghini Huracán GT3 Evo 2 1 Lamborghini Temerario GT3 9",
+        "Lamborghini Temerario GT3",
         "2979"
       ],
       [
@@ -1241,19 +1566,19 @@
       [
         "4",
         "#77 AO Racing",
-        "Porsche 911 GT3 R (992.2)",
+        "Porsche 911 GT3 R (992)",
         "2921"
       ],
       [
         "5",
         "#65 Ford Racing",
-        "Ford Mustang GT3 Evo",
+        "Ford Mustang GT3",
         "2825"
       ],
       [
         "6",
         "#64 Ford Racing",
-        "Ford Mustang GT3 Evo",
+        "Ford Mustang GT3",
         "2821"
       ],
       [
@@ -1271,43 +1596,43 @@
       [
         "9",
         "#59 RLL Team McLaren",
-        "McLaren 720S GT3 Evo",
+        "McLaren 720S GT3 EVO",
         "2392"
       ],
       [
         "10",
-        "#911 Manthey Racing",
-        "Porsche 911 GT3 R (992.2)",
+        "#911 Manthey",
+        "Porsche 911 GT3 R (992)",
         "1379"
       ],
       [
         "11",
         "#033 Triarsi Competizione",
-        "Ferrari 296 GT3 Evo",
+        "Ferrari 296 GT3 EVO",
         "1257"
       ],
       [
         "12",
         "#62 Risi Competizione",
-        "Ferrari 296 GT3 Evo",
+        "Ferrari 296 GT3 EVO",
         "1206"
       ],
       [
         "13",
         "#68 Car Blanche",
-        "Aston Martin Vantage AMR GT3 Evo",
+        "Aston Martin Vantage GT3 Evo",
         "1144"
       ],
       [
         "14",
         "#48 Winward Racing",
-        "Mercedes-AMG GT3 Evo",
+        "Mercedes-AMG GT3",
         "512"
       ],
       [
         "15",
         "#75 75 Express",
-        "Mercedes-AMG GT3 Evo",
+        "Mercedes-AMG GT3",
         "350"
       ],
       [
@@ -1324,8 +1649,8 @@
       ],
       [
         "18",
-        "#69 Bartone Bros with GetSpeed",
-        "Mercedes-AMG GT3 Evo",
+        "#69 GetSpeed",
+        "Mercedes-AMG GT3",
         "225"
       ]
     ]
@@ -1342,19 +1667,19 @@
       [
         "1",
         "#57 Winward Racing",
-        "Mercedes-AMG GT3 Evo",
+        "Mercedes-AMG GT3",
         "3078"
       ],
       [
         "2",
         "#96 Turner Motorsport",
-        "BMW M4 GT3 Evo",
+        "BMW M4 GT3 EVO",
         "2843"
       ],
       [
         "3",
         "#27 Heart of Racing Team",
-        "Aston Martin Vantage AMR GT3 Evo",
+        "Aston Martin Vantage GT3 Evo",
         "2742"
       ],
       [
@@ -1372,25 +1697,25 @@
       [
         "6",
         "#70 Inception Racing",
-        "Ferrari 296 GT3 Evo",
+        "Ferrari 296 GT3 EVO",
         "2398"
       ],
       [
         "7",
         "#120 Wright Motorsports",
-        "Porsche 911 GT3 R (992.2)",
+        "Porsche 911 GT3 R (992)",
         "2387"
       ],
       [
         "8",
         "#34 Conquest Racing",
-        "Ferrari 296 GT3 Evo",
+        "Ferrari 296 GT3 EVO",
         "2363"
       ],
       [
         "9",
         "#45 Wayne Taylor Racing",
-        "Lamborghini Huracán GT3 Evo 2",
+        "Lamborghini Huracan GT3 EVO2",
         "2215"
       ],
       [
@@ -1402,13 +1727,13 @@
       [
         "11",
         "#66 Gradient Racing",
-        "Ford Mustang GT3 Evo",
+        "Ford Mustang GT3",
         "2033"
       ],
       [
         "12",
         "#16 Myers Riley Motorsports",
-        "Ford Mustang GT3 Evo",
+        "Ford Mustang GT3",
         "2011"
       ],
       [
@@ -1419,44 +1744,44 @@
       ],
       [
         "14",
-        "#19 van der Steur Racing 4#068 Car Blanche 2",
-        "Aston Martin Vantage AMR GT3 Evo",
+        "#068 Car Blanche",
+        "Aston Martin Vantage GT3 Evo",
         "1543"
       ],
       [
         "15",
         "#80 Lone Star Racing",
-        "Mercedes-AMG GT3 Evo",
+        "Mercedes-AMG GT3",
         "1372"
       ],
       [
         "16",
         "#21 AF Corse USA",
-        "Ferrari 296 GT3 Evo",
+        "Ferrari 296 GT3 EVO",
         "1318"
       ],
       [
         "17",
         "#023 Triarsi Competizione",
-        "Ferrari 296 GT3 Evo",
+        "Ferrari 296 GT3 EVO",
         "1264"
       ],
       [
         "18",
         "#912 Manthey 1st Phorm",
-        "Porsche 911 GT3 R (992.2)",
+        "Porsche 911 GT3 R (992)",
         "1189"
       ],
       [
         "19",
         "#28 RS1",
-        "Porsche 911 GT3 R (992.2)",
+        "Porsche 911 GT3 R (992)",
         "1005"
       ],
       [
         "20",
         "#44 Magnus Racing",
-        "Aston Martin Vantage AMR GT3 Evo",
+        "Aston Martin Vantage GT3 Evo",
         "729"
       ],
       [
@@ -1468,7 +1793,7 @@
       [
         "22",
         "#177 AO Racing",
-        "Porsche 911 GT3 R (992.2)",
+        "Porsche 911 GT3 R (992)",
         "202"
       ],
       [
@@ -1479,8 +1804,8 @@
       ],
       [
         "24",
-        "#123 Mühlner Motorsport",
-        "Porsche 911 GT3 R (992.2)",
+        "#123 Muehlner Motorsports America, LLC",
+        "Porsche 911 GT3 R (992)",
         "172"
       ]
     ]
