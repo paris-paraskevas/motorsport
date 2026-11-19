@@ -173,7 +173,7 @@ const STANDINGS_HOSTS: Readonly<Record<string, string>> = {
   wrc: 'wikipedia',
   'nascar-cup': 'wikipedia',
   'gt-world': 'gt-world-challenge',
-  imsa: 'wikipedia',
+  imsa: 'alkamel',
   wec: 'fiawec',
 };
 const RESULTS_HOSTS: Readonly<Record<string, string>> = {

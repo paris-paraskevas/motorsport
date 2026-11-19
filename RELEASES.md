@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.314 — 2026-11-19
+
+IMSA's championship standings now come straight from the series' official points, the same figures IMSA publishes after every round, in every class, with each team under the name it races by.
+
 ## 1.0.313 — 2026-11-17
 
 The endurance and GT pages fit a phone: every results table of the FIA WEC, IMSA and GT World Challenge now stays on the screen, a car's laps and time moving to a small line under its crew where the columns would not fit, on a small laptop too. The link under a class's results on a weekend's page opens the race's full classification on that same class. And the series pages with weekend pages, Formula 1's among them, lead to the season's page from their Overview and their Results: "The 2026 season →".
