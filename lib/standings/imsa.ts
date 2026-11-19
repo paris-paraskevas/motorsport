@@ -1,6 +1,6 @@
 import { fetchUpstream } from '@/lib/fetch-upstream';
 import { withSourceSnapshot } from '@/lib/source-snapshot';
-import { fetchImsaRoundResults, type ImsaRoundResults } from '@/lib/results/imsa';
+import { fetchImsaRoundResults } from '@/lib/results/imsa';
 import { loadTeamNames, officialTeamName } from '@/lib/series-content';
 import manifest from '@/content/series/imsa/alkamel-rounds.json';
 
@@ -34,9 +34,9 @@ export interface ImsaDriverStanding {
 
 export interface ImsaTeamStanding {
   position: number;
-  // e.g. "#7 Porsche Penske Motorsport": the points files name a team by its
-  // car number, the season's race results by its team, and `car` is the
-  // model that number last raced.
+  // e.g. "#7 Porsche Penske Motorsport": the car number and the team as the
+  // points files name them, spelled by team-names.json; `car` is the model
+  // that number last raced in the class, from the season's race files.
   team: string;
   car?: string;
   points: number;
@@ -67,9 +67,8 @@ const MIN_TOTAL_DRIVER_ROWS = 30;
 // Kamel files beside the official points PDF after every round, on the open
 // Apache index the results loader reads (lib/results/imsa.ts): in each event's
 // WeatherTech folder, "POINTS DATA - Official/IWSC 08 GTDPRO Drivers.csv" and
-// its ten siblings, "Pos;Participant;Points;…" a row. They replaced Wikipedia's
-// tables (O34, November 2026), whose GTD PRO figures had gone stale. A team is
-// named by its car number alone there; the season's race results name it.
+// its ten siblings, "Pos;Participant;Points;…" a row; a teams file adds a Team
+// column. No file names a car's model: the season's race files give it.
 const FETCH_HEADERS = {
   'User-Agent':
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36',
@@ -121,58 +120,54 @@ export interface PointsRow {
   /** A driver, a car number ("068") or a make, as the file writes it. */
   name: string;
   points: number;
+  /** A teams file's Team column ("Car Blanche"); '' in the other files. */
+  team: string;
 }
 
 /** A points file: a byte-order mark, the head "Pos;Participant;Points;…", then a participant a row. Null
- *  when the head or any row is not that: a file read wrongly is no file. */
+ *  when the head or any row is not that: a file read wrongly (an error page answered with a 200) is no file. */
 export function parsePointsCsv(text: string): PointsRow[] | null {
   const lines = text
-    .replace(/^﻿/, '')
+    .replace(/^\uFEFF/, '')
     .split(/\r?\n/)
     .filter(l => l.trim() !== '');
   const head = (lines[0] ?? '').split(';');
   if (head[0] !== 'Pos' || head[1] !== 'Participant' || head[2] !== 'Points') return null;
+  const teamAt = head.indexOf('Team');
   const rows: PointsRow[] = [];
   for (const line of lines.slice(1)) {
-    const [pos = '', name = '', points = ''] = line.split(';');
+    const cells = line.split(';');
+    const [pos = '', name = '', points = ''] = cells;
     const position = Number(pos);
     const value = Number(points);
     if (!Number.isInteger(position) || position < 1 || points.trim() === '' || !Number.isFinite(value) || name.trim() === '') return null;
-    rows.push({ position, name: name.trim(), points: value });
+    rows.push({ position, name: name.trim(), points: value, team: teamAt < 0 ? '' : (cells[teamAt] ?? '').trim() });
   }
   return rows.length ? rows : null;
 }
 
-/** Each class's cars as the season's race results name them: by number, the team and car model of the
- *  latest race that number ran in the class (GTD PRO's #68 and GTD's #068 are two cars). */
-export type CarNames = Partial<Record<ImsaClass, ReadonlyMap<string, { team: string; vehicle: string }>>>;
+/** Each class's car models by number ("68" → "Aston Martin Vantage GT3 Evo"). */
+type CarModels = Partial<Record<ImsaClass, ReadonlyMap<string, string>>>;
 
 const byPosition = (a: { position: number }, b: { position: number }): number => a.position - b.position;
 
-/** The standings from the eleven files (by name, as fetched) and the cars' names; null unless every class
- *  reads whole. A team whose number no race names stands as its number ("#68"). */
-export function standingsFromPoints(files: Readonly<Record<string, string | null>>, cars: CarNames): ImsaStandings | null {
-  const read = (name: string): PointsRow[] | null => {
-    const text = files[name];
-    return typeof text === 'string' ? parsePointsCsv(text) : null;
-  };
+/** The standings from the eleven files as parsed (by name), each team spelled by `spell` (team-names.json) and given
+ *  its car model; null unless every class reads whole. */
+function standingsFromPoints(files: Readonly<Record<string, PointsRow[] | null>>, models: CarModels, spell: (team: string) => string): ImsaStandings | null {
   const drivers = {} as Record<ImsaClass, ImsaDriverStanding[]>;
   const teams = {} as Record<ImsaClass, ImsaTeamStanding[]>;
   const manufacturers: Partial<Record<ImsaClass, ImsaManufacturerStanding[]>> = {};
   for (const cls of IMSA_CLASSES) {
     const f = POINTS_FILES[cls];
-    const d = read(f.drivers);
-    const t = read(f.teams);
+    const d = files[f.drivers];
+    const t = files[f.teams];
     if (!d || !t) return null;
     drivers[cls] = d.map(x => ({ position: x.position, driverName: x.name, points: x.points })).sort(byPosition);
     teams[cls] = t
-      .map(x => {
-        const car = cars[cls]?.get(x.name);
-        return { position: x.position, team: car?.team ? `#${x.name} ${car.team}` : `#${x.name}`, car: car?.vehicle || undefined, points: x.points };
-      })
+      .map(x => ({ position: x.position, team: x.team ? `#${x.name} ${spell(x.team)}` : `#${x.name}`, car: models[cls]?.get(x.name) || undefined, points: x.points }))
       .sort(byPosition);
     if (f.manufacturers) {
-      const m = read(f.manufacturers);
+      const m = files[f.manufacturers];
       if (!m) return null;
       manufacturers[cls] = m.map(x => ({ position: x.position, manufacturer: x.name, points: x.points })).sort(byPosition);
     }
@@ -195,13 +190,13 @@ async function readText(url: string): Promise<string | null> {
 }
 
 /** The newest round's points folder: the season's rounds newest first, the first whose WeatherTech folder
- *  lists one (a round just raced files its points hours later). An index that cannot be read ends the
- *  search, so an older round's points never stand in for the newest's. */
+ *  lists one (a round just raced files its points hours later). An index that cannot be read, or a round whose
+ *  URL names no WeatherTech folder, ends the search, so an older round's points never stand in for the newest's. */
 async function latestPointsFolder(): Promise<string | null> {
   const rounds = [...(manifest.rounds ?? [])].sort((a, b) => b.round - a.round);
   for (const r of rounds) {
     const base = championshipFolder(r.url);
-    if (!base) continue;
+    if (!base) return null;
     const html = await readText(base);
     if (html === null) return null;
     const folder = pointsFolderOf(indexFolders(html));
@@ -210,27 +205,41 @@ async function latestPointsFolder(): Promise<string | null> {
   return null;
 }
 
-/** The cars' names, each team as team-names.json writes it (imsa.com's spelling, where Al Kamel's race files
- *  write "Crowdstrike Racing by APR"; the results pages read the same file). */
-async function carNames(): Promise<CarNames> {
-  const [rounds, names] = await Promise.all([Promise.all((manifest.rounds ?? []).map(r => fetchImsaRoundResults(r.url, r.round))), loadTeamNames('imsa')]);
-  const season = String(manifest.season);
-  const out: Partial<Record<ImsaClass, Map<string, { team: string; vehicle: string }>>> = {};
-  for (const r of rounds.filter((x): x is ImsaRoundResults => x !== null).sort(byRound)) {
+/** Each class's car models for the numbers its teams file lists, from the season's race files read one at a time,
+ *  newest first, until every number has one: the model each number last raced, without a burst of requests (the
+ *  politeness scripts/warm-live-data.mts keeps for these hosts). Null when no race file answers, so a run that
+ *  cannot read them keeps the stored tables rather than store teams without their cars. */
+async function carModels(wanted: Readonly<Record<ImsaClass, readonly string[]>>): Promise<CarModels | null> {
+  const out: Partial<Record<ImsaClass, Map<string, string>>> = {};
+  const complete = (): boolean => IMSA_CLASSES.every(c => wanted[c].every(no => out[c]?.has(no)));
+  let answered = false;
+  for (const r of [...(manifest.rounds ?? [])].sort((a, b) => b.round - a.round)) {
+    if (answered && complete()) break;
+    const race = await fetchImsaRoundResults(r.url, r.round);
+    if (!race) continue;
+    answered = true;
     for (const cls of IMSA_CLASSES) {
-      for (const e of r.perClass[cls] ?? []) (out[cls] ??= new Map()).set(e.carNumber, { team: officialTeamName(names, season, e.team), vehicle: e.vehicle });
+      for (const e of race.perClass[cls] ?? []) {
+        const known = (out[cls] ??= new Map<string, string>());
+        if (e.vehicle && !known.has(e.carNumber)) known.set(e.carNumber, e.vehicle);
+      }
     }
   }
-  return out;
+  return answered ? out : null;
 }
-const byRound = (a: { round: number }, b: { round: number }): number => a.round - b.round;
 
 async function fetchImsaStandingsLive(): Promise<ImsaStandings | null> {
   const folder = await latestPointsFolder();
   if (!folder) return null;
-  const [texts, cars] = await Promise.all([Promise.all(FILE_NAMES.map(n => readText(`${folder}${encodeURIComponent(`${n}.csv`)}`))), carNames()]);
+  const texts = await Promise.all(FILE_NAMES.map(n => readText(`${folder}${encodeURIComponent(`${n}.csv`)}`)));
+  const files = Object.fromEntries(FILE_NAMES.map((n, i) => [n, texts[i] === null ? null : parsePointsCsv(texts[i])]));
+  if (FILE_NAMES.some(n => files[n] === null)) return null;
   try {
-    return standingsFromPoints(Object.fromEntries(FILE_NAMES.map((n, i) => [n, texts[i]])), cars);
+    const wanted = Object.fromEntries(IMSA_CLASSES.map(c => [c, (files[POINTS_FILES[c].teams] ?? []).map(x => x.name)])) as Record<ImsaClass, string[]>;
+    const [models, names] = await Promise.all([carModels(wanted), loadTeamNames('imsa')]);
+    if (!models) return null;
+    const season = String(manifest.season);
+    return standingsFromPoints(files, models, team => officialTeamName(names, season, team));
   } catch {
     return null;
   }

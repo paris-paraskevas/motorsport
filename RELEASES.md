@@ -6,7 +6,7 @@ Paddock is out of early access. Fifteen championships in one place, every sessio
 
 ## 1.0.314 — 2026-11-19
 
-IMSA's championship standings now come straight from the series' official points, the same figures IMSA publishes after every round, in every class, with each team under the name it races by.
+Behind the scenes, IMSA's championship standings are now read from the series' own official points, every class's figures as IMSA publishes them after each round, ready for the IMSA standings pages to come.
 
 ## 1.0.313 — 2026-11-17
 
