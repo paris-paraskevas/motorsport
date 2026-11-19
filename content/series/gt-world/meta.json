@@ -12,5 +12,5 @@
   "officialStandingsUrl": "https://www.gt-world-challenge-europe.com/standings",
   "officialSite": "https://www.gt-world-challenge-europe.com/",
   "watch": { "service": "GT World", "url": "https://www.gt-world-challenge-europe.com/watch-live" },
-  "site": { "family": "C", "pages": ["results", "weekends"] }
+  "site": { "family": "C", "pages": ["results", "standings", "champions", "weekends"] }
 }

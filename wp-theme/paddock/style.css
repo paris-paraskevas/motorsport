@@ -4,7 +4,7 @@ Theme URI: https://paddock-tracker.com/
 Description: Paddock Tracker's look (round 2) on Twenty Twenty-Five: Archivo, square corners, orange only for now, next and the main action, a designed Night, and the parts the publisher's pages use.
 Author: Paris Paraskevas
 Template: twentytwentyfive
-Version: 0.1.25
+Version: 0.1.26
 Requires at least: 6.7
 Requires PHP: 7.2
 License: GNU General Public License v2 or later
@@ -1514,4 +1514,95 @@ a.pd-sn-t:hover { border-color: var(--pd-ink); border-top-color: var(--t, var(--
 @container (max-width: 779px) {
 	.pd-ec-tbl.is-wide .mv { display: none; }
 	.pd-ec-tbl.is-wide .pd-ec-sub { display: block; }
+}
+
+/* Family C's Standings, Champions and the Overview's standings block (O34, PR 3), as drawn on Endurance Weekend Drafts,
+   Version 4: Formula 1's tables (.pd-st-*, .pd-sr-*, .pd-ch-*) a class at a time, a row a crew whose names take the lines
+   they need. The class tabs are 2.b's (.pd-rt); without the script every class stands under its own heading. */
+.pd-ec-cols { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); grid-template-areas: "drv box" "drv side"; grid-template-rows: auto 1fr; gap: 22px 28px; align-items: start; }
+.pd-ec-cols.no-box { grid-template-areas: "drv side"; grid-template-rows: auto; }
+.pd-ec-drv { grid-area: drv; min-width: 0; }
+.pd-ec-box { grid-area: box; min-width: 0; }
+.pd-ec-side { grid-area: side; display: grid; align-content: start; gap: 22px; min-width: 0; }
+.pd-sr .pd-ec-h3 { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 12px; margin: 0 0 10px; font-size: 1.3rem; font-weight: 800; }
+.pd-ec-h3 small { font-size: .8rem; font-weight: 500; color: var(--pd-muted); }
+.pd-ec-stp .pd-st-tbl .tb { height: auto; min-height: 26px; align-self: stretch; }
+.pd-ec-stp .pd-st-tbl .d b { overflow: visible; white-space: normal; text-overflow: clip; overflow-wrap: anywhere; line-height: 1.25; }
+.pd-ec-stp .pd-st-tbl .d small { overflow-wrap: anywhere; }
+.pd-ec-stp .pd-st-tbl .d em { display: inline-block; margin-left: 4px; padding: 0 6px; background: var(--pd-ink); color: var(--pd-ground); font-size: .64rem; font-style: normal; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; vertical-align: 1px; }
+.pd-ec-stp .pd-st-tbl .pt, .pd-ec-stp .pd-st-tbl .g { white-space: nowrap; }
+/* S2: a table's first ten rows, the rest behind "All N rows", which opens in place. */
+.pd-ec-more { border: 1px solid var(--pd-line); border-top: 0; background: var(--pd-surface); }
+.pd-ec-more summary { padding: 10px 12px; font-size: .84rem; font-weight: 800; cursor: pointer; list-style: none; }
+.pd-ec-more summary::-webkit-details-marker { display: none; }
+.pd-ec-more summary::after { content: " ▾"; color: var(--pd-muted); }
+.pd-ec-more[open] summary::after { content: " ▴"; }
+.pd-ec-more[open] summary { border-bottom: 1px solid var(--pd-line); }
+.pd-ec-more summary:focus-visible { outline: 2px solid var(--pd-accent); outline-offset: -2px; }
+.pd-ec-more .pd-st-tbl { border: 0; }
+/* The season over: the class's champions, or its leaders where champions.json does not name them yet. */
+.pd-ec-title { padding-bottom: 14px; border: 1px solid var(--pd-line); border-top: 4px solid var(--s); background: var(--pd-surface); }
+.pd-sr .pd-ec-title .k { padding: 12px 16px 0; font-size: .72rem; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; color: var(--pd-muted); }
+.pd-ec-title .who { display: grid; gap: 2px; margin: 12px 16px 0; padding-left: 12px; border-left: 4px solid var(--t); }
+.pd-ec-title .who small { font-size: .74rem; font-weight: 700; color: var(--pd-muted); }
+.pd-ec-title .who b { font-size: 1.22rem; line-height: 1.18; font-weight: 800; letter-spacing: -.01em; overflow-wrap: anywhere; }
+.pd-ec-title .who span { font-size: .84rem; color: var(--pd-muted); }
+.pd-sr .pd-ec-title .sum { margin: 14px 0 -14px; padding: 10px 16px 12px; border-top: 1px solid var(--pd-line); font-size: .82rem; color: var(--pd-muted); }
+.pd-ec-title .sum b { margin-right: 6px; color: var(--pd-ink); font-weight: 800; }
+/* The Overview's block: a tab a class, the first five crews beside the first five manufacturers or teams. */
+.pd-sr .pd-ec-sh h3 { font-size: 1.05rem; font-weight: 800; }
+.pd-ec-sr .pd-d .sn { display: none; }
+.pd-ec-sr .pd-d small { display: block; }
+/* Champions: the crew stacked on the reigning card, a table a decade with the other classes' lines under a season. */
+.pd-chp .pd-ec-reign h3 { font-size: 2.75rem; }
+.pd-ec-reign h3 span { display: block; }
+.pd-ec-roll { width: 100%; border: 1px solid var(--pd-line); border-collapse: collapse; background: var(--pd-surface); }
+.pd-ec-roll th { padding: 9px 12px; background: var(--pd-sunken); font-size: .75rem; font-weight: 700; text-align: left; color: var(--pd-muted); }
+.pd-ec-roll td { padding: 10px 12px; border-top: 1px solid var(--pd-line); font-size: .875rem; vertical-align: top; }
+.pd-ec-roll .yr { width: 64px; font-weight: 800; color: var(--pd-accent); }
+.pd-ec-roll td.ch { position: relative; padding-left: 26px; }
+.pd-ec-roll td.ch .tb { position: absolute; left: 12px; top: 10px; bottom: 10px; width: 4px; background: var(--t); }
+.pd-ec-roll td.ch b, .pd-ec-roll td.mk b { display: block; font-weight: 800; overflow-wrap: anywhere; }
+.pd-ec-roll td.mk { width: 34%; }
+.pd-ec-roll td.mk b { font-weight: 600; }
+.pd-ec-roll small { display: block; font-size: .75rem; color: var(--pd-muted); }
+.pd-ec-roll sup { margin-left: 2px; font-size: .64rem; font-weight: 700; color: var(--pd-muted); }
+.pd-ec-roll tr.cls td { padding-top: 0; padding-bottom: 11px; border-top: 0; }
+.pd-ec-roll td.ot { padding-left: 26px; font-size: .82rem; color: var(--pd-muted); }
+.pd-ec-roll td.ot span { display: inline-block; margin-right: 18px; }
+.pd-ec-roll td.ot em { margin-right: 4px; padding: 0 5px; border: 1.5px solid var(--pd-line-strong); font-size: .66rem; font-style: normal; font-weight: 800; letter-spacing: .04em; color: var(--pd-ink); }
+.pd-ec-roll td.ot b { font-weight: 700; color: var(--pd-ink); }
+@media (min-width: 700px) {
+	.pd-ec-recs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+/* Below 1,100 px the crews no longer fit beside the box: one column, the box first. */
+@media (max-width: 1099px) {
+	.pd-ec-cols { grid-template-columns: minmax(0, 1fr); grid-template-areas: "box" "drv" "side"; grid-template-rows: none; }
+	.pd-ec-cols.no-box { grid-template-areas: "drv" "side"; }
+}
+@media (max-width: 699px) {
+	/* IMSA's four-figure points and gaps (3020, −2123) and GT World's halves (131.5) keep their columns. */
+	.pd-ec-stp .pd-st-th, .pd-ec-stp .pd-st-th.c, .pd-ec-stp .pd-st-tbl li, .pd-ec-stp .pd-st-tbl.c li { grid-template-columns: 24px 4px minmax(0, 1fr) 52px 46px 28px; }
+	.pd-ec-sr .pd-d .fn { display: none; }
+	.pd-ec-sr .pd-d .sn { display: inline; }
+	/* GT World's halves (131.5) and IMSA's four figures in the Overview block's points. */
+	.pd-ec-two .pd-sr-th, .pd-ec-sr li { grid-template-columns: 24px minmax(0, 1fr) 48px 52px; }
+	.pd-chp .pd-ec-reign h3 { font-size: 2rem; }
+	/* GT World's halves (131.5, +11.5) and IMSA's four figures stay on one line in a third of a phone. */
+	.pd-ec-reign .pd-ch-tiles span { padding: 8px 10px; overflow-wrap: normal; }
+	.pd-ec-reign .pd-ch-tiles b { font-size: 1.3rem; }
+	.pd-ec-roll thead { display: none; }
+	.pd-ec-roll, .pd-ec-roll tbody, .pd-ec-roll tr, .pd-ec-roll td { display: block; }
+	.pd-ec-roll tr { padding: 12px 14px; border-top: 1px solid var(--pd-line); }
+	.pd-ec-roll tbody tr:first-child { border-top: 0; }
+	.pd-ec-roll td { padding: 0; border: 0; }
+	.pd-ec-roll td.yr { width: auto; margin-bottom: 6px; font-size: .95rem; }
+	.pd-ec-roll td.ch { margin-bottom: 8px; padding-left: 12px; border-left: 4px solid var(--t); }
+	.pd-ec-roll td.ch .tb { display: none; }
+	.pd-ec-roll td.mk { display: grid; grid-template-columns: 104px minmax(0, 1fr); width: auto; padding: 6px 0 0; border-top: 1px solid var(--pd-line); font-size: .84rem; }
+	.pd-ec-roll td.mk::before { content: attr(data-l); grid-row: span 2; font-size: .78rem; font-weight: 700; color: var(--pd-muted); }
+	.pd-ec-roll tr.cls { padding-top: 0; border-top: 0; }
+	.pd-ec-roll tr.cls td.yr { display: none; }
+	.pd-ec-roll td.ot { padding-left: 0; }
+	.pd-ec-roll td.ot span { display: block; margin: 0 0 4px; }
 }

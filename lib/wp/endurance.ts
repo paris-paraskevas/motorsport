@@ -10,9 +10,10 @@
 // total time). The Crew column also tells a round stored in this shape from one stored before it (inShape).
 
 import * as cheerio from 'cheerio';
-import type { SeriesRoundEntry } from '@/lib/types';
-import { built, escapeHtml, sessionKind, type CalendarEntry, type FamilyKit, type Page, type ResultRound, type ResultSession, type SeriesData, type SeriesTeam, type Table } from './render';
-import { col, htmlBlock, teamLabel, tick } from './series';
+import { slugify } from '@/lib/slug';
+import type { Champion, SeriesRoundEntry } from '@/lib/types';
+import { built, escapeHtml, seriesPath, sessionKind, type CalendarEntry, type FamilyKit, type Page, type ResultRound, type ResultSession, type SeriesData, type SeriesTeam, type Table } from './render';
+import { band, championsFoot, col, darkColour, firstSentence, htmlBlock, ordinal, raceWins, tabs, teamLabel, tick } from './series';
 import {
   aside,
   bar,
@@ -859,9 +860,14 @@ function lengthOf(w: Weekend, u: Unit | undefined): string {
 }
 
 const PARTICLES = /^(?:da|das|de|del|della|der|den|di|do|dos|du|la|le|ten|ter|van|von)$/i;
+/** Surnames of two words with no particle, which the last-word rule would cut ("Alessandro Pier Guidi" → "Guidi"). */
+const TWO_WORD_SURNAMES = /\s(Pier Guidi)$/;
 /** A driver's surname for the strip: from its first particle ("Nyck de Vries" → "de Vries", "Sheldon van der Linde" →
- *  "van der Linde"), with a suffix ("Dave Musial Jr." → "Musial Jr."), else the last word. */
+ *  "van der Linde"), with a suffix ("Dave Musial Jr." → "Musial Jr."), a known surname of two words whole ("Pier
+ *  Guidi"), else the last word. */
 export function surnameOf(name: string): string {
+  const two = TWO_WORD_SURNAMES.exec(name.trim());
+  if (two) return two[1];
   const words = name.trim().split(/\s+/);
   const at = words.findIndex((x, i) => i > 0 && i < words.length - 1 && PARTICLES.test(x));
   if (at > 0) return words.slice(at).join(' ');
@@ -1235,6 +1241,795 @@ export function calledOffLine(raw: unknown): string {
   return line.charAt(0).toUpperCase() + line.slice(1);
 }
 
+// ── Standings and Champions (O34's third PR) ─────────────────────────────────
+//
+// As drawn on Endurance Weekend Drafts, Version 4 (ST1 to ST4, CH1, CH2, OV) and answered on 17 Nov (S1: no "Who can
+// still win it" in this PR; S2: a table's first ten rows open, the rest behind "All N rows"; S3: 2026's lines for every
+// class). A class's stored tables ("Hypercar · Drivers", "Hypercar · Manufacturers", "LMGT3 · Teams") are joined to the
+// season's races, as the drawings' join did: each row's names as the results spell them, its car and team, its class
+// wins and its colour. Nothing is typed by hand: every figure is a stored table's or counted from the stored races.
+
+const NEUTRAL = '#9aa3b2';
+const HEX = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i;
+/** Points as a table writes them: 115, 131.5. */
+const fmt = (n: number): string => String(Math.round(n * 10) / 10);
+const num = (s: string): number => Number.parseFloat(s) || 0;
+const plural = (n: number, one: string, many = `${one}s`): string => `${n} ${n === 1 ? one : many}`;
+const andList = (items: readonly string[]): string => (items.length > 1 ? `${items.slice(0, -1).join(', ')} and ${items[items.length - 1]}` : (items[0] ?? ''));
+
+/** A name's letters for comparing, as nameKey writes them, the words kept in their order. */
+const foldName = (name: string): string =>
+  name
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/ø/g, 'o')
+    .replace(/æ/g, 'ae')
+    .replace(/œ/g, 'oe')
+    .replace(/ß/g, 'ss')
+    .replace(/ł/g, 'l')
+    .replace(/đ/g, 'd')
+    .replace(/ı/g, 'i')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+
+/** A name as a standings table and a result are matched by: folded, its initials joined ("A. J." and "AJ" alike), a
+ *  middle initial left out, "ue", "oe" and "ae" as the plain vowel (IMSA's "Nico Mueller" is Müller), the surname last. */
+export function joinKey(name: string): string {
+  const out: string[] = [];
+  for (const w of foldName(name).split(' ').filter(Boolean)) {
+    if (w.length === 1 && out.length === 1 && out[0].length <= 2) out[0] += w;
+    else out.push(w);
+  }
+  return out
+    .filter((w, i) => !(w.length === 1 && i > 0 && i < out.length - 1))
+    .join(' ')
+    .replace(/ue/g, 'u')
+    .replace(/oe/g, 'o')
+    .replace(/ae/g, 'a');
+}
+
+/** The same drivers whatever their order and spelling ("Ryō Hirakawa" and "Ryo Hirakawa"). */
+const sameDrivers = (a: readonly string[], b: readonly string[]): boolean => a.length === b.length && a.map(nameKey).sort().join('|') === b.map(nameKey).sort().join('|');
+
+/** A race of a class: its round, its label and the class's table in it. */
+interface ClassRace {
+  round: number;
+  label: string;
+  table: Table;
+}
+
+/** A class's races in running order: its own table in each race (WEC and IMSA); GT World's whole order in every race
+ *  for Overall, a Sprint Cup round's ("Race 1", "Race 2") for the Sprint Cup and the others for the Endurance Cup. */
+function classRaces(d: SeriesData, cls: string): ClassRace[] {
+  const out: ClassRace[] = [];
+  for (const r of [...(d.results ?? [])].sort((a, b) => (a.round ?? 0) - (b.round ?? 0))) {
+    if (r.round === null) continue;
+    for (const s of r.sessions.filter(own)) {
+      for (const t of classTables(s)) {
+        if (cupAt(t) >= 0) {
+          const sprint = /^race \d/i.test(s.label);
+          if (/sprint/i.test(cls) ? !sprint : /endurance/i.test(cls) && sprint) continue;
+          out.push({ round: r.round, label: s.label, table: t });
+        } else if (t.title === cls) out.push({ round: r.round, label: s.label, table: t });
+      }
+    }
+  }
+  return out;
+}
+
+const crewIn = (t: Table, row: readonly string[]): string[] => cell(t, row, CREW).split(', ').map(clean).filter(Boolean);
+const inCrew = (t: Table, row: readonly string[], name: string): boolean => crewIn(t, row).some(n => joinKey(n) === joinKey(name));
+/** A race's winner: its first place, else its first row. */
+const winnerOf = (t: Table): readonly string[] | undefined => t.rows.find(row => cell(t, row, 'Pos') === '1') ?? t.rows[0];
+
+/** Every name the season's results spell, by its join key, the first spelling kept. */
+function knownNames(d: SeriesData): Map<string, string> {
+  const out = new Map<string, string>();
+  for (const r of d.results ?? []) {
+    for (const s of [...r.sessions, ...(r.others ?? [])]) {
+      for (const t of s.tables) for (const row of t.rows) for (const n of crewIn(t, row)) if (!out.has(joinKey(n))) out.set(joinKey(n), n);
+    }
+  }
+  return out;
+}
+
+/** The results' spelling of a name a standings table writes: the same key in the class's races, then in the season's;
+ *  else (not `strict`) inside the class, the one of that surname with the same initial ("Eduardo Barrichello" for Dudu
+ *  is not: E against D), the one name that begins with it ("Lilou Wadoux" for "Lilou Wadoux Ducellier"), or the only one
+ *  of that surname ("Eduardo Barrichello" → "Dudu Barrichello"). Null when none. */
+function matcherOf(known: ReadonlyMap<string, string>, races: readonly ClassRace[]): (text: string, strict?: boolean) => string | null {
+  const pool = new Map<string, string>();
+  for (const r of races) for (const row of r.table.rows) for (const n of crewIn(r.table, row)) if (!pool.has(joinKey(n))) pool.set(joinKey(n), n);
+  const last = (k: string): string => k.split(' ').pop() ?? '';
+  return (text, strict = false) => {
+    const k = joinKey(text);
+    const hit = pool.get(k) ?? known.get(k);
+    if (hit) return hit;
+    if (strict || k.split(' ').length < 2) return null;
+    const same = [...pool].filter(([p]) => last(p) === last(k));
+    const initial = same.filter(([p]) => p[0] === k[0]);
+    if (initial.length === 1) return initial[0][1];
+    const begins = [...pool].filter(([p]) => p.startsWith(`${k} `));
+    if (begins.length === 1) return begins[0][1];
+    return same.length === 1 ? same[0][1] : null;
+  };
+}
+
+interface CrewName {
+  name: string;
+  /** Spelled from the results; a name they do not hold stays as the table writes it. */
+  known: boolean;
+}
+
+/** A crew a standings cell runs together (the Wikipedia tables stored for IMSA before its official points files: "Nick
+ *  Yelloly Renger van der Zande"): the split that costs least, a name the results hold costing 1, one matched by surname
+ *  2, an unknown name of two or three words 10 a word; a name the results do not know stays as written. A cell of the
+ *  official files, one driver, is the one name the results hold whole. */
+function runTogether(text: string, match: (text: string, strict?: boolean) => string | null): CrewName[] {
+  const words = text.trim().split(/\s+/).filter(Boolean);
+  const best: ({ cost: number; names: CrewName[] } | null)[] = [{ cost: 0, names: [] }, ...words.map(() => null)];
+  for (let i = 1; i <= words.length; i++) {
+    for (let j = Math.max(0, i - 5); j < i; j++) {
+      const before = best[j];
+      if (!before) continue;
+      const span = words.slice(j, i).join(' ');
+      const strict = match(span, true);
+      const sized = i - j >= 2 && i - j <= 3;
+      const loose = strict ? null : sized ? match(span) : null;
+      const cost = before.cost + (strict ? 1 : loose ? 2 : sized ? 10 * (i - j) : Infinity);
+      if (cost < (best[i]?.cost ?? Infinity)) best[i] = { cost, names: [...before.names, { name: strict ?? loose ?? span, known: Boolean(strict ?? loose) }] };
+    }
+  }
+  return best[words.length]?.names ?? [{ name: text.trim(), known: false }];
+}
+
+/** A drivers' table cell as its names: WEC's comma-separated capitals, each spelled; GT World's one driver a row;
+ *  IMSA's one driver a row too (its official points files), or run together in the Wikipedia tables stored before
+ *  them, split. */
+function crewOfCell(text: string, match: (text: string, strict?: boolean) => string | null, single: boolean): CrewName[] {
+  if (text.includes(',')) {
+    return text
+      .split(',')
+      .map(clean)
+      .filter(Boolean)
+      .map(n => {
+        const hit = match(n);
+        return { name: hit ?? tidyCaps(n), known: hit !== null };
+      });
+  }
+  if (single) {
+    const hit = match(text);
+    return [{ name: hit ?? tidyCaps(clean(text)), known: hit !== null }];
+  }
+  return runTogether(text, match);
+}
+
+/** Of entries counted in the order first seen, the one counted most; the latest first seen when level. */
+function mostOf<T>(entries: readonly (readonly [T, number])[]): T | undefined {
+  const most = Math.max(0, ...entries.map(([, n]) => n));
+  return entries.filter(([, n]) => n === most).pop()?.[0];
+}
+
+/** The cars a crew raced in the class, its first known driver's: the car raced most first, under the team name it ran
+ *  most with that car (a team never taken from another car's rows), then every other car it raced, the most raced
+ *  first. A driver's points can come from more than one car (IMSA's Heinrich: the #5, and both his wins in the #7), so a
+ *  row names them all (the operator's "Every car", 18 Nov). */
+function carOf(races: readonly ClassRace[], names: readonly CrewName[]): { car: string; team: string; also: string[] } {
+  const first = names.find(n => n.known)?.name;
+  if (!first) return { car: '', team: '', also: [] };
+  const cars = new Map<string, Map<string, number>>();
+  for (const r of races) {
+    const row = r.table.rows.find(x => inCrew(r.table, x, first));
+    if (!row) continue;
+    const teams = cars.get(cell(r.table, row, 'No.')) ?? new Map<string, number>();
+    teams.set(cell(r.table, row, 'Team'), (teams.get(cell(r.table, row, 'Team')) ?? 0) + 1);
+    cars.set(cell(r.table, row, 'No.'), teams);
+  }
+  const raced = [...cars].map(([no, teams]) => [no, [...teams.values()].reduce((n, x) => n + x, 0)] as const);
+  const car = mostOf(raced) ?? '';
+  const team = mostOf([...(cars.get(car) ?? new Map<string, number>())]) ?? '';
+  const also = raced
+    .filter(([no]) => no !== '' && no !== car)
+    .sort((a, b) => b[1] - a[1])
+    .map(([no]) => no);
+  return { car, team, also };
+}
+
+/** A crew's class wins: the races its every driver won together. A crew with a name the results do not hold has none. */
+function winsOf(races: readonly ClassRace[], names: readonly CrewName[]): number {
+  if (!names.length || names.some(n => !n.known)) return 0;
+  return races.filter(r => {
+    const won = winnerOf(r.table);
+    return won !== undefined && names.every(n => inCrew(r.table, won, n.name));
+  }).length;
+}
+
+/** Each car's colour in drivers.json, which names a team by its car ("Toyota Gazoo Racing #8 (Hypercar)"). */
+function carColours(d: SeriesData): Map<string, string> {
+  const out = new Map<string, string>();
+  for (const t of d.teams ?? []) {
+    const car = /#(\S+)/.exec(t.name)?.[1];
+    if (car && t.colour && HEX.test(t.colour) && !out.has(car)) out.set(car, t.colour);
+  }
+  return out;
+}
+
+/** A crew a row of a class's drivers' table. */
+export interface CrewRow {
+  pos: string;
+  names: string[];
+  /** The points as the table writes them. */
+  shown: string;
+  pts: number;
+  /** The car's number without its "#", and its team, as the crew raced most often in the class; '' when not found. */
+  car: string;
+  team: string;
+  /** Every other car the crew raced in the class, the most raced first ("7", "6"). */
+  also: string[];
+  wins: number;
+  colour: string;
+}
+
+/** A row of a class's manufacturers' or teams' table. */
+export interface SideRow {
+  pos: string;
+  /** The car's number without its "#" (a team entered by its car), else ''. */
+  car: string;
+  name: string;
+  /** Under the name: a WEC team's make, an IMSA team's car; '' for none. */
+  small: string;
+  shown: string;
+  pts: number;
+  wins: number;
+  colour: string;
+}
+
+/** A class's tables, joined to its races. */
+export interface ClassStanding {
+  /** As the stored tables name it ("GTD Pro"), and as the page writes it ("GTD PRO"). */
+  name: string;
+  label: string;
+  races: number;
+  drivers: CrewRow[];
+  makes: SideRow[];
+  teams: SideRow[];
+}
+
+/** A car text holding two models and a footnote's digits, as the Wikipedia tables stored for IMSA before its official
+ *  points files wrote one ("… Huracán GT3 Evo 2 1 Lamborghini Temerario GT3 9"): not a car, so not shown. */
+const twoCars = (car: string): boolean => /\s\d+\s+\S/.test(car) && /\s\d+$/.test(car);
+
+/** A make or a name fiawec.com writes in capitals, in ordinary case: "TOYOTA" → "Toyota", "MERCEDES-AMG" →
+ *  "Mercedes-AMG", "McLAREN" → "McLaren"; two or three capitals stay ("BMW"). Any other text unchanged. */
+function capsName(s: string): string {
+  if (/\p{Ll}/u.test(s.replace(/^Mc/, ''))) return s;
+  return s
+    .split(' ')
+    .map(w =>
+      w
+        .split('-')
+        .map(p => (/^\p{Lu}{2,3}$/u.test(p) ? p : p.charAt(0) + p.slice(1).toLowerCase()))
+        .join('-'),
+    )
+    .join(' ')
+    .replace(/\bMc(\p{Ll})/gu, (_, c: string) => `Mc${c.toUpperCase()}`);
+}
+
+/** A class's drivers: a crew a row, crew-mates a table lists apart (GT World's, level on place and points in one car,
+ *  not always next to each other) on one row; drivers of two cars level on points stay apart. */
+function crewRows(t: Table | undefined, races: readonly ClassRace[], known: ReadonlyMap<string, string>, colours: ReadonlyMap<string, string>, single: boolean): CrewRow[] {
+  if (!t) return [];
+  const match = matcherOf(known, races);
+  const rows: { pos: string; crew: CrewName[]; shown: string; car: string; team: string; also: string[] }[] = [];
+  for (const row of t.rows) {
+    const pos = cell(t, row, 'Pos');
+    const shown = cell(t, row, 'Pts') || cell(t, row, 'Points');
+    const crew = crewOfCell(cell(t, row, 'Driver'), match, single);
+    const { car, team, also } = carOf(races, crew);
+    const mate = car ? rows.find(x => x.car === car && x.pos === pos && x.shown === shown) : undefined;
+    if (mate) {
+      mate.crew.push(...crew);
+      // A crew-mate's own other cars join the row's.
+      mate.also.push(...also.filter(no => !mate.also.includes(no)));
+    } else rows.push({ pos, crew, shown, car, team, also: [...also] });
+  }
+  return rows.map(x => ({
+    pos: x.pos,
+    names: x.crew.map(n => n.name),
+    shown: x.shown,
+    pts: num(x.shown),
+    car: x.car,
+    team: x.team,
+    also: x.also,
+    wins: winsOf(races, x.crew),
+    colour: colours.get(x.car) ?? NEUTRAL,
+  }));
+}
+
+/** A class's teams: IMSA's "#31 Cadillac Whelen" with its car beside it; WEC's "CORVETTE #33 TF SPORT" as the latest race
+ *  with that car spells the team, the make under it; GT World's team alone, coloured as its best-placed crew. A win is a
+ *  class win by the team's car, or by a car of its name. */
+function teamRows(t: Table | undefined, races: readonly ClassRace[], drivers: readonly CrewRow[], colours: ReadonlyMap<string, string>): SideRow[] {
+  if (!t) return [];
+  return t.rows.map(row => {
+    const stored = cell(t, row, 'Team');
+    const byCar = /^#(\S+)\s+(.+)$/.exec(stored);
+    const caps = byCar ? null : /^(.*?) #(\S+) (.+)$/.exec(stored);
+    let car = '';
+    let name = stored;
+    let small = '';
+    if (byCar) {
+      [, car, name] = byCar;
+      small = cell(t, row, 'Car');
+      if (twoCars(small)) small = '';
+    } else if (caps) {
+      car = caps[2];
+      small = capsName(caps[1]);
+      const latest = [...races].reverse().flatMap(r => r.table.rows.filter(x => cell(r.table, x, 'No.') === car).map(x => cell(r.table, x, 'Team')))[0];
+      name = latest || capsName(caps[3]);
+    }
+    const shown = cell(t, row, 'Pts') || cell(t, row, 'Points');
+    const wins = races.filter(r => {
+      const won = winnerOf(r.table);
+      return won !== undefined && (car ? cell(r.table, won, 'No.') === car : foldName(cell(r.table, won, 'Team')) === foldName(stored));
+    }).length;
+    let colour = car ? (colours.get(car) ?? NEUTRAL) : NEUTRAL;
+    if (!car) {
+      const best = drivers.find(x => foldName(x.team) === foldName(stored) && x.colour !== NEUTRAL)?.colour;
+      const raced = races.flatMap(r => r.table.rows.filter(x => foldName(cell(r.table, x, 'Team')) === foldName(stored) && colours.has(cell(r.table, x, 'No.'))).map(x => colours.get(cell(r.table, x, 'No.'))))[0];
+      colour = best ?? raced ?? NEUTRAL;
+    }
+    return { pos: cell(t, row, 'Pos'), car, name, small, shown, pts: num(shown), wins, colour };
+  });
+}
+
+/** A class's manufacturers: each car's make from the drivers' table (WEC's "TOYOTA #8") or the teams' car (IMSA's
+ *  "Cadillac V-Series.R"); a win is a class win by one of the make's cars. */
+function makeRows(t: Table | undefined, drivers: Table | undefined, teams: Table | undefined, races: readonly ClassRace[], colours: ReadonlyMap<string, string>): SideRow[] {
+  if (!t) return [];
+  const names = t.rows.map(row => cell(t, row, 'Manufacturer'));
+  const makeOf = new Map<string, string>();
+  for (const row of drivers?.rows ?? []) {
+    const m = /^(.*?) #(\S+)$/.exec(cell(drivers as Table, row, 'Team'));
+    if (m && !makeOf.has(m[2])) makeOf.set(m[2], m[1]);
+  }
+  for (const row of teams?.rows ?? []) {
+    const no = /^#(\S+)/.exec(cell(teams as Table, row, 'Team'))?.[1];
+    const make = names.find(n => n && foldName(cell(teams as Table, row, 'Car')).startsWith(foldName(n)));
+    if (no && make && !makeOf.has(no)) makeOf.set(no, make);
+  }
+  return t.rows.map(row => {
+    const stored = cell(t, row, 'Manufacturer');
+    const cars = [...makeOf].filter(([, m]) => m === stored).map(([no]) => no);
+    const shown = cell(t, row, 'Pts') || cell(t, row, 'Points');
+    const wins = races.filter(r => {
+      const won = winnerOf(r.table);
+      return won !== undefined && cars.includes(cell(r.table, won, 'No.'));
+    }).length;
+    const coloured = cars.find(c => colours.has(c));
+    return { pos: cell(t, row, 'Pos'), car: '', name: capsName(stored), small: '', shown, pts: num(shown), wins, colour: coloured ? (colours.get(coloured) ?? NEUTRAL) : NEUTRAL };
+  });
+}
+
+/** Every class with a drivers' table, in the stored order: FIA WEC Hypercar and LMGT3; IMSA GTP, LMP2, GTD PRO, GTD;
+ *  GT World Overall, Sprint Cup and Endurance Cup. */
+export function classStandings(d: SeriesData): ClassStanding[] {
+  const tables = d.standings ?? [];
+  const of = (cls: string, kind: string): Table | undefined => tables.find(t => t.title === `${cls} · ${kind}`);
+  const names = [...new Set(tables.map(t => (t.title.includes(' · ') ? t.title.slice(0, t.title.lastIndexOf(' · ')) : '')))].filter(cls => cls && of(cls, 'Drivers'));
+  const known = knownNames(d);
+  const colours = carColours(d);
+  const single = cupSeriesOf(d);
+  return names.map(cls => {
+    const races = classRaces(d, cls);
+    const drivers = crewRows(of(cls, 'Drivers'), races, known, colours, single);
+    return {
+      name: cls,
+      label: className(cls),
+      races: races.length,
+      drivers,
+      makes: makeRows(of(cls, 'Manufacturers'), of(cls, 'Drivers'), of(cls, 'Teams'), races, colours),
+      teams: teamRows(of(cls, 'Teams'), races, drivers, colours),
+    };
+  });
+}
+
+/** A line under a season for another class's title (champions.json `others`, O34's P1): the title, its champions,
+ *  their team. Read by family C's pages alone. */
+interface ClassTitle {
+  title: string;
+  champions: string;
+  team?: string;
+}
+
+function othersOf(s: Champion): ClassTitle[] {
+  const raw: unknown = (s as Champion & { others?: unknown }).others;
+  if (!Array.isArray(raw)) return [];
+  return raw.filter((x): x is ClassTitle => typeof x === 'object' && x !== null && typeof x.title === 'string' && typeof x.champions === 'string' && (x.team === undefined || typeof x.team === 'string'));
+}
+
+const crewList = (names: string): string[] => names.split(',').map(clean).filter(Boolean);
+/** "TOYOTA RACING — Toyota TR010 Hybrid" → the team and the car. */
+const teamAndCar = (s: Champion): [string, string] => {
+  const [team, car] = (typeof s.constructor === 'string' ? s.constructor : '').split(' — ');
+  return [team ?? '', car ?? ''];
+};
+
+/** The drivers champions.json names for a class's title in a season: the top class's the season's own, a second
+ *  title's (GT World's Endurance Cup) its own, any other class's an `others` line; null where it names none. */
+function namedChampions(s: Champion | undefined, c: ClassStanding, top: boolean): string[] | null {
+  if (!s) return null;
+  if (top) return crewList(s.driver);
+  if (s.secondaryDriver && s.secondaryLabel && foldName(s.secondaryLabel) === foldName(c.label)) return crewList(s.secondaryDriver);
+  const line = othersOf(s).find(l => foldName(l.title) === foldName(c.label));
+  return line ? crewList(line.champions) : null;
+}
+
+/** A round has run once its races are stored: a Sprint Cup round's both. */
+function roundRun(r: ResultRound | undefined): boolean {
+  if (!r) return false;
+  const races = r.sessions.filter(s => s.tables.some(t => t.rows.length > 0));
+  if (!races.length) return false;
+  return !races.some(s => /^race 1$/i.test(s.label)) || races.some(s => /^race 2$/i.test(s.label));
+}
+
+/** "8 November", the day at the track's date. */
+const dayMonth = (day: string): string => (/^\d{4}-\d{2}-\d{2}$/.test(day) ? new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC', day: 'numeric', month: 'long' }).format(new Date(`${day}T12:00:00Z`)) : '');
+
+interface StandingsHead {
+  final: boolean;
+  /** The last round run; 0 before the first. */
+  after: number;
+  title: string;
+  /** Markup, its text escaped. */
+  line: string;
+}
+
+/** The page's head (ST1, ST4): "Final standings" once every round has run; else "Standings after round 7 of 8" with the
+ *  round and its day, and when the next points are scored. */
+function standingsHead(d: SeriesData): StandingsHead {
+  const rounds = d.rounds ?? [];
+  const stored = new Map((d.results ?? []).flatMap(r => (r.round === null ? [] : [[r.round, r] as const])));
+  // The rounds run in order: one stored after a round still missing waits for it (its fetch is outstanding).
+  const gap = rounds.findIndex(r => !roundRun(stored.get(r.round)));
+  const run = gap === -1 ? rounds : rounds.slice(0, gap);
+  const last = run[run.length - 1];
+  if (!last) return { final: false, after: 0, title: 'Standings', line: 'No race has run yet this season.' };
+  const day = dayMonth(stored.get(last.round)?.date ?? last.endDate);
+  const named = [esc(last.name), day].filter(Boolean).join(', ');
+  if (gap === -1) return { final: true, after: last.round, title: 'Final standings', line: `All ${rounds.length} rounds run. The last: ${named}.` };
+  const next = rounds[gap];
+  const race = next ? (d.calendar ?? []).filter(e => e.round === next.round && !e.dateOnly && /\brace\b/i.test(e.session) && !/qualif|practice|warm/i.test(e.session)).sort(byStart)[0] : undefined;
+  let weekday = '';
+  if (next && race) {
+    try {
+      weekday = new Intl.DateTimeFormat('en-GB', { timeZone: next.tz || 'UTC', weekday: 'long' }).format(new Date(race.start));
+    } catch {
+      weekday = new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC', weekday: 'long' }).format(new Date(race.start));
+    }
+  }
+  const then = next && weekday ? `<span class="pd-st-next"> · next update after ${weekday}’s ${esc(next.name)}</span>` : '';
+  return { final: false, after: last.round, title: `Standings after round ${last.round} of ${rounds.length}`, line: `${named}${then}` };
+}
+
+/** A table's first ten rows open, the rest behind "All N …", which opens in place (S2). */
+const OPEN = 10;
+function folded(items: readonly string[], noun: string, side: boolean): string {
+  const cls = `pd-st-tbl${side ? ' c' : ''}`;
+  const rest = items.slice(OPEN);
+  return `<ol class="${cls}">${items.slice(0, OPEN).join('')}</ol>` + (rest.length ? `<details class="pd-ec-more"><summary>All ${items.length} ${noun}</summary><ol class="${cls}">${rest.join('')}</ol></details>` : '');
+}
+
+const gapOf = (n: number): string => (n > 0 ? `−${fmt(n)}` : '0');
+const width = (pts: number, lead: number): string => (lead > 0 ? Math.max(0, Math.min(100, (pts / lead) * 100)).toFixed(1) : '0.0');
+/** A crew by its surnames on a phone ("Hartley, Hirakawa, Buemi"); one driver by the whole name. */
+const surnames = (names: readonly string[]): string => (names.length > 1 ? names.map(surnameOf).join(', ') : (names[0] ?? ''));
+const carAndTeam = (car: string, team: string): string => [car ? `#${car}` : '', team].filter(Boolean).join(' ');
+/** "#5 JDC-Miller MotorSports, also #7 and #6": the car the crew raced most, then every other car it raced. */
+const carsOf = (x: CrewRow): string => [carAndTeam(x.car, x.team), andList(x.also.map(no => `#${no}`))].filter(Boolean).join(', also ');
+
+function crewLi(x: CrewRow, i: number, lead: number, champion: boolean): string {
+  const tag = champion ? ` <em>${x.names.length > 1 ? 'Champions' : 'Champion'}</em>` : '';
+  return (
+    `<li${i === 0 ? ' class="lead"' : ''} style="--t:${x.colour}"><span class="p">${esc(x.pos)}</span><i class="tb"></i>` +
+    `<span class="d"><b><span class="fn">${esc(x.names.join(', '))}</span><span class="sn">${esc(surnames(x.names))}</span></b><small>${esc(carsOf(x))}${tag}</small></span>` +
+    `<i class="bar"><i style="width:${width(x.pts, lead)}%"></i></i><span class="pt">${esc(x.shown)}</span><span class="g">${i === 0 ? '—' : gapOf(lead - x.pts)}</span><span class="w">${x.wins || ''}</span></li>`
+  );
+}
+
+function sideLi(x: SideRow, i: number, lead: number, champion: boolean): string {
+  const under = x.small || champion ? `<small>${esc(x.small)}${champion ? `${x.small ? ' ' : ''}<em>Champion</em>` : ''}</small>` : '';
+  return (
+    `<li${i === 0 ? ' class="lead"' : ''} style="--t:${x.colour}"><span class="p">${esc(x.pos)}</span><i class="tb"></i><span class="d"><b>${esc(carAndTeam(x.car, x.name))}</b>${under}</span>` +
+    `<span class="pt">${esc(x.shown)}</span><span class="g">${i === 0 ? '—' : gapOf(lead - x.pts)}</span><span class="w">${x.wins || ''}</span></li>`
+  );
+}
+
+/** The season-over box (ST1): the class's champions where champions.json names them as the table does, else its
+ *  leaders without the word; the top class's with the line where the title was clinched. */
+function titleBox(d: SeriesData, c: ClassStanding, champions: boolean, clinched: string): string {
+  const clear = (rows: readonly { pts: number }[]): string => (rows[1] ? `, ${fmt(rows[0].pts - rows[1].pts)} clear` : '');
+  const wins = (n: number): string => (n ? ` · ${plural(n, 'win')}` : '');
+  const points = (x: { pts: number; shown: string }): string => `${x.shown} point${x.pts === 1 ? '' : 's'}`;
+  const who = (label: string, name: string, line: string, colour: string): string => `<div class="who" style="--t:${colour}"><small>${label}</small><b>${name}</b><span>${esc(line)}</span></div>`;
+  const parts: string[] = [];
+  const top = c.drivers[0];
+  if (top) parts.push(who('Drivers', top.names.map(esc).join('<br>'), [carsOf(top), `${points(top)}${clear(c.drivers)}${wins(top.wins)}`].filter(Boolean).join(' · '), top.colour));
+  const make = c.makes[0];
+  if (make) parts.push(who('Manufacturers', esc(make.name), `${points(make)}${clear(c.makes)}${c.makes[1] ? ` of ${c.makes[1].name}` : ''}${wins(make.wins)}`, make.colour));
+  const team = c.teams[0];
+  if (team) parts.push(who('Teams', esc(carAndTeam(team.car, team.name)), [team.small, `${points(team)}${clear(c.teams)}${wins(team.wins)}`].filter(Boolean).join(' · '), team.colour));
+  const season = d.season ? String(d.season) : '';
+  const head = champions ? `${[season, 'champions'].filter(Boolean).join(' ')} · ${c.label}` : [season, c.label].filter(Boolean).join(' · ');
+  return `<section class="pd-ec-title"><p class="k">${esc(head)}</p>${parts.join('')}${champions && clinched ? `<p class="sum"><b>Clinched</b> ${esc(clinched)}</p>` : ''}</section>`;
+}
+
+const FOOT =
+  'A row is the drivers level on points who raced together: a driver who missed a round has a row of their own, and a driver who raced more than one car has each car named, the one raced most first. Wins are class wins.';
+
+/** One class's tab: its drivers on the left; the box, then the manufacturers' and the teams' tables on the right. */
+function classPanel(d: SeriesData, c: ClassStanding, head: StandingsHead, top: boolean): string {
+  const s = d.champions?.seasons.find(x => x.year === d.season);
+  const named = head.final ? namedChampions(s, c, top) : null;
+  const champions = named !== null && c.drivers[0] !== undefined && sameDrivers(named, c.drivers[0].names);
+  const clinched = top && d.season ? (d.champions?.notes?.[String(d.season)]?.clinched ?? '') : '';
+  const box = head.final ? titleBox(d, c, champions, clinched) : '';
+  const lead = c.drivers[0]?.pts ?? 0;
+  const drivers = folded(
+    c.drivers.map((x, i) => crewLi(x, i, lead, champions && i === 0)),
+    c.drivers.length === 1 ? 'row' : 'rows',
+    false,
+  );
+  const side = (title: string, what: string, rows: readonly SideRow[], noun: string): string =>
+    rows.length
+      ? `<div><h3 class="pd-ec-h3">${title}</h3><div class="pd-st-th c"><span>Pos</span><span></span><span>${what}</span><span>Pts</span><span>Gap</span><span>Wins</span></div>` +
+        `${folded(
+          rows.map((x, i) => sideLi(x, i, rows[0].pts, champions && i === 0)),
+          noun,
+          true,
+        )}</div>`
+      : '';
+  return (
+    `<div class="pd-ec-cols${box ? '' : ' no-box'}">${box ? `<div class="pd-ec-box">${box}</div>` : ''}` +
+    `<div class="pd-ec-drv"><h3 class="pd-ec-h3">Drivers <small>a crew a row</small></h3><div class="pd-st-th"><span>Pos</span><span></span><span>Crew</span><span></span><span>Pts</span><span>Gap</span><span>Wins</span></div>` +
+    `${drivers}<p class="pd-st-foot">${FOOT}</p></div><div class="pd-ec-side">${side('Manufacturers', 'Manufacturer', c.makes, 'manufacturers')}${side('Teams', 'Team', c.teams, 'teams')}</div></div>`
+  );
+}
+
+/** /series/<slug>/standings/ (ST1 to ST3): the head, then a tab a class. Without the script every class stands under its
+ *  own heading. In season the box waits for S1's PR ("Who can still win it"). */
+export function enduranceStandings(d: SeriesData): Page {
+  const all = raceWins(d);
+  const current = (d.rounds ?? []).find(r => !all.has(r.round));
+  const head = standingsHead(d);
+  const classes = classStandings(d);
+  const body = classes.length ? resultTabs(classes.map((c, i) => ({ tab: [c.label], body: classPanel(d, c, head, i === 0) }))) : '<p class="pd-mut">No standings yet this season.</p>';
+  const main =
+    `<div class="pd-sr pd-s-${esc(d.slug)}">${band(d, all, current)}${tabs(d, 'standings')}<div class="pd-sr-main">` +
+    `<section class="pd-sr-sec pd-stp pd-ec-stp"><div class="pd-st-head"><div><h2 class="pd-st-h">${esc(head.title)}</h2><p>${head.line}</p></div></div>${body}</section></div></div>`;
+  return { path: seriesPath(d.slug, 'standings'), title: `${d.name} standings`, body: htmlBlock(main), template: 'page-wide' };
+}
+
+/** The Overview's block (OV): a tab a class, the first five crews beside the first five manufacturers (teams where the
+ *  class has none), each "All N →" to the Standings page opened on that class. */
+export function classBlock(d: SeriesData): string {
+  const classes = classStandings(d);
+  if (!classes.length) return '';
+  const head = standingsHead(d);
+  const hint = head.final ? 'Final · a class at a time' : head.after ? `After round ${head.after} · a class at a time` : 'A class at a time';
+  const live = built(d, 'standings');
+  const row = (x: { pos: string; pts: number; shown: string; wins: number; colour: string }, lead: number, name: string, small: string): string =>
+    `<li><span class="pd-p">${esc(x.pos)}</span><span class="pd-d"><b>${name}</b>${small ? ` <small>${esc(small)}</small>` : ''}<i class="pd-sr-pts"><i style="width:${width(x.pts, lead)}%;--t:${x.colour}"></i></i></span>` +
+    `<span class="pd-pt">${esc(x.shown)}</span><span class="pd-w">${x.wins ? plural(x.wins, 'win') : ''}</span></li>`;
+  const column = (c: ClassStanding, title: string, what: string, count: number, items: string): string => {
+    const all = live ? `<a href="${seriesPath(d.slug, 'standings')}#${tabAnchor([c.label])}">All ${count} →</a>` : `<span class="is-off">All ${count}</span>`;
+    return `<div><div class="pd-sh pd-ec-sh"><h3>${title}</h3><p>${all}</p></div><div class="pd-sr-th"><span></span><span>${what}</span><span>Pts</span><span>Wins</span></div><ol class="pd-sr-tbl pd-ec-sr">${items}</ol></div>`;
+  };
+  const panels = classes.map(c => {
+    const lead = c.drivers[0]?.pts ?? 0;
+    const crews = c.drivers
+      .slice(0, 5)
+      .map(x => row(x, lead, `<span class="fn">${esc(x.names.join(', '))}</span><span class="sn">${esc(surnames(x.names))}</span>`, carsOf(x)))
+      .join('');
+    const side = c.makes.length ? { title: 'Manufacturers', what: 'Manufacturer', rows: c.makes } : { title: 'Teams', what: 'Team', rows: c.teams };
+    const others = side.rows
+      .slice(0, 5)
+      .map(x => row(x, side.rows[0]?.pts ?? 0, esc(carAndTeam(x.car, x.name)), ''))
+      .join('');
+    const right = side.rows.length ? column(c, side.title, side.what, side.rows.length, others) : '';
+    return { tab: [c.label], body: `<div class="pd-sr-two pd-ec-two">${column(c, 'Drivers', 'Crew', c.drivers.length, crews)}${right}</div>` };
+  });
+  return `<section class="pd-sr-sec pd-ec-ov"><div class="pd-sh"><h2>Standings</h2><p>${esc(hint)}</p></div>${resultTabs(panels)}</section>`;
+}
+
+// ── Champions ────────────────────────────────────────────────────────────────
+
+const TITLE_WORDS = ['', 'first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth'];
+const nthWord = (n: number): string => TITLE_WORDS[n] ?? ordinal(n);
+const capital = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
+
+/** A champion team's colour (CH1, CH2): its best-placed crew this season, a car raced under its name, today's roster by
+ *  its name or its make's first word, then the series' historic-team-colors.json by the name without a trailing
+ *  bracket ("(Blancpain GT Series)"); grey where none names it. */
+function championColourOf(d: SeriesData, classes: readonly ClassStanding[], team: string): string {
+  const name = team.split(' — ')[0].trim();
+  const f = foldName(name);
+  if (!f) return NEUTRAL;
+  for (const c of classes) {
+    const best = c.drivers.find(x => foldName(x.team) === f && x.colour !== NEUTRAL);
+    if (best) return best.colour;
+  }
+  const colours = carColours(d);
+  for (const r of classes[0] ? classRaces(d, classes[0].name) : []) {
+    const hit = r.table.rows.find(row => foldName(cell(r.table, row, 'Team')) === f && colours.has(cell(r.table, row, 'No.')));
+    if (hit) return colours.get(cell(r.table, hit, 'No.')) ?? NEUTRAL;
+  }
+  const roster = (d.teams ?? []).flatMap(t => (t.colour && HEX.test(t.colour) ? [{ name: foldName(t.name.replace(/#\S+.*$/, '')), colour: t.colour }] : []));
+  const own = roster.find(t => t.name === f) ?? roster.find(t => t.name.split(' ')[0] === f.split(' ')[0]);
+  if (own) return own.colour;
+  const old = d.champions?.historic[slugify(name.replace(/\s*\([^)]*\)\s*$/, ''))]?.color;
+  return old && HEX.test(old) ? old : NEUTRAL;
+}
+
+/** Each season's place in each of its drivers' titles, and its manufacturers' champion's, counted from the first. */
+function titleMarks(seasons: readonly Champion[]): Map<number, { nth: number[]; make: number | null }> {
+  const drivers = new Map<string, number>();
+  const makes = new Map<string, number>();
+  const out = new Map<number, { nth: number[]; make: number | null }>();
+  for (const s of [...seasons].sort((a, b) => a.year - b.year)) {
+    const nth = crewList(s.driver).map(n => {
+      drivers.set(joinKey(n), (drivers.get(joinKey(n)) ?? 0) + 1);
+      return drivers.get(joinKey(n)) ?? 1;
+    });
+    let make: number | null = null;
+    if (s.constructorChampion) {
+      make = (makes.get(s.constructorChampion) ?? 0) + 1;
+      makes.set(s.constructorChampion, make);
+    }
+    out.set(s.year, { nth, make });
+  }
+  return out;
+}
+
+/** "Fifth title for Buemi and Hartley, third for Hirakawa." */
+function titlesLine(crew: readonly string[], nth: readonly number[]): string {
+  const by = new Map<number, string[]>();
+  crew.forEach((n, i) => by.set(nth[i] ?? 1, [...(by.get(nth[i] ?? 1) ?? []), surnameOf(n)]));
+  return [...by]
+    .sort((a, b) => b[0] - a[0])
+    .map(([n, names], i) => `${i === 0 ? `${capital(nthWord(n))} title` : nthWord(n)} for ${andList(names)}`)
+    .join(', ');
+}
+
+/** The reigning card (CH1): the crew stacked on its team's colour, the team and car, whose title this is, the tiles from
+ *  the season's own row, the second title and the note's first sentence. */
+function reignCard(d: SeriesData, s: Champion, marks: ReturnType<typeof titleMarks>, classes: readonly ClassStanding[]): string {
+  const [team, car] = teamAndCar(s);
+  const colour = championColourOf(d, classes, team);
+  const crew = crewList(s.driver);
+  const mk = marks.get(s.year);
+  const margin = typeof s.points === 'number' && typeof s.runnerUpPoints === 'number' ? s.points - s.runnerUpPoints : null;
+  const tiles = [
+    typeof s.points === 'number' ? `<span><b>${fmt(s.points)}</b>Points</span>` : '',
+    typeof s.wins === 'number' ? `<span><b>${s.wins}</b>Wins</span>` : '',
+    margin !== null && s.runnerUp ? `<span><b>+${fmt(margin)}</b>Over ${esc(andList(crewList(s.runnerUp).map(surnameOf)))}</span>` : '',
+  ].join('');
+  const second = s.constructorChampion
+    ? `Manufacturers’ champion: <b>${esc(s.constructorChampion)}</b>, its ${nthWord(mk?.make ?? 1)} title.`
+    : s.secondaryDriver
+      ? `${esc(s.secondaryLabel ?? 'Second title')}: <b>${esc(andList(crewList(s.secondaryDriver)))}</b>${s.secondaryTeam ? `, ${esc(s.secondaryTeam)}` : ''}.`
+      : '';
+  const note = d.champions?.notes?.[String(s.year)]?.note;
+  const txt = [second, note ? esc(firstSentence(note)) : ''].filter(Boolean).join(' ');
+  const season = d.season;
+  const button =
+    typeof season === 'number' && built(d, 'standings') ? `<div class="pd-ch-acts"><a href="${seriesPath(d.slug, 'standings')}">${season} ${s.year >= season ? 'final standings' : 'title race'} →</a></div>` : '';
+  return (
+    `<section class="pd-ch-reign pd-ec-reign${darkColour(colour) ? ' is-dark' : ''}" style="--t:${colour}"><div class="pd-ch-rin">` +
+    `<p class="pd-ch-lab"><span>Reigning champion${crew.length > 1 ? 's' : ''}</span> ${s.year} season</p><h3>${crew.map(n => `<span>${esc(n)}</span>`).join('')}</h3>` +
+    `<p class="pd-ch-sub"><b>${esc([team, car].filter(Boolean).join(' · '))}</b><b>${esc(titlesLine(crew, mk?.nth ?? []))}</b></p>` +
+    `${tiles ? `<div class="pd-ch-tiles">${tiles}</div>` : ''}${txt ? `<p class="pd-ch-txt">${txt}</p>` : ''}</div>` +
+    `${button}<i class="pd-ch-big" aria-hidden="true">${s.year}</i></section>`
+  );
+}
+
+/** /series/<slug>/champions/ (CH1, CH2): Formula 1's roll of honour with a crew in the champion's place, a table a decade
+ *  with each other class's line under its season, the drivers' titles and the manufacturers', then the doorways and the
+ *  calendar call. No jump bar or search: under three decades. */
+export function enduranceChampions(d: SeriesData): Page {
+  const all = raceWins(d);
+  const current = (d.rounds ?? []).find(r => !all.has(r.round));
+  const path = seriesPath(d.slug, 'champions');
+  const title = `${d.name} champions`;
+  const frame = (inner: string): string => htmlBlock(`<div class="pd-sr pd-s-${esc(d.slug)}">${band(d, all, current)}${tabs(d, 'champions')}<div class="pd-sr-main">${inner}</div></div>`);
+  const seasons = [...(d.champions?.seasons ?? [])].sort((a, b) => b.year - a.year);
+  if (!seasons.length) return { path, title, body: frame('<section class="pd-sr-sec pd-chp"><p class="pd-mut">No champions recorded yet.</p></section>'), template: 'page-wide' };
+
+  const classes = classStandings(d);
+  const marks = titleMarks(seasons);
+  const first = seasons[seasons.length - 1].year;
+  const label = seasons.find(s => s.secondaryLabel)?.secondaryLabel;
+  const makes = seasons.some(s => s.constructorChampion);
+  const drivers = new Set(seasons.flatMap(s => crewList(s.driver).map(joinKey))).size;
+  const name = esc(d.name);
+  const intro = label
+    ? `Every overall champion since ${first} and every ${esc(label)} champion, year by year`
+    : `Every drivers’ champion crew since ${first}${makes ? ' and every manufacturers’ champion' : ''}, year by year`;
+  const mast =
+    `<header class="pd-ch-mast"><p class="pd-ch-kick">${name} · Roll of honour</p><h2 class="pd-ch-h">${name} champions</h2>` +
+    `<p class="pd-ch-intro">${intro}: ${plural(seasons.length, 'season')}, ${plural(drivers, 'different driver')}.</p></header>`;
+
+  const firstHead = label ? 'Overall champions' : 'Drivers’ champions';
+  const secondHead = label ? `${label} champions` : 'Manufacturers’ champion';
+  const secondShort = label ?? 'Manufacturers’';
+  const decade = (y: number): number => Math.floor(y / 10) * 10;
+  const decs = [...new Set(seasons.map(s => decade(s.year)))]
+    .map(x => {
+      const list = seasons.filter(s => decade(s.year) === x);
+      const rows = list
+        .map(s => {
+          const mk = marks.get(s.year);
+          const [team, car] = teamAndCar(s);
+          const names = crewList(s.driver)
+            .map((n, i) => `${esc(n)}${(mk?.nth[i] ?? 1) > 1 ? `<sup>×${mk?.nth[i]}</sup>` : ''}`)
+            .join(', ');
+          const two = s.constructorChampion
+            ? `<b>${esc(s.constructorChampion)}</b><small>${ordinal(mk?.make ?? 1)} title</small>`
+            : s.secondaryDriver
+              ? `<b>${esc(s.secondaryDriver)}</b>${s.secondaryTeam ? `<small>${esc(s.secondaryTeam)}</small>` : ''}`
+              : '<small>—</small>';
+          const lines = othersOf(s)
+            .map(l => `<span><em>${esc(l.title)}</em> <b>${esc(l.champions)}</b>${l.team ? ` ${esc(l.team)}` : ''}</span>`)
+            .join('');
+          return (
+            `<tr><td class="yr">${s.year}</td><td class="ch" style="--t:${championColourOf(d, classes, team)}"><i class="tb"></i><b>${names}</b><small>${esc([team, car].filter(Boolean).join(' · '))}</small></td>` +
+            `<td class="mk" data-l="${esc(secondShort)}">${two}</td></tr>` +
+            (lines ? `<tr class="cls"><td class="yr"></td><td colspan="2" class="ot">${lines}</td></tr>` : '')
+          );
+        })
+        .join('');
+      return (
+        `<section class="pd-ch-dec" id="pd-ch-${x}s" data-dec="${x}s"><h2>${x}s <small>${plural(list.length, 'season')}</small></h2>` +
+        `<table class="pd-ec-roll"><thead><tr><th>Year</th><th>${esc(firstHead)}</th><th>${esc(secondHead)}</th></tr></thead><tbody>${rows}</tbody></table></section>`
+      );
+    })
+    .join('');
+
+  // The drivers' titles (the top five, and everyone level with the fifth, in the order they reached the count) and the
+  // manufacturers', a square a title in that season's team colour.
+  const by = new Map<string, { name: string; titles: Champion[] }>();
+  for (const s of [...seasons].sort((a, b) => a.year - b.year)) {
+    for (const n of crewList(s.driver)) by.set(joinKey(n), { name: by.get(joinKey(n))?.name ?? n, titles: [...(by.get(joinKey(n))?.titles ?? []), s] });
+  }
+  const ranked = [...by.values()].sort((a, b) => b.titles.length - a.titles.length || a.titles[a.titles.length - 1].year - b.titles[b.titles.length - 1].year);
+  const fifth = ranked[4]?.titles.length ?? 0;
+  const squares = (colours: readonly string[]): string => `<span class="sq">${colours.map(c => `<i style="--t:${c}"></i>`).join('')}</span>`;
+  const lead = d.champions?.records?.drivers?.lead?.trim();
+  const most =
+    `<div class="pd-ch-rec"><h3>Most drivers’ titles</h3><ol>${ranked
+      .filter((x, i) => i < 5 || x.titles.length === fifth)
+      .map(x => `<li><b>${esc(x.name)}</b>${squares(x.titles.map(s => championColourOf(d, classes, teamAndCar(s)[0])))}<span class="n">${x.titles.length}</span></li>`)
+      .join('')}</ol>` +
+    `<blockquote>${lead ? `<b>${esc(/[.!?]$/.test(lead) ? lead : `${lead}.`)}</b> ` : ''}One square per title, in that season’s team colour.</blockquote></div>`;
+  const tally = new Map<string, { n: number; last: number }>();
+  for (const s of [...seasons].sort((a, b) => a.year - b.year)) if (s.constructorChampion) tally.set(s.constructorChampion, { n: (tally.get(s.constructorChampion)?.n ?? 0) + 1, last: s.year });
+  const makeTitles = tally.size
+    ? `<div class="pd-ch-rec"><h3>Manufacturers’ titles</h3><ol>${[...tally]
+        .sort((a, b) => b[1].n - a[1].n || a[1].last - b[1].last)
+        .map(([m, v]) => `<li><b>${esc(m)}</b>${squares(Array<string>(v.n).fill(championColourOf(d, classes, m)))}<span class="n">${v.n}</span></li>`)
+        .join('')}</ol></div>`
+    : '';
+
+  const head = standingsHead(d);
+  const standLine = head.final ? 'The final standings, a class at a time.' : head.after ? `The standings after round ${head.after}, a class at a time.` : 'Every class’s table, a crew a row.';
+  // The site has no category for these series yet (/category/fia-wec/ answers 404, 18 Nov 2026): the blog's door waits.
+  const inner =
+    `<div class="pd-sr-sec pd-chp">${mast}${reignCard(d, seasons[0], marks, classes)}<div class="pd-ch-decs">${decs}</div>` +
+    `<section class="pd-ch-recs pd-ec-recs">${most}${makeTitles}</section>${championsFoot(d, standLine, { blog: false })}</div>`;
+  return { path, title, body: frame(inner), template: 'page-wide' };
+}
+
 /** What a family C kit needs from the publisher beyond SeriesData. */
 export interface EnduranceOptions {
   /** A called-off round's line on its tile (calledOffLine), read from rounds.json by the publisher. */
@@ -1265,9 +2060,14 @@ function endurancePages(d: SeriesData, o: EnduranceOptions): Page[] {
   return pages;
 }
 
-/** Family C's kit (O33's registry, scripts/wp-publish.mts): its weekends, its Results fold, and no Overview standings
- *  block until its Standings are drawn (PR 3; Formula 1's drivers beside its constructors do not fit standings kept a
- *  class at a time). */
+/** Family C's kit (O33's registry, scripts/wp-publish.mts): its weekends, its Results fold, and its Standings, Champions
+ *  and Overview standings block a class at a time (PR 3; Formula 1's drivers beside its constructors do not fit them). */
 export function enduranceKit(o: EnduranceOptions = {}): FamilyKit {
-  return { weekendPages: d => endurancePages(d, o), resultsFold: classWinners, overviewStandings: () => '' };
+  return {
+    weekendPages: d => endurancePages(d, o),
+    resultsFold: classWinners,
+    standingsPage: enduranceStandings,
+    championsPage: enduranceChampions,
+    overviewStandings: classBlock,
+  };
 }

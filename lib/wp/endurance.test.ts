@@ -1,17 +1,24 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { describe, it, expect } from 'vitest';
+import type { ChampionNotesFile, HistoricTeamColor, RecordNotesFile } from '@/lib/series-content';
+import type { Champion } from '@/lib/types';
 import type { CalendarEntry, CalendarRound, Page, ResultRound, ResultSession, SeriesData, Table } from './render';
 import { seriesFamily } from './series';
 import { tabAnchor, weekendOf } from './weekend';
 import {
   alkamelSession,
   calledOffLine,
+  classBlock,
+  classStandings,
   classWinners,
   CREW,
   crewCell,
   emptyCrews,
+  enduranceChampions,
   enduranceKit,
+  enduranceStandings,
+  joinKey,
   fetchedRound,
   gtSessionOptions,
   gtTable,
@@ -400,6 +407,8 @@ interface Saved {
   rounds: CalendarRound[];
   calendar: CalendarEntry[];
   results: ResultRound[];
+  /** The races of the rounds `results` does not hold (PR 3's Standings and Champions read both). */
+  races?: ResultRound[];
   standings: Table[];
   teams: { name: string; colour: string }[];
 }
@@ -900,13 +909,13 @@ describe("family C's weekend pages (O34), as drawn on Endurance Weekend Drafts",
     expect(results).toContain('All 35 and every session on the weekend page →');
   });
 
-  it("draws no standings block on the Overview until family C's Standings are drawn (Formula 1's drivers beside its constructors do not fit them)", () => {
-    expect(kit.overviewStandings?.(wec)).toBe('');
-    expect(enduranceKit().overviewStandings?.(imsa)).toBe('');
+  it("draws the Overview's standings block a class at a time, never Formula 1's drivers beside its constructors (PR 3, OV)", () => {
+    expect(kit.overviewStandings).toBe(classBlock);
     const overview = seriesFamily(wec, kit)[0];
     expect(overview.path).toBe('/series/wec/');
-    expect(overview.body).not.toContain('pd-sr-two');
-    expect(seriesFamily(wec)[0].body).toContain('pd-sr-two');
+    expect(overview.body).toContain('<section class="pd-sr-sec pd-ec-ov">');
+    expect(overview.body).not.toContain('<section class="pd-sr-sec pd-sr-two">');
+    expect(seriesFamily(wec)[0].body).toContain('<section class="pd-sr-sec pd-sr-two">');
   });
 
   it("joins a result's team to its car's colour in drivers.json, so a tile and a tick draw it", () => {
@@ -1099,5 +1108,283 @@ describe("family C's pages: what #1201's review found", () => {
     expect(lines).toContain('wec R6 Free Practice 4: no car stored, left out');
     expect(lines.some(l => /another championship/.test(l))).toBe(false);
     expect(tabsOf(body(pages, FUJI))).toEqual(['Hypercar · 17 cars', 'LMGT3 · 1 car']);
+  });
+});
+
+// ── Standings and Champions (O34, PR 3) ──────────────────────────────────────
+
+describe("family C's Standings and Champions (O34, PR 3), as drawn on Endurance Weekend Drafts, Version 4", () => {
+  const content = (slug: Slug, file: string): unknown => JSON.parse(readFileSync(path.join(process.cwd(), 'content', 'series', slug, file), 'utf8'));
+  /** A series as the publisher hands it over once its setting lists Standings and Champions: every stored table, every
+   *  round's race, champions.json and what the Champions page reads beside it (the colour file left out on request). */
+  const full = (slug: Slug, extra: Partial<SeriesData> = {}, historic = true): SeriesData => {
+    const s = saved[slug];
+    const results = [...s.results, ...(s.races ?? [])].sort((a, b) => (a.round ?? 0) - (b.round ?? 0));
+    return seriesOf(slug, {
+      results,
+      teams: withResultTeams(
+        s.teams.map(x => ({ ...x, drivers: [] })),
+        results,
+      ),
+      champions: {
+        seasons: content(slug, 'champions.json') as Champion[],
+        notes: content(slug, 'champion-notes.json') as ChampionNotesFile,
+        records: content(slug, 'record-notes.json') as RecordNotesFile,
+        historic: historic ? (content(slug, 'historic-team-colors.json') as { teams: Record<string, HistoricTeamColor> }).teams : {},
+        names: null,
+      },
+      sites: { [slug]: { family: 'C', pages: ['results', 'standings', 'champions', 'weekends'] } },
+      ...extra,
+    });
+  };
+  /** One class's tab: from its name to the next tab, or to the end (a box's own section closes inside a tab). */
+  const tab = (html: string, name: string): string => {
+    const from = html.indexOf(`data-pd-tab="${name}"`);
+    const to = html.indexOf('<section class="pd-rt-p"', from + 1);
+    return from < 0 ? '' : html.slice(from, to < 0 ? undefined : to);
+  };
+  const seasonsWith = (slug: Slug, change: (s: Champion) => Champion): Champion[] => (content(slug, 'champions.json') as Champion[]).map(s => (s.year === 2026 ? change(s) : s));
+
+  it('matches a table’s names to the results’ whatever their initials, accents and umlauts', () => {
+    expect(joinKey('A. J. Allmendinger')).toBe(joinKey('AJ Allmendinger'));
+    expect(joinKey('Nico Mueller')).toBe(joinKey('Nico Müller'));
+    expect(joinKey('Maximilian Goetz')).toBe(joinKey('Maximilian Götz'));
+    expect(joinKey('Marco Sørensen')).toBe(joinKey('Marco Sorensen'));
+    expect(joinKey('Juan Pablo Montoya')).not.toBe(joinKey('Juan Montoya'));
+    expect(surnameOf('Alessandro Pier Guidi')).toBe('Pier Guidi');
+  });
+
+  it("joins FIA WEC's tables to its races: a crew a row, its car and team, its class wins and its colour", () => {
+    const [hyper, gt3] = classStandings(full('wec'));
+    expect([hyper.label, gt3.label]).toEqual(['Hypercar', 'LMGT3']);
+    expect(hyper.drivers).toHaveLength(29);
+    expect(hyper.drivers[0]).toEqual({ pos: '1', names: ['Brendon Hartley', 'Ryo Hirakawa', 'Sébastien Buemi'], shown: '115', pts: 115, car: '8', team: 'TOYOTA RACING', also: [], wins: 3, colour: '#EB0A1E' });
+    expect(hyper.drivers[3]).toMatchObject({ names: ['Earl Bamber', 'Sébastien Bourdais'], car: '38', team: 'Cadillac Hertz Team JOTA', wins: 1 });
+    expect(hyper.makes.slice(0, 3).map(m => `${m.name} ${m.shown} ${m.wins}`)).toEqual(['Toyota 215 4', 'BMW 172 2', 'Ferrari 150 1']);
+    expect(hyper.teams).toEqual([]);
+    expect(gt3.drivers.slice(0, 3).map(x => `${x.names.join(', ')} #${x.car} ${x.wins}`)).toEqual(['Jonny Edgar #33 1', 'Nicky Catsburg #33 1', 'Riccardo Pera, Richard Lietz, Yasser Shahin #92 2']);
+    // fiawec.com's "CORVETTE #33 TF SPORT": the car, the team as its races spell it, the make under it.
+    expect(gt3.teams[0]).toMatchObject({ car: '33', name: 'TF Sport', small: 'Corvette', shown: '107', wins: 1 });
+    expect(gt3.makes).toEqual([]);
+  });
+
+  it("reads IMSA's official tables a driver a row: crew-mates level on place and points in one car one row, each spelled as the results spell them", () => {
+    const stored = (title: string): string[][] => saved.imsa.standings.find(t => t.title === title)?.rows ?? [];
+    expect(stored('GTP · Drivers').slice(2, 5)).toEqual([
+      ['3', 'Nick Yelloly', '2723'],
+      ['3', 'Renger van der Zande', '2723'],
+      ['4', 'Kevin Estre', '2709'],
+    ]);
+    const classes = classStandings(full('imsa'));
+    expect(classes.map(c => `${c.label} ${c.drivers.length}`)).toEqual(['GTP 32', 'LMP2 42', 'GTD PRO 44', 'GTD 82']);
+    const [gtp, lmp2, pro, gtd] = classes;
+    expect(gtp.drivers[2]).toMatchObject({ pos: '3', names: ['Nick Yelloly', 'Renger van der Zande'], car: '93', team: 'Acura Meyer Shank Racing w/Curb Agajanian' });
+    expect(gtp.drivers[3]).toMatchObject({ names: ['Kévin Estre'], car: '6', team: 'Porsche Penske Motorsport' });
+    // A crew in IMSA's own order.
+    expect(lmp2.drivers[0]).toMatchObject({ names: ['Alex Quinn', 'George Kurtz'], car: '04', team: 'CrowdStrike Racing by APR', wins: 2 });
+    // The figures the review of #1204 found stale on Wikipedia, as IMSA's files give them.
+    expect([0, 10, 13, 15, 16, 19].map(i => `${pro.drivers[i].pos} ${pro.drivers[i].names.join(', ')} ${pro.drivers[i].shown} #${pro.drivers[i].car}`)).toEqual([
+      '1 Connor De Phillippi, Neil Verhagen 3017 #1',
+      '11 James Calado, Riccardo Agostini 1257 #033',
+      '14 Valentin Hasse Clot 1144 #68',
+      '16 Marco Sorensen 908 #68',
+      '17 Nico Varrone 848 #4',
+      '20 Miguel Molina 717 #033',
+    ]);
+    expect(gtd.teams.find(t => t.car === '068')).toMatchObject({ pos: '14', name: 'Car Blanche', small: 'Aston Martin Vantage GT3 Evo', shown: '1543' });
+    expect(classes.flatMap(c => c.teams).filter(t => t.name.includes('#'))).toEqual([]);
+    expect(pro.teams.find(t => t.car === '9')).toMatchObject({ name: 'Pfaff Motorsports', small: 'Lamborghini Temerario GT3', wins: 2 });
+    expect(gtp.teams[0]).toMatchObject({ car: '31', name: 'Cadillac Whelen', small: 'Cadillac V-Series.R', wins: 2 });
+    expect(gtd.makes[0]).toMatchObject({ name: 'Mercedes-AMG', shown: '3339', wins: 5 });
+    expect(lmp2.makes).toEqual([]);
+  });
+
+  it("still reads the Wikipedia tables stored for IMSA before its official points files: a crew run together split, a name spelled otherwise found, a two-car cell not shown", () => {
+    // Cells as those tables wrote them (the data branch at e8f7e1bf).
+    const drivers = (cls: string, row: string[]) => ({ title: `${cls} · Drivers`, columns: ['Pos', 'Driver', 'Pts'], rows: [row] });
+    const [gtp, pro, gtd] = classStandings(
+      full('imsa', {
+        standings: [
+          drivers('GTP', ['3', 'Nick Yelloly Renger van der Zande', '2723']),
+          drivers('GTD Pro', ['1', 'Connor De Phillippi Neil Verhagen', '3012']),
+          drivers('GTD', ['3', 'Eduardo Barrichello', '2742']),
+          { title: 'GTD Pro · Teams', columns: ['Pos', 'Team', 'Car', 'Pts'], rows: [['2', '#9 Pfaff Motorsports', 'Lamborghini Huracán GT3 Evo 2 1 Lamborghini Temerario GT3 9', '2979']] },
+        ],
+      }),
+    );
+    expect(gtp.drivers[0]).toMatchObject({ names: ['Nick Yelloly', 'Renger van der Zande'], car: '93' });
+    expect(pro.drivers[0]).toMatchObject({ names: ['Connor De Phillippi', 'Neil Verhagen'], car: '1' });
+    // Wikipedia's "Eduardo Barrichello" is the results' (and imsa.com's) Dudu Barrichello.
+    expect(gtd.drivers[0]).toMatchObject({ names: ['Dudu Barrichello'], car: '27', team: 'Heart of Racing Team' });
+    expect(pro.teams[0]).toMatchObject({ car: '9', name: 'Pfaff Motorsports', small: '' });
+  });
+
+  it('names every car a driver raced in the class, the one raced most first (the operator’s “Every car”, 18 Nov)', () => {
+    // Heinrich raced the #5 most, won in the #7 and raced the #6 once: one row, its points from every car.
+    const [gtp] = classStandings(full('imsa'));
+    expect(gtp.drivers[1]).toMatchObject({ pos: '2', names: ['Laurin Heinrich'], car: '5', team: 'JDC-Miller MotorSports', also: ['7', '6'], wins: 3 });
+    const page = enduranceStandings(full('imsa')).body;
+    expect(tab(page, 'GTP')).toContain('<span class="sn">Laurin Heinrich</span></b><small>#5 JDC-Miller MotorSports, also #7 and #6</small>');
+    expect(tab(classBlock(full('imsa')), 'GTP')).toContain('<small>#5 JDC-Miller MotorSports, also #7 and #6</small>');
+    const [overall] = classStandings(full('gt-world'));
+    expect(overall.drivers.find(x => x.names.join() === 'Fabian Schiller')).toMatchObject({ car: '12', also: ['17'] });
+    expect(page).toContain(
+      '<p class="pd-st-foot">A row is the drivers level on points who raced together: a driver who missed a round has a row of their own, and a driver who raced more than one car has each car named, the one raced most first. Wins are class wins.</p>',
+    );
+  });
+
+  it("joins GT World's crew-mates into one row by place, points and car, never two cars level on points", () => {
+    const [overall, sprint, endurance] = classStandings(full('gt-world'));
+    expect([overall.label, sprint.label, endurance.label]).toEqual(['Overall', 'Sprint Cup', 'Endurance Cup']);
+    expect([overall.drivers.length, sprint.drivers.length, endurance.drivers.length]).toEqual([72, 31, 38]);
+    expect(overall.drivers[0]).toMatchObject({ names: ['Lucas Auer', 'Maro Engel'], car: '48', team: 'Winward Racing', shown: '131.5', wins: 0 });
+    expect(endurance.drivers[0]).toMatchObject({ names: ['Lucas Auer', 'Maro Engel', 'Luca Stolz'], car: '48', team: 'Mercedes-AMG Team MANN-FILTER' });
+    expect(sprint.drivers[0]).toMatchObject({ names: ['Ricardo Feller', 'Bastian Buus'], car: '80', team: 'Lionspeed GP', wins: 2 });
+    expect(overall.drivers.filter(x => x.pos === '20').map(x => `${x.names.join(', ')} #${x.car}`)).toEqual(['Fabian Schiller #12', 'Maximilian Götz #17']);
+    // The #71's crew, which the table lists around another car's: one row.
+    expect(overall.drivers.find(x => x.car === '71' && x.pos === '47')?.names).toEqual(['Simon Birch', 'Malte Ebdrup', 'Frederik Schandorff']);
+    // A team named without its car takes its best-placed crew's colour.
+    expect(overall.teams[0]).toMatchObject({ car: '', name: 'Team WRT', shown: '152.5', wins: 2, colour: '#1C69D4' });
+  });
+
+  it('draws the Standings page with the season over: a tab a class, the box naming the champions, ten rows open (ST1)', () => {
+    const page = enduranceStandings(full('wec'));
+    expect(page).toMatchObject({ path: '/series/wec/standings/', title: 'FIA WEC standings', template: 'page-wide' });
+    const html = page.body;
+    expect(html).toContain('<nav class="pd-sr-tabs" aria-label="FIA WEC pages"><div class="pd-sr-tabs-in"><a href="/series/wec/">Overview</a>');
+    expect(html).toContain('<a href="/series/wec/standings/" aria-current="page">Standings</a>');
+    expect(html).toContain('<h2 class="pd-st-h">Final standings</h2><p>All 8 rounds run. The last: 6 Hours of Monza, 8 November.</p>');
+    expect(tabsOf(html)).toEqual(['Hypercar', 'LMGT3']);
+    const hyper = tab(html, 'Hypercar');
+    expect(hyper).toContain('<p class="k">2026 champions · Hypercar</p>');
+    expect(hyper).toContain('<small>Drivers</small><b>Brendon Hartley<br>Ryo Hirakawa<br>Sébastien Buemi</b><span>#8 TOYOTA RACING · 115 points, 18 clear · 3 wins</span>');
+    expect(hyper).toContain('<small>Manufacturers</small><b>Toyota</b><span>215 points, 43 clear of BMW · 4 wins</span>');
+    expect(hyper).toContain('<p class="sum"><b>Clinched</b> 6 Hours of Monza, 8 November 2026, final round (8 of 8)</p>');
+    expect(hyper).toContain('<span class="fn">Brendon Hartley, Ryo Hirakawa, Sébastien Buemi</span><span class="sn">Hartley, Hirakawa, Buemi</span></b><small>#8 TOYOTA RACING <em>Champions</em></small>');
+    expect(hyper).toContain('<span class="pt">97</span><span class="g">−18</span><span class="w">1</span>');
+    const open = hyper.slice(hyper.indexOf('pd-ec-drv'), hyper.indexOf('<details'));
+    expect((open.match(/<li/g) ?? []).length).toBe(10);
+    expect(hyper).toContain('<details class="pd-ec-more"><summary>All 29 rows</summary>');
+    expect(hyper).toContain('<span class="d"><b>Toyota</b><small><em>Champion</em></small></span>');
+    const gt3 = tab(html, 'LMGT3');
+    expect(gt3).toContain('<p class="k">2026 champions · LMGT3</p>');
+    expect(gt3).toContain('<small>Teams</small><b>#33 TF Sport</b><span>Corvette · 107 points, 8 clear · 1 win</span>');
+    expect(gt3).not.toContain('Clinched');
+    expect(gt3).toContain('<summary>All 26 rows</summary>');
+    expect(gt3).toContain('<summary>All 18 teams</summary>');
+    expect(seriesFamily(full('wec'), kit).find(p => p.path === '/series/wec/standings/')?.body).toBe(html);
+  });
+
+  it("says champions only where champions.json names the class's champions as the table does", () => {
+    const d = full('wec');
+    const none = d.champions ? { ...d.champions, seasons: seasonsWith('wec', s => ({ ...s, others: [] }) as Champion) } : undefined;
+    const gt3 = tab(enduranceStandings({ ...d, champions: none }).body, 'LMGT3');
+    expect(gt3).toContain('<p class="k">2026 · LMGT3</p>');
+    expect(gt3).not.toContain('<em>Champion');
+    const other = d.champions ? { ...d.champions, seasons: seasonsWith('wec', s => ({ ...s, driver: 'Kamui Kobayashi, Mike Conway, Nyck de Vries' })) } : undefined;
+    const hyper = tab(enduranceStandings({ ...d, champions: other }).body, 'Hypercar');
+    expect(hyper).toContain('<p class="k">2026 · Hypercar</p>');
+    expect(hyper).not.toContain('Clinched');
+    expect(hyper).not.toContain('<em>Champion');
+    // GT World's Endurance Cup is named by the season's second title; its Sprint Cup by an `others` line.
+    const gtw = enduranceStandings(full('gt-world')).body;
+    expect(tab(gtw, 'Endurance Cup')).toContain('<p class="k">2026 champions · Endurance Cup</p>');
+    expect(tab(gtw, 'Sprint Cup')).toContain('<p class="k">2026 champions · Sprint Cup</p>');
+    expect(tab(gtw, 'Overall')).toContain('<p class="sum"><b>Clinched</b> On appeal, before the Portimão finale, October 2026</p>');
+  });
+
+  it('draws the page in season: the round run and when the next points are scored, and no box until S1 (ST4)', () => {
+    const d = full('wec');
+    const html = enduranceStandings({ ...d, results: (d.results ?? []).filter(r => r.round !== 8) }).body;
+    expect(html).toContain('<h2 class="pd-st-h">Standings after round 7 of 8</h2><p>6 Hours of Barcelona, 18 October<span class="pd-st-next"> · next update after Sunday’s 6 Hours of Monza</span></p>');
+    expect(html).not.toContain('pd-ec-title');
+    expect(html).not.toContain('<em>Champion');
+    expect(html).toContain('<div class="pd-ec-cols no-box"><div class="pd-ec-drv">');
+    // A Sprint Cup round with its first race alone is not run yet.
+    const g = full('gt-world');
+    const half = (g.results ?? []).map(r => (r.round === 9 ? { ...r, sessions: r.sessions.filter(s => s.label === 'Race 1') } : r)).filter(r => r.round !== 10);
+    expect(enduranceStandings({ ...g, results: half }).body).toContain('<h2 class="pd-st-h">Standings after round 8 of 10</h2>');
+    // A round stored while an earlier one is still missing waits for it.
+    const gap = enduranceStandings({ ...d, results: (d.results ?? []).filter(r => r.round !== 7) }).body;
+    expect(gap).toContain('<h2 class="pd-st-h">Standings after round 6 of 8</h2>');
+    expect(gap).toContain('<span class="pd-st-next"> · next update after Sunday’s 6 Hours of Barcelona</span>');
+  });
+
+  it('heads the box with the class alone when the series names no season', () => {
+    const hyper = tab(enduranceStandings({ ...full('wec'), season: undefined }).body, 'Hypercar');
+    expect(hyper).toContain('<p class="k">Hypercar</p>');
+    expect(hyper).not.toContain('Clinched');
+  });
+
+  it('escapes what a table holds', () => {
+    const evil = saved.wec.standings.map(t => (t.title === 'Hypercar · Drivers' ? { ...t, rows: [...t.rows.slice(0, -1), ['29', '<img src=x onerror=alert(1)>', '', '0']] } : t));
+    const html = enduranceStandings(full('wec', { standings: evil })).body;
+    expect(html).toContain('&lt;img src=x onerror=alert(1)&gt;');
+    expect(html).not.toContain('<img src=x');
+  });
+
+  it('draws the Champions page with a crew in the champion’s place and each other class’s line under its season (CH1)', () => {
+    const page = enduranceChampions(full('wec'));
+    expect(page).toMatchObject({ path: '/series/wec/champions/', title: 'FIA WEC champions', template: 'page-wide' });
+    const html = page.body;
+    expect(html).toContain('<p class="pd-ch-intro">Every drivers’ champion crew since 2012 and every manufacturers’ champion, year by year: 14 seasons, 26 different drivers.</p>');
+    expect(html).toContain('<p class="pd-ch-lab"><span>Reigning champions</span> 2026 season</p><h3><span>Sébastien Buemi</span><span>Brendon Hartley</span><span>Ryō Hirakawa</span></h3>');
+    expect(html).toContain('<p class="pd-ch-sub"><b>TOYOTA RACING · Toyota TR010 Hybrid</b><b>Fifth title for Buemi and Hartley, third for Hirakawa</b></p>');
+    expect(html).toContain('<div class="pd-ch-tiles"><span><b>115</b>Points</span><span><b>3</b>Wins</span><span><b>+18</b>Over Kobayashi, Conway and de Vries</span></div>');
+    expect(html).toContain('Manufacturers’ champion: <b>Toyota</b>, its sixth title. Buemi, Hartley and Hirakawa went to Monza 17 points clear of the sister #7 Toyota with 26 still to win, and tenth place on 8 November was enough.</p>');
+    expect(html).toContain('<a href="/series/wec/standings/">2026 final standings →</a>');
+    expect(html).toContain('<b>Sébastien Buemi<sup>×5</sup>, Brendon Hartley<sup>×5</sup>, Ryō Hirakawa<sup>×3</sup></b><small>TOYOTA RACING · Toyota TR010 Hybrid</small>');
+    expect(html).toContain('<td class="mk" data-l="Manufacturers’"><b>Toyota</b><small>6th title</small></td>');
+    expect(html).toContain('<tr class="cls"><td class="yr"></td><td colspan="2" class="ot"><span><em>LMGT3</em> <b>Jonny Edgar</b> #33 TF Sport</span><span><em>LMGT3 teams</em> <b>#33 TF Sport</b> Corvette</span></td></tr>');
+    expect(html).toContain('<tr><td class="yr">2020</td><td class="ch"');
+    expect(html).toMatch(/<td class="yr">2020<\/td>.*?<td class="mk" data-l="Manufacturers’"><small>—<\/small><\/td>/);
+    expect(html).not.toContain('pd-ch-jump');
+    expect(html).toMatch(/<li><b>Sébastien Buemi<\/b><span class="sq">(<i style="--t:#[0-9A-Fa-f]{6}"><\/i>){5}<\/span><span class="n">5<\/span><\/li>/);
+    expect(html).toContain('<blockquote><b>Buemi and Hartley have shared the record since 2022, when both reached three in the same car; a fourth came in the 2023 finale and a fifth at Monza in 2026.</b> One square per title, in that season’s team colour.</blockquote>');
+    expect(html).toMatch(/<li><b>Toyota<\/b><span class="sq">(<i style="--t:#EB0A1E"><\/i>){6}<\/span><span class="n">6<\/span><\/li>/);
+    // The doorways as on Formula 1's page; the blog's waits for a category, the Standings door has its own line.
+    expect(html).toContain('<b>FIA WEC standings</b><span>The final standings, a class at a time.</span>');
+    expect(html).toContain('<span class="pd-ch-door is-off"><small>From the blog</small><b>FIA WEC posts</b>');
+    expect(html).toContain('<section class="pd-ch-call">');
+    expect(seriesFamily(full('wec'), kit).find(p => p.path === '/series/wec/champions/')?.body).toBe(html);
+  });
+
+  it('colours a past champion from the colour file, grey without it', () => {
+    expect(enduranceChampions(full('wec')).body).toContain('<tr><td class="yr">2017</td><td class="ch" style="--t:#D5001C">');
+    expect(enduranceChampions(full('wec', {}, false)).body).toContain('<tr><td class="yr">2017</td><td class="ch" style="--t:#9aa3b2">');
+    // A name with its era in brackets reads the plain name's line, as GT World writes 2015's team.
+    expect(enduranceChampions(full('gt-world')).body).toContain('<tr><td class="yr">2015</td><td class="ch" style="--t:#1C69D4">');
+  });
+
+  it("draws GT World's two titles a season and IMSA's manufacturers' (CH2)", () => {
+    const gtw = enduranceChampions(full('gt-world')).body;
+    expect(gtw).toContain('<p class="pd-ch-intro">Every overall champion since 2014 and every Endurance Cup champion, year by year: 13 seasons, 15 different drivers.</p>');
+    expect(gtw).toContain('<p class="pd-ch-sub"><b>Winward Racing</b><b>Second title for Auer and Engel</b></p>');
+    expect(gtw).toContain('<div class="pd-ch-tiles"><span><b>131.5</b>Points</span><span><b>0</b>Wins</span><span><b>+11.5</b>Over Feller and Buus</span></div>');
+    expect(gtw).toContain('Endurance Cup: <b>Lucas Auer, Maro Engel and Luca Stolz</b>, Winward Racing.');
+    expect(gtw).toContain('<th>Year</th><th>Overall champions</th><th>Endurance Cup champions</th>');
+    expect(gtw).toContain('<span><em>Sprint Cup</em> <b>Ricardo Feller, Bastian Buus</b> Lionspeed GP</span>');
+    expect(gtw).not.toContain('Manufacturers’ titles');
+    const imsaPage = enduranceChampions(full('imsa')).body;
+    expect(imsaPage).toContain('<b>Cadillac Whelen · Cadillac V-Series.R (GTP)</b><b>First title for Aitken</b>');
+    expect(imsaPage).toContain('<span><b>+161</b>Over Heinrich</span>');
+    expect(imsaPage).toContain('Manufacturers’ champion: <b>Cadillac</b>, its fifth title.');
+    expect(imsaPage).toContain('<span><em>GTD PRO</em> <b>Connor De Phillippi, Neil Verhagen</b> #1 Paul Miller Racing</span>');
+  });
+
+  it("draws the Overview's block: a tab a class, five crews beside five manufacturers or teams, each list to its class (OV)", () => {
+    const block = classBlock(full('wec'));
+    expect(block).toContain('<div class="pd-sh"><h2>Standings</h2><p>Final · a class at a time</p></div>');
+    expect(tabsOf(block)).toEqual(['Hypercar', 'LMGT3']);
+    const hyper = tab(block, 'Hypercar');
+    expect(hyper).toContain('<h3>Drivers</h3><p><a href="/series/wec/standings/#hypercar">All 29 →</a></p>');
+    expect(hyper).toContain('<h3>Manufacturers</h3><p><a href="/series/wec/standings/#hypercar">All 8 →</a></p>');
+    expect((hyper.match(/<li>/g) ?? []).length).toBe(10);
+    expect(hyper).toContain('<span class="fn">Brendon Hartley, Ryo Hirakawa, Sébastien Buemi</span><span class="sn">Hartley, Hirakawa, Buemi</span></b> <small>#8 TOYOTA RACING</small>');
+    expect(hyper).toContain('<span class="pd-pt">115</span><span class="pd-w">3 wins</span>');
+    expect(tab(block, 'LMGT3')).toContain('<h3>Teams</h3><p><a href="/series/wec/standings/#lmgt3">All 18 →</a></p>');
+    expect(tab(classBlock(full('imsa')), 'GTD PRO')).toContain('<a href="/series/imsa/standings/#gtd-pro">All 44 →</a>');
+    expect(classBlock(full('wec', { sites: { wec: { family: 'C', pages: ['results', 'weekends'] } } }))).toContain('<span class="is-off">All 29</span>');
+    expect(seriesFamily(full('wec'), kit)[0].body).toContain(block);
   });
 });

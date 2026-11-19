@@ -1,0 +1,9 @@
+{
+  "_comment": "Colours for IMSA's past champion teams and makes that no team racing today colours, read by the Champions page (O34, lib/wp/endurance.ts) after the season's own cars and today's roster. Keys are the slugified name as champions.json writes it, without a trailing bracket (lib/slug.ts). A colour is taken only from a team or a make Paddock already colours today, named in `note` (the operator's answer P2, 18 Nov 2026); a name with no such match (Action Express Racing) stays grey. `note` is ignored by code.",
+  "teams": {
+    "whelen-engineering-racing": { "color": "#C8102E", "note": "The #31 Cadillac Whelen's colour in Paddock's IMSA list (drivers.json); 2021." },
+    "whelen-cadillac-racing": { "color": "#C8102E", "note": "The #31 Cadillac Whelen's colour in Paddock's IMSA list; 2023." },
+    "meyer-shank-racing": { "color": "#E82C2A", "note": "Acura Meyer Shank Racing's colour in Paddock's IMSA list; 2022." },
+    "chevrolet": { "color": "#FFD200", "note": "Corvette Racing by Pratt Miller's colour in Paddock's IMSA list, Chevrolet's cars; the manufacturers' titles of 2014 to 2016." }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "_comment": "Colours for FIA WEC's past champion teams and makes that no team racing today colours, read by the Champions page (O34, lib/wp/endurance.ts) after the season's own cars and today's roster. Keys are the slugified name as champions.json writes it, without a trailing bracket (lib/slug.ts). A colour is taken only from a team or a make Paddock already colours today, named in `note` (the operator's answer P2, 18 Nov 2026); a name with no such match stays grey. `note` is ignored by code.",
+  "teams": {
+    "porsche-team": { "color": "#D5001C", "note": "Porsche Penske Motorsport's colour in Paddock's IMSA list (content/series/imsa/drivers.json); 2015 to 2017." },
+    "porsche-penske-motorsport": { "color": "#D5001C", "note": "The same team's colour in Paddock's IMSA list; 2024." },
+    "porsche": { "color": "#D5001C", "note": "The make, as Porsche Penske Motorsport; the manufacturers' titles of 2015 to 2017." },
+    "audi-sport-team-joest": { "color": "#00352F", "note": "Audi's colour in Paddock's Formula 1 list (content/series/f1/drivers.json); 2012 and 2013." },
+    "audi": { "color": "#00352F", "note": "The make, as in Paddock's Formula 1 list; the manufacturers' titles of 2012 and 2013." }
+  }
+}
