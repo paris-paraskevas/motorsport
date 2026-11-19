@@ -1362,9 +1362,10 @@ interface CrewName {
   known: boolean;
 }
 
-/** A crew a standings cell runs together (IMSA's, Wikipedia's: "Nick Yelloly Renger van der Zande"): the split that
- *  costs least, a name the results hold costing 1, one matched by surname 2, an unknown name of two or three words 10
- *  a word; a name the results do not know stays as written. */
+/** A crew a standings cell runs together (the Wikipedia tables stored for IMSA before its official points files: "Nick
+ *  Yelloly Renger van der Zande"): the split that costs least, a name the results hold costing 1, one matched by surname
+ *  2, an unknown name of two or three words 10 a word; a name the results do not know stays as written. A cell of the
+ *  official files, one driver, is the one name the results hold whole. */
 function runTogether(text: string, match: (text: string, strict?: boolean) => string | null): CrewName[] {
   const words = text.trim().split(/\s+/).filter(Boolean);
   const best: ({ cost: number; names: CrewName[] } | null)[] = [{ cost: 0, names: [] }, ...words.map(() => null)];
@@ -1384,7 +1385,8 @@ function runTogether(text: string, match: (text: string, strict?: boolean) => st
 }
 
 /** A drivers' table cell as its names: WEC's comma-separated capitals, each spelled; GT World's one driver a row;
- *  IMSA's run together, split. */
+ *  IMSA's one driver a row too (its official points files), or run together in the Wikipedia tables stored before
+ *  them, split. */
 function crewOfCell(text: string, match: (text: string, strict?: boolean) => string | null, single: boolean): CrewName[] {
   if (text.includes(',')) {
     return text
@@ -1494,8 +1496,8 @@ export interface ClassStanding {
   teams: SideRow[];
 }
 
-/** IMSA's stored car text holding two models and a footnote's digits ("… Huracán GT3 Evo 2 1 Lamborghini Temerario GT3
- *  9"): not a car, so not shown. */
+/** A car text holding two models and a footnote's digits, as the Wikipedia tables stored for IMSA before its official
+ *  points files wrote one ("… Huracán GT3 Evo 2 1 Lamborghini Temerario GT3 9"): not a car, so not shown. */
 const twoCars = (car: string): boolean => /\s\d+\s+\S/.test(car) && /\s\d+$/.test(car);
 
 /** A make or a name fiawec.com writes in capitals, in ordinary case: "TOYOTA" → "Toyota", "MERCEDES-AMG" →

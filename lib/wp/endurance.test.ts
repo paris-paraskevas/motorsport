@@ -1168,20 +1168,55 @@ describe("family C's Standings and Champions (O34, PR 3), as drawn on Endurance 
     expect(gt3.makes).toEqual([]);
   });
 
-  it("splits IMSA's run-together names by the results' and finds a name the table spells otherwise in its class", () => {
+  it("reads IMSA's official tables a driver a row: crew-mates level on place and points in one car one row, each spelled as the results spell them", () => {
+    const stored = (title: string): string[][] => saved.imsa.standings.find(t => t.title === title)?.rows ?? [];
+    expect(stored('GTP · Drivers').slice(2, 5)).toEqual([
+      ['3', 'Nick Yelloly', '2723'],
+      ['3', 'Renger van der Zande', '2723'],
+      ['4', 'Kevin Estre', '2709'],
+    ]);
     const classes = classStandings(full('imsa'));
     expect(classes.map(c => `${c.label} ${c.drivers.length}`)).toEqual(['GTP 32', 'LMP2 42', 'GTD PRO 44', 'GTD 82']);
     const [gtp, lmp2, pro, gtd] = classes;
-    expect(gtp.drivers[2]).toMatchObject({ names: ['Nick Yelloly', 'Renger van der Zande'], car: '93', team: 'Acura Meyer Shank Racing w/Curb Agajanian' });
-    expect(lmp2.drivers[0]).toMatchObject({ names: ['George Kurtz', 'Alex Quinn'], car: '04', team: 'CrowdStrike Racing by APR', wins: 2 });
-    // Wikipedia's "Eduardo Barrichello" is the results' (and imsa.com's) Dudu Barrichello.
-    expect(saved.imsa.standings.find(t => t.title === 'GTD · Drivers')?.rows[2]).toEqual(['3', 'Eduardo Barrichello', '2742']);
-    expect(gtd.drivers[2]).toMatchObject({ names: ['Dudu Barrichello'], car: '27', team: 'Heart of Racing Team' });
-    // A stored car holding two models and a footnote's digits is not shown.
-    expect(pro.teams.find(t => t.car === '9')).toMatchObject({ name: 'Pfaff Motorsports', small: '' });
+    expect(gtp.drivers[2]).toMatchObject({ pos: '3', names: ['Nick Yelloly', 'Renger van der Zande'], car: '93', team: 'Acura Meyer Shank Racing w/Curb Agajanian' });
+    expect(gtp.drivers[3]).toMatchObject({ names: ['Kévin Estre'], car: '6', team: 'Porsche Penske Motorsport' });
+    // A crew in IMSA's own order.
+    expect(lmp2.drivers[0]).toMatchObject({ names: ['Alex Quinn', 'George Kurtz'], car: '04', team: 'CrowdStrike Racing by APR', wins: 2 });
+    // The figures the review of #1204 found stale on Wikipedia, as IMSA's files give them.
+    expect([0, 10, 13, 15, 16, 19].map(i => `${pro.drivers[i].pos} ${pro.drivers[i].names.join(', ')} ${pro.drivers[i].shown} #${pro.drivers[i].car}`)).toEqual([
+      '1 Connor De Phillippi, Neil Verhagen 3017 #1',
+      '11 James Calado, Riccardo Agostini 1257 #033',
+      '14 Valentin Hasse Clot 1144 #68',
+      '16 Marco Sorensen 908 #68',
+      '17 Nico Varrone 848 #4',
+      '20 Miguel Molina 717 #033',
+    ]);
+    expect(gtd.teams.find(t => t.car === '068')).toMatchObject({ pos: '14', name: 'Car Blanche', small: 'Aston Martin Vantage GT3 Evo', shown: '1543' });
+    expect(classes.flatMap(c => c.teams).filter(t => t.name.includes('#'))).toEqual([]);
+    expect(pro.teams.find(t => t.car === '9')).toMatchObject({ name: 'Pfaff Motorsports', small: 'Lamborghini Temerario GT3', wins: 2 });
     expect(gtp.teams[0]).toMatchObject({ car: '31', name: 'Cadillac Whelen', small: 'Cadillac V-Series.R', wins: 2 });
     expect(gtd.makes[0]).toMatchObject({ name: 'Mercedes-AMG', shown: '3339', wins: 5 });
     expect(lmp2.makes).toEqual([]);
+  });
+
+  it("still reads the Wikipedia tables stored for IMSA before its official points files: a crew run together split, a name spelled otherwise found, a two-car cell not shown", () => {
+    // Cells as those tables wrote them (the data branch at e8f7e1bf).
+    const drivers = (cls: string, row: string[]) => ({ title: `${cls} · Drivers`, columns: ['Pos', 'Driver', 'Pts'], rows: [row] });
+    const [gtp, pro, gtd] = classStandings(
+      full('imsa', {
+        standings: [
+          drivers('GTP', ['3', 'Nick Yelloly Renger van der Zande', '2723']),
+          drivers('GTD Pro', ['1', 'Connor De Phillippi Neil Verhagen', '3012']),
+          drivers('GTD', ['3', 'Eduardo Barrichello', '2742']),
+          { title: 'GTD Pro · Teams', columns: ['Pos', 'Team', 'Car', 'Pts'], rows: [['2', '#9 Pfaff Motorsports', 'Lamborghini Huracán GT3 Evo 2 1 Lamborghini Temerario GT3 9', '2979']] },
+        ],
+      }),
+    );
+    expect(gtp.drivers[0]).toMatchObject({ names: ['Nick Yelloly', 'Renger van der Zande'], car: '93' });
+    expect(pro.drivers[0]).toMatchObject({ names: ['Connor De Phillippi', 'Neil Verhagen'], car: '1' });
+    // Wikipedia's "Eduardo Barrichello" is the results' (and imsa.com's) Dudu Barrichello.
+    expect(gtd.drivers[0]).toMatchObject({ names: ['Dudu Barrichello'], car: '27', team: 'Heart of Racing Team' });
+    expect(pro.teams[0]).toMatchObject({ car: '9', name: 'Pfaff Motorsports', small: '' });
   });
 
   it('names every car a driver raced in the class, the one raced most first (the operator’s “Every car”, 18 Nov)', () => {
