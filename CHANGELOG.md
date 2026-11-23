@@ -4,6 +4,24 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
+## 1.0.317 — 2026-11-23
+
+### "● Live" on a weekend's strip only while a session is on (O19, theme 0.1.27)
+
+Found on 23 Nov by the session that put Las Vegas's first practice right (#1206), and read on the site itself the same day (the Browser pane, signed in, 17:21 Athens): `/series/f1/2026/round-22/` said "● Live NEXT Practice 1 · Fri 15:30 in 3 days 22 hours" and `/series/f1/2026/round-23/` "● Live NEXT Practice 1 · Fri 11:30 in 10 days 18 hours". Drawn beside the fix on Live Pill Drafts (https://claude.ai/code/artifact/0a065f94-08e2-47e8-afc3-f0c04349ab11); the plan approved in plan mode on 23 Nov.
+
+- **The cause:** `strip` (lib/wp/weekend.ts) writes the pill as `<span class="pd-pill pd-pill-live" hidden>` and the theme's script takes the attribute off while a session is on (paddock.js, the `[data-pd-ses]` pass). `.pd-pill { display: inline-block }` is the site's own rule, and a site's `display` outranks the browser's `[hidden] { display: none }`; the strip's hiding rule (`.pd-wk-btn[hidden], .pd-wk-pill[hidden]`) never named this pill. So it was drawn at every hour: before the weekend, between sessions, after the last one ("● Live Every session has run · the results follow") and with the script off. It was right only while a session ran.
+- **The rule:** `.pd-pill[hidden] { display: none; }` beside `.pd-pill`, its reason in a comment. It holds for a pill wherever one stands: Formula 1's strips, family C's (lib/wp/endurance.ts calls the same `strip`; none is published today, every 2026 round having run, and each 2027 round would have said Live from the day it was published) and the series card, whose own rule (`.pd-sr-lab .pd-pill[hidden]`) stays. The Calendar's cards and the home's rows make their pill in the script and remove it: unchanged.
+- **Theme 0.1.27:** style.css alone (the Version line, the rule and its comment). No page changes and no script change, so an upload and no publish.
+- **Checked** (after the last edit; WordPress Playground with this branch's theme and the dry run's pages, Chromium, Europe/Athens):
+  - The strip at six moments (four days before, during Practice 1, between sessions, during the race, after it, the script off) on Formula 1's Qatar and on FIA WEC's Fuji (built from tests/fixtures/endurance.json with its sessions still to come), at 1,440 and 375 px, Day and Night: 192 of 192 (Live and Next on screen or out of the layout, the strip's words, no sideways scroll, no console error). The same run on `next`'s stylesheet: 128 of 192; the 64 that fail are the pill at four of the six moments.
+  - Every published page and the home, 390, at 13 widths (one inside every band the stylesheet's media rules cut): of the 2,300 elements a page or the script hides with the attribute, none is still drawn. On `next`'s stylesheet: this pill on rounds 22 and 23, at every width, and nothing else.
+  - In the Browser pane on the local server: round 22 now and with the hour set inside Practice 1, and round 23, at 1,280 and 375 px, Day and Night; Formula 1's page as before.
+  - The dry run `--from-ref` paddock-data 868b8dc4, this branch against `next` (97e98761) the same day: 389 pages each, feeds 42 OK, 389 byte-identical (8,542,805 bytes).
+- **No test joins the repository:** vitest has no browser, so it cannot see what a stylesheet draws; the checks above are a browser's, and their figures stand in the pull request's entry.
+- **Found, not changed** (for the desk): the site's home page says "● Live Formula 1, Practice 1 · Austin · started 17:30 UTC" to a reader without the script. Its stored strip (page 5053, last changed 20 Oct) lacks the class `is-off` that wp-theme/preview/home.html has; the script hides it for everyone else.
+- **After the merge (the desk's):** theme 0.1.27 cut and uploaded with the test list in docs/pull-requests.md; no publish.
+
 ## 1.0.315 — 2026-11-19
 
 ### Family C's Standings and Champions (Task 2.c, O34, PR 3): FIA WEC, IMSA and GT World a class at a time
