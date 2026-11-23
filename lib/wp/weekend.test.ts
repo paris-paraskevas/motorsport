@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import type { VenueForecast } from '@/lib/met-norway';
 import type { CircuitMap, DriverStints, SessionExtras } from '@/lib/openf1/weekend';
-import { escapeHtml, type CalendarEntry, type CalendarRound, type RaceLaps, type ResultRound, type SeriesData, type Table } from './render';
+import { calledOffOf, escapeHtml, type CalendarEntry, type CalendarRound, type RaceLaps, type ResultRound, type SeriesData, type Table } from './render';
 import { weekendPoints } from './series';
 import {
   aside,
@@ -1206,5 +1206,136 @@ describe("the shared parts' options (O33), Formula 1's by default", () => {
     expect(cols(saved.wsbk.result.sessions[0].tables[0])).toEqual({ pos: 0, name: 1, team: 2, time: 3, pts: 4 });
     const riders = seriesOf('wsbk', 'WorldSBK', { standings: [{ title: 'Riders', columns: ['Pos', 'Rider', 'Team', 'Pts'], rows: [['1', 'Nicolo Bulega', 'Aruba.it Racing - Ducati', '600']] }] });
     expect(championship(riders, 12)).toEqual([{ name: 'Nicolo Bulega', team: 'Aruba.it Racing - Ducati', pts: 600 }]);
+  });
+});
+
+// ── A session that ended with no results (O19, 23 Nov 2026), from the saved round ──
+
+/** Formula 1's round 21 as the publisher stored it (paddock-data 27f64bec): its results hold no Practice 1, for which
+ *  OpenF1 answered with an empty classification (tests/fixtures/f1-las-vegas-2026.json; its `about` says the rest). */
+const vegas = JSON.parse(readFileSync(path.join(process.cwd(), 'tests/fixtures/f1-las-vegas-2026.json'), 'utf8')) as {
+  round: CalendarRound;
+  result: ResultRound;
+  calendar: CalendarEntry[];
+  sessions: Record<string, SessionExtras>;
+};
+// The hand-written line as content/series/f1/rounds.json holds it, read as the publisher reads it.
+const f1Rounds = JSON.parse(readFileSync(path.join(process.cwd(), 'content/series/f1/rounds.json'), 'utf8')) as { rounds: { round: number; noResults?: unknown }[] };
+const vegasLine = calledOffOf(f1Rounds.rounds.find(r => r.round === 21)?.noResults);
+/** The round's pages from a stored result (null: nothing stored yet) and rounds.json's noResults for the round. */
+const vegasPages = (result: ResultRound | null, line: NonNullable<CalendarRound['noResults']> = []) =>
+  weekendPages({
+    slug: 'f1',
+    name: 'Formula 1',
+    season: 2026,
+    sites: { f1: { family: 'F1', pages: ['results', 'standings', 'champions', 'weekends'] } },
+    standings: null,
+    results: result ? [result] : [],
+    calendar: vegas.calendar,
+    rounds: [{ ...vegas.round, ...(line.length ? { noResults: line } : {}) }],
+    weekend: { sessions: { '2026': { '21': vegas.sessions } }, maps: {}, forecast: {} },
+  });
+/** The stored round cut back to the sessions run by some point of the weekend. */
+const vegasUpTo = (others: string[], race: boolean): ResultRound => ({ ...vegas.result, sessions: race ? vegas.result.sessions : [], others: (vegas.result.others ?? []).filter(s => others.includes(s.label)) });
+const V = '/series/f1/2026/round-21/';
+// Practice 1 on the bar: a solid box as a session that ran, "no results" where a run session names its leader.
+const NO_RESULTS = '>Practice 1<small><span class="pd-t" data-utc="2026-11-20T00:30:00.000Z" data-f="wt">Fri 00:30 UTC</span> · no results</small></a>';
+const named = (body: string, title: string, tag: string): string[] => [...sectionOf(body, title).matchAll(new RegExp(`<${tag}>([^<]+)</`, 'g'))].map(m => m[1]);
+
+describe('a session that ended with no results (Las Vegas 2026, Practice 1, as stored)', () => {
+  it("holds the hand-written line whole in rounds.json, under a name the round's timetable has", () => {
+    expect(vegasLine).toEqual([
+      { session: 'Practice 1', note: 'It ran in the rain and no driver set a lap time', source: 'https://www.fia.com/news/f1-rain-limits-running-opening-practice-las-vegas-grand-prix' },
+    ]);
+    expect(vegas.calendar.map(e => e.session)).toContain(vegasLine[0].session);
+    // What the store holds: every session of the round but that one.
+    expect([...(vegas.result.others ?? []), ...vegas.result.sessions].map(s => s.label)).toEqual(['Practice 2', 'Practice 3', 'Qualifying', 'Race']);
+  });
+
+  const pages = vegasPages(vegas.result, vegasLine);
+  const overview = pageOf(V, pages);
+  const p1 = pageOf(`${V}practice-1/`, pages);
+
+  it('reads "no results" on the bar of every page of the round, never "still to run"', () => {
+    expect(overview).toContain(`<a href="${V}practice-1/"${NO_RESULTS}`);
+    expect(pageOf(`${V}practice-2/`, pages)).toContain(`<a href="${V}practice-1/"${NO_RESULTS}`);
+    expect(pageOf(`${V}race/`, pages)).toContain(`<a href="${V}practice-1/"${NO_RESULTS}`);
+    expect(p1).toContain(`<a href="${V}practice-1/" aria-current="page"${NO_RESULTS}`);
+    for (const page of pages.filter(p => p.path.startsWith(V))) {
+      expect(page.body).not.toContain('still to run');
+      expect(page.body).not.toContain('class="is-up"');
+    }
+    expect(overview).toContain(`<a href="${V}practice-2/">Practice 2<small><span class="pd-t" data-utc="2026-11-20T04:00:00.000Z" data-f="wt">Fri 04:00 UTC</span> · RUS</small></a>`);
+  });
+
+  it('gives its own page the reason rounds.json holds, then that no results are available, and the weather measured through it', () => {
+    expect(p1).toContain('<h2>Classification</h2></div><p class="pd-wk-empty">It ran in the rain and no driver set a lap time: no results are available for this session.</p></section>');
+    expect(p1).not.toContain('Not run yet');
+    expect(p1).toContain(
+      '<aside class="pd-wk-aside"><section class="pd-wk-box"><h3>Weather at the track</h3><dl><dt>Air</dt><dd>12–13 °C</dd><dt>Track</dt><dd>13–15 °C</dd><dt>Humidity</dt><dd>56–65 %</dd><dt>Rain</dt><dd>Yes</dd></dl>' +
+        '<p class="pd-wk-src">Measured through the session</p></section>',
+    );
+    expect(p1).not.toContain('Forecast for its start');
+    expect(p1).toContain('<p class="pd-wk-credit">The weather from <a href="https://openf1.org/">OpenF1</a></p>');
+  });
+
+  it('leaves the Overview after the race as it was: Final, the sessions that ran as cards, nothing to come', () => {
+    expect(overview).toContain('<em class="pd-wk-pill is-fin">Final</em><span class="pd-wk-sum"><b>Max Verstappen</b> won</span>');
+    expect(named(overview, 'Earlier in the weekend', 'h3')).toEqual(['Practice 2', 'Practice 3', 'Qualifying']);
+    expect(sectionOf(overview, 'Still to come')).toBe('');
+  });
+
+  it('needs no hand-written line once a later session has results: the words stand alone', () => {
+    const alone = vegasPages(vegas.result);
+    expect(pageOf(V, alone)).toContain(`<a href="${V}practice-1/"${NO_RESULTS}`);
+    expect(pageOf(`${V}practice-1/`, alone)).toContain('<p class="pd-wk-empty">No results are available for this session.</p>');
+    // A line without an https source is left out (calledOffOf), and a note is escaped.
+    expect(pageOf(`${V}practice-1/`, vegasPages(vegas.result, calledOffOf([{ session: 'Practice 1', note: 'It rained', source: 'fia.com' }])))).toContain(
+      '<p class="pd-wk-empty">No results are available for this session.</p>',
+    );
+    expect(pageOf(`${V}practice-1/`, vegasPages(vegas.result, [{ session: 'Practice 1', note: 'Rain & <b>no</b> laps', source: 'https://example.org/a' }]))).toContain(
+      '<p class="pd-wk-empty">Rain &amp; &lt;b&gt;no&lt;/b&gt; laps: no results are available for this session.</p>',
+    );
+  });
+
+  it('while the weekend is under way: off the Next line and out of Still to come, from Practice 2 alone', () => {
+    const under = vegasPages(vegasUpTo(['Practice 2'], false));
+    const body = pageOf(V, under);
+    expect(body).toContain(`<a href="${V}practice-1/"${NO_RESULTS}`);
+    expect(body.match(/class="is-up"/g)).toHaveLength(3);
+    expect(body).toContain('<b class="pd-sr-ses">Practice 3 · <span class="pd-t" data-utc="2026-11-21T00:30:00.000Z" data-f="wt">Sat 00:30 UTC</span></b>');
+    expect(body).toContain('data-pd-target="2026-11-21T00:30:00.000Z"');
+    expect(body).toContain('data-pd-ses="Practice%203|2026-11-21T00:30:00.000Z|2026-11-21T01:30:00.000Z;Qualifying|');
+    expect(named(body, 'Done so far', 'h3')).toEqual(['Practice 2']);
+    expect(named(body, 'Still to come', 'span class="pd-wk-name"')).toEqual(['Practice 3', 'Qualifying', 'Race']);
+    expect(pageOf(`${V}practice-1/`, under)).toContain('<p class="pd-wk-empty">No results are available for this session.</p>');
+    expect(pageOf(`${V}practice-3/`, under)).toContain('<p class="pd-wk-empty">Not run yet. Its results join this page when it ends.</p>');
+  });
+
+  it('with nothing stored: the hand-written line counts at once; without it all five are still to run, as before', () => {
+    const lined = vegasPages(null, vegasLine);
+    const body = pageOf(V, lined);
+    expect(body).toContain(`<a href="${V}practice-1/"${NO_RESULTS}`);
+    expect(body.match(/class="is-up"/g)).toHaveLength(4);
+    expect(body).toContain('<b class="pd-sr-ses">Practice 2 · <span class="pd-t" data-utc="2026-11-20T04:00:00.000Z" data-f="wt">Fri 04:00 UTC</span></b>');
+    expect(named(body, 'The weekend', 'span class="pd-wk-name"')).toEqual(['Practice 2', 'Practice 3', 'Qualifying', 'Race']);
+    expect(pageOf(`${V}practice-1/`, lined)).toContain('It ran in the rain and no driver set a lap time: no results are available for this session.');
+
+    const bare = vegasPages(null);
+    expect(pageOf(V, bare).match(/class="is-up"/g)).toHaveLength(5);
+    expect(pageOf(V, bare)).toContain('<b class="pd-sr-ses">Practice 1 · <span class="pd-t" data-utc="2026-11-20T00:30:00.000Z" data-f="wt">Fri 00:30 UTC</span></b>');
+    expect(named(pageOf(V, bare), 'The weekend', 'span class="pd-wk-name"')).toEqual(['Practice 1', 'Practice 2', 'Practice 3', 'Qualifying', 'Race']);
+    expect(pageOf(`${V}practice-1/`, bare)).toContain('<p class="pd-wk-empty">Not run yet. Its results join this page when it ends.</p>');
+    // Its hour past and nothing after it stored: the forecast box stays the page's side, never the weather.
+    expect(pageOf(`${V}practice-1/`, bare)).not.toContain('Weather at the track');
+  });
+
+  it('shows a stored classification whatever rounds.json says', () => {
+    const stored: ResultRound = { ...vegas.result, others: [{ label: 'Practice 1', tables: [practice([VER, LEC, HAM, RUS])] }, ...(vegas.result.others ?? [])] };
+    const late = vegasPages(stored, vegasLine);
+    expect(pageOf(`${V}practice-1/`, late)).toContain('<p class="pd-wk-hint">All 4, as classified</p>');
+    expect(pageOf(`${V}practice-1/`, late)).not.toContain('no results');
+    expect(pageOf(V, late)).toContain(`<a href="${V}practice-1/">Practice 1<small><span class="pd-t" data-utc="2026-11-20T00:30:00.000Z" data-f="wt">Fri 00:30 UTC</span> · VER</small></a>`);
+    expect(named(pageOf(V, late), 'Earlier in the weekend', 'h3')).toEqual(['Practice 1', 'Practice 2', 'Practice 3', 'Qualifying']);
   });
 });

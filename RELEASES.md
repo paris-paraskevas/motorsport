@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.316 — 2026-11-23
+
+A Formula 1 session that ends with no results now says so. First practice in Las Vegas ran in the rain and no driver set a lap time, yet the weekend's pages went on calling it still to run. It now reads "no results" beside the weekend's other sessions, and its own page says why, with the weather measured at the track through the hour.
+
 ## 1.0.315 — 2026-11-19
 
 The FIA WEC, IMSA and GT World Challenge have their standings and their champions. Each series' final 2026 standings, a class at a time: every crew on one row with the cars it raced, its points, the gap to the leader and its class wins, the manufacturers and the teams beside them, and each class's champions named in a box of their own. Each series' roll of honour, from its first season: the champions year by year with every other class's champions under 2026, the drivers with the most titles and the manufacturers', and the 2026 FIA WEC title for Sébastien Buemi, Brendon Hartley and Ryō Hirakawa, the fifth for Buemi and Hartley. Each series' overview shows the top five of every class, and the list of series names the FIA WEC's 2026 champions.

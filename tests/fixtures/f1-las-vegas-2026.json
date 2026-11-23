@@ -1,0 +1,1289 @@
+{
+ "about": "Formula 1's round 21, the 2026 Las Vegas Grand Prix, as the publisher stored it: paddock-data 27f64bec (22 Nov 2026, run 45026478501). result: its round of f1/results.json, no table cut; it holds no Practice 1, for which OpenF1 answered with an empty classification. calendar: its five entries of f1/calendar.json. sessions: what OpenF1 measured through each session (f1/sessions.json, 2026, round 21). round: the round as scripts/wp-publish.mts calendarRounds resolves it from content/series/f1/rounds.json and content/circuits.json, without its noResults line, which the test reads from rounds.json itself. Practice 1 ran in the rain and no driver set a lap time (https://www.fia.com/news/f1-rain-limits-running-opening-practice-las-vegas-grand-prix); formula1.com lists no results for it.",
+ "round": {
+  "round": 21,
+  "name": "Las Vegas Grand Prix",
+  "startDate": "2026-11-19",
+  "endDate": "2026-11-22",
+  "venue": "Las Vegas Strip Circuit",
+  "place": "Las Vegas",
+  "outline": "las-vegas",
+  "circuit": "las-vegas",
+  "tz": "America/Los_Angeles",
+  "country": "United States"
+ },
+ "result": {
+  "round": 21,
+  "name": "Las Vegas Grand Prix",
+  "date": "2026-11-22",
+  "sessions": [
+   {
+    "label": "Race",
+    "tables": [
+     {
+      "title": "Race",
+      "columns": [
+       "Pos",
+       "Driver",
+       "Team",
+       "Time",
+       "Pts"
+      ],
+      "rows": [
+       [
+        "1",
+        "Max Verstappen",
+        "Red Bull Racing",
+        "1:27:39.624",
+        "25"
+       ],
+       [
+        "2",
+        "Lando Norris",
+        "McLaren",
+        "+0.639",
+        "18"
+       ],
+       [
+        "3",
+        "Oscar Piastri",
+        "McLaren",
+        "+1.529",
+        "15"
+       ],
+       [
+        "4",
+        "Andrea Kimi Antonelli",
+        "Mercedes",
+        "+2.574",
+        "12"
+       ],
+       [
+        "5",
+        "Pierre Gasly",
+        "Alpine",
+        "+2.927",
+        "10"
+       ],
+       [
+        "6",
+        "Franco Colapinto",
+        "Alpine",
+        "+7.955",
+        "8"
+       ],
+       [
+        "7",
+        "Lewis Hamilton",
+        "Ferrari",
+        "+12.795",
+        "6"
+       ],
+       [
+        "8",
+        "Carlos Sainz",
+        "Williams",
+        "+12.938",
+        "4"
+       ],
+       [
+        "9",
+        "George Russell",
+        "Mercedes",
+        "+13.192",
+        "2"
+       ],
+       [
+        "10",
+        "Charles Leclerc",
+        "Ferrari",
+        "+17.554",
+        "1"
+       ],
+       [
+        "11",
+        "Nico Hülkenberg",
+        "Audi",
+        "+22.720",
+        "0"
+       ],
+       [
+        "12",
+        "Gabriel Bortoleto",
+        "Audi",
+        "+28.602",
+        "0"
+       ],
+       [
+        "13",
+        "Oliver Bearman",
+        "Haas F1 Team",
+        "+28.843",
+        "0"
+       ],
+       [
+        "14",
+        "Liam Lawson",
+        "Racing Bulls",
+        "+36.588",
+        "0"
+       ],
+       [
+        "15",
+        "Isack Hadjar",
+        "Red Bull Racing",
+        "+46.488",
+        "0"
+       ],
+       [
+        "16",
+        "Rafael Camara",
+        "Haas F1 Team",
+        "+47.814",
+        "0"
+       ],
+       [
+        "17",
+        "Lance Stroll",
+        "Aston Martin",
+        "+1:08.353",
+        "0"
+       ],
+       [
+        "18",
+        "Valtteri Bottas",
+        "Cadillac",
+        "+1:11.673",
+        "0"
+       ],
+       [
+        "19",
+        "Fernando Alonso",
+        "Aston Martin",
+        "Retired",
+        "0"
+       ],
+       [
+        "20",
+        "Arvid Lindblad",
+        "Racing Bulls",
+        "Retired",
+        "0"
+       ],
+       [
+        "21",
+        "Sergio Pérez",
+        "Cadillac",
+        "Retired",
+        "0"
+       ],
+       [
+        "22",
+        "Alexander Albon",
+        "Williams",
+        "Did not start",
+        "0"
+       ]
+      ]
+     }
+    ]
+   }
+  ],
+  "others": [
+   {
+    "label": "Practice 2",
+    "tables": [
+     {
+      "title": "Practice 2",
+      "columns": [
+       "Pos",
+       "Driver",
+       "Team",
+       "Time",
+       "Gap",
+       "Laps"
+      ],
+      "rows": [
+       [
+        "1",
+        "George Russell",
+        "Mercedes",
+        "1:47.272",
+        "",
+        "23"
+       ],
+       [
+        "2",
+        "Pierre Gasly",
+        "Alpine",
+        "1:47.343",
+        "+0.071",
+        "16"
+       ],
+       [
+        "3",
+        "Charles Leclerc",
+        "Ferrari",
+        "1:47.605",
+        "+0.333",
+        "28"
+       ],
+       [
+        "4",
+        "Isack Hadjar",
+        "Red Bull Racing",
+        "1:48.407",
+        "+1.135",
+        "20"
+       ],
+       [
+        "5",
+        "Oscar Piastri",
+        "McLaren",
+        "1:48.453",
+        "+1.181",
+        "24"
+       ],
+       [
+        "6",
+        "Lewis Hamilton",
+        "Ferrari",
+        "1:48.483",
+        "+1.211",
+        "26"
+       ],
+       [
+        "7",
+        "Lando Norris",
+        "McLaren",
+        "1:48.837",
+        "+1.565",
+        "22"
+       ],
+       [
+        "8",
+        "Kimi Antonelli",
+        "Mercedes",
+        "1:49.043",
+        "+1.771",
+        "23"
+       ],
+       [
+        "9",
+        "Franco Colapinto",
+        "Alpine",
+        "1:49.229",
+        "+1.957",
+        "15"
+       ],
+       [
+        "10",
+        "Fernando Alonso",
+        "Aston Martin",
+        "1:49.231",
+        "+1.959",
+        "21"
+       ],
+       [
+        "11",
+        "Lance Stroll",
+        "Aston Martin",
+        "1:49.782",
+        "+2.510",
+        "23"
+       ],
+       [
+        "12",
+        "Alexander Albon",
+        "Williams",
+        "1:49.829",
+        "+2.557",
+        "23"
+       ],
+       [
+        "13",
+        "Max Verstappen",
+        "Red Bull Racing",
+        "1:50.141",
+        "+2.869",
+        "9"
+       ],
+       [
+        "14",
+        "Sergio Pérez",
+        "Cadillac",
+        "1:50.431",
+        "+3.159",
+        "17"
+       ],
+       [
+        "15",
+        "Oliver Bearman",
+        "Haas",
+        "1:50.699",
+        "+3.427",
+        "22"
+       ],
+       [
+        "16",
+        "Liam Lawson",
+        "Racing Bulls",
+        "1:51.009",
+        "+3.737",
+        "12"
+       ],
+       [
+        "17",
+        "Arvid Lindblad",
+        "Racing Bulls",
+        "1:51.148",
+        "+3.876",
+        "13"
+       ],
+       [
+        "18",
+        "Carlos Sainz",
+        "Williams",
+        "1:51.571",
+        "+4.299",
+        "11"
+       ],
+       [
+        "19",
+        "Nico Hülkenberg",
+        "Audi",
+        "1:51.807",
+        "+4.535",
+        "16"
+       ],
+       [
+        "20",
+        "Gabriel Bortoleto",
+        "Audi",
+        "1:52.325",
+        "+5.053",
+        "15"
+       ],
+       [
+        "21",
+        "Valtteri Bottas",
+        "Cadillac",
+        "1:52.794",
+        "+5.522",
+        "14"
+       ],
+       [
+        "22",
+        "Rafael Camara",
+        "Haas F1 Team",
+        "1:53.589",
+        "+6.317",
+        "20"
+       ]
+      ]
+     }
+    ]
+   },
+   {
+    "label": "Practice 3",
+    "tables": [
+     {
+      "title": "Practice 3",
+      "columns": [
+       "Pos",
+       "Driver",
+       "Team",
+       "Time",
+       "Gap",
+       "Laps"
+      ],
+      "rows": [
+       [
+        "1",
+        "George Russell",
+        "Mercedes",
+        "1:34.041",
+        "",
+        "30"
+       ],
+       [
+        "2",
+        "Kimi Antonelli",
+        "Mercedes",
+        "1:34.952",
+        "+0.911",
+        "29"
+       ],
+       [
+        "3",
+        "Lando Norris",
+        "McLaren",
+        "1:35.015",
+        "+0.974",
+        "28"
+       ],
+       [
+        "4",
+        "Charles Leclerc",
+        "Ferrari",
+        "1:35.191",
+        "+1.150",
+        "31"
+       ],
+       [
+        "5",
+        "Franco Colapinto",
+        "Alpine",
+        "1:35.198",
+        "+1.157",
+        "29"
+       ],
+       [
+        "6",
+        "Max Verstappen",
+        "Red Bull Racing",
+        "1:35.350",
+        "+1.309",
+        "24"
+       ],
+       [
+        "7",
+        "Liam Lawson",
+        "Racing Bulls",
+        "1:35.402",
+        "+1.361",
+        "31"
+       ],
+       [
+        "8",
+        "Lewis Hamilton",
+        "Ferrari",
+        "1:35.434",
+        "+1.393",
+        "30"
+       ],
+       [
+        "9",
+        "Pierre Gasly",
+        "Alpine",
+        "1:35.443",
+        "+1.402",
+        "30"
+       ],
+       [
+        "10",
+        "Arvid Lindblad",
+        "Racing Bulls",
+        "1:35.450",
+        "+1.409",
+        "32"
+       ],
+       [
+        "11",
+        "Isack Hadjar",
+        "Red Bull Racing",
+        "1:35.493",
+        "+1.452",
+        "29"
+       ],
+       [
+        "12",
+        "Oscar Piastri",
+        "McLaren",
+        "1:35.804",
+        "+1.763",
+        "29"
+       ],
+       [
+        "13",
+        "Carlos Sainz",
+        "Williams",
+        "1:35.986",
+        "+1.945",
+        "29"
+       ],
+       [
+        "14",
+        "Nico Hülkenberg",
+        "Audi",
+        "1:36.391",
+        "+2.350",
+        "22"
+       ],
+       [
+        "15",
+        "Alexander Albon",
+        "Williams",
+        "1:36.446",
+        "+2.405",
+        "29"
+       ],
+       [
+        "16",
+        "Gabriel Bortoleto",
+        "Audi",
+        "1:36.747",
+        "+2.706",
+        "29"
+       ],
+       [
+        "17",
+        "Oliver Bearman",
+        "Haas",
+        "1:36.938",
+        "+2.897",
+        "30"
+       ],
+       [
+        "18",
+        "Rafael Camara",
+        "Haas F1 Team",
+        "1:37.012",
+        "+2.971",
+        "30"
+       ],
+       [
+        "19",
+        "Sergio Pérez",
+        "Cadillac",
+        "1:37.132",
+        "+3.091",
+        "28"
+       ],
+       [
+        "20",
+        "Fernando Alonso",
+        "Aston Martin",
+        "1:37.249",
+        "+3.208",
+        "29"
+       ],
+       [
+        "21",
+        "Lance Stroll",
+        "Aston Martin",
+        "1:37.681",
+        "+3.640",
+        "28"
+       ],
+       [
+        "22",
+        "Valtteri Bottas",
+        "Cadillac",
+        "1:37.696",
+        "+3.655",
+        "27"
+       ]
+      ]
+     }
+    ]
+   },
+   {
+    "label": "Qualifying",
+    "tables": [
+     {
+      "title": "Qualifying",
+      "columns": [
+       "Pos",
+       "Driver",
+       "Team",
+       "Q1",
+       "Q2",
+       "Q3"
+      ],
+      "rows": [
+       [
+        "1",
+        "Andrea Kimi Antonelli",
+        "Mercedes",
+        "1:34.684",
+        "1:35.086",
+        "1:33.893"
+       ],
+       [
+        "2",
+        "Max Verstappen",
+        "Red Bull Racing",
+        "1:35.264",
+        "1:34.394",
+        "1:34.151"
+       ],
+       [
+        "3",
+        "George Russell",
+        "Mercedes",
+        "1:34.664",
+        "1:34.617",
+        "1:34.224"
+       ],
+       [
+        "4",
+        "Lando Norris",
+        "McLaren",
+        "1:35.109",
+        "1:34.766",
+        "1:34.244"
+       ],
+       [
+        "5",
+        "Isack Hadjar",
+        "Red Bull Racing",
+        "1:35.413",
+        "1:35.064",
+        "1:34.592"
+       ],
+       [
+        "6",
+        "Arvid Lindblad",
+        "Racing Bulls",
+        "1:35.456",
+        "1:34.963",
+        "1:34.668"
+       ],
+       [
+        "7",
+        "Oscar Piastri",
+        "McLaren",
+        "1:35.491",
+        "1:34.763",
+        "1:34.899"
+       ],
+       [
+        "8",
+        "Liam Lawson",
+        "Racing Bulls",
+        "1:35.489",
+        "1:35.048",
+        "1:35.090"
+       ],
+       [
+        "9",
+        "Pierre Gasly",
+        "Alpine",
+        "1:35.718",
+        "1:34.559",
+        "1:35.105"
+       ],
+       [
+        "10",
+        "Franco Colapinto",
+        "Alpine",
+        "1:35.930",
+        "1:34.982",
+        "1:35.314"
+       ],
+       [
+        "11",
+        "Charles Leclerc",
+        "Ferrari",
+        "1:35.040",
+        "1:35.197",
+        ""
+       ],
+       [
+        "12",
+        "Lewis Hamilton",
+        "Ferrari",
+        "1:35.743",
+        "1:35.253",
+        ""
+       ],
+       [
+        "13",
+        "Nico Hülkenberg",
+        "Audi",
+        "1:35.710",
+        "1:35.460",
+        ""
+       ],
+       [
+        "14",
+        "Carlos Sainz",
+        "Williams",
+        "1:35.588",
+        "1:35.641",
+        ""
+       ],
+       [
+        "15",
+        "Gabriel Bortoleto",
+        "Audi",
+        "1:36.149",
+        "1:35.993",
+        ""
+       ],
+       [
+        "16",
+        "Alexander Albon",
+        "Williams",
+        "1:35.856",
+        "1:36.125",
+        ""
+       ],
+       [
+        "17",
+        "Rafael Camara",
+        "Haas F1 Team",
+        "1:36.220",
+        "",
+        ""
+       ],
+       [
+        "18",
+        "Sergio Pérez",
+        "Cadillac",
+        "1:37.383",
+        "",
+        ""
+       ],
+       [
+        "19",
+        "Fernando Alonso",
+        "Aston Martin",
+        "1:37.400",
+        "",
+        ""
+       ],
+       [
+        "20",
+        "Lance Stroll",
+        "Aston Martin",
+        "1:37.550",
+        "",
+        ""
+       ],
+       [
+        "21",
+        "Valtteri Bottas",
+        "Cadillac",
+        "1:37.601",
+        "",
+        ""
+       ],
+       [
+        "22",
+        "Oliver Bearman",
+        "Haas F1 Team",
+        "1:48.005",
+        "",
+        ""
+       ]
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "calendar": [
+  {
+   "start": "2026-11-20T00:30:00.000Z",
+   "end": "2026-11-20T01:30:00.000Z",
+   "dateOnly": false,
+   "event": "Las Vegas Grand Prix",
+   "session": "Practice 1",
+   "round": 21,
+   "location": "Las Vegas Strip Circuit"
+  },
+  {
+   "start": "2026-11-20T04:00:00.000Z",
+   "end": "2026-11-20T05:00:00.000Z",
+   "dateOnly": false,
+   "event": "Las Vegas Grand Prix",
+   "session": "Practice 2",
+   "round": 21,
+   "location": "Las Vegas Strip Circuit"
+  },
+  {
+   "start": "2026-11-21T00:30:00.000Z",
+   "end": "2026-11-21T01:30:00.000Z",
+   "dateOnly": false,
+   "event": "Las Vegas Grand Prix",
+   "session": "Practice 3",
+   "round": 21,
+   "location": "Las Vegas Strip Circuit"
+  },
+  {
+   "start": "2026-11-21T04:00:00.000Z",
+   "end": "2026-11-21T05:00:00.000Z",
+   "dateOnly": false,
+   "event": "Las Vegas Grand Prix",
+   "session": "Qualifying",
+   "round": 21,
+   "location": "Las Vegas Strip Circuit"
+  },
+  {
+   "start": "2026-11-22T04:00:00.000Z",
+   "end": "2026-11-22T06:00:00.000Z",
+   "dateOnly": false,
+   "event": "Las Vegas Grand Prix",
+   "session": "Race",
+   "round": 21,
+   "location": "Las Vegas Strip Circuit"
+  }
+ ],
+ "sessions": {
+  "Race": {
+   "key": 11420,
+   "at": "2026-11-22T13:16:18.399Z",
+   "weather": {
+    "air": [
+     12,
+     12,
+     12
+    ],
+    "track": [
+     13,
+     14,
+     15
+    ],
+    "humidity": [
+     31,
+     38
+    ],
+    "rain": false
+   },
+   "marks": {
+    "neutral": [
+     {
+      "kind": "SC",
+      "from": 19,
+      "to": 25
+     }
+    ],
+    "lanes": []
+   },
+   "stints": [
+    [
+     1,
+     [
+      [
+       "SOFT",
+       1,
+       19
+      ],
+      [
+       "MEDIUM",
+       20,
+       50
+      ]
+     ]
+    ],
+    [
+     3,
+     [
+      [
+       "SOFT",
+       1,
+       19
+      ],
+      [
+       "MEDIUM",
+       20,
+       50
+      ]
+     ]
+    ],
+    [
+     5,
+     [
+      [
+       "SOFT",
+       1,
+       19
+      ],
+      [
+       "MEDIUM",
+       20,
+       50
+      ]
+     ]
+    ],
+    [
+     6,
+     [
+      [
+       "SOFT",
+       1,
+       19
+      ],
+      [
+       "MEDIUM",
+       20,
+       26
+      ],
+      [
+       "SOFT",
+       27,
+       50
+      ]
+     ]
+    ],
+    [
+     10,
+     [
+      [
+       "SOFT",
+       1,
+       19
+      ],
+      [
+       "MEDIUM",
+       20,
+       50
+      ]
+     ]
+    ],
+    [
+     11,
+     [
+      [
+       "SOFT",
+       1,
+       17
+      ]
+     ]
+    ],
+    [
+     12,
+     [
+      [
+       "MEDIUM",
+       1,
+       19
+      ],
+      [
+       "SOFT",
+       20,
+       50
+      ]
+     ]
+    ],
+    [
+     14,
+     [
+      [
+       "SOFT",
+       1,
+       19
+      ],
+      [
+       "MEDIUM",
+       20,
+       49
+      ]
+     ]
+    ],
+    [
+     16,
+     [
+      [
+       "SOFT",
+       1,
+       19
+      ],
+      [
+       "MEDIUM",
+       20,
+       50
+      ]
+     ]
+    ],
+    [
+     18,
+     [
+      [
+       "SOFT",
+       1,
+       20
+      ],
+      [
+       "MEDIUM",
+       21,
+       50
+      ]
+     ]
+    ],
+    [
+     23,
+     [
+      [
+       "SOFT",
+       1,
+       1
+      ]
+     ]
+    ],
+    [
+     27,
+     [
+      [
+       "SOFT",
+       1,
+       19
+      ],
+      [
+       "MEDIUM",
+       20,
+       50
+      ]
+     ]
+    ],
+    [
+     30,
+     [
+      [
+       "MEDIUM",
+       1,
+       1
+      ],
+      [
+       "SOFT",
+       2,
+       50
+      ]
+     ]
+    ],
+    [
+     41,
+     [
+      [
+       "SOFT",
+       1,
+       19
+      ],
+      [
+       "MEDIUM",
+       20,
+       20
+      ]
+     ]
+    ],
+    [
+     43,
+     [
+      [
+       "SOFT",
+       1,
+       19
+      ],
+      [
+       "MEDIUM",
+       20,
+       50
+      ]
+     ]
+    ],
+    [
+     44,
+     [
+      [
+       "SOFT",
+       1,
+       20
+      ],
+      [
+       "MEDIUM",
+       21,
+       50
+      ]
+     ]
+    ],
+    [
+     51,
+     [
+      [
+       "SOFT",
+       1,
+       18
+      ],
+      [
+       "MEDIUM",
+       19,
+       21
+      ],
+      [
+       "SOFT",
+       22,
+       50
+      ]
+     ]
+    ],
+    [
+     55,
+     [
+      [
+       "SOFT",
+       1,
+       19
+      ],
+      [
+       "MEDIUM",
+       20,
+       50
+      ]
+     ]
+    ],
+    [
+     63,
+     [
+      [
+       "SOFT",
+       1,
+       19
+      ],
+      [
+       "MEDIUM",
+       20,
+       50
+      ]
+     ]
+    ],
+    [
+     77,
+     [
+      [
+       "SOFT",
+       1,
+       19
+      ],
+      [
+       "MEDIUM",
+       20,
+       20
+      ],
+      [
+       "SOFT",
+       21,
+       50
+      ]
+     ]
+    ],
+    [
+     81,
+     [
+      [
+       "SOFT",
+       1,
+       19
+      ],
+      [
+       "MEDIUM",
+       20,
+       50
+      ]
+     ]
+    ],
+    [
+     87,
+     [
+      [
+       "MEDIUM",
+       1,
+       19
+      ],
+      [
+       "SOFT",
+       20,
+       50
+      ]
+     ]
+    ]
+   ]
+  },
+  "Qualifying": {
+   "key": 11416,
+   "at": "2026-11-22T13:16:18.399Z",
+   "weather": {
+    "air": [
+     13,
+     13,
+     14
+    ],
+    "track": [
+     15,
+     16,
+     16
+    ],
+    "humidity": [
+     31,
+     37
+    ],
+    "rain": false
+   },
+   "marks": {}
+  },
+  "Practice 3": {
+   "key": 11415,
+   "at": "2026-11-22T13:16:18.399Z",
+   "weather": {
+    "air": [
+     14,
+     14,
+     14
+    ],
+    "track": [
+     17,
+     17,
+     18
+    ],
+    "humidity": [
+     31,
+     35
+    ],
+    "rain": false
+   },
+   "marks": {}
+  },
+  "Practice 2": {
+   "key": 11414,
+   "at": "2026-11-22T13:16:18.399Z",
+   "weather": {
+    "air": [
+     15,
+     15,
+     15
+    ],
+    "track": [
+     13,
+     13,
+     14
+    ],
+    "humidity": [
+     51,
+     65
+    ],
+    "rain": false
+   },
+   "marks": {
+    "red": [
+     {
+      "lap": null,
+      "restarted": true
+     }
+    ]
+   }
+  },
+  "Practice 1": {
+   "key": 11413,
+   "at": "2026-11-22T13:16:18.399Z",
+   "weather": {
+    "air": [
+     12,
+     12,
+     13
+    ],
+    "track": [
+     13,
+     14,
+     15
+    ],
+    "humidity": [
+     56,
+     65
+    ],
+    "rain": true
+   },
+   "marks": {}
+  }
+ }
+}
