@@ -4,7 +4,7 @@ Theme URI: https://paddock-tracker.com/
 Description: Paddock Tracker's look (round 2) on Twenty Twenty-Five: Archivo, square corners, orange only for now, next and the main action, a designed Night, and the parts the publisher's pages use.
 Author: Paris Paraskevas
 Template: twentytwentyfive
-Version: 0.1.26
+Version: 0.1.27
 Requires at least: 6.7
 Requires PHP: 7.2
 License: GNU General Public License v2 or later
@@ -116,6 +116,8 @@ body { font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; 
 .pd-main, .pd-live + .pd-hero { margin-block-start: 0; }
 .pd-mut { color: var(--pd-muted); }
 .pd-pill { display: inline-block; padding: 1px 8px; font-size: .72rem; font-weight: 800; white-space: nowrap; }
+/* A class that sets display outranks the browser's own [hidden] rule, so a hidden pill says so itself. */
+.pd-pill[hidden] { display: none; }
 .pd-pill-live { background: var(--pd-live); color: #ffffff; }
 .pd-pill-next { background: var(--pd-accent); color: var(--pd-on); }
 
