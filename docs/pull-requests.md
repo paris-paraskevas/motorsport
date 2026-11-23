@@ -14,13 +14,13 @@ How to read an entry: **Readers see** is what a visitor of paddock-tracker.com c
 
 Back-filled 24 September 2026 for #1029 to #1053 (23 and 24 September 2026), from `gh pr view`, each merge commit's `git show --stat`, and `CHANGELOG.md`.
 
-## #1207 · 1.0.317 · O19 (a weekend's strip says "● Live" only while a session is on; theme 0.1.27) · opened 2026-11-23 into `next` on the operator's "Push and open PR", on the plan approved in plan mode on 23 Nov (the finding read on the site itself first, on the operator's "Signed in: read it")
+## #1207 · 1.0.316 · O19 (a weekend's strip says "● Live" only while a session is on; theme 0.1.27) · opened 2026-11-23 into `next` on the operator's "Push and open PR", on the plan approved in plan mode on 23 Nov (the finding read on the site itself first, on the operator's "Signed in: read it"); reviewed on "Under 60%: review" and merged on "Merge now" the same day, ahead of #1206
 **A weekend's strip said "● Live" at every hour**, drawn beside the fix on Live Pill Drafts (https://claude.ai/code/artifact/0a065f94-08e2-47e8-afc3-f0c04349ab11): the strip at six moments, today and as built, on a laptop and a phone, Day and Night.
 - **Readers see:** nothing until the desk uploads theme 0.1.27 (no publish). Then: on a weekend's page whose sessions are still to come (Qatar and Abu Dhabi today), the strip under the band opens with "NEXT" and the next session, and the red "● Live" stands there only while a session is on. Before, "● Live" stood there at every hour: four days before the weekend, between sessions, after the last one and with the script off.
 - **Editors get:** nothing.
 - **Files (6):**
   - `wp-theme/paddock/style.css` · Version 0.1.27; `.pd-pill[hidden] { display: none; }` beside `.pd-pill`, its reason in a comment.
-  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json`, `docs/pull-requests.md` · 1.0.317 and theme 0.1.27, provisional, taken at merge (#1206 holds 1.0.316).
+  - `CHANGELOG.md`, `RELEASES.md`, `package.json`, `package-lock.json`, `docs/pull-requests.md` · 1.0.316 and theme 0.1.27, taken at merge: opened as 1.0.317 behind #1206's 1.0.316, it merged first, and #1206 takes 1.0.317.
 - **Defaults taken in the build** (the plan's, as approved): one rule at the pill's own class, so it holds wherever a pill stands (Formula 1's strips, family C's, the series card), not one rule a place; the series card's own rule (`.pd-sr-lab .pd-pill[hidden]`) left as it is; no test file (vitest has no browser, so it cannot see what a stylesheet draws); commit tag `[O19]`, the strip being O19's.
 - **Verified** (after the last edit):
   - `npx tsc --noEmit` exit 0; `npm run lint` 0 errors, the 2 known `_encoding` warnings; `npm test` 285 files, 3,189 tests passed.

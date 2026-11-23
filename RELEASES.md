@@ -4,7 +4,7 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
-## 1.0.317 — 2026-11-23
+## 1.0.316 — 2026-11-23
 
 A Grand Prix weekend's page no longer says Live before its first session has started. The red Live marker under the page's heading now shows only while a session is running; until then the page names the next session and counts down to it, as it was meant to.
 

@@ -4,7 +4,7 @@ All notable changes to Paddock are recorded here. Newest first. This file is the
 
 > **Cross-cutting invariant (locked-in 2026-05-20):** the season-trend chart total for every driver MUST match the standings tab's points total for that driver. This applies to every series. If a series' results parser emits incomplete classifications (winners-only, top-10-only, partial), either (a) extend the parser to emit full per-driver per-round points, or (b) drop the trend chart for that series until full data is available. Do not ship a chart whose totals disagree with the standings tab — it actively erodes trust in the data layer.
 
-## 1.0.317 — 2026-11-23
+## 1.0.316 — 2026-11-23
 
 ### "● Live" on a weekend's strip only while a session is on (O19, theme 0.1.27)
 
@@ -21,6 +21,7 @@ Found on 23 Nov by the session that put Las Vegas's first practice right (#1206)
 - **No test joins the repository:** vitest has no browser, so it cannot see what a stylesheet draws; the checks above are a browser's, and their figures stand in the pull request's entry.
 - **Found, not changed** (for the desk): the site's home page says "● Live Formula 1, Practice 1 · Austin · started 17:30 UTC" to a reader without the script. Its stored strip (page 5053, last changed 20 Oct) lacks the class `is-off` that wp-theme/preview/home.html has; the script hides it for everyone else.
 - **The review** (a fresh-context Sonnet, 23 Nov, on the operator's "Under 60%: review": 383,962 tokens, 126 tool calls, 32 minutes; its report live-pill-review-1207.md in the desk's notes): mergeable, 0 blockers, 0 to fix, 5 nits, no fault in the code; its own probes on the local copy found the pill drawn at four of the six moments on `next`'s stylesheet and only while a session is on here, and no element marked hidden drawn on any page. The nits put right in the records: the entry's Review line; the pull request's body names docs/pull-requests.md among the files #1206 also edits; the sweep's 2,300 says what it counts (the reviewer counts 1,935 elements carrying the attribute at one instant with the script on; the 2,300 adds those the script hides at another hour); the check's second step describes its countdown.
+- **The number:** opened as 1.0.317 behind #1206's 1.0.316; reviewed first and merged first on the operator's "Merge now" (23 Nov), it takes 1.0.316, `next` being at 1.0.315 and theme 0.1.26, and #1206 takes 1.0.317.
 - **After the merge (the desk's):** theme 0.1.27 cut and uploaded with the test list in docs/pull-requests.md; no publish.
 
 ## 1.0.315 — 2026-11-19
