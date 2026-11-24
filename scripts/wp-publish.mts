@@ -142,9 +142,11 @@ import {
   fomQualifyingLabel,
   fomTable,
   initialsSpeller,
+  multiRaceKit,
   roundOver,
   sessionNone,
   sessionsWanted,
+  spelledAsRoster,
   timedTable,
   withWinnerTime,
   WSBK_RACES,
@@ -153,6 +155,7 @@ import {
   wsbkRaceTable,
   wsbkScored,
   type DtmGroups,
+  type RosterTeam,
 } from '../lib/wp/multi-race';
 import { calledOffOf } from '../lib/wp/render';
 import * as familyB from '../lib/wp/family-b';
@@ -1867,6 +1870,9 @@ const KITS: Partial<Record<Family, FamilyKit>> = {
     calledOff: (slug, round) => sessionsCalledOff(roundsFile(slug).rounds.find(r => r.round === round)),
     log: line => log('R', `weekend ${line}`),
   }),
+  // Family A (O33): its log names a weekend's stored sessions no page shows, those not stored, and each order made
+  // from two qualifying groups.
+  A: multiRaceKit({ log: line => log('R', `weekend ${line}`) }),
 };
 
 // ── Main ─────────────────────────────────────────────────────────────────────
@@ -2046,6 +2052,14 @@ async function build(now: Date): Promise<{ pages: Page[]; health: FeedHealth[] }
       }));
       // Family C (O34): a result names a team as the series writes it, drivers.json by its car; joined by the car.
       if (site.family === 'C') d.teams = withResultTeams(d.teams, d.results);
+      // Family A (O33): every name as drivers.json spells it, a team's colour by its name folded or under `also`; a team
+      // name that finds none is drawn grey and named here.
+      if (site.family === 'A') {
+        const roster = ((await loadCuratedDrivers(slug))?.teams ?? []) as unknown as (RosterTeam & { color?: string })[];
+        const spelled = spelledAsRoster(d, roster.map(t => ({ ...t, colour: t.color })));
+        ({ results: d.results, standings: d.standings, teams: d.teams } = spelled);
+        for (const name of spelled.grey) log('R', `teams ${slug} ${name}: no roster team, drawn grey`);
+      }
       d.cancelled = file.cancelled.flatMap(c =>
         typeof c?.originalRound === 'number' && typeof c.name === 'string'
           ? [

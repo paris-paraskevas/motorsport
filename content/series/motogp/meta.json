@@ -12,5 +12,14 @@
   "seasonPage": "2026_MotoGP_World_Championship",
   "officialStandingsUrl": "https://www.motogp.com/en/standings",
   "officialSite": "https://www.motogp.com/",
-  "watch": { "service": "MotoGP VideoPass", "url": "https://www.motogp.com/en/videopass" }
+  "watch": { "service": "MotoGP VideoPass", "url": "https://www.motogp.com/en/videopass" },
+  "site": {
+    "family": "A",
+    "pages": ["results", "standings", "champions", "weekends"],
+    "champions": {
+      "footnote": "Until 2001 the top class raced 500cc bikes; in 2002 990cc bikes replaced them and the class was renamed MotoGP.",
+      "sources": ["https://en.wikipedia.org/wiki/List_of_Grand_Prix_motorcycle_racing_World_champions"],
+      "door": { "href": "/series/wsbk/champions/", "title": "WorldSBK champions", "line": "Since 1988." }
+    }
+  }
 }

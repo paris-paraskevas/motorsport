@@ -675,6 +675,12 @@ export function groupsGrid(a: Table, b: Table): Table {
   return { title: 'Qualifying', columns: [...a.columns, 'Group'], rows };
 }
 
+/** A table without a column that is empty on every row (motorsport.com's grid of DTM's two groups gives no time). */
+function filled(t: Table): Table {
+  const keep = t.columns.map((c, i) => ['Pos', 'Driver', 'Rider', 'Team'].includes(c) || t.rows.some(r => (r[i] ?? '') !== ''));
+  return keep.every(Boolean) ? t : { ...t, columns: t.columns.filter((_, i) => keep[i]), rows: t.rows.map(r => r.filter((_, i) => keep[i])) };
+}
+
 /** The stored session a unit shows, by label: its table and its mark of none. */
 function storedOf(w: Weekend, label: string): ResultSession | undefined {
   return [...(w.result?.sessions ?? []), ...(w.result?.others ?? [])].find(s => s.label === label);
@@ -703,7 +709,7 @@ export function unitsOf(w: Weekend): { units: Unit[]; left: string[] } {
     const s = storedOf(w, u.label);
     if (s) shown.add(s.label);
     if (s?.none && !s.tables.length) u.none = s.none;
-    const own = s?.tables[0]?.rows.length ? s.tables[0] : null;
+    const own = s?.tables[0]?.rows.length ? filled(s.tables[0]) : null;
     const groups = ['A', 'B'].flatMap(g => {
       const x = storedOf(w, `${u.page} Group ${g}`);
       if (x) shown.add(x.label);
