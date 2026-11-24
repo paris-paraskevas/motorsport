@@ -1222,7 +1222,9 @@ const vegas = JSON.parse(readFileSync(path.join(process.cwd(), 'tests/fixtures/f
 // The hand-written line as content/series/f1/rounds.json holds it, read as the publisher reads it.
 const f1Rounds = JSON.parse(readFileSync(path.join(process.cwd(), 'content/series/f1/rounds.json'), 'utf8')) as { rounds: { round: number; noResults?: unknown }[] };
 const vegasLine = calledOffOf(f1Rounds.rounds.find(r => r.round === 21)?.noResults);
-/** The round's pages from a stored result (null: nothing stored yet) and rounds.json's noResults for the round. */
+// The line the rendering tests give the pages: a rewording of the note in rounds.json fails none of them.
+const LINE: NonNullable<CalendarRound['noResults']> = [{ session: 'Practice 1', note: 'It ran in the rain and no driver set a lap time', source: 'https://example.org/report' }];
+/** The round's pages from a stored result (null: nothing stored yet) and a noResults line for the round. */
 const vegasPages = (result: ResultRound | null, line: NonNullable<CalendarRound['noResults']> = []) =>
   weekendPages({
     slug: 'f1',
@@ -1244,15 +1246,16 @@ const named = (body: string, title: string, tag: string): string[] => [...sectio
 
 describe('a session that ended with no results (Las Vegas 2026, Practice 1, as stored)', () => {
   it("holds the hand-written line whole in rounds.json, under a name the round's timetable has", () => {
-    expect(vegasLine).toEqual([
-      { session: 'Practice 1', note: 'It ran in the rain and no driver set a lap time', source: 'https://www.fia.com/news/f1-rain-limits-running-opening-practice-las-vegas-grand-prix' },
-    ]);
+    // The session and the source are held here; the note is the editor's to reword (MotoGP's calledOff is held the same way).
+    expect(vegasLine).toHaveLength(1);
+    expect(vegasLine[0]).toMatchObject({ session: 'Practice 1', source: 'https://www.fia.com/news/f1-rain-limits-running-opening-practice-las-vegas-grand-prix' });
+    expect(vegasLine[0].note).not.toBe('');
     expect(vegas.calendar.map(e => e.session)).toContain(vegasLine[0].session);
     // What the store holds: every session of the round but that one.
     expect([...(vegas.result.others ?? []), ...vegas.result.sessions].map(s => s.label)).toEqual(['Practice 2', 'Practice 3', 'Qualifying', 'Race']);
   });
 
-  const pages = vegasPages(vegas.result, vegasLine);
+  const pages = vegasPages(vegas.result, LINE);
   const overview = pageOf(V, pages);
   const p1 = pageOf(`${V}practice-1/`, pages);
 
@@ -1268,7 +1271,7 @@ describe('a session that ended with no results (Las Vegas 2026, Practice 1, as s
     expect(overview).toContain(`<a href="${V}practice-2/">Practice 2<small><span class="pd-t" data-utc="2026-11-20T04:00:00.000Z" data-f="wt">Fri 04:00 UTC</span> · RUS</small></a>`);
   });
 
-  it('gives its own page the reason rounds.json holds, then that no results are available, and the weather measured through it', () => {
+  it('gives its own page the reason written by hand, then that no results are available, and the weather measured through it', () => {
     expect(p1).toContain('<h2>Classification</h2></div><p class="pd-wk-empty">It ran in the rain and no driver set a lap time: no results are available for this session.</p></section>');
     expect(p1).not.toContain('Not run yet');
     expect(p1).toContain(
@@ -1289,13 +1292,18 @@ describe('a session that ended with no results (Las Vegas 2026, Practice 1, as s
     const alone = vegasPages(vegas.result);
     expect(pageOf(V, alone)).toContain(`<a href="${V}practice-1/"${NO_RESULTS}`);
     expect(pageOf(`${V}practice-1/`, alone)).toContain('<p class="pd-wk-empty">No results are available for this session.</p>');
-    // A line without an https source is left out (calledOffOf), and a note is escaped.
-    expect(pageOf(`${V}practice-1/`, vegasPages(vegas.result, calledOffOf([{ session: 'Practice 1', note: 'It rained', source: 'fia.com' }])))).toContain(
-      '<p class="pd-wk-empty">No results are available for this session.</p>',
-    );
-    expect(pageOf(`${V}practice-1/`, vegasPages(vegas.result, [{ session: 'Practice 1', note: 'Rain & <b>no</b> laps', source: 'https://example.org/a' }]))).toContain(
+  });
+
+  it('reads a line as it was typed: its name in any case, a final full stop dropped, the note escaped, a line without an https source left out', () => {
+    const p1With = (line: unknown) => pageOf(`${V}practice-1/`, vegasPages(vegas.result, calledOffOf(line)));
+    expect(p1With([{ session: 'practice 1', note: 'It rained.', source: 'https://example.org/a' }])).toContain('<p class="pd-wk-empty">It rained: no results are available for this session.</p>');
+    expect(p1With([{ session: 'Practice 1', note: 'Rain & <b>no</b> laps', source: 'https://example.org/a' }])).toContain(
       '<p class="pd-wk-empty">Rain &amp; &lt;b&gt;no&lt;/b&gt; laps: no results are available for this session.</p>',
     );
+    expect(p1With([{ session: 'Practice 1', note: 'It rained', source: 'fia.com' }])).toContain('<p class="pd-wk-empty">No results are available for this session.</p>');
+    // With nothing stored the line alone decides: a name in another case counts at once, a name the timetable lacks never.
+    expect(pageOf(V, vegasPages(null, [{ session: 'PRACTICE 1', note: 'It rained', source: 'https://example.org/a' }]))).toContain(`<a href="${V}practice-1/"${NO_RESULTS}`);
+    expect(pageOf(V, vegasPages(null, [{ session: 'FP1', note: 'It rained', source: 'https://example.org/a' }])).match(/class="is-up"/g)).toHaveLength(5);
   });
 
   it('while the weekend is under way: off the Next line and out of Still to come, from Practice 2 alone', () => {
@@ -1313,7 +1321,7 @@ describe('a session that ended with no results (Las Vegas 2026, Practice 1, as s
   });
 
   it('with nothing stored: the hand-written line counts at once; without it all five are still to run, as before', () => {
-    const lined = vegasPages(null, vegasLine);
+    const lined = vegasPages(null, LINE);
     const body = pageOf(V, lined);
     expect(body).toContain(`<a href="${V}practice-1/"${NO_RESULTS}`);
     expect(body.match(/class="is-up"/g)).toHaveLength(4);
@@ -1326,13 +1334,13 @@ describe('a session that ended with no results (Las Vegas 2026, Practice 1, as s
     expect(pageOf(V, bare)).toContain('<b class="pd-sr-ses">Practice 1 · <span class="pd-t" data-utc="2026-11-20T00:30:00.000Z" data-f="wt">Fri 00:30 UTC</span></b>');
     expect(named(pageOf(V, bare), 'The weekend', 'span class="pd-wk-name"')).toEqual(['Practice 1', 'Practice 2', 'Practice 3', 'Qualifying', 'Race']);
     expect(pageOf(`${V}practice-1/`, bare)).toContain('<p class="pd-wk-empty">Not run yet. Its results join this page when it ends.</p>');
-    // Its hour past and nothing after it stored: the forecast box stays the page's side, never the weather.
+    // Still to run by its data, its hour past: the weather measured through it is stored and stays off its page.
     expect(pageOf(`${V}practice-1/`, bare)).not.toContain('Weather at the track');
   });
 
   it('shows a stored classification whatever rounds.json says', () => {
     const stored: ResultRound = { ...vegas.result, others: [{ label: 'Practice 1', tables: [practice([VER, LEC, HAM, RUS])] }, ...(vegas.result.others ?? [])] };
-    const late = vegasPages(stored, vegasLine);
+    const late = vegasPages(stored, LINE);
     expect(pageOf(`${V}practice-1/`, late)).toContain('<p class="pd-wk-hint">All 4, as classified</p>');
     expect(pageOf(`${V}practice-1/`, late)).not.toContain('no results');
     expect(pageOf(V, late)).toContain(`<a href="${V}practice-1/">Practice 1<small><span class="pd-t" data-utc="2026-11-20T00:30:00.000Z" data-f="wt">Fri 00:30 UTC</span> · VER</small></a>`);

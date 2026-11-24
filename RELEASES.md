@@ -6,7 +6,7 @@ Paddock is out of early access. Fifteen championships in one place, every sessio
 
 ## 1.0.317 — 2026-11-24
 
-A Formula 1 session that ends with no results now says so. First practice in Las Vegas ran in the rain and no driver set a lap time, yet the weekend's pages went on calling it still to run. It now reads "no results" beside the weekend's other sessions, and its own page says why, with the weather measured at the track through the hour.
+A Formula 1 session that ends with no results now says so once the weekend has moved on. First practice in Las Vegas ran in the rain and no driver set a lap time, yet the weekend's pages went on calling it still to run. It now reads "no results" beside the weekend's other sessions, and its own page says why, with the weather measured at the track through the hour.
 
 ## 1.0.316 — 2026-11-23
 

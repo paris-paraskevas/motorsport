@@ -261,15 +261,19 @@ export function bar(w: Weekend, entries: readonly BarEntry[]): string {
   return `<nav class="pd-wb" aria-label="${esc(`${w.r.name}: its pages`)}">${items.join('')}</nav>`;
 }
 
-/** A Formula 1 session on its weekend's pages: run once its classification is stored; without one, `off` (it ended with
- *  no results) when rounds.json says so by hand (the round's noResults) or a later session of the weekend has a
+/** The round's hand-written noResults line for a session, its name compared as the timetable compares two names
+ *  (sessionSlug: "practice 1" is "Practice 1"). */
+const noResultsLine = (w: Weekend, e: CalendarEntry) => w.r.noResults?.find(c => sessionSlug(c.session) === sessionSlug(e.session));
+
+/** A Formula 1 session on its weekend's pages: run once its classification is stored; without one, `none` (it ended
+ *  with no results) when rounds.json says so by hand (the round's noResults) or a later session of the weekend has a
  *  classification, family C's rule (endurance.ts unitStates); else still to run. A page follows its data, never the
- *  hour it is written: Las Vegas's first practice, 2026, read "still to run" for days after no driver set a lap time. */
-function sessionState(w: Weekend, e: CalendarEntry): 'run' | 'off' | 'up' {
+ *  hour it is written. `none` is not the bar's `off`: the session keeps its page, so its box stays a solid link. */
+function sessionState(w: Weekend, e: CalendarEntry): 'run' | 'none' | 'up' {
   if (tableOf(w, e.session)) return 'run';
   const at = w.sessions.findIndex(x => x.session === e.session);
   const later = at >= 0 && w.sessions.slice(at + 1).some(x => tableOf(w, x.session) !== null);
-  return later || w.r.noResults?.some(c => c.session === e.session) ? 'off' : 'up';
+  return later || noResultsLine(w, e) !== undefined ? 'none' : 'up';
 }
 
 /** Formula 1's bar: its Overview, then each session's page with its time (its real start when it ran late) and its
@@ -279,7 +283,7 @@ function weekendBar(w: Weekend, current: string | null): string {
   for (const e of w.sessions) {
     const t = tableOf(w, e.session);
     const state = sessionState(w, e);
-    const who = t ? ` · ${esc(codeOf(w.d, t.rows[0][cols(t).name] ?? ''))}` : state === 'off' ? ' · no results' : '<span class="pd-vh"> · still to run</span>';
+    const who = t ? ` · ${esc(codeOf(w.d, t.rows[0][cols(t).name] ?? ''))}` : state === 'none' ? ' · no results' : '<span class="pd-vh"> · still to run</span>';
     const at = extrasOf(w, e.session)?.marks?.late?.started ?? e.start;
     entries.push({ label: e.session, note: `${yours(at, 'wt')}${who}`, href: sessionPath(w, e.session), current: e.session === current, ...(state === 'up' ? { state: 'up' as const } : {}) });
   }
@@ -998,7 +1002,7 @@ export function forecastBox(w: Weekend, e: CalendarEntry, used: Used): string {
 
 /** A session's own page: its classification (every driver, every part), race control's marks, Pit wall for a race or
  *  a sprint, and the weather measured through it, or its forecast before it runs. A session that ended with no results
- *  says so in the words formula1.com's results page uses, after the reason rounds.json gives by hand, if it gives one. */
+ *  says so, after the reason rounds.json gives by hand, if it gives one. */
 function sessionPage(w: Weekend, e: CalendarEntry): Page {
   const used = nothingUsed();
   const t = tableOf(w, e.session);
@@ -1016,9 +1020,10 @@ function sessionPage(w: Weekend, e: CalendarEntry): Page {
       if (wall) parts.push(section('Pit wall', 'Each driver’s tyres and stops, lap by lap', wall));
     }
   } else {
-    const why = w.r.noResults?.find(c => c.session === e.session)?.note;
-    const none = why ? `${esc(why)}: no results are available for this session.` : 'No results are available for this session.';
-    parts.push(section('Classification', '', `${marks(w, e.session, used)}<p class="pd-wk-empty">${state === 'off' ? none : 'Not run yet. Its results join this page when it ends.'}</p>`));
+    // The note is a clause this sentence finishes, so a final full stop typed by hand is dropped.
+    const why = noResultsLine(w, e)?.note.replace(/[.\s]+$/, '') ?? '';
+    const none = why === '' ? 'No results are available for this session.' : `${esc(why)}: no results are available for this session.`;
+    parts.push(section('Classification', '', `${marks(w, e.session, used)}<p class="pd-wk-empty">${state === 'none' ? none : 'Not run yet. Its results join this page when it ends.'}</p>`));
   }
   const wx = x?.weather;
   let weather = '';
