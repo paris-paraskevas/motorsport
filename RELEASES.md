@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.319 — 2026-11-24
+
+Formula 2, Formula 3, MotoGP, WorldSBK and DTM now have their own series pages, as Formula 1 has: an overview of the season, every round's results, the standings with who can still win the title, and the roll of champions. Each weekend has a page of its own, with every race of the weekend in one table (the points from all of them first, then a tab for each race), and each session has its page. MotoGP's Australian round shows its Sprint as the weekend's only race, since the Grand Prix was called off. Where a season is over, the standings name the champion and where the title was won.
+
 ## 1.0.318 — 2026-11-24
 
 Formula 2's Qatar weekend now has its session times on the calendar: practice and qualifying on Friday 27 November, the Sprint Race on Saturday and the Feature Race on Sunday, each shown in your own time zone. Until the series published them, the weekend's card read "Times not published yet". Abu Dhabi's, a week later, are still to come.
