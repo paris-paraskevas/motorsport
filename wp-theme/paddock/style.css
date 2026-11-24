@@ -4,7 +4,7 @@ Theme URI: https://paddock-tracker.com/
 Description: Paddock Tracker's look (round 2) on Twenty Twenty-Five: Archivo, square corners, orange only for now, next and the main action, a designed Night, and the parts the publisher's pages use.
 Author: Paris Paraskevas
 Template: twentytwentyfive
-Version: 0.1.27
+Version: 0.1.28
 Requires at least: 6.7
 Requires PHP: 7.2
 License: GNU General Public License v2 or later
@@ -1607,4 +1607,36 @@ a.pd-sn-t:hover { border-color: var(--pd-ink); border-top-color: var(--t, var(--
 	.pd-ec-roll tr.cls td.yr { display: none; }
 	.pd-ec-roll td.ot { padding-left: 0; }
 	.pd-ec-roll td.ot span { display: block; margin: 0 0 4px; }
+}
+
+/* ── Task 2.b (O33), PR 3: family A's pages, Formula 2, Formula 3, MotoGP, WorldSBK and DTM ──────────────────────
+   The markup is the publisher's (lib/wp/multi-race.ts), as drawn on Multi-Race Weekend Drafts (O, W, X) and the three
+   drawings answered on 12 Nov: the weekend's points a column a race (DTM's five fit a phone), a qualifying's groups on
+   its page, the season's title box on the Standings page, the round's circuit small under the columns, and a
+   series' two tables beside its drivers (DTM's teams and manufacturers). */
+.pd-fa-pts .n { width: 64px; }
+.pd-fa-pts .tot { width: 72px; }
+.pd-wkp .pd-fa-part { display: flex; align-items: baseline; gap: 10px; margin: 22px 0 8px; font-size: 1.05rem; font-weight: 800; }
+.pd-wkp .pd-wk-sh + .pd-fa-part { margin-top: 0; }
+.pd-fa-part small { font-size: .8rem; font-weight: 600; color: var(--pd-muted); }
+/* The season over (the operator's "Name the champion", 12 Nov; "Clinched in …", 24 Nov): the champion first. */
+.pd-fa-title { border: 1px solid var(--pd-line); border-top: 4px solid var(--t, var(--s)); background: var(--pd-surface); }
+.pd-sr .pd-fa-title h3 { margin: 0; padding: 14px 16px 4px; font-size: .78rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--pd-muted); }
+.pd-sr .pd-fa-title p { margin: 0; padding: 0 16px 12px; font-size: .875rem; line-height: 1.5; color: var(--pd-muted); }
+.pd-sr .pd-fa-title .pd-fa-champ { padding-top: 4px; font-size: 1rem; color: var(--pd-ink); }
+.pd-fa-champ b { font-size: 1.3rem; font-weight: 800; letter-spacing: -.01em; }
+.pd-sr .pd-fa-how { display: block; padding: 10px 16px; border-top: 1px solid var(--pd-line); font-size: .84rem; font-weight: 800; color: var(--pd-ink); }
+.pd-stp[data-show="constructors"] .pd-fa-title { display: none; }
+/* A second table beside the drivers keeps its gap in the switch's second view. */
+.pd-sr .pd-stp[data-show="constructors"] .pd-st-cons + .pd-st-cons .pd-st-ch { margin-top: 26px; }
+/* The circuit (draft L, All 4): the theme's outline, small, under the columns. */
+.pd-fa-cm { display: grid; justify-items: start; gap: 4px; padding: 0 var(--pd-gutter) 32px; }
+.pd-fa-cm h2 { margin: 0; font-size: 1.35rem; font-weight: 800; letter-spacing: -.015em; }
+.pd-fa-cm .pd-fa-ol { width: 140px; height: 140px; margin-top: 8px; color: var(--pd-ink); }
+@media (max-width: 699px) {
+	.pd-fa-pts .n, .pd-fa-pts .tot { width: auto; padding-right: 6px; padding-left: 6px; }
+	.pd-fa-pts .p { width: 28px; }
+	.pd-fa-pts .d b { margin-right: 0; }
+	.pd-fa-champ b { font-size: 1.15rem; }
+	.pd-fa-cm .pd-fa-ol { width: 110px; height: 110px; }
 }
