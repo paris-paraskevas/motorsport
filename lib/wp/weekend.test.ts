@@ -1242,6 +1242,8 @@ const vegasUpTo = (others: string[], race: boolean): ResultRound => ({ ...vegas.
 const V = '/series/f1/2026/round-21/';
 // Practice 1 on the bar: a solid box as a session that ran, "no results" where a run session names its leader.
 const NO_RESULTS = '>Practice 1<small><span class="pd-t" data-utc="2026-11-20T00:30:00.000Z" data-f="wt">Fri 00:30 UTC</span> · no results</small></a>';
+// The same box where no hand-written line names it and a later session has results: "not stored".
+const NOT_STORED = '>Practice 1<small><span class="pd-t" data-utc="2026-11-20T00:30:00.000Z" data-f="wt">Fri 00:30 UTC</span> · not stored</small></a>';
 const named = (body: string, title: string, tag: string): string[] => [...sectionOf(body, title).matchAll(new RegExp(`<${tag}>([^<]+)</`, 'g'))].map(m => m[1]);
 
 describe('a session that ended with no results (Las Vegas 2026, Practice 1, as stored)', () => {
@@ -1288,19 +1290,31 @@ describe('a session that ended with no results (Las Vegas 2026, Practice 1, as s
     expect(sectionOf(overview, 'Still to come')).toBe('');
   });
 
-  it('needs no hand-written line once a later session has results: the words stand alone', () => {
+  it('reads "not stored" without a hand-written line once a later session has results: its page and its weather kept, never a claim that it had none', () => {
     const alone = vegasPages(vegas.result);
-    expect(pageOf(V, alone)).toContain(`<a href="${V}practice-1/"${NO_RESULTS}`);
-    expect(pageOf(`${V}practice-1/`, alone)).toContain('<p class="pd-wk-empty">No results are available for this session.</p>');
+    for (const p of ['', 'practice-2/', 'race/']) expect(pageOf(`${V}${p}`, alone)).toContain(`<a href="${V}practice-1/"${NOT_STORED}`);
+    const page = pageOf(`${V}practice-1/`, alone);
+    expect(page).toContain(`<a href="${V}practice-1/" aria-current="page"${NOT_STORED}`);
+    expect(page).toContain('<h2>Classification</h2></div><p class="pd-wk-empty">No results are stored for this session.</p></section>');
+    expect(page).toContain('<h3>Weather at the track</h3>');
+    expect(page).not.toContain('Forecast for its start');
+    // Results a run failed to fetch read the same in the store, so no page of the round says there were none.
+    for (const p of alone.filter(x => x.path.startsWith(V))) {
+      expect(p.body).not.toContain(' · no results');
+      expect(p.body).not.toContain('are available for this session');
+      expect(p.body).not.toContain('still to run');
+      expect(p.body).not.toContain('class="is-up"');
+    }
   });
 
-  it('reads a line as it was typed: its name in any case, a final full stop dropped, the note escaped, a line without an https source left out', () => {
+  it('reads a line as it was typed: its name in any case, a final full stop dropped, the note escaped, an empty note the words alone, a line without an https source left out', () => {
     const p1With = (line: unknown) => pageOf(`${V}practice-1/`, vegasPages(vegas.result, calledOffOf(line)));
     expect(p1With([{ session: 'practice 1', note: 'It rained.', source: 'https://example.org/a' }])).toContain('<p class="pd-wk-empty">It rained: no results are available for this session.</p>');
     expect(p1With([{ session: 'Practice 1', note: 'Rain & <b>no</b> laps', source: 'https://example.org/a' }])).toContain(
       '<p class="pd-wk-empty">Rain &amp; &lt;b&gt;no&lt;/b&gt; laps: no results are available for this session.</p>',
     );
-    expect(p1With([{ session: 'Practice 1', note: 'It rained', source: 'fia.com' }])).toContain('<p class="pd-wk-empty">No results are available for this session.</p>');
+    expect(p1With([{ session: 'Practice 1', note: '', source: 'https://example.org/a' }])).toContain('<p class="pd-wk-empty">No results are available for this session.</p>');
+    expect(p1With([{ session: 'Practice 1', note: 'It rained', source: 'fia.com' }])).toContain('<p class="pd-wk-empty">No results are stored for this session.</p>');
     // With nothing stored the line alone decides: a name in another case counts at once, a name the timetable lacks never.
     expect(pageOf(V, vegasPages(null, [{ session: 'PRACTICE 1', note: 'It rained', source: 'https://example.org/a' }]))).toContain(`<a href="${V}practice-1/"${NO_RESULTS}`);
     expect(pageOf(V, vegasPages(null, [{ session: 'FP1', note: 'It rained', source: 'https://example.org/a' }])).match(/class="is-up"/g)).toHaveLength(5);
@@ -1309,14 +1323,14 @@ describe('a session that ended with no results (Las Vegas 2026, Practice 1, as s
   it('while the weekend is under way: off the Next line and out of Still to come, from Practice 2 alone', () => {
     const under = vegasPages(vegasUpTo(['Practice 2'], false));
     const body = pageOf(V, under);
-    expect(body).toContain(`<a href="${V}practice-1/"${NO_RESULTS}`);
+    expect(body).toContain(`<a href="${V}practice-1/"${NOT_STORED}`);
     expect(body.match(/class="is-up"/g)).toHaveLength(3);
     expect(body).toContain('<b class="pd-sr-ses">Practice 3 · <span class="pd-t" data-utc="2026-11-21T00:30:00.000Z" data-f="wt">Sat 00:30 UTC</span></b>');
     expect(body).toContain('data-pd-target="2026-11-21T00:30:00.000Z"');
     expect(body).toContain('data-pd-ses="Practice%203|2026-11-21T00:30:00.000Z|2026-11-21T01:30:00.000Z;Qualifying|');
     expect(named(body, 'Done so far', 'h3')).toEqual(['Practice 2']);
     expect(named(body, 'Still to come', 'span class="pd-wk-name"')).toEqual(['Practice 3', 'Qualifying', 'Race']);
-    expect(pageOf(`${V}practice-1/`, under)).toContain('<p class="pd-wk-empty">No results are available for this session.</p>');
+    expect(pageOf(`${V}practice-1/`, under)).toContain('<p class="pd-wk-empty">No results are stored for this session.</p>');
     expect(pageOf(`${V}practice-3/`, under)).toContain('<p class="pd-wk-empty">Not run yet. Its results join this page when it ends.</p>');
   });
 
