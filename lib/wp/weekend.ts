@@ -261,15 +261,34 @@ export function bar(w: Weekend, entries: readonly BarEntry[]): string {
   return `<nav class="pd-wb" aria-label="${esc(`${w.r.name}: its pages`)}">${items.join('')}</nav>`;
 }
 
+/** The round's hand-written noResults line for a session, its name compared as the timetable compares two names
+ *  (sessionSlug: "practice 1" is "Practice 1"). */
+const noResultsLine = (w: Weekend, e: CalendarEntry) => w.r.noResults?.find(c => sessionSlug(c.session) === sessionSlug(e.session));
+
+/** A Formula 1 session on its weekend's pages: run once its classification is stored. Without one: `none` (it ended
+ *  with no results) only when rounds.json says so by hand (the round's noResults); `unstored` when no line names it
+ *  and a later session of the weekend has a classification, family C's rule and its words (endurance.ts unitStates,
+ *  "not stored"), because results a run failed to fetch and results that never were look the same in the store; else
+ *  still to run. A page follows its data, never the hour it is written. Neither is the bar's `off`: the session keeps
+ *  its page, so its box stays a solid link. */
+function sessionState(w: Weekend, e: CalendarEntry): 'run' | 'none' | 'unstored' | 'up' {
+  if (tableOf(w, e.session)) return 'run';
+  if (noResultsLine(w, e) !== undefined) return 'none';
+  const at = w.sessions.findIndex(x => x.session === e.session);
+  return at >= 0 && w.sessions.slice(at + 1).some(x => tableOf(w, x.session) !== null) ? 'unstored' : 'up';
+}
+
 /** Formula 1's bar: its Overview, then each session's page with its time (its real start when it ran late) and its
- *  winner once run, a session still to run dashed and said so. */
+ *  winner once run, a session that ended with no results or whose results are not stored said so, a session still to
+ *  run dashed and said so. */
 function weekendBar(w: Weekend, current: string | null): string {
   const entries: BarEntry[] = [{ label: 'Overview', note: 'the weekend', href: w.path, current: current === null }];
   for (const e of w.sessions) {
     const t = tableOf(w, e.session);
-    const who = t ? ` · ${esc(codeOf(w.d, t.rows[0][cols(t).name] ?? ''))}` : '<span class="pd-vh"> · still to run</span>';
+    const state = sessionState(w, e);
+    const who = t ? ` · ${esc(codeOf(w.d, t.rows[0][cols(t).name] ?? ''))}` : state === 'none' ? ' · no results' : state === 'unstored' ? ' · not stored' : '<span class="pd-vh"> · still to run</span>';
     const at = extrasOf(w, e.session)?.marks?.late?.started ?? e.start;
-    entries.push({ label: e.session, note: `${yours(at, 'wt')}${who}`, href: sessionPath(w, e.session), current: e.session === current, ...(t ? {} : { state: 'up' as const }) });
+    entries.push({ label: e.session, note: `${yours(at, 'wt')}${who}`, href: sessionPath(w, e.session), current: e.session === current, ...(state === 'up' ? { state: 'up' as const } : {}) });
   }
   return bar(w, entries);
 }
@@ -930,7 +949,7 @@ function overviewPage(w: Weekend): Page {
   const used = nothingUsed();
   const race = tableOf(w, 'Race');
   const run = w.sessions.filter(e => tableOf(w, e.session));
-  const ahead = w.sessions.filter(e => !tableOf(w, e.session));
+  const ahead = w.sessions.filter(e => sessionState(w, e) === 'up');
   const parts: string[] = [];
   if (race) {
     const x = extrasOf(w, 'Race');
@@ -959,8 +978,11 @@ function overviewPage(w: Weekend): Page {
     }
     if (!w.sessions.length) parts.push(section('The weekend', '', '<p class="pd-wk-empty">The weekend’s session times are not published yet; they appear here as soon as they are.</p>'));
   }
+  // The strip's Next is read from the sessions still to run, as family C's Overview passes its own: the shared strip
+  // takes a session without a classification as to come, which one that ended with no results, or whose results are
+  // not stored, is not.
   const body =
-    `<div class="pd-wkp pd-s-${esc(w.d.slug)}">${weekendBand(w)}${strip(w, f1Final(w))}${weekendBar(w, null)}` +
+    `<div class="pd-wkp pd-s-${esc(w.d.slug)}">${weekendBand(w)}${strip(ahead.length ? { ...w, sessions: ahead } : w, f1Final(w))}${weekendBar(w, null)}` +
     `<div class="pd-wk-main"><div class="pd-wk-col">${parts.join('')}</div>${aside(w, Boolean(race))}</div>${circuit(w, used)}${credit(used)}</div>`;
   return { path: w.path, title: `${w.r.name} ${w.season}`, body: htmlBlock(body), template: 'page-wide' };
 }
@@ -983,10 +1005,12 @@ export function forecastBox(w: Weekend, e: CalendarEntry, used: Used): string {
 }
 
 /** A session's own page: its classification (every driver, every part), race control's marks, Pit wall for a race or
- *  a sprint, and the weather measured through it, or its forecast before it runs. */
+ *  a sprint, and the weather measured through it, or its forecast before it runs. A session that ended with no results
+ *  says so, after the reason its noResults line gives; one whose results are not stored says that alone. */
 function sessionPage(w: Weekend, e: CalendarEntry): Page {
   const used = nothingUsed();
   const t = tableOf(w, e.session);
+  const state = sessionState(w, e);
   const x = extrasOf(w, e.session);
   const band = sessionBand(w, e);
   const parts: string[] = [];
@@ -1000,16 +1024,20 @@ function sessionPage(w: Weekend, e: CalendarEntry): Page {
       if (wall) parts.push(section('Pit wall', 'Each driver’s tyres and stops, lap by lap', wall));
     }
   } else {
-    parts.push(section('Classification', '', `${marks(w, e.session, used)}<p class="pd-wk-empty">Not run yet. Its results join this page when it ends.</p>`));
+    // The note is a clause this sentence finishes, so a final full stop typed by hand is dropped.
+    const why = noResultsLine(w, e)?.note.replace(/[.\s]+$/, '') ?? '';
+    const none = why === '' ? 'No results are available for this session.' : `${esc(why)}: no results are available for this session.`;
+    const said = state === 'none' ? none : state === 'unstored' ? 'No results are stored for this session.' : 'Not run yet. Its results join this page when it ends.';
+    parts.push(section('Classification', '', `${marks(w, e.session, used)}<p class="pd-wk-empty">${said}</p>`));
   }
   const wx = x?.weather;
   let weather = '';
-  if (t && wx) {
+  if (state !== 'up' && wx) {
     used.weather = true;
     weather =
       `<section class="pd-wk-box"><h3>Weather at the track</h3><dl><dt>Air</dt><dd>${wx.air[0]}–${wx.air[2]} °C</dd>${wx.track ? `<dt>Track</dt><dd>${wx.track[0]}–${wx.track[2]} °C</dd>` : ''}` +
       `${wx.humidity ? `<dt>Humidity</dt><dd>${wx.humidity[0]}–${wx.humidity[1]} %</dd>` : ''}<dt>Rain</dt><dd>${wx.rain ? 'Yes' : 'None'}</dd></dl><p class="pd-wk-src">Measured through the session</p></section>`;
-  } else if (!t) {
+  } else if (state === 'up') {
     weather = forecastBox(w, e, used);
   }
   const body =

@@ -1090,16 +1090,22 @@ export interface CalendarRound {
   moved?: { note: string; from?: string; to?: string };
   /** Its sessions called off once the calendar was set (rounds.json calledOff, O33): MotoGP's Australian race. */
   calledOff?: CalledOff[];
+  /** Its sessions that ended with no results (rounds.json noResults, the entries calledOff has), each note the reason
+   *  as its source gives it, a clause the session's page finishes: Las Vegas's first practice, 2026, run in the rain
+   *  with no lap time set. */
+  noResults?: CalledOff[];
 }
 
-/** A session called off: the timetable's name for it, the sentence readers see, and the page that says so. */
+/** A session called off, or one that ended with no results: the timetable's name for it, the note readers see (a
+ *  called-off session's whole sentence; a no-results session's reason, which its page finishes), and the page that
+ *  says so. */
 export interface CalledOff {
   session: string;
   note: string;
   source: string;
 }
 
-/** rounds.json's `calledOff` for a round: each entry whole, with an https source, or left out. */
+/** rounds.json's `calledOff` for a round, or its `noResults`: each entry whole, with an https source, or left out. */
 export function calledOffOf(raw: unknown): CalledOff[] {
   if (!Array.isArray(raw)) return [];
   return raw.flatMap(c =>

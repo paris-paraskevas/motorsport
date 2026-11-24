@@ -1953,6 +1953,7 @@ async function calendarRounds(list: Partial<SeriesRoundEntry>[], calendar: Calen
         ? { moved: { note: r.rescheduleNote, ...(typeof r.previousStartDate === 'string' && typeof r.previousEndDate === 'string' ? { from: r.previousStartDate, to: r.previousEndDate } : {}) } }
         : {}),
       ...(calledOffOf((r as { calledOff?: unknown }).calledOff).length ? { calledOff: calledOffOf((r as { calledOff?: unknown }).calledOff) } : {}),
+      ...(calledOffOf((r as { noResults?: unknown }).noResults).length ? { noResults: calledOffOf((r as { noResults?: unknown }).noResults) } : {}),
     });
   }
   return out;
