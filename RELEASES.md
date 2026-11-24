@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.318 — 2026-11-24
+
+Formula 2's Qatar weekend now has its session times on the calendar: practice and qualifying on Friday 27 November, the Sprint Race on Saturday and the Feature Race on Sunday, each shown in your own time zone. Until the series published them, the weekend's card read "Times not published yet". Abu Dhabi's, a week later, are still to come.
+
 ## 1.0.317 — 2026-11-24
 
 A Formula 1 session that ended with no results now says so, and why. First practice in Las Vegas ran in the rain and no driver set a lap time, yet the weekend's pages went on calling it still to run. It now reads "no results" beside the weekend's other sessions, and its own page says why, with the weather measured at the track through the hour. Any other session left without results once a later one has them reads "not stored", where it too read still to run.
