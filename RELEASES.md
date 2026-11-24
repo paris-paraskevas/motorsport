@@ -6,7 +6,7 @@ Paddock is out of early access. Fifteen championships in one place, every sessio
 
 ## 1.0.318 — 2026-11-24
 
-Formula 2's Qatar weekend now has its session times on the calendar: practice and qualifying on Friday 27 November, the Sprint Race on Saturday and the Feature Race on Sunday, each shown in your own time zone. They read "time to be confirmed" until the series published them. Abu Dhabi's, a week later, are still to come.
+Formula 2's Qatar weekend now has its session times on the calendar: practice and qualifying on Friday 27 November, the Sprint Race on Saturday and the Feature Race on Sunday, each shown in your own time zone. Until the series published them, the weekend's card read "Times not published yet". Abu Dhabi's, a week later, are still to come.
 
 ## 1.0.317 — 2026-11-24
 
