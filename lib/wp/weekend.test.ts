@@ -1207,6 +1207,37 @@ describe("the shared parts' options (O33), Formula 1's by default", () => {
     const riders = seriesOf('wsbk', 'WorldSBK', { standings: [{ title: 'Riders', columns: ['Pos', 'Rider', 'Team', 'Pts'], rows: [['1', 'Nicolo Bulega', 'Aruba.it Racing - Ducati', '600']] }] });
     expect(championship(riders, 12)).toEqual([{ name: 'Nicolo Bulega', team: 'Aruba.it Racing - Ducati', pts: 600 }]);
   });
+
+  it("championship: a session kept beside the races that pays counts (DTM's qualifying, 3-2-1), one that does not pay never", () => {
+    const paid = (label: string, rows: string[][]) => ({ label, tables: [table(['Pos', 'Driver', 'Team', 'Time', 'Pts'], rows)] });
+    const round = (n: number): ResultRound => ({
+      round: n,
+      name: `Round ${n}`,
+      date: `2026-0${n + 3}-26`,
+      sessions: [paid('Race 1', [['1', 'Maro Engel', 'Winward', '50:00.000', '25'], ['2', 'Lucas Auer', 'Landgraf', '+1.0', '20']])],
+      others: [paid('Qualifying 1', [['1', 'Lucas Auer', 'Landgraf', '1:24.000', '3'], ['2', 'Maro Engel', 'Winward', '1:24.100', '2']]), { label: 'Free Practice 1', tables: [table(['Pos', 'Driver', 'Team', 'Time'], [['1', 'Lucas Auer', 'Landgraf', '1:25.000']])] }],
+    });
+    const dtm = seriesOf('wsbk', 'DTM', { results: [round(1), round(2)] });
+    // After round 1, before the official table's round: summed, qualifying's points with the race's.
+    expect(championship(dtm, 1)).toEqual([
+      { name: 'Maro Engel', team: 'Winward', pts: 27 },
+      { name: 'Lucas Auer', team: 'Landgraf', pts: 23 },
+    ]);
+  });
+
+  it("seasonPage: a round whose race was called off names the race it rests on and the one called off (family A)", () => {
+    const sprint = { label: 'Sprint', tables: [table(['Pos', 'Rider', 'Team', 'Time', 'Pts'], [['1', 'Marc Márquez', 'Ducati Lenovo Team', '19:09.411', '12']])] };
+    const off = { session: 'Race', note: 'The Grand Prix was called off: poor visibility for the medical helicopter.', source: 'https://www.motogp.com/' };
+    const moto = seriesOf('wsbk', 'MotoGP', {
+      results: [{ round: 18, name: 'Australia', date: '2026-10-25', sessions: [sprint] }],
+      rounds: [{ round: 18, name: 'Australian Grand Prix', startDate: '2026-10-23', endDate: '2026-10-25', venue: 'Phillip Island', calledOff: [off] }],
+    });
+    const names = (label: string) => (label === 'Race' || label === 'Grand Prix' ? 'Grand Prix' : label);
+    expect(seasonPage(moto, 2026, { raceName: names }).body).toContain('<small>Round 18 · 23–25 Oct</small><b>Australian Grand Prix</b><span><i class="pd-tc" style="--t:#9aa3b2"></i>Sprint: Márquez · Grand Prix called off</span>');
+    expect(seasonPage(moto, 2026, { raceName: names }).body).toContain('<p>1 rounds · 1 run</p>');
+    // Without the names, the winner as on any tile.
+    expect(seasonPage(moto, 2026).body).toContain('<i class="pd-tc" style="--t:#9aa3b2"></i>Marc Márquez</span>');
+  });
 });
 
 // ── A session that ended with no results (O19, 23 Nov 2026), from the saved round ──

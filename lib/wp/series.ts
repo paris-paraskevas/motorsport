@@ -119,17 +119,23 @@ export interface RoundWin {
   /** The winning car's number where the race classifies cars that crews share (a Crew column, family C, O34): a line
    *  then names the car and its team, not the crew. */
   car?: string;
+  /** The race the round rests on when its race was called off (rounds.json calledOff; MotoGP's round 18 of 2026, its
+   *  Sprint alone), by its stored label: the round counts as run, and its winner won no race (O33). */
+  only?: string;
 }
 
 /** Each round's race, the last session in its running order that is not a sprint: the winner, the team and the
- *  margin. Sprints are not wins, and a sprint weekend's Saturday, when the round holds its Sprint alone, has no race.
- *  A race that classifies cars names its crew and keeps the car's number, from its first table: WEC and IMSA store a
- *  table a class, the top class first; GT World one table, every cup in overall order. */
+ *  margin. Sprints are not wins, and a sprint weekend's Saturday, when the round holds its Sprint alone, has no race;
+ *  but a round whose race rounds.json calls off rests on the last race it ran, marked `only`. A race that classifies
+ *  cars names its crew and keeps the car's number, from its first table: WEC and IMSA store a table a class, the top
+ *  class first; GT World one table, every cup in overall order. */
 export function raceWins(d: SeriesData): Map<number, RoundWin> {
   const out = new Map<number, RoundWin>();
   for (const r of d.results ?? []) {
     if (r.round === null) continue;
-    const race = r.sessions.find(s => s.label === 'Race') ?? [...r.sessions].reverse().find(s => !/^sprint/i.test(s.label));
+    const main = r.sessions.find(s => s.label === 'Race') ?? [...r.sessions].reverse().find(s => !/^sprint/i.test(s.label));
+    const off = !main && (d.rounds?.find(x => x.round === r.round)?.calledOff ?? []).some(c => sessionKind(c.session) === 'race');
+    const race = main ?? (off ? [...r.sessions].reverse().find(s => (s.tables[0]?.rows.length ?? 0) > 0) : undefined);
     const t = race?.tables[0];
     const nameAt = t ? col(t.columns, 'Driver', 'Rider', 'Crew') : -1;
     if (!t || t.rows.length === 0 || nameAt < 0) continue;
@@ -145,13 +151,21 @@ export function raceWins(d: SeriesData): Map<number, RoundWin> {
       team: teamAt >= 0 ? t.rows[0][teamAt] : '',
       margin: /^\+\d[\d:.]*$/.test(second) ? second.slice(1) : '',
       ...(carAt >= 0 && t.rows[0][carAt] ? { car: t.rows[0][carAt] } : {}),
+      ...(main || !race ? {} : { only: race.label }),
     });
   }
   return out;
 }
 
-const driverWins = (wins: Map<number, RoundWin>, name: string): number => [...wins.values()].filter(w => w.winner === name).length;
-const teamWins = (wins: Map<number, RoundWin>, team: string): number => [...wins.values()].filter(w => plain(w.team) === plain(team)).length;
+const driverWins = (wins: Map<number, RoundWin>, name: string): number => [...wins.values()].filter(w => !w.only && w.winner === name).length;
+const teamWins = (wins: Map<number, RoundWin>, team: string): number => [...wins.values()].filter(w => !w.only && plain(w.team) === plain(team)).length;
+
+/** Race wins as a series counts them, by a driver's name or a team's: Formula 1's Grands Prix by default (raceWins). */
+export interface WinCount {
+  driver(name: string): number;
+  team(name: string): number;
+}
+const winCount = (wins: Map<number, RoundWin>): WinCount => ({ driver: name => driverWins(wins, name), team: team => teamWins(wins, team) });
 const winsLabel = (n: number): string => `${n} win${n === 1 ? '' : 's'}`;
 /** A winner as a line names it beside the team: the car ("#8") where the race classifies cars, else the driver. */
 const winnerName = (w: RoundWin): string => (w.car ? `#${w.car}` : w.winner);
@@ -222,13 +236,15 @@ function lastCard(d: SeriesData, w: RoundWin, r: CalendarRound | undefined): str
 }
 
 /** A round's tile: its weekend page where the series has them (O19); else a finished round opens its line on the
- *  Results page when the series has that page built, and any other round its month on the Calendar. */
-function tile(d: SeriesData, r: CalendarRound, w: RoundWin | undefined, current: CalendarRound | undefined): string {
+ *  Results page when the series has that page built, and any other round its month on the Calendar. A round whose race
+ *  was called off names the race it rests on where its date stands ("MAR · Sprint", family A). */
+function tile(d: SeriesData, r: CalendarRound, w: RoundWin | undefined, current: CalendarRound | undefined, raceName?: FamilyKit['raceName']): string {
   const head = `<small>R${r.round}</small><b>${escapeHtml(r.place ?? r.name)}</b>${outline(r.outline)}`;
   const page = weekendOf(d, r.round);
   const month = `${calendarMonthPath(r.startDate.slice(0, 7))}#${escapeHtml(d.slug)}`;
   if (w) {
-    const won = `<span class="pd-sr-win" style="--t:${colourOf(d, w.team)}"><b>${escapeHtml(w.car ? winnerLine(w) : codeOf(d, w.winner))}</b>${w.date ? dayLabel(w.date) : ''}</span>`;
+    const when = w.only && raceName ? escapeHtml(raceName(d, w.only)) : w.date ? dayLabel(w.date) : '';
+    const won = `<span class="pd-sr-win" style="--t:${colourOf(d, w.team)}"><b>${escapeHtml(w.car ? winnerLine(w) : codeOf(d, w.winner))}</b>${when}</span>`;
     return `<a class="pd-sr-tile" href="${page ?? (built(d, 'results') ? `${seriesPath(d.slug, 'results')}#r${r.round}` : month)}">${head}${won}</a>`;
   }
   const when = dates(r.startDate, r.endDate);
@@ -236,8 +252,9 @@ function tile(d: SeriesData, r: CalendarRound, w: RoundWin | undefined, current:
   return `<a class="pd-sr-tile ${r === current ? 'is-now' : 'is-ahead'}" href="${page ?? month}">${head}<span class="pd-sr-when">${label}</span></a>`;
 }
 
-/** The top of a standings table with points bars sized against the leader; the driver's wins, races only. */
-function tableRows(d: SeriesData, t: Table, wins: Map<number, RoundWin>, limit: number, drivers: boolean): string {
+/** The top of a standings table with points bars sized against the leader; the driver's wins, races only; a table of
+ *  manufacturers without them (`wins` false). */
+function tableRows(d: SeriesData, t: Table, count: WinCount, limit: number, drivers: boolean, wins = true): string {
   const posAt = col(t.columns, 'Pos');
   const nameAt = drivers ? col(t.columns, 'Driver', 'Rider') : col(t.columns, 'Constructor', 'Team', 'Manufacturer');
   const teamAt = drivers ? col(t.columns, 'Team') : nameAt;
@@ -251,24 +268,36 @@ function tableRows(d: SeriesData, t: Table, wins: Map<number, RoundWin>, limit: 
       const team = teamAt >= 0 ? row[teamAt] : '';
       const width = lead > 0 ? Math.max(0, Math.min(100, (pts / lead) * 100)).toFixed(1) : '0';
       const who = drivers ? `<b>${escapeHtml(row[nameAt])}</b> <small>${escapeHtml(teamLabel(team))}</small>` : `<b>${escapeHtml(teamLabel(row[nameAt]))}</b>`;
-      const n = drivers ? driverWins(wins, row[nameAt]) : teamWins(wins, row[nameAt]);
+      const n = drivers ? count.driver(row[nameAt]) : count.team(row[nameAt]);
       return (
         `<li><span class="pd-p">${escapeHtml(posAt >= 0 ? row[posAt] : '')}</span><span class="pd-d">${who}<i class="pd-sr-pts"><i style="width:${width}%;--t:${colourOf(d, team)}"></i></i></span>` +
-        `<span class="pd-pt">${escapeHtml(row[ptsAt])}</span><span class="pd-w">${drivers ? winsLabel(n) : n}</span></li>`
+        `<span class="pd-pt">${escapeHtml(row[ptsAt])}</span><span class="pd-w">${!wins ? '' : drivers ? winsLabel(n) : n}</span></li>`
       );
     })
     .join('');
 }
 
-function standings(d: SeriesData, wins: Map<number, RoundWin>): string {
+/** The Overview's standings block's words, each by default Formula 1's (family A, O33). */
+export interface BlockOptions {
+  /** The person's word over the first table: "Driver" by default, "Rider". */
+  person?: 'Driver' | 'Rider';
+  /** Race wins as the series counts them: Formula 1's Grands Prix by default. */
+  wins?: (d: SeriesData) => WinCount;
+}
+
+/** The Overview's standings: the first stored table's top ten beside the second, a Wins column but for a table of
+ *  manufacturers. Formula 1's block, and family A's with its words (FamilyKit.overviewStandings). */
+export function standingsBlock(d: SeriesData, o: BlockOptions = {}, wins: Map<number, RoundWin> = raceWins(d)): string {
   const [drivers, teams] = d.standings ?? [];
   if (!drivers) return '';
+  const count = o.wins ? o.wins(d) : winCount(wins);
   const head = (who: string, last: string) => `<div class="pd-sr-th"><span></span><span>${who}</span><span>Pts</span><span>${last}</span></div>`;
   const left =
     `<div><div class="pd-sh"><h2>${escapeHtml(drivers.title)}</h2><p>${built(d, 'standings') ? `<a href="${seriesPath(d.slug, 'standings')}">All ${drivers.rows.length} →</a>` : `<span class="is-off">All ${drivers.rows.length}</span>`}</p></div>` +
-    `${head('Driver', 'Wins')}<ol class="pd-sr-tbl">${tableRows(d, drivers, wins, 10, true)}</ol></div>`;
+    `${head(o.person ?? 'Driver', 'Wins')}<ol class="pd-sr-tbl">${tableRows(d, drivers, count, 10, true)}</ol></div>`;
+  const make = teams !== undefined && col(teams.columns, 'Manufacturer') >= 0;
   const right = teams
-    ? `<div><div class="pd-sh"><h2>${escapeHtml(teams.title)}</h2></div>${head('Team', 'Wins')}<ol class="pd-sr-tbl">${tableRows(d, teams, wins, teams.rows.length, false)}</ol></div>`
+    ? `<div><div class="pd-sh"><h2>${escapeHtml(teams.title)}</h2></div>${head(make ? 'Manufacturer' : 'Team', make ? '' : 'Wins')}<ol class="pd-sr-tbl">${tableRows(d, teams, count, teams.rows.length, false, !make)}</ol></div>`
     : '';
   return `<section class="pd-sr-sec pd-sr-two">${left}${right}</section>`;
 }
@@ -296,15 +325,16 @@ export function categorySlug(name: string): string {
 
 /** /series/<slug>/: the round on now or next and the last race, the season a tile a round, the standings' top (the
  *  family's block where its kit draws one, FamilyKit.overviewStandings), the series' newest posts (the theme's
- *  [pd_series_posts], nothing when the category has none) and About. */
-export function seriesOverview(d: SeriesData, standingsBlock?: FamilyKit['overviewStandings']): Page {
+ *  [pd_series_posts], nothing when the category has none) and About. A family's race names (FamilyKit.raceName) name a
+ *  tile's race where its round's race was called off. */
+export function seriesOverview(d: SeriesData, block?: FamilyKit['overviewStandings'], raceName?: FamilyKit['raceName']): Page {
   const wins = raceWins(d);
   const rounds = d.rounds ?? [];
   const current = rounds.find(r => !wins.has(r.round));
   const last = [...wins.values()].sort((a, b) => b.round - a.round)[0];
   const cards = [current ? nextCard(d, current) : '', last ? lastCard(d, last, rounds.find(r => r.round === last.round)) : ''].join('');
   const tiles =
-    rounds.map(r => tile(d, r, wins.get(r.round), current)).join('') +
+    rounds.map(r => tile(d, r, wins.get(r.round), current, raceName)).join('') +
     (d.cancelled ?? [])
       .map(c => `<span class="pd-sr-tile is-off"><small>—</small><b><s>${escapeHtml(c.place ?? c.name)}</s></b><span class="pd-sr-when">Cancelled · was round ${c.round}</span></span>`)
       .join('');
@@ -314,7 +344,7 @@ export function seriesOverview(d: SeriesData, standingsBlock?: FamilyKit['overvi
     : '';
   const main =
     `<div class="pd-sr pd-s-${escapeHtml(d.slug)}">${band(d, wins, current)}${tabs(d, 'overview')}` +
-    `<div class="pd-sr-main">${cards ? `<div class="pd-sr-cards">${cards}</div>` : ''}${season}${standingsBlock ? standingsBlock(d) : standings(d, wins)}</div></div>`;
+    `<div class="pd-sr-main">${cards ? `<div class="pd-sr-cards">${cards}</div>` : ''}${season}${block ? block(d) : standingsBlock(d, {}, wins)}</div></div>`;
   const posts = `<!-- wp:shortcode -->\n[pd_series_posts category="${categorySlug(d.name)}" title="${escapeHtml(d.name)}" series="${escapeHtml(d.slug)}"]\n<!-- /wp:shortcode -->`;
   const about = d.about?.trim()
     ? htmlBlock(`<section class="pd-sr-sec pd-sr-about"><div class="pd-sh"><h2>About ${escapeHtml(d.name)}</h2></div><div class="pd-sr-prose">${prose(d.about)}</div></section>`)
@@ -381,8 +411,19 @@ export function pointsTable(d: SeriesData, rows: WeekendScore[], sprint: boolean
 
 /** A round as one row in its winner's colour (approved as drawn on Paddock Weekend Drafts): its number, its name, place
  *  and dates, its winner, and See weekend → to its weekend page; open, the weekend's points, as the series' family
- *  counts them (FamilyKit.resultsFold), else Formula 1's sprint and race. */
-function resultRow(d: SeriesData, r: ResultRound & { round: number }, race: ResultSession, w: RoundWin | undefined, open: boolean, fold?: FamilyKit['resultsFold']): string {
+ *  counts them (FamilyKit.resultsFold), else Formula 1's sprint and race. With a family's race names (family A): no
+ *  Sprint tag, since every weekend has one, and each earlier race's winner after the team ("Sprint: Miyata"); a round
+ *  whose race was called off names the race it rests on and the one called off ("Sprint: Marc Márquez" over "GP
+ *  called off"). */
+function resultRow(
+  d: SeriesData,
+  r: ResultRound & { round: number },
+  race: ResultSession,
+  w: RoundWin | undefined,
+  open: boolean,
+  fold?: FamilyKit['resultsFold'],
+  raceName?: FamilyKit['raceName'],
+): string {
   const cr = d.rounds?.find(x => x.round === r.round);
   const name = cr?.name ?? r.name;
   const sprint = sprintWeekend(d, r.round, r);
@@ -391,12 +432,27 @@ function resultRow(d: SeriesData, r: ResultRound & { round: number }, race: Resu
   const when = cr ? dates(cr.startDate, cr.endDate) : w?.date ? dayLabel(w.date) : r.date ? dayLabel(r.date) : '';
   const where = [cr?.place ?? '', when].filter(Boolean).map(escapeHtml).join(' · ');
   const page = weekendOf(d, r.round);
-  const also = sprintWin && w ? (sprintWin === w.winner ? ' · won the sprint too' : ` · sprint: ${escapeHtml(sprintWin)}`) : '';
-  const winner = w
-    ? `<span class="pd-rs-win">${tick(d, w.team)}<b>${escapeHtml(winnerName(w))}</b><small>${escapeHtml(teamLabel(w.team))}${also}</small></span>`
-    : '<span class="pd-rs-win"></span>';
+  let also = sprintWin && w ? (sprintWin === w.winner ? ' · won the sprint too' : ` · sprint: ${escapeHtml(sprintWin)}`) : '';
+  let who = w ? escapeHtml(winnerName(w)) : '';
+  if (raceName && w) {
+    const off = cr?.calledOff?.find(c => sessionKind(c.session) === 'race');
+    const first = (s: ResultSession): string => {
+      const t = s.tables[0];
+      return t?.rows[0]?.[col(t.columns, 'Driver', 'Rider')] ?? '';
+    };
+    also = w.only
+      ? off
+        ? ` · ${escapeHtml(raceName(d, off.session, true))} called off`
+        : ''
+      : r.sessions
+          .filter(s => s !== race && first(s) !== '')
+          .map(s => ` · ${escapeHtml(raceName(d, s.label))}: ${escapeHtml(surname(first(s)))}`)
+          .join('');
+    if (w.only) who = `${escapeHtml(raceName(d, w.only))}: ${who}`;
+  }
+  const winner = w ? `<span class="pd-rs-win">${tick(d, w.team)}<b>${who}</b><small>${escapeHtml(teamLabel(w.team))}${also}</small></span>` : '<span class="pd-rs-win"></span>';
   const summary =
-    `<summary><span class="pd-rs-n">${r.round}</span><span class="pd-rs-name"><b>${escapeHtml(name)}</b><small>${where}${sprint ? ' · <em>Sprint</em>' : ''}</small></span>` +
+    `<summary><span class="pd-rs-n">${r.round}</span><span class="pd-rs-name"><b>${escapeHtml(name)}</b><small>${where}${sprint && !raceName ? ' · <em>Sprint</em>' : ''}</small></span>` +
     `${winner}${page ? `<a class="pd-rs-go" href="${page}">See weekend →</a>` : '<span></span>'}</summary>`;
   // Every class's table: WEC's and IMSA's races are stored a table a class.
   const all = race.tables.reduce((n, t) => n + t.rows.length, 0);
@@ -405,19 +461,21 @@ function resultRow(d: SeriesData, r: ResultRound & { round: number }, race: Resu
   return `<details class="pd-rs-row" id="r${r.round}" style="--t:${w ? colourOf(d, w.team) : NEUTRAL}"${open ? ' open' : ''}>${summary}<div class="pd-rs-fold">${points}${more}</div></details>`;
 }
 
-/** /series/<slug>/results/: a row a round that has raced, the latest first and open. */
-export function seriesResults(d: SeriesData, fold?: FamilyKit['resultsFold']): Page {
+/** /series/<slug>/results/: a row a round that has raced, the latest first and open; a round whose race was called off
+ *  among them, by the race it rests on (raceWins). */
+export function seriesResults(d: SeriesData, fold?: FamilyKit['resultsFold'], raceName?: FamilyKit['raceName']): Page {
   const wins = raceWins(d);
   const current = (d.rounds ?? []).find(r => !wins.has(r.round));
   const raced = (d.results ?? [])
     .flatMap(r => {
-      const race = raceOf(r);
+      const only = r.round === null ? undefined : wins.get(r.round)?.only;
+      const race = raceOf(r) ?? (only === undefined ? undefined : r.sessions.find(s => s.label === only));
       return r.round !== null && race ? [{ r: r as ResultRound & { round: number }, race }] : [];
     })
     .sort((a, b) => b.r.round - a.r.round);
   const line = [d.season ? String(d.season) : '', `${wins.size} of ${(d.rounds ?? []).length || wins.size} rounds run`, 'the latest first'].filter(Boolean).join(' · ');
   const list = raced.length
-    ? `<div class="pd-rs">${raced.map(({ r, race }, i) => resultRow(d, r, race, wins.get(r.round), i === 0, fold)).join('')}</div>`
+    ? `<div class="pd-rs">${raced.map(({ r, race }, i) => resultRow(d, r, race, wins.get(r.round), i === 0, fold, raceName)).join('')}</div>`
     : '<p class="pd-mut">No results yet this season.</p>';
   // The season's door in the head, beside the line (the operator's "R1 · In the head", 17 Nov).
   const door = seasonLink(d);
@@ -495,16 +553,33 @@ function standingRows(t: Table | undefined, drivers: boolean): Standing[] {
   }));
 }
 
+/** A session kept beside the races that pays points: a table with a Pts column (DTM's qualifying, family A, O33). */
+export const scores = (s: ResultSession): boolean => {
+  const t = s.tables[0];
+  return t !== undefined && col(t.columns, 'Pts', 'Points') >= 0;
+};
+
+/** A round's sessions that pay points in their running order: its races, and with them any session kept beside them
+ *  that pays (DTM's qualifying), all by the timetable's start where each has one; else its races as stored. */
+function scoring(d: SeriesData, r: ResultRound): ResultSession[] {
+  const paying = (r.others ?? []).filter(scores);
+  if (!paying.length) return r.sessions;
+  const all = [...r.sessions, ...paying];
+  const start = (s: ResultSession): string => (d.calendar ?? []).find(e => e.round === r.round && !e.dateOnly && e.session === s.label)?.start ?? '';
+  return all.every(s => start(s) !== '') ? [...all].sort((a, b) => (start(a) < start(b) ? -1 : start(a) > start(b) ? 1 : 0)) : all;
+}
+
 /** The stored results the official table counts. The standings and the results are fetched apart, so the table can lag the
  *  results by a session: the last point in the running order where the points awarded so far equal the table's total marks
- *  what it counts, and the page is written as of there. When none does (a deduction outside any race), every result. */
+ *  what it counts, and the page is written as of there. When none does (a deduction outside any race), every result. A
+ *  session beside the races that pays (DTM's qualifying) counts in its place. */
 function counted(d: SeriesData, drivers: Standing[]): SeriesData {
   const total = drivers.reduce((n, x) => n + x.pts, 0);
   const rounds = (d.results ?? []).filter(r => r.round !== null).sort((a, b) => (a.round ?? 0) - (b.round ?? 0));
   let sum = 0;
   let at: { round: number; sessions: number } | null = null;
   for (const r of rounds) {
-    for (const [i, s] of r.sessions.entries()) {
+    for (const [i, s] of scoring(d, r).entries()) {
       const t = s.tables[0];
       const ptsAt = t ? col(t.columns, 'Pts', 'Points') : -1;
       if (t && ptsAt >= 0) for (const row of t.rows) sum += Number.parseFloat(row[ptsAt] ?? '') || 0;
@@ -513,7 +588,12 @@ function counted(d: SeriesData, drivers: Standing[]): SeriesData {
   }
   if (!drivers.length || !at) return d;
   const { round, sessions } = at;
-  return { ...d, results: (d.results ?? []).flatMap(r => (r.round === null || r.round < round ? [r] : r.round === round ? [{ ...r, sessions: r.sessions.slice(0, sessions) }] : [])) };
+  const cut = (r: ResultRound): ResultRound => {
+    if (!(r.others ?? []).some(scores)) return { ...r, sessions: r.sessions.slice(0, sessions) };
+    const kept = new Set(scoring(d, r).slice(0, sessions));
+    return { ...r, sessions: r.sessions.filter(s => kept.has(s)), others: (r.others ?? []).filter(s => !scores(s) || kept.has(s)) };
+  };
+  return { ...d, results: (d.results ?? []).flatMap(r => (r.round === null || r.round < round ? [r] : r.round === round ? [cut(r)] : [])) };
 }
 
 /** How many of a table, from the top, can still draw level with the leader on points: on paper, with no countback. */
@@ -663,30 +743,95 @@ function standingsHead(d: SeriesData, wins: Map<number, RoundWin>, stored: Map<n
   return { title, line };
 }
 
+/** The Standings page's words and parts, each by default Formula 1's (family A, O33). */
+export interface StandingsOptions {
+  /** The person's word: "Driver" by default, "Rider". */
+  person?: 'Driver' | 'Rider';
+  /** Race wins as the series counts them, as of the table: Formula 1's Grands Prix by default. */
+  wins?: (d: SeriesData) => WinCount;
+  /** The points one driver can still score as of the table, and how ("two Sprint Races at 10"): by default Formula 1's
+   *  Grands Prix and sprints, with the constructors' points left beside them. */
+  left?: (d: SeriesData) => { points: number; scales: string[] };
+  /** The head's title and its line (markup, its text escaped) as of the table: by default Formula 1's. */
+  head?: (d: SeriesData) => { title: string; line: string };
+  /** Each stored table after the first on the right under its own name, a Wins column for a table of teams only, and no
+   *  teammates: by default Formula 1's Constructors and Teammates. */
+  tables?: boolean;
+  /** Once no points are left, the season's title box in place of Who can still win it: its champion where champions.json
+   *  names the table's leader, where the title was clinched (champion-notes.json) and the teams' champion under this
+   *  word ("Teams'"); before champions.json has the row, the leader without the word. */
+  title?: { teams: string };
+}
+
+/** "Feature Race 2, Madrid, 13 September 2026, the last race of the season" (champion-notes.json `clinched`) as "Clinched
+ *  in Feature Race 2 at Madrid on 13 September, the last race of the season." (the operator, 24 Nov); a place ending in
+ *  "ring" takes "the", a rest that starts with "with" no comma; a line of another shape after "Clinched: ". */
+export function clinchedLine(clinched: string): string {
+  const m = /^(.+?), (.+?), (\d{1,2} [A-Z][a-z]+) \d{4}(?:, (.+?))?\.?$/.exec(clinched.trim());
+  if (!m) return `Clinched: ${clinched.trim().replace(/\.?$/, '.')}`;
+  const [, session, place, day, rest] = m;
+  const at = /ring$/i.test(place) ? `the ${place}` : place;
+  return `Clinched in ${session} at ${at} on ${day}${rest ? `${/^with\b/.test(rest) ? ' ' : ', '}${rest}` : ''}.`;
+}
+
+/** The season's title box (the operator's "Name the champion", 12 Nov): the champion and the margin, where it was
+ *  clinched, the teams' champion, the way to the Champions page; before champions.json names the table's leader, the
+ *  top two without the word. */
+function titleBox(d: SeriesData, drivers: readonly Standing[], teams: string): string {
+  const season = d.season;
+  const [first, second] = drivers;
+  if (!first || !season) return '';
+  const row = (d.champions?.seasons ?? []).find(s => s.year === season);
+  const crowned = row !== undefined && fold(row.driver) === fold(first.name);
+  const gap = second ? Math.round((first.pts - second.pts) * 10) / 10 : 0;
+  const clear = second ? `, ${pointsText(gap)} clear of ${escapeHtml(second.name)}` : '';
+  const lines: string[] = [];
+  if (crowned) {
+    lines.push(`<p class="pd-fa-champ"><b>${escapeHtml(first.name)}</b> is the ${season} champion${clear}.${(() => {
+      const clinched = d.champions?.notes?.[String(season)]?.clinched;
+      return clinched ? ` ${escapeHtml(clinchedLine(clinched))}` : '';
+    })()}</p>`);
+    if (row.constructorChampion) lines.push(`<p>${escapeHtml(teams)} champion: ${escapeHtml(row.constructorChampion)}.</p>`);
+  } else {
+    lines.push(`<p>No points left: the season is over.</p><p class="pd-fa-champ"><b>${escapeHtml(first.name)}</b> finished on top${clear}.</p>`);
+  }
+  const how = crowned && built(d, 'champions') ? `<a class="pd-fa-how" href="${seriesPath(d.slug, 'champions')}">How it was won →</a>` : '';
+  return `<section class="pd-fa-title" style="--t:${colourOf(d, first.team)}"><h3>The ${season} title</h3>${lines.join('')}${how}</section>`;
+}
+
 /** /series/<slug>/standings/: the drivers and Who can still win it beside the constructors, then the teammates. The band
- *  counts every stored result, as on the series' other pages; the rest is written as of what the table counts. */
-export function seriesStandings(d: SeriesData): Page {
+ *  counts every stored result, as on the series' other pages; the rest is written as of what the table counts. A family
+ *  passes its words and parts (StandingsOptions). */
+export function seriesStandings(d: SeriesData, o: StandingsOptions = {}): Page {
   const all = raceWins(d);
   const current = (d.rounds ?? []).find(r => !all.has(r.round));
   const drivers = standingRows(d.standings?.[0], true);
-  const teams = standingRows(d.standings?.[1], false);
+  const teams = o.tables ? [] : standingRows(d.standings?.[1], false);
+  const sides = o.tables ? (d.standings ?? []).slice(1) : [];
   const asOf = counted(d, drivers);
   const wins = raceWins(asOf);
+  const count = o.wins ? o.wins(asOf) : winCount(wins);
   const stored = new Map((asOf.results ?? []).flatMap(r => (r.round === null ? [] : [[r.round, r] as const])));
   const left = pointsLeft(asOf);
-  const head = standingsHead(asOf, wins, stored);
+  const own = o.left?.(asOf);
+  const points = own ? own.points : left.driver;
+  const head = o.head ? o.head(asOf) : standingsHead(asOf, wins, stored);
   const marks = marksOf(d);
   const lead = drivers[0]?.pts ?? 0;
+  const person = o.person ?? 'Driver';
+  const word = person.toLowerCase();
   // Without the season's rounds the points left are unknown: no line, and no one named in or out.
   const known = (d.rounds ?? []).length > 0;
-  const inIt = known ? stillIn(drivers, left.driver) : drivers.length;
+  const inIt = known ? stillIn(drivers, points) : drivers.length;
   const cut = inIt > 0 && inIt < drivers.length ? inIt - 1 : -1;
 
   // WordPress keeps no aria-pressed in a page; the script sets it with the view.
-  const seg = teams.length
-    ? '<div class="pd-st-seg" role="group" aria-label="Show" hidden><button type="button" data-pd-st="drivers">Drivers</button>' +
-      '<button type="button" data-pd-st="constructors">Constructors</button><button type="button" class="both" data-pd-st="both">Both</button></div>'
-    : '';
+  const side = o.tables ? sides.map((t, i) => (i ? t.title.toLowerCase() : t.title)) : ['Constructors'];
+  const seg =
+    teams.length || sides.length
+      ? `<div class="pd-st-seg" role="group" aria-label="Show" hidden><button type="button" data-pd-st="drivers">${person}s</button>` +
+        `<button type="button" data-pd-st="constructors">${escapeHtml(andList(side))}</button><button type="button" class="both" data-pd-st="both">Both</button></div>`
+      : '';
   const top = `<div class="pd-st-head"><div><h2 class="pd-st-h">${escapeHtml(head.title)}</h2><p>${head.line}</p></div>${seg}</div>`;
 
   const driverRows = drivers
@@ -695,7 +840,7 @@ export function seriesStandings(d: SeriesData): Page {
       const width = lead > 0 ? Math.max(0, Math.min(100, (x.pts / lead) * 100)).toFixed(1) : '0.0';
       const mark = marks.get(bare(x.name));
       const sup = mark ? `<sup>${mark > 0 ? '+' : '−'}${Math.abs(mark)}</sup>` : '';
-      const n = driverWins(wins, x.name);
+      const n = count.driver(x.name);
       return (
         `<li${cls ? ` class="${cls}"` : ''} style="--t:${colourOf(d, x.team)}"><span class="p">${escapeHtml(x.pos)}</span><i class="tb"></i>` +
         `<span class="d"><b><span class="fn">${escapeHtml(x.name)}</span><span class="sn">${escapeHtml(initialled(x.name))}</span>${sup}</b><small>${escapeHtml(teamLabel(x.team))}</small></span>` +
@@ -705,8 +850,8 @@ export function seriesStandings(d: SeriesData): Page {
     .join('');
 
   // The line under the drivers: the season's rulings with their sources, the dashed line, and every driver whose total
-  // holds points scored for a team other than the one the table names.
-  const splits = teammates(asOf);
+  // holds points scored for a team other than the one the table names (Formula 1's: a family's tables stand alone).
+  const splits = o.tables ? [] : teammates(asOf);
   const notes = (d.standingsNotes ?? []).filter(n => Object.keys(n.drivers ?? {}).some(k => drivers.some(x => bare(x.name) === bare(k))));
   const foot = [
     notes.length
@@ -718,7 +863,7 @@ export function seriesStandings(d: SeriesData): Page {
           })
           .join(', and ')}.`
       : '',
-    cut >= 0 ? 'The dashed line marks the last driver who can still mathematically win.' : '',
+    cut >= 0 ? `The dashed line marks the last ${word} who can still mathematically win.` : '',
     ...drivers.flatMap(x =>
       splits
         .filter(s => plain(x.team) !== '' && plain(s.team) !== plain(x.team))
@@ -726,29 +871,34 @@ export function seriesStandings(d: SeriesData): Page {
     ),
   ].filter(Boolean);
   const leftCol = drivers.length
-    ? `<div class="pd-st-left"><div class="pd-st-th"><span>Pos</span><span></span><span>Driver</span><span></span><span>Pts</span><span>Gap</span><span>Wins</span></div><ol class="pd-st-tbl">${driverRows}</ol>` +
+    ? `<div class="pd-st-left"><div class="pd-st-th"><span>Pos</span><span></span><span>${person}</span><span></span><span>Pts</span><span>Gap</span><span>Wins</span></div><ol class="pd-st-tbl">${driverRows}</ol>` +
       `${foot.length ? `<p class="pd-st-foot">${foot.join(' ')}</p>` : ''}</div>`
     : '<div class="pd-st-left"><p class="pd-mut">No standings yet this season.</p></div>';
 
-  // Who can still win it: the leader, everyone who can still draw level, and the first driver who cannot.
+  // Who can still win it: the leader, everyone who can still draw level, and the first driver who cannot; once no points
+  // are left, a family's title box in its place.
   let who = '';
-  if (drivers.length && known) {
-    const bar = (gap: number) => (left.driver > 0 ? Math.min(100, (gap / left.driver) * 100) : gap > 0 ? 100 : 0).toFixed(1);
+  if (drivers.length && known && o.title && points <= 0) {
+    who = titleBox(d, drivers, o.title.teams);
+  } else if (drivers.length && known) {
+    const bar = (gap: number) => (points > 0 ? Math.min(100, (gap / points) * 100) : gap > 0 ? 100 : 0).toFixed(1);
     const out = drivers[inIt];
     const items = [
       `<li class="ld" style="--t:${colourOf(d, drivers[0].team)}"><b>${escapeHtml(surname(drivers[0].name))}</b><span class="lab">Leader</span><span class="v">${escapeHtml(drivers[0].shown)}</span></li>`,
       ...drivers.slice(1, inIt).map(x => `<li style="--t:${colourOf(d, x.team)}"><b>${escapeHtml(surname(x.name))}</b><i class="wb"><i style="width:${bar(lead - x.pts)}%"></i></i><span class="v">${gapText(lead - x.pts)}</span></li>`),
       out ? `<li class="out" style="--t:${colourOf(d, out.team)}"><b>${escapeHtml(surname(out.name))}</b><i class="wb"><i style="width:100.0%"></i></i><span class="v">${gapText(lead - out.pts)}</span></li>` : '',
     ].join('');
-    const scales = [
-      left.races ? `${inWords(left.races).toLowerCase()} Grand${left.races === 1 ? '' : 's'} Prix at ${GP[0]}` : '',
-      left.sprints ? `${inWords(left.sprints).toLowerCase()} sprint${left.sprints === 1 ? '' : 's'} at ${SPRINT[0]}` : left.sprintsRun ? 'the sprints all run' : '',
-    ].filter(Boolean);
-    const intro = left.driver > 0 ? `${left.driver} points left: ${scales.join(', ')}. A bar is how much of that a driver needs just to draw level.` : 'No points left: the season is over.';
+    const scales = own
+      ? own.scales.map(escapeHtml)
+      : [
+          left.races ? `${inWords(left.races).toLowerCase()} Grand${left.races === 1 ? '' : 's'} Prix at ${GP[0]}` : '',
+          left.sprints ? `${inWords(left.sprints).toLowerCase()} sprint${left.sprints === 1 ? '' : 's'} at ${SPRINT[0]}` : left.sprintsRun ? 'the sprints all run' : '',
+        ].filter(Boolean);
+    const intro = points > 0 ? `${points} points left: ${scales.join(', ')}. A bar is how much of that a ${word} needs just to draw level.` : 'No points left: the season is over.';
     const alive = teams.slice(1, stillIn(teams, left.team)).map(x => escapeHtml(teamLabel(x.name)));
     const sum = [
-      inIt > 1 ? `${inWords(inIt)} drivers are still in it on paper.` : `Only ${escapeHtml(surname(drivers[0].name))} can still win it.`,
-      out ? `${escapeHtml(surname(out.name))} is out by ${pointsText(lead - out.pts - left.driver)}.` : '',
+      inIt > 1 ? `${inWords(inIt)} ${word}s are still in it on paper.` : `Only ${escapeHtml(surname(drivers[0].name))} can still win it.`,
+      out ? `${escapeHtml(surname(out.name))} is out by ${pointsText(lead - out.pts - points)}.` : '',
       teams.length ? `Constructors: ${left.team} left, ${alive.length ? `so ${andList(alive)} ${alive.length === 1 ? 'is' : 'are'} still alive` : `so only ${escapeHtml(teamLabel(teams[0].name))} can still win it`}.` : '',
     ].filter(Boolean);
     who = `<section class="pd-st-who"><h3>Who can still win it</h3><p>${intro}</p><ol>${items}</ol><p class="pd-st-sum">${sum.join(' ')}</p></section>`;
@@ -759,7 +909,7 @@ export function seriesStandings(d: SeriesData): Page {
     ? `<div class="pd-st-cons"><h3 class="pd-st-ch">Constructors</h3><div class="pd-st-th c"><span>Pos</span><span></span><span>Constructor</span><span>Pts</span><span>Gap</span><span>Wins</span></div><ol class="pd-st-tbl c">` +
       teams
         .map((x, i) => {
-          const n = teamWins(wins, x.name);
+          const n = count.team(x.name);
           return (
             `<li${i === 0 ? ' class="lead"' : ''} style="--t:${colourOf(d, x.name)}"><span class="p">${escapeHtml(x.pos)}</span><i class="tb"></i><span class="d"><b>${escapeHtml(teamLabel(x.name))}</b></span>` +
             `<span class="pt">${escapeHtml(x.shown)}</span><span class="g">${i === 0 ? '—' : gapText(teamLead - x.pts)}</span><span class="w">${n || ''}</span></li>`
@@ -767,7 +917,27 @@ export function seriesStandings(d: SeriesData): Page {
         })
         .join('') +
       '</ol></div>'
-    : '';
+    : sides
+        .map(t => {
+          // A family's tables after the first, each under its own name; a table of manufacturers without wins.
+          const rows = standingRows(t, false);
+          const make = col(t.columns, 'Manufacturer') >= 0;
+          const best = rows[0]?.pts ?? 0;
+          return (
+            `<div class="pd-st-cons"><h3 class="pd-st-ch">${escapeHtml(t.title)}</h3><div class="pd-st-th c"><span>Pos</span><span></span><span>${make ? 'Manufacturer' : 'Team'}</span><span>Pts</span><span>Gap</span><span>${make ? '' : 'Wins'}</span></div><ol class="pd-st-tbl c">` +
+            rows
+              .map((x, i) => {
+                const n = make ? 0 : count.team(x.name);
+                return (
+                  `<li${i === 0 ? ' class="lead"' : ''} style="--t:${colourOf(d, x.name)}"><span class="p">${escapeHtml(x.pos)}</span><i class="tb"></i><span class="d"><b>${escapeHtml(teamLabel(x.name))}</b></span>` +
+                  `<span class="pt">${escapeHtml(x.shown)}</span><span class="g">${i === 0 ? '—' : gapText(best - x.pts)}</span><span class="w">${n || ''}</span></li>`
+                );
+              })
+              .join('') +
+            '</ol></div>'
+          );
+        })
+        .join('');
 
   const mates = splits.length
     ? `<section class="pd-sr-sec pd-st-mates"><div class="pd-sh"><h2>Teammates</h2><p>Points split inside each team</p></div><div class="pd-st-grid">${splits
@@ -902,7 +1072,7 @@ export function firstSentence(text: string): string {
   return m ? m[1] : t;
 }
 
-function reigningCard(d: SeriesData, s: Champion, marks: Map<number, TitleMarks>, seasons: readonly Champion[]): string {
+function reigningCard(d: SeriesData, s: Champion, marks: Map<number, TitleMarks>, seasons: readonly Champion[], teamsWord = "Teams'"): string {
   const team = teamIn(s);
   const colour = championColour(d, team);
   const m = marginOf(s);
@@ -918,7 +1088,7 @@ function reigningCard(d: SeriesData, s: Champion, marks: Map<number, TitleMarks>
     while (seasons.find(x => x.year === s.year - streak)?.constructorChampion === s.constructorChampion) streak++;
     const word = streak > 1 ? nthWord(streak).toLowerCase() : '';
     const which = streak > 1 ? `${article(word)} ${word} title in a row` : `its ${ordinal(marks.get(s.year)?.teamNth ?? 1)} title`;
-    teams = `Teams' champion: <b>${escapeHtml(s.constructorChampion)}</b>, ${which}.`;
+    teams = `${teamsWord} champion: <b>${escapeHtml(s.constructorChampion)}</b>, ${which}.`;
   }
   const note = d.champions?.notes?.[String(s.year)]?.note;
   const txt = [teams, note ? escapeHtml(firstSentence(note)) : ''].filter(Boolean).join(' ');
@@ -943,8 +1113,27 @@ function door(href: string, label: string, title: string, line: string, live: bo
   return live ? `<a class="pd-ch-door" href="${escapeHtml(href)}">${inner}<em>Open →</em></a>` : `<span class="pd-ch-door is-off">${inner}<em>Coming</em></span>`;
 }
 
-/** /series/<slug>/champions/: the roll of honour. */
-export function seriesChampions(d: SeriesData): Page {
+/** The Champions page's words, each by default Formula 1's (family A, O33). The words are the code's own, written as
+ *  they are. */
+export interface ChampionsOptions {
+  /** Whose roll it is: "driver" by default, "rider". */
+  person?: 'driver' | 'rider';
+  /** The second title, champions.json's constructorChampion: by default "constructors" where the page names the
+   *  championship and "teams" where it names its champion ("teams", "manufacturers" for both). */
+  title?: string;
+  /** What a champion's team is, champions.json's constructor: "team" by default, "manufacturer". */
+  team?: string;
+  /** The points one driver can still score, for the Standings door's line: Formula 1's by default. */
+  left?: (d: SeriesData) => number;
+}
+
+const capital = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
+/** Text in a paragraph, its markup escaped and its apostrophes as written. */
+const prosaic = (s: string): string => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+/** /series/<slug>/champions/: the roll of honour, in a family's words where it passes them (ChampionsOptions); its
+ *  footnote's line on the series' history from the series' content (meta.json site.champions). */
+export function seriesChampions(d: SeriesData, o: ChampionsOptions = {}): Page {
   const all = raceWins(d);
   const current = (d.rounds ?? []).find(r => !all.has(r.round));
   const path = seriesPath(d.slug, 'champions');
@@ -953,6 +1142,11 @@ export function seriesChampions(d: SeriesData): Page {
   const seasons = [...(d.champions?.seasons ?? [])].sort((a, b) => b.year - a.year);
   if (!seasons.length) return { path, title, body: frame('<section class="pd-sr-sec pd-chp"><p class="pd-mut">No champions recorded yet.</p></section>'), template: 'page-wide' };
 
+  const person = o.person ?? 'driver';
+  const persons = `${person}s`;
+  const titleWord = o.title ?? 'constructors';
+  const champWord = o.title ?? 'teams';
+  const teamWord = o.team ?? 'team';
   const marks = titleCounts(seasons);
   const first = seasons[seasons.length - 1].year;
   const firstTeams = [...seasons].reverse().find(s => s.constructorChampion)?.year;
@@ -960,15 +1154,15 @@ export function seriesChampions(d: SeriesData): Page {
   const champs = new Set(seasons.map(s => s.driver)).size;
   const mast =
     `<header class="pd-ch-mast"><p class="pd-ch-kick">${name} · Roll of honour</p><h2 class="pd-ch-h">${name} champions</h2>` +
-    `<p class="pd-ch-intro">Every drivers' champion since ${first}${firstTeams ? ` and every constructors' champion since ${firstTeams}` : ''}, year by year: ` +
-    `${seasonsText(seasons.length)}, ${champs} different driver${champs === 1 ? '' : 's'}.</p></header>`;
+    `<p class="pd-ch-intro">Every ${persons}' champion since ${first}${firstTeams ? ` and every ${titleWord}' champion since ${firstTeams}` : ''}, year by year: ` +
+    `${seasonsText(seasons.length)}, ${champs} different ${person}${champs === 1 ? '' : 's'}.</p></header>`;
 
   const decade = (y: number) => Math.floor(y / 10) * 10;
   const decades = [...new Set(seasons.map(s => decade(s.year)))];
   const jump =
     `<nav class="pd-ch-jump" aria-label="Jump to"><span class="lab">Jump to</span>` +
     decades.map((x, i) => `<a href="#pd-ch-${x}s" data-dec="${x}s"${i === 0 ? ' class="on"' : ''}>${x}s</a>`).join('') +
-    (firstTeams ? `<a href="#pd-ch-${firstTeams}" data-dec="${decade(firstTeams)}s">${firstTeams}: teams' title</a>` : '') +
+    (firstTeams ? `<a href="#pd-ch-${firstTeams}" data-dec="${decade(firstTeams)}s">${firstTeams}: ${champWord}' title</a>` : '') +
     `<span class="pd-ch-find" hidden></span><span class="pd-ch-count" data-of="${seasons.length}">${seasonsText(seasons.length)}</span></nav>`;
   const decs = decades
     .map(x => {
@@ -995,32 +1189,33 @@ export function seriesChampions(d: SeriesData): Page {
           `<li data-find="${find}"><p class="top"><b class="yr">${s.year}</b><span${close ? ' class="close"' : ''}>${facts}</span></p>` +
             `<p class="nm" style="--t:${colour}"><b>${escapeHtml(s.driver)}${sup}</b><small>${escapeHtml(team)}</small></p>` +
             (s.runnerUp ? `<p class="kv"><span>Runner-up</span><span><b>${escapeHtml(s.runnerUp)}</b>${typeof s.runnerUpPoints === 'number' ? ` · ${s.runnerUpPoints} pts` : ''}</span></p>` : '') +
-            (s.constructorChampion ? `<p class="kv"><span>Teams'</span><span><b>${escapeHtml(s.constructorChampion)}</b> · ${ordinal(mk?.teamNth ?? 1)} title</span></p>` : '') +
+            (s.constructorChampion ? `<p class="kv"><span>${capital(champWord)}'</span><span><b>${escapeHtml(s.constructorChampion)}</b> · ${ordinal(mk?.teamNth ?? 1)} title</span></p>` : '') +
             '</li>',
         );
         if (s.year === firstTeams) {
-          rows.push(`<tr class="era" id="pd-ch-${firstTeams}"><td colspan="7"><b>${firstTeams}</b> The constructors' championship begins: from here the last column names the teams' champion.</td></tr>`);
+          rows.push(`<tr class="era" id="pd-ch-${firstTeams}"><td colspan="7"><b>${firstTeams}</b> The ${titleWord}' championship begins: from here the last column names the ${champWord}' champion.</td></tr>`);
         }
       }
       return (
         `<section class="pd-ch-dec" id="pd-ch-${x}s" data-dec="${x}s"><h2>${x}s <small>${list.length} season${list.length === 1 ? '' : 's'}</small></h2>` +
-        `<table class="pd-ch-tbl"><thead><tr><th>Year</th><th>Champion</th><th>Pts</th><th>Wins</th><th>Margin</th><th>Runner-up</th><th>Constructors' champion</th></tr></thead>` +
+        `<table class="pd-ch-tbl"><thead><tr><th>Year</th><th>Champion</th><th>Pts</th><th>Wins</th><th>Margin</th><th>Runner-up</th><th>${capital(titleWord)}' champion</th></tr></thead>` +
         `<tbody>${rows.join('')}</tbody></table><ol class="pd-ch-cards">${cards.join('')}</ol></section>`
       );
     })
     .join('');
-  const foot =
-    '<p class="pd-ch-foot">Points as counted at the time: until 1990 only a driver\'s best results counted towards the title, and races stopped early paid half points (hence Lauda\'s 0.5 in 1984). ×2, ×3: the driver\'s second, third title. Orange margin: five points or fewer.</p>';
+  // The series' own line on its history (meta.json site.champions.footnote), then the page's marks.
+  const history = d.sites?.[d.slug]?.champions?.footnote;
+  const foot = `<p class="pd-ch-foot">${history ? `${prosaic(history)} ` : ''}×2, ×3: the ${person}'s second, third title. Orange margin: five points or fewer.</p>`;
 
   const squares = (colours: string[]) => `<span class="sq">${colours.map(c => `<i style="--t:${c}"></i>`).join('')}</span>`;
   const tally = (heading: string, list: { name: string; count: number }[]) =>
     `<div class="pd-ch-tally"><h3>${heading}</h3><ol>${list
       .slice(0, 5)
       .map(t => `<li><b>${escapeHtml(t.name)}</b>${squares(Array(t.count).fill(championColour(d, t.name)))}<span class="n">${t.count}</span></li>`)
-      .join('')}</ol>${list.length > 5 ? `<p class="more">+ ${list.length - 5} more teams</p>` : ''}</div>`;
+      .join('')}</ol>${list.length > 5 ? `<p class="more">+ ${list.length - 5} more ${teamWord}s</p>` : ''}</div>`;
   const teamsSec =
-    `<section class="pd-ch-teams"><h2>Most successful teams</h2><p class="pd-mut">Drivers' titles since ${first}, counted by the champion's team${firstTeams ? `; constructors' titles since ${firstTeams}` : ''}.</p>` +
-    `<div class="pd-ch-two">${tally("Drivers' titles", teamTallies(seasons, 'drivers'))}${firstTeams ? tally("Constructors' titles", teamTallies(seasons, 'constructors')) : ''}</div></section>`;
+    `<section class="pd-ch-teams"><h2>Most successful ${teamWord}s</h2><p class="pd-mut">${capital(persons)}' titles since ${first}, counted by the champion's ${teamWord}${firstTeams ? `; ${titleWord}' titles since ${firstTeams}` : ''}.</p>` +
+    `<div class="pd-ch-two">${tally(`${capital(persons)}' titles`, teamTallies(seasons, 'drivers'))}${firstTeams ? tally(`${capital(titleWord)}' titles`, teamTallies(seasons, 'constructors')) : ''}</div></section>`;
 
   const rec = recordLists(seasons);
   const lead = d.champions?.records?.drivers?.lead?.trim();
@@ -1029,14 +1224,14 @@ export function seriesChampions(d: SeriesData): Page {
       .map(s => `<li><span class="yr">${s.year}</span><span class="who"><b>${escapeHtml(surname(s.driver))}</b> <small>over ${escapeHtml(surname(s.runnerUp ?? ''))}</small></span><span class="n">${marginOf(s)}</span></li>`)
       .join('')}</ol></div>`;
   const recs =
-    `<section class="pd-ch-recs"><div class="pd-ch-rec"><h3>Most drivers' titles</h3><ol>${rec.most
+    `<section class="pd-ch-recs"><div class="pd-ch-rec"><h3>Most ${persons}' titles</h3><ol>${rec.most
       .map(x => `<li><b>${escapeHtml(x.name)}</b>${squares(x.titles.map(s => championColour(d, teamIn(s))))}<span class="n">${x.titles.length}</span></li>`)
       .join('')}</ol><blockquote>${lead ? `<b>${escapeHtml(/[.!?]$/.test(lead) ? lead : `${lead}.`)}</b> ` : ''}One square per title, in that season's team colour.</blockquote></div>` +
     `${fights('Closest title fights', rec.closest)}${fights('Biggest winning margins', rec.biggest)}</section>`;
 
   // The doorways' lines come from the data at publish time.
   const drivers = standingRows(d.standings?.[0], true);
-  const left = pointsLeft(counted(d, drivers)).driver;
+  const left = o.left ? o.left(counted(d, drivers)) : pointsLeft(counted(d, drivers)).driver;
   const rounds = (d.rounds ?? []).length;
   let standLine = 'Both tables, and who can still win it.';
   if (drivers.length > 1) {
@@ -1047,7 +1242,7 @@ export function seriesChampions(d: SeriesData): Page {
         : `${escapeHtml(surname(drivers[0].name))} and ${escapeHtml(surname(drivers[1].name))} are level on ${escapeHtml(drivers[0].shown)}.`;
   }
 
-  const inner = `<div class="pd-sr-sec pd-chp">${mast}${reigningCard(d, seasons[0], marks, seasons)}${jump}<div class="pd-ch-decs">${decs}</div>${foot}${teamsSec}${recs}${championsFoot(d, standLine)}</div>`;
+  const inner = `<div class="pd-sr-sec pd-chp">${mast}${reigningCard(d, seasons[0], marks, seasons, `${capital(champWord)}'`)}${jump}<div class="pd-ch-decs">${decs}</div>${foot}${teamsSec}${recs}${championsFoot(d, standLine)}</div>`;
   return { path, title, body: frame(inner), template: 'page-wide' };
 }
 
@@ -1066,11 +1261,14 @@ export function championsFoot(d: SeriesData, standLine: string, o: { blog?: bool
     door(`/calendar/#${d.slug}`, `/calendar/#${d.slug}`, `${d.name} on the calendar`, 'Every session in your own time zone.', true),
     door(category, 'From the blog', `${d.name} posts`, 'Our race reports and analysis, newest first.', o.blog ?? true),
   ].join('');
-  // Around the site, as the operator chose it on 21 Oct; a page the new site does not have yet waits greyed.
+  // Around the site, as the operator chose it on 21 Oct; a page the new site does not have yet waits greyed. The third
+  // door opens a sibling series' champions, as the series' content names it (meta.json site.champions.door, O33);
+  // without one, Formula 2's.
+  const sibling = d.sites?.[d.slug]?.champions?.door ?? { href: '/series/f2/champions/', title: 'Formula 2 champions', line: 'Since 2005, including the GP2 years.' };
   const around = [
     ['/calendar/', 'Calendar', 'Every session of fifteen championships in your time zone.'],
     ['/series/', 'All series', 'Fifteen championships, each with its next event.'],
-    ['/series/f2/champions/', 'Formula 2 champions', 'Since 2005, including the GP2 years.'],
+    [sibling.href, sibling.title, escapeHtml(sibling.line)],
     ['/learn/', 'Learn', 'Motorsport, explained.'],
     ['/news/', 'News', 'Our stories, then the wire.'],
     ['/about/', 'About', 'Who makes Paddock, and how.'],
@@ -1398,8 +1596,8 @@ export function seriesList(all: SeriesData[], now: Date): Page {
  *  them (the weekend pages are the family's own, FamilyKit.weekendPages). */
 export function seriesFamily(d: SeriesData, kit?: FamilyKit): Page[] {
   return [
-    seriesOverview(d, kit?.overviewStandings),
-    ...(built(d, 'results') ? [seriesResults(d, kit?.resultsFold)] : []),
+    seriesOverview(d, kit?.overviewStandings, kit?.raceName),
+    ...(built(d, 'results') ? [seriesResults(d, kit?.resultsFold, kit?.raceName)] : []),
     ...(built(d, 'standings') ? [kit?.standingsPage ? kit.standingsPage(d) : seriesStandings(d)] : []),
     ...(built(d, 'champions') ? [kit?.championsPage ? kit.championsPage(d) : seriesChampions(d)] : []),
     ...titleRacesOf(d).map(t => seriesTitleRace(d, t)),

@@ -898,6 +898,40 @@ export type SitePage = (typeof SITE_PAGES)[number];
 export interface SeriesSite {
   family: Family;
   pages: SitePage[];
+  /** The Champions page's words from the series' own content (O33): the footnote's line on its history and the door to
+   *  a sibling series' champions; without it, none and the door to Formula 2's. */
+  champions?: SiteChampions;
+}
+
+/** meta.json `site.champions`: the footnote (text; its sources kept beside it for the record, not drawn) and the door
+ *  in Around the site to a sibling series' champions. */
+export interface SiteChampions {
+  footnote?: string;
+  sources?: string[];
+  door?: { href: string; title: string; line: string };
+}
+
+/** A meta.json's `site.champions`, checked; a wrong value throws, naming the file. */
+function siteChampions(at: string, raw: unknown): SiteChampions {
+  if (!isObj(raw)) throw new Error(`${at}: site.champions must be an object such as { "footnote": "…", "door": { … } }`);
+  const text = (v: unknown, key: string): string => {
+    if (typeof v !== 'string' || v.trim() === '') throw new Error(`${at}: site.champions.${key} must be words`);
+    return v;
+  };
+  const out: SiteChampions = {};
+  if (raw.footnote !== undefined) out.footnote = text(raw.footnote, 'footnote');
+  if (raw.sources !== undefined) {
+    if (!Array.isArray(raw.sources) || raw.sources.some(s => typeof s !== 'string' || !/^https:\/\/\S+$/.test(s))) throw new Error(`${at}: site.champions.sources must be a list of https addresses`);
+    out.sources = raw.sources as string[];
+  }
+  if (raw.door !== undefined) {
+    const door = raw.door;
+    if (!isObj(door) || typeof door.href !== 'string' || !/^\/series\/[a-z0-9-]+\/champions\/$/.test(door.href)) {
+      throw new Error(`${at}: site.champions.door must be { "href": "/series/<slug>/champions/", "title": "…", "line": "…" }`);
+    }
+    out.door = { href: door.href, title: text(door.title, 'door.title'), line: text(door.line, 'door.line') };
+  }
+  return out;
 }
 
 /** A meta.json's `site`, checked: null when it has none. A wrong value throws, naming the file, so a hand edit stops
@@ -915,7 +949,8 @@ export function siteOf(slug: string, raw: unknown): SeriesSite | null {
   if (!Array.isArray(raw.pages)) throw new Error(`${at}: site.pages must be a list, such as ["results", "standings"]`);
   const wrong = raw.pages.find(p => typeof p !== 'string' || !(SITE_PAGES as readonly string[]).includes(p));
   if (wrong !== undefined) throw new Error(`${at}: site.pages holds ${JSON.stringify(wrong)}, not one of ${SITE_PAGES.join(', ')}`);
-  return { family: family as Family, pages: [...new Set(raw.pages as SitePage[])] };
+  const champions = raw.champions === undefined ? undefined : siteChampions(at, raw.champions);
+  return { family: family as Family, pages: [...new Set(raw.pages as SitePage[])], ...(champions ? { champions } : {}) };
 }
 
 /** A page built for the series, or for another series named by its slug. */
@@ -939,6 +974,10 @@ export interface FamilyKit {
    *  drivers' top ten beside the constructors, which a series whose standings are kept by class does not fit (family C,
    *  O34). */
   overviewStandings?(d: SeriesData): string;
+  /** A race's name where the shared Overview and Results name one (family A, O33): a stored race by its label, or a
+   *  race called off by its timetable name, in a line ("Sprint", "Feature Race 1") or `short`, a column's ("GP",
+   *  "FR1"); without it, Formula 1's words. */
+  raceName?(d: SeriesData, label: string, short?: boolean): string;
 }
 
 export interface SeriesTeam {

@@ -6,6 +6,7 @@ import { siteOf, type ResultRound, type SeriesData, type SeriesSite } from './re
 import {
   categorySlug,
   championColour,
+  clinchedLine,
   firstSentence,
   ordinal,
   pointsLeft,
@@ -19,6 +20,7 @@ import {
   seriesResults,
   seriesStandings,
   seriesTitleRace,
+  standingsBlock,
   stillIn,
   tabs as tabStrip,
   teammates,
@@ -26,8 +28,16 @@ import {
   titleCounts,
 } from './series';
 
-/** Formula 1's setting as content/series/f1/meta.json writes it: every page built (O33). */
-const F1_SITE: SeriesSite = { family: 'F1', pages: ['results', 'standings', 'champions', 'weekends'] };
+/** Formula 1's setting as content/series/f1/meta.json writes it: every page built (O33), and its Champions page's
+ *  footnote and door to Formula 2's champions (O33's PR 3). */
+const F1_SITE: SeriesSite = {
+  family: 'F1',
+  pages: ['results', 'standings', 'champions', 'weekends'],
+  champions: {
+    footnote: "Points as counted at the time: until 1990 only a driver's best results counted towards the title, and races stopped early paid half points (hence Lauda's 0.5 in 1984).",
+    door: { href: '/series/f2/champions/', title: 'Formula 2 champions', line: 'Since 2005, including the GP2 years.' },
+  },
+};
 const SITES = { f1: F1_SITE };
 
 const race = (round: number, name: string, date: string, rows: string[][]): ResultRound => ({
@@ -1239,5 +1249,195 @@ describe('a race that classifies cars, a crew to a car (O34)', () => {
     expect(o).toContain('<b>#&lt;8&gt; T&amp;C &quot;q&quot;</b>27 Sep</span>');
     expect(results).toContain('<b>#&lt;8&gt;</b><small>T&amp;C &quot;q&quot;</small>');
     expect(o + results).not.toContain('<i>X</i>');
+  });
+});
+
+// ── Family A's words and races on the shared pages (O33's PR 3) ──────────────
+
+describe("a family's words and races on the shared pages (family A, O33), Formula 1's by default", () => {
+  const rider = (pos: string, name: string, team: string, time: string, pts: string): string[] => [pos, name, team, time, pts];
+  const race = (label: string, rows: string[][]) => ({ label, tables: [{ title: label, columns: ['Pos', 'Rider', 'Team', 'Time', 'Pts'], rows }] });
+  const OFF = { session: 'Race', note: 'The Grand Prix was called off: poor visibility for the medical helicopter.', source: 'https://www.motogp.com/en/news' };
+  const moto: SeriesData = {
+    slug: 'motogp',
+    name: 'MotoGP',
+    season: 2026,
+    sites: {
+      motogp: {
+        family: 'A',
+        pages: ['results', 'standings', 'champions', 'weekends'],
+        champions: { footnote: 'The top class raced 500cc two-strokes & <more> until 2001.', door: { href: '/series/wsbk/champions/', title: 'WorldSBK champions', line: "Since 1988, the world's production bikes." } },
+      },
+      wsbk: { family: 'A', pages: ['champions'] },
+    },
+    standings: [
+      { title: 'Riders', columns: ['Pos', 'Rider', 'Team', 'Pts'], rows: [['1', 'Marc Márquez', 'Ducati Lenovo Team', '49'], ['2', 'Jorge Martín', 'Aprilia Racing', '29'], ['3', 'Ai Ogura', 'Trackhouse', '9']] },
+      { title: 'Manufacturers', columns: ['Pos', 'Manufacturer', 'Pts'], rows: [['1', 'Ducati', '49'], ['2', 'Aprilia', '29']] },
+    ],
+    results: [
+      {
+        round: 1,
+        name: 'Thailand',
+        date: '2026-03-01',
+        sessions: [
+          race('Sprint', [rider('1', 'Jorge Martín', 'Aprilia Racing', '19:00.000', '12'), rider('2', 'Marc Márquez', 'Ducati Lenovo Team', '+0.5', '9')]),
+          race('Grand Prix', [rider('1', 'Marc Márquez', 'Ducati Lenovo Team', '40:00.000', '25'), rider('2', 'Jorge Martín', 'Aprilia Racing', '+1.2', '20')]),
+        ],
+      },
+      { round: 2, name: 'Australia', date: '2026-10-25', sessions: [race('Sprint', [rider('1', 'Marc Márquez', 'Ducati Lenovo Team', '19:09.411', '12'), rider('2', 'Ai Ogura', 'Trackhouse', '+0.509', '9')])] },
+    ],
+    calendar: [
+      { start: '2026-11-28T14:00:00Z', end: '2026-11-28T14:30:00Z', dateOnly: false, event: 'Valencian Grand Prix', session: 'Sprint', round: 3 },
+      { start: '2026-11-29T13:00:00Z', end: '2026-11-29T14:00:00Z', dateOnly: false, event: 'Valencian Grand Prix', session: 'Race', round: 3 },
+    ],
+    rounds: [
+      { round: 1, name: 'Thai Grand Prix', startDate: '2026-02-27', endDate: '2026-03-01', venue: 'Chang International Circuit' },
+      { round: 2, name: 'Australian Grand Prix', startDate: '2026-10-23', endDate: '2026-10-25', venue: 'Phillip Island', calledOff: [OFF] },
+      { round: 3, name: 'Valencian Grand Prix', startDate: '2026-11-27', endDate: '2026-11-29', venue: 'Circuit Ricardo Tormo' },
+    ],
+    teams: [
+      { name: 'Ducati Lenovo Team', colour: '#CC0000', drivers: [{ name: 'Marc Márquez' }] },
+      { name: 'Aprilia Racing', colour: '#9C1B26', drivers: [{ name: 'Jorge Martín' }] },
+    ],
+  };
+  const raceName = (_d: SeriesData, label: string, short?: boolean): string => (label === 'Grand Prix' || label === 'Race' ? (short ? 'GP' : 'Grand Prix') : label);
+  const titleOf = (body: string): string => /<section class="pd-fa-title"[\s\S]*?<\/section>/.exec(body)?.[0] ?? '';
+
+  it('raceWins: a round whose race rounds.json calls off rests on its Sprint, run but no win', () => {
+    const wins = raceWins(moto);
+    expect(wins.get(2)).toEqual({ round: 2, title: 'Australia', date: '2026-10-25', winner: 'Marc Márquez', team: 'Ducati Lenovo Team', margin: '0.509', only: 'Sprint' });
+    expect(wins.get(1)?.only).toBeUndefined();
+    // A Sprint alone without a called-off race is a Saturday, not a round run.
+    expect(raceWins({ ...moto, rounds: moto.rounds?.map(r => ({ ...r, calledOff: [] })) }).has(2)).toBe(false);
+    // A session called off that is no race (WEC's qualifying at Fuji) leaves the round as it was.
+    expect(raceWins({ ...moto, rounds: moto.rounds?.map(r => ({ ...r, calledOff: [{ ...OFF, session: 'Qualifying' }] })) }).has(2)).toBe(false);
+    // The band counts it run; the Standings count its winner's one Grand Prix, not the Sprint.
+    expect(seriesOverview(moto).body).toContain('<p>2026 season · 3 rounds · 2 run · ');
+    expect(seriesStandings(moto, { person: 'Rider', tables: true }).body).toContain('<span class="pt">49</span><span class="g">—</span><span class="w">1</span>');
+  });
+
+  it("the Overview's tile names the race the round rests on where its date stands, with the family's names", () => {
+    expect(seriesOverview(moto, undefined, raceName).body).toContain('<span class="pd-sr-win" style="--t:#CC0000"><b>MAR</b>Sprint</span>');
+    expect(seriesOverview(moto).body).toContain('<span class="pd-sr-win" style="--t:#CC0000"><b>MAR</b>25 Oct</span>');
+  });
+
+  it("the Results rows: each earlier race's winner after the team, the called-off round by its Sprint, no Sprint tag", () => {
+    const body = seriesResults(moto, undefined, raceName).body;
+    expect(body).toContain('<b>Sprint: Marc Márquez</b><small>Ducati Lenovo Team · GP called off</small>');
+    expect(body).toContain('<b>Marc Márquez</b><small>Ducati Lenovo Team · Sprint: Martín</small>');
+    expect(body).not.toContain('<em>Sprint</em>');
+    expect(body).toContain('2 of 3 rounds run');
+    // Formula 1's words without the names: the round 2 row stands on its Sprint, the Sprint tag stays.
+    const plain = seriesResults(moto).body;
+    expect(plain).toContain('<b>Marc Márquez</b><small>Ducati Lenovo Team</small>');
+    expect(plain).toContain(' · <em>Sprint</em>');
+  });
+
+  it("the Overview's standings block: the rider's word, and a table of manufacturers without wins", () => {
+    const block = standingsBlock(moto, { person: 'Rider' });
+    expect(block).toContain('<div class="pd-sr-th"><span></span><span>Rider</span><span>Pts</span><span>Wins</span></div>');
+    expect(block).toContain('<div class="pd-sr-th"><span></span><span>Manufacturer</span><span>Pts</span><span></span></div>');
+    expect(block).toContain('<span class="pd-pt">49</span><span class="pd-w"></span></li>');
+    expect(block).toContain('<span class="pd-pt">49</span><span class="pd-w">1 win</span></li>');
+    const counted = standingsBlock(moto, { wins: () => ({ driver: name => (name === 'Jorge Martín' ? 2 : 0), team: () => 0 }) });
+    expect(counted).toContain('<span class="pd-pt">29</span><span class="pd-w">2 wins</span></li>');
+  });
+
+  it("Standings: the rider's word, the family's points left, each table after the first under its own name, no teammates", () => {
+    const body = seriesStandings(moto, { person: 'Rider', tables: true, left: () => ({ points: 37, scales: ['one Grand Prix at 25', 'one Sprint at 12'] }) }).body;
+    expect(body).toContain('<p>37 points left: one Grand Prix at 25, one Sprint at 12. A bar is how much of that a rider needs just to draw level.</p>');
+    expect(body).toContain('<p class="pd-st-sum">Two riders are still in it on paper. Ogura is out by 3 points.</p>');
+    expect(body).toContain('<button type="button" data-pd-st="drivers">Riders</button><button type="button" data-pd-st="constructors">Manufacturers</button>');
+    expect(body).toContain('<span>Pos</span><span></span><span>Rider</span><span></span><span>Pts</span>');
+    expect(body).toContain('<h3 class="pd-st-ch">Manufacturers</h3><div class="pd-st-th c"><span>Pos</span><span></span><span>Manufacturer</span><span>Pts</span><span>Gap</span><span></span></div>');
+    expect(body).toContain('The dashed line marks the last rider who can still mathematically win.');
+    expect(body).not.toContain('Teammates');
+    expect(body).not.toContain('Constructors:');
+  });
+
+  it('Standings: once no points are left, the title box names the champion champions.json names', () => {
+    const notes = { '2026': { clinched: 'Race 2, Hockenheimring, 11 October 2026, the last race of the season', note: 'n' } };
+    const crowned: SeriesData = { ...moto, champions: { seasons: [{ year: 2026, driver: 'Marc Márquez', constructor: 'Ducati', constructorChampion: 'Ducati' }], notes, records: null, historic: {}, names: null } };
+    const over = (d: SeriesData) => seriesStandings(d, { person: 'Rider', tables: true, left: () => ({ points: 0, scales: [] }), title: { teams: "Constructors'" } }).body;
+    expect(titleOf(over(crowned))).toBe(
+      '<section class="pd-fa-title" style="--t:#CC0000"><h3>The 2026 title</h3><p class="pd-fa-champ"><b>Marc Márquez</b> is the 2026 champion, 20 points clear of Jorge Martín. Clinched in Race 2 at the Hockenheimring on 11 October, the last race of the season.</p>' +
+        '<p>Constructors&#39; champion: Ducati.</p><a class="pd-fa-how" href="/series/motogp/champions/">How it was won →</a></section>',
+    );
+    expect(over(crowned)).not.toContain('Who can still win it');
+    // Before champions.json has the row, or where it names another, the top two without the word.
+    expect(titleOf(over(moto))).toBe(
+      '<section class="pd-fa-title" style="--t:#CC0000"><h3>The 2026 title</h3><p>No points left: the season is over.</p><p class="pd-fa-champ"><b>Marc Márquez</b> finished on top, 20 points clear of Jorge Martín.</p></section>',
+    );
+    expect(titleOf(over({ ...crowned, champions: { ...crowned.champions!, seasons: [{ year: 2026, driver: 'Jorge Martín', constructor: 'Aprilia' }] } }))).toContain('finished on top');
+    // Formula 1's page keeps its box: no title option.
+    expect(seriesStandings({ ...crowned, standings: [moto.standings![0]] }, { left: () => ({ points: 0, scales: [] }) }).body).toContain('<p>No points left: the season is over.</p><ol>');
+  });
+
+  it('clinchedLine: where the title was clinched, as the operator worded it on 24 Nov', () => {
+    expect(clinchedLine('Feature Race 2, Madrid, 13 September 2026, the last race of the season')).toBe('Clinched in Feature Race 2 at Madrid on 13 September, the last race of the season.');
+    expect(clinchedLine('Race 2, Cremona, 27 September 2026, with six races to spare')).toBe('Clinched in Race 2 at Cremona on 27 September with six races to spare.');
+    expect(clinchedLine('Race 2, Hockenheimring, 11 October 2026, the last race of the season')).toBe('Clinched in Race 2 at the Hockenheimring on 11 October, the last race of the season.');
+    expect(clinchedLine('Race 1, Assen, 19 April 2026')).toBe('Clinched in Race 1 at Assen on 19 April.');
+    expect(clinchedLine('at the final round')).toBe('Clinched: at the final round.');
+  });
+
+  it("Champions: the family's words, its footnote and its door from its content, the rider's marks", () => {
+    const seasons = [
+      { year: 2025, driver: 'Marc Márquez', constructor: 'Ducati', constructorChampion: 'Ducati', points: 545, runnerUp: 'Álex Márquez', runnerUpPoints: 467 },
+      { year: 1949, driver: 'Leslie Graham', constructor: 'AJS', constructorChampion: 'AJS', points: 30, runnerUp: 'Nello Pagani', runnerUpPoints: 29 },
+    ];
+    const d: SeriesData = { ...moto, champions: { seasons, notes: null, records: null, historic: {}, names: null } };
+    const body = seriesChampions(d, { person: 'rider', title: 'constructors', team: 'manufacturer', left: () => 62 }).body;
+    expect(body).toContain("Every riders' champion since 1949 and every constructors' champion since 1949, year by year: 2 seasons, 2 different riders.");
+    expect(body).toContain('<a href="#pd-ch-1949" data-dec="1940s">1949: constructors\' title</a>');
+    expect(body).toContain("The constructors' championship begins: from here the last column names the constructors' champion.");
+    expect(body).toContain("<th>Constructors' champion</th>");
+    expect(body).toContain('<h2>Most successful manufacturers</h2><p class="pd-mut">Riders\' titles since 1949, counted by the champion\'s manufacturer; constructors\' titles since 1949.</p>');
+    expect(body).toContain("<h3>Most riders' titles</h3>");
+    expect(body).toContain("Constructors' champion: <b>Ducati</b>");
+    expect(body).toContain('<p class="pd-ch-foot">The top class raced 500cc two-strokes &amp; &lt;more&gt; until 2001. ×2, ×3: the rider\'s second, third title. Orange margin: five points or fewer.</p>');
+    expect(body).toContain('leads by 20 with 62 points left.');
+    expect(body).toContain('<a class="pd-ch-door" href="/series/wsbk/champions/"><small>/series/wsbk/champions/</small><b>WorldSBK champions</b><span>Since 1988, the world&#39;s production bikes.</span><em>Open →</em></a>');
+    expect(body).not.toContain('Formula 2 champions');
+    // Without the series' own words: no history line, and the door to Formula 2's.
+    const bare = seriesChampions({ ...d, sites: { motogp: { family: 'A', pages: ['champions'] } } }).body;
+    expect(bare).toContain('<p class="pd-ch-foot">×2, ×3: the driver\'s second, third title.');
+    expect(bare).toContain('<span class="pd-ch-door is-off"><small>/series/f2/champions/</small><b>Formula 2 champions</b>');
+  });
+
+  it("Standings: a session kept beside the races that pays (DTM's qualifying) counts where it ran", () => {
+    const q = (label: string, rows: string[][]) => ({ label, tables: [{ title: label, columns: ['Pos', 'Driver', 'Team', 'Time', 'Pts'], rows }] });
+    const dtm: SeriesData = {
+      ...moto,
+      slug: 'dtm',
+      name: 'DTM',
+      sites: { dtm: { family: 'A', pages: ['standings'] } },
+      // The table counts Qualifying 1 and Race 1, not yet Qualifying 2 and Race 2.
+      standings: [{ title: 'Drivers', columns: ['Pos', 'Driver', 'Team', 'Pts'], rows: [['1', 'Maro Engel', 'Winward', '28'], ['2', 'Lucas Auer', 'Landgraf', '20']] }],
+      results: [
+        {
+          round: 1,
+          name: 'Red Bull Ring',
+          date: '2026-04-26',
+          sessions: [q('Race 1', [['1', 'Maro Engel', 'Winward', '50:00.000', '25'], ['2', 'Lucas Auer', 'Landgraf', '+1.0', '20']]), q('Race 2', [['1', 'Lucas Auer', 'Landgraf', '50:00.000', '25'], ['2', 'Maro Engel', 'Winward', '+2.0', '20']])],
+          others: [
+            q('Qualifying 2', [['1', 'Lucas Auer', 'Landgraf', '1:24.000', '3']]),
+            q('Qualifying 1', [['1', 'Maro Engel', 'Winward', '1:24.500', '3']]),
+            { label: 'Free Practice 1', tables: [{ title: 'Free Practice 1', columns: ['Pos', 'Driver', 'Team', 'Time'], rows: [['1', 'Lucas Auer', 'Landgraf', '1:25.000']] }] },
+          ],
+        },
+      ],
+      calendar: [
+        { start: '2026-04-25T07:40:00Z', end: '2026-04-25T08:00:00Z', dateOnly: false, event: 'Red Bull Ring', session: 'Qualifying 1', round: 1 },
+        { start: '2026-04-25T11:30:00Z', end: '2026-04-25T12:30:00Z', dateOnly: false, event: 'Red Bull Ring', session: 'Race 1', round: 1 },
+        { start: '2026-04-26T07:30:00Z', end: '2026-04-26T07:50:00Z', dateOnly: false, event: 'Red Bull Ring', session: 'Qualifying 2', round: 1 },
+        { start: '2026-04-26T11:30:00Z', end: '2026-04-26T12:30:00Z', dateOnly: false, event: 'Red Bull Ring', session: 'Race 2', round: 1 },
+      ],
+      rounds: [{ round: 1, name: 'Red Bull Ring Round', startDate: '2026-04-24', endDate: '2026-04-26', venue: 'Red Bull Ring' }],
+    };
+    // As of the table the round has run Qualifying 1 and Race 1: Race 1's winner holds the round's win, not Race 2's.
+    const body = seriesStandings(dtm, { tables: true }).body;
+    expect(body).toContain('<span class="pt">28</span><span class="g">—</span><span class="w">1</span></li>');
+    expect(body).toContain('<span class="pt">20</span><span class="g">−8</span><span class="w"></span></li>');
   });
 });

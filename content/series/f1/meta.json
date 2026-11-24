@@ -14,5 +14,12 @@
   "officialSite": "https://www.formula1.com/",
   "regulationsUrl": "https://www.fia.com/regulation/category/110",
   "watch": { "service": "F1 TV", "url": "https://f1tv.formula1.com/" },
-  "site": { "family": "F1", "pages": ["results", "standings", "champions", "weekends"] }
+  "site": {
+    "family": "F1",
+    "pages": ["results", "standings", "champions", "weekends"],
+    "champions": {
+      "footnote": "Points as counted at the time: until 1990 only a driver's best results counted towards the title, and races stopped early paid half points (hence Lauda's 0.5 in 1984).",
+      "door": { "href": "/series/f2/champions/", "title": "Formula 2 champions", "line": "Since 2005, including the GP2 years." }
+    }
+  }
 }
