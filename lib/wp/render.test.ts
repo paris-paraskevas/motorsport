@@ -1074,7 +1074,30 @@ describe("a series' setting (O33)", () => {
       expect(() => siteOf(slug, meta.site)).not.toThrow();
     }
     const f1 = JSON.parse(readFileSync(path.join(dir, 'f1', 'meta.json'), 'utf8')) as { site?: unknown };
-    expect(siteOf('f1', f1.site)).toEqual({ family: 'F1', pages: ['results', 'standings', 'champions', 'weekends'] });
+    // Its Champions page's footnote and its door to Formula 2's champions live in its content (O33's PR 3).
+    expect(siteOf('f1', f1.site)).toEqual({
+      family: 'F1',
+      pages: ['results', 'standings', 'champions', 'weekends'],
+      champions: {
+        footnote: "Points as counted at the time: until 1990 only a driver's best results counted towards the title, and races stopped early paid half points (hence Lauda's 0.5 in 1984).",
+        door: { href: '/series/f2/champions/', title: 'Formula 2 champions', line: 'Since 2005, including the GP2 years.' },
+      },
+    });
+  });
+
+  it("checks a Champions page's words (site.champions), naming the file", () => {
+    const site = (champions: unknown) => ({ family: 'A', pages: ['champions'], champions });
+    expect(siteOf('wsbk', site({ door: { href: '/series/motogp/champions/', title: 'MotoGP champions', line: 'Since 1949.' } }))).toEqual({
+      family: 'A',
+      pages: ['champions'],
+      champions: { door: { href: '/series/motogp/champions/', title: 'MotoGP champions', line: 'Since 1949.' } },
+    });
+    expect(siteOf('f3', site({ footnote: 'GP3 until 2018.', sources: ['https://www.fiaformula3.com/'] }))?.champions).toEqual({ footnote: 'GP3 until 2018.', sources: ['https://www.fiaformula3.com/'] });
+    expect(() => siteOf('f3', site('GP3'))).toThrow('content/series/f3/meta.json: site.champions must be an object');
+    expect(() => siteOf('f3', site({ footnote: ' ' }))).toThrow('site.champions.footnote must be words');
+    expect(() => siteOf('f3', site({ sources: ['http://example.com'] }))).toThrow('site.champions.sources must be a list of https addresses');
+    expect(() => siteOf('f3', site({ door: { href: 'https://example.com/', title: 'X', line: 'Y' } }))).toThrow('site.champions.door must be');
+    expect(() => siteOf('f3', site({ door: { href: '/series/f2/champions/', title: 'Formula 2 champions' } }))).toThrow('site.champions.door.line must be words');
   });
 
   it('keeps the plain pages without a setting, and stops on a wrong one, naming the file', () => {

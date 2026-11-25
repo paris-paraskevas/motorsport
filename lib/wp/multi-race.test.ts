@@ -1,4 +1,8 @@
 import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+import type { ChampionNotesFile } from '../series-content';
+import type { Champion } from '../types';
 import type { FomResultRow } from '../results/fom-api';
 import {
   answered,
@@ -18,11 +22,21 @@ import {
   dtmWinnersTimes,
   fomQualifyingLabel,
   fomTable,
+  foldName,
+  groupsGrid,
   initialsSpeller,
+  multiRaceKit,
+  multiRaceLeft,
+  multiRaceWins,
+  raceName,
   roundOver,
+  roundPoints,
   sessionNone,
   sessionsWanted,
+  spelledAsRoster,
   timedTable,
+  unitsOf,
+  unitStates,
   wsbkCarried,
   wsbkDue,
   wsbkHeld,
@@ -33,8 +47,11 @@ import {
   wsbkScored,
   wsbkTimedTable,
   type DtmGroups,
+  type RosterTeam,
 } from './multi-race';
-import { calledOffOf, padHour, type CalendarEntry, type ResultRound, type Table } from './render';
+import { calledOffOf, padHour, siteOf, type CalendarEntry, type CalendarRound, type Page, type ResultRound, type SeriesData, type Table } from './render';
+import { seriesFamily } from './series';
+import { weekendOf } from './weekend';
 
 // Rows as FOM's API wrote them for Formula 2's 2026 sessions (probed 12 Nov 2026): a placed driver, a "666" with
 // "NC" and a slow lap (Boya, Melbourne qualifying), a "666" with "NC" and no time (Varrone, Madrid qualifying), and a
@@ -665,5 +682,369 @@ describe("WorldSBK's race points (O33)", () => {
 
   it('pays a retirement nothing in the stored tables', () => {
     expect(wsbkScored([magnyCours(nineLaps)])[0].sessions[0].tables[0].rows.map(r => r[4])).toEqual(['25', '0']);
+  });
+});
+
+// ── Family A's pages (O33's PR 3), from the saved document ────────────────────
+//
+// tests/fixtures/multi-race.json: paddock-data 868b8dc4 as the publisher keeps it (its `about` says what and from where),
+// read through the publisher's line (spelledAsRoster) and each series' own setting in content/series/<slug>/meta.json.
+
+type SlugA = 'f2' | 'f3' | 'motogp' | 'wsbk' | 'dtm';
+interface SavedA {
+  name: string;
+  rounds: CalendarRound[];
+  cancelled?: SeriesData['cancelled'];
+  calendar: CalendarEntry[];
+  results: ResultRound[];
+  standings: Table[];
+  teams: RosterTeam[];
+  champions: { seasons: Champion[]; notes: ChampionNotesFile };
+}
+const savedA = (JSON.parse(readFileSync(path.join(process.cwd(), 'tests', 'fixtures', 'multi-race.json'), 'utf8')) as { series: Record<SlugA, SavedA> }).series;
+const SITES_A = Object.fromEntries(
+  ['f1', 'f2', 'f3', 'motogp', 'wsbk', 'dtm', 'gt-world'].flatMap(slug => {
+    const site = siteOf(slug, (JSON.parse(readFileSync(path.join(process.cwd(), 'content', 'series', slug, 'meta.json'), 'utf8')) as { site?: unknown }).site);
+    return site ? [[slug, site]] : [];
+  }),
+);
+
+/** A series as the publisher hands it to the kit: the saved document through the publisher's line. */
+function seriesA(slug: SlugA, extra: Partial<SeriesData> = {}): SeriesData {
+  const s = savedA[slug];
+  const spelled = spelledAsRoster({ results: s.results, standings: s.standings }, s.teams);
+  return {
+    slug,
+    name: s.name,
+    season: 2026,
+    sites: SITES_A,
+    standings: spelled.standings,
+    results: spelled.results,
+    calendar: s.calendar,
+    rounds: s.rounds,
+    teams: spelled.teams,
+    cancelled: s.cancelled ?? [],
+    champions: { seasons: s.champions.seasons, notes: s.champions.notes, records: null, historic: {}, names: null },
+    ...extra,
+  };
+}
+
+const kitA = multiRaceKit();
+const pagesA = (d: SeriesData): Map<string, Page> => new Map([...seriesFamily(d, kitA), ...kitA.weekendPages(d)].map(p => [p.path, p]));
+const F2 = pagesA(seriesA('f2'));
+const MOTO = pagesA(seriesA('motogp'));
+const WSBK = pagesA(seriesA('wsbk'));
+const DTM = pagesA(seriesA('dtm'));
+const F3 = pagesA(seriesA('f3'));
+const at = (pages: Map<string, Page>, p: string): string => pages.get(p)?.body ?? '';
+const roundA = (d: SeriesData, n: number): CalendarRound => (d.rounds ?? []).find(r => r.round === n) as CalendarRound;
+const unitsA = (slug: SlugA, n: number) => {
+  const d = seriesA(slug);
+  const w = weekendOf(d, 2026, roundA(d, n));
+  const { units } = unitsOf(w);
+  return { units, states: unitStates(w, units) };
+};
+/** The bar's items as "label | note", the note's markup dropped. */
+const barA = (html: string): string[] => [...(/<nav class="pd-wb".*?<\/nav>/.exec(html)?.[0] ?? '').matchAll(/<(?:a|span)[^>]*>([^<]+)<small>(.*?)<\/small>/g)].map(m => `${m[1]} | ${m[2].replace(/<[^>]+>/g, '')}`);
+const tabsA = (html: string): string[] => [...html.matchAll(/data-pd-tab="([^"]+)"/g)].map(m => m[1]);
+/** A results table's panel: from its tab to the next. */
+const panelA = (html: string, tab: string): string => {
+  const from = html.indexOf(`data-pd-tab="${tab}"`);
+  const to = html.indexOf('<section class="pd-rt-p"', from);
+  return from < 0 ? '' : html.slice(from, to < 0 ? undefined : to);
+};
+const rowsA = (html: string): number => (html.match(/<tr><td class="p">/g) ?? []).length;
+const headA = (html: string): string[] => [...(/<thead>(.*?)<\/thead>/.exec(html)?.[1] ?? '').matchAll(/<th[^>]*>([^<]*)<\/th>/g)].map(m => m[1]);
+const W = (slug: string, n: number) => `/series/${slug}/2026/round-${n}/`;
+
+describe("family A: the roster's spellings (default 17)", () => {
+  it('spells every name as drivers.json writes it, and joins each team name the series writes otherwise', () => {
+    const moto = spelledAsRoster({ results: savedA.motogp.results, standings: savedA.motogp.standings }, savedA.motogp.teams);
+    expect(moto.standings?.[0].rows[0].slice(0, 2)).toEqual(['1', 'Marc Márquez']);
+    expect(moto.teams.filter(t => ['Castrol Honda LCR', 'Pro Honda LCR', 'Trackhouse MotoGP Team', 'Monster Energy Yamaha MotoGP Team'].includes(t.name)).map(t => [t.name, t.colour]).sort()).toEqual([
+      ['Castrol Honda LCR', '#00873E'],
+      ['Monster Energy Yamaha MotoGP Team', '#2140C9'],
+      ['Pro Honda LCR', '#00873E'],
+      ['Trackhouse MotoGP Team', '#24449C'],
+    ]);
+    // A one-off wildcard entry is no roster team: drawn grey, named in the log (Honda HRC's, round 16's practice alone,
+    // is not in the saved document).
+    expect(moto.grey).toEqual(['Yamaha Factory Racing']);
+    const wsbk = spelledAsRoster({ results: savedA.wsbk.results, standings: savedA.wsbk.standings }, savedA.wsbk.teams);
+    expect(wsbk.grey).toEqual(['Team Apreco']);
+    expect(wsbk.standings?.[0].rows.find(r => r[1].endsWith('Bridewell'))?.[1]).toBe('Tommy Bridewell');
+    expect(wsbk.teams.find(t => t.name === 'Aruba.it Racing - Ducati')?.colour).toBe('#CC0000');
+    const dtm = spelledAsRoster({ results: savedA.dtm.results, standings: savedA.dtm.standings }, savedA.dtm.teams);
+    expect([dtm.grey, dtm.teams.find(t => t.name === 'Mercedes-AMG Team Winward')?.colour]).toEqual([[], '#D2232A']);
+    // A name the roster does not hold stays as the feed writes it.
+    expect(spelledAsRoster({ results: null, standings: [{ title: 'Riders', columns: ['Pos', 'Rider', 'Team', 'Pts'], rows: [['1', 'Aleix Espargaro', 'Honda HRC', '9']] }] }, savedA.motogp.teams).standings?.[0].rows[0][1]).toBe('Aleix Espargaro');
+  });
+
+  it('folds accents, case, dashes and the letters NFD keeps whole', () => {
+    expect(foldName('Toprak Razgatlıoğlu')).toBe(foldName('Toprak  Razgatlioglu'));
+    expect(foldName('Maciej Gładysz')).toBe(foldName('Maciej Gladysz'));
+    expect(foldName('Noah Strømsted')).toBe(foldName('Noah Stromsted'));
+    expect(foldName('Aruba.it Racing – Ducati')).toBe(foldName('aruba.it racing - ducati'));
+  });
+});
+
+describe("family A: a weekend's pages and their states (the label bridge; the operator's \"Greyed, as drawn\", 24 Nov)", () => {
+  it("pairs the timetable's names with the stored sessions", () => {
+    const { units, states } = unitsA('f2', 11);
+    expect(units.map(u => [u.page, u.label, u.kind])).toEqual([
+      ['Practice', 'Practice', 'practice'],
+      ['Qualifying', 'Qualifying', 'qualifying'],
+      ['Sprint Race', 'Sprint', 'race'],
+      ['Feature Race', 'Feature', 'race'],
+    ]);
+    expect(states).toEqual(['run', 'run', 'run', 'run']);
+    expect(unitsA('motogp', 17).units.map(u => u.label)).toEqual(['FP1', 'Practice', 'FP2', 'Q1', 'Q2', 'Sprint', 'Warm Up', 'Grand Prix']);
+  });
+
+  it("joins a qualifying's two groups on one page, the order they make by the series' rule (A3, default 5)", () => {
+    const monaco = unitsA('f2', 4).units.find(u => u.page === 'Qualifying');
+    expect(monaco?.entries.map(e => e.session)).toEqual(['Qualifying Group A', 'Qualifying Group B']);
+    expect(monaco?.groups.map(g => g.name)).toEqual(['Group A', 'Group B']);
+    // Câmara's Group A was faster (1:20.923 to Tsolov's 1:21.053): its drivers take the odd places (motorsportweek.com).
+    expect(monaco?.table?.rows.slice(0, 7).map(r => `${r[0]} ${r[1]} ${r[r.length - 1]}`)).toEqual([
+      '1 Rafael Câmara A',
+      '2 Nikola Tsolov B',
+      '3 Alexander Dunne A',
+      '4 Martinius Stenshorne B',
+      '5 Dino Beganovic A',
+      '6 Kush Maini B',
+      '7 Gabriele Minì A',
+    ]);
+    // Those a group did not place follow, unplaced: Bennett's best lap was deleted (Group A, NC), van Hoepen set none.
+    expect(monaco?.table?.rows.slice(-2).map(r => `${r[0]} ${r[1]}`)).toEqual(['NC John Bennett', 'NC Laurens van Hoepen']);
+    // Formula 3's Monaco, all 30 as Formula Scout lists the overall order.
+    const f3 = unitsA('f3', 2).units.find(u => u.page === 'Qualifying');
+    expect(f3?.table?.rows.map(r => r[1].split(' ').pop())).toEqual(
+      'Naël Badoer Slater Ugochukwu Rivera Taponen Giusti Pino Clerot Strømsted Xie Yamakoshi Gładysz Kato Nakamura Sharp Lacorte Bhirombhakdi Ho Benavides Deligny Le David Palo Wharton Garfias Colnaghi McLaughlin Shin Barrichello'.split(' '),
+    );
+    // DTM keeps the order its two groups made (motorsport.com's grid, which gives no time) beside each group.
+    const noris = unitsA('dtm', 4).units.find(u => u.page === 'Qualifying 1');
+    expect([noris?.table?.columns, noris?.groups.length, noris?.table?.rows[0][1]]).toEqual([['Pos', 'Driver', 'Team', 'Pts'], 2, 'Nicki Thiim']);
+  });
+
+  it('a session run, still to run, with no results, not stored, or called off', () => {
+    expect(unitsA('motogp', 18).states).toEqual(['run', 'run', 'run', 'run', 'run', 'run', 'x', 'x']);
+    expect(unitsA('motogp', 17).states[6]).toBe('none');
+    expect(unitsA('motogp', 21).states).toEqual(['run', 'run', 'run', 'run', 'run', 'run', 'run', 'up']);
+    expect(new Set(unitsA('motogp', 22).states)).toEqual(new Set(['up']));
+    // The saved document keeps round 1's races alone: its practice and qualifying are not stored.
+    expect(unitsA('motogp', 1).states).toEqual(['unstored', 'unstored', 'unstored', 'unstored', 'unstored', 'run', 'unstored', 'run']);
+    // Formula 2's Qatar, its times "TBC" in the stored timetable: no session on its weekend yet.
+    expect(unitsA('f2', 13).units).toEqual([]);
+  });
+
+  it('greys a session with no results or not stored on the bar and its card, with no page; a reason typed into rounds.json shows', () => {
+    const r17 = at(MOTO, W('motogp', 17));
+    expect(barA(r17)).toContain('Warm Up | Sun · no results');
+    expect(r17).toContain('<span class="is-off">Warm Up<small>Sun · no results</small></span>');
+    expect(r17).toContain('<p class="pd-sc-empty">No results are available for this session.</p><span class="pd-sc-go is-off">No page yet</span>');
+    expect(MOTO.has(`${W('motogp', 17)}warm-up/`)).toBe(false);
+    expect(barA(at(MOTO, W('motogp', 1)))).toContain('FP1 | Fri · not stored');
+    expect(MOTO.has(`${W('motogp', 1)}fp1/`)).toBe(false);
+    const line = [{ session: 'Warm Up', note: 'Rain stopped it before a lap was timed.', source: 'https://www.motogp.com/' }];
+    const moto = seriesA('motogp');
+    const typed = pagesA({ ...moto, rounds: moto.rounds?.map(r => (r.round === 17 ? { ...r, noResults: line } : r)) });
+    expect(at(typed, W('motogp', 17))).toContain('<p class="pd-sc-empty">Rain stopped it before a lap was timed: no results are available for this session.</p>');
+  });
+});
+
+describe("family A: a round's Overview after its races (O, W, X)", () => {
+  const madrid = at(F2, W('f2', 11));
+
+  it('O: the Final line names each race’s winner, the bar each session’s leader', () => {
+    expect(madrid).toContain('<span class="pd-wk-sum"><b>Dino Beganovic</b> won the Feature Race, and the Sprint went to Ritomo Miyata</span>');
+    expect(barA(madrid)).toEqual(['Overview | the weekend', 'Practice | Fri · TSO', 'Qualifying | Fri · BEG', 'Sprint Race | Sat · MIY', 'Feature Race | Sun · BEG']);
+  });
+
+  it('O: one table with tabs, Both races first with every scorer, then a tab a race with its top ten', () => {
+    expect(tabsA(madrid)).toEqual(['Both races', 'Sprint Race', 'Feature Race']);
+    const both = panelA(madrid, 'Both races');
+    expect(headA(both)).toEqual(['Pos', 'Driver', 'Team', 'Sprint', 'Feature', 'Total']);
+    expect(rowsA(both)).toBe(13);
+    expect(both).toContain('<b>BEG</b><span>Dino Beganovic</span></td><td class="tm">DAMS Lucas Oil</td><td class="n">–</td><td class="n">27</td><td class="n tot">27</td>');
+    // Equal totals by the earlier race's points, as drawn: Stenshorne (4 and 4) before Inthraphuvasak (8).
+    expect(both.indexOf('Martinius Stenshorne')).toBeLessThan(both.indexOf('Tasanapol Inthraphuvasak'));
+    const sprint = panelA(madrid, 'Sprint Race');
+    expect([rowsA(sprint), headA(sprint)]).toEqual([10, ['Pos', 'Driver', 'Team', 'Time', 'Pts']]);
+    expect(sprint).toContain(`<a class="pd-wk-link" href="${W('f2', 11)}sprint-race/">All 21 on the race's page</a>`);
+  });
+
+  it('O: the earlier sessions, the championship after the round, the format, the next round', () => {
+    expect(madrid).toContain('<h2>Earlier in the weekend</h2><p class="pd-wk-hint">Each session’s leading results, in the order they ran</p>');
+    expect(madrid).toContain('<h3>Championship after round 11</h3>');
+    expect(madrid).toContain('<b>Nikola Tsolov</b><small>Campos Racing</small></span><span class="g">Leader</span><b class="pt">177</b>');
+    expect(madrid).toContain('<dt>Format</dt><dd>Sprint and Feature</dd>');
+    expect(madrid).toContain('<small>Next round · 12</small><b>Azerbaijan Grand Prix</b>');
+  });
+
+  it('X: Baku, two qualifying sessions and three races', () => {
+    const baku = at(F2, W('f2', 12));
+    expect(baku).toContain('<em class="pd-wk-tag">Two qualifying sessions and two Feature Races</em>');
+    expect(baku).toContain('<b>Rafael Câmara</b> won Feature Race 2; Alexander Dunne Feature Race 1, Dino Beganovic the Sprint');
+    expect(barA(baku).map(x => x.split(' | ')[0])).toEqual(['Overview', 'Practice', 'Qualifying 1', 'Qualifying 2', 'Sprint Race', 'Feature Race 1', 'Feature Race 2']);
+    expect(tabsA(baku)).toEqual(['All three races', 'Sprint Race', 'Feature Race 1', 'Feature Race 2']);
+    expect(baku).toContain('<p class="pd-wk-hint">All three races together, or one race at a time</p>');
+    expect(headA(panelA(baku, 'All three races'))).toEqual(['Pos', 'Driver', 'Team', 'Sprint', 'FR1', 'FR2', 'Total']);
+    expect(rowsA(panelA(baku, 'All three races'))).toBe(14);
+    expect(baku).toContain('<dt>Format</dt><dd>Two qualifying sessions, three races</dd>');
+  });
+
+  it("W: MotoGP's, WorldSBK's and DTM's weekends, a column a race (DTM's qualifying too)", () => {
+    const r17 = at(MOTO, W('motogp', 17));
+    expect(tabsA(r17)).toEqual(['Both races', 'Sprint', 'Grand Prix']);
+    expect(headA(panelA(r17, 'Both races'))).toEqual(['Pos', 'Rider', 'Team', 'Sprint', 'GP', 'Total']);
+    const jerez = at(WSBK, W('wsbk', 12));
+    expect(tabsA(jerez)).toEqual(['All three races', 'Race 1', 'Superpole Race', 'Race 2']);
+    expect(headA(panelA(jerez, 'All three races'))).toEqual(['Pos', 'Rider', 'Team', 'R1', 'SPR', 'R2', 'Total']);
+    expect(jerez).toContain('<dt>Format</dt><dd>Race 1, Superpole Race and Race 2</dd>');
+    const hockenheim = at(DTM, W('dtm', 8));
+    expect(headA(panelA(hockenheim, 'Both races'))).toEqual(['Pos', 'Driver', 'Team', 'Q1', 'R1', 'Q2', 'R2', 'Total']);
+    expect(roundPoints(seriesA('dtm'), savedA.dtm.results.find(r => r.round === 8) as ResultRound).cols).toEqual(['Q1', 'R1', 'Q2', 'R2']);
+  });
+});
+
+describe("family A: MotoGP's round 18, as drawn (12 Nov)", () => {
+  const r18 = at(MOTO, W('motogp', 18));
+
+  it('the Final line gives the reason, the race is struck through, the Sprint is the round’s only result', () => {
+    expect(r18).toContain('<span class="pd-wk-sum">The Grand Prix was called off: poor visibility for the medical helicopter. <b>Marc Márquez</b> won the Sprint.</span>');
+    expect(r18).toContain('<span class="is-x">Race<small>Sun · called off</small></span>');
+    expect(barA(r18).slice(-3)).toEqual(['Sprint | Sat · MAR', 'Warm Up | Sun · called off', 'Race | Sun · called off']);
+    expect(r18).toContain("<h2>Results</h2><p class=\"pd-wk-hint\">The Sprint, the weekend's only race</p>");
+    expect(tabsA(r18)).toEqual([]);
+    expect(MOTO.has(`${W('motogp', 18)}race/`)).toBe(false);
+  });
+
+  it('the season tile, the Overview tile and the Results row name the Sprint’s winner and the race called off', () => {
+    expect(at(MOTO, '/series/motogp/2026/')).toContain('<small>Round 18 · 23–25 Oct</small><b>Australian Grand Prix</b><span><i class="pd-tc" style="--t:#CC0000"></i>Sprint: Márquez · Grand Prix called off</span>');
+    expect(at(MOTO, '/series/motogp/')).toContain('<small>R18</small><b>Australian Grand Prix</b><span class="pd-sr-win" style="--t:#CC0000"><b>MAR</b>Sprint</span>');
+    expect(at(MOTO, '/series/motogp/results/')).toContain('<b>Sprint: Marc Márquez</b><small>Ducati Lenovo Team · GP called off</small>');
+  });
+
+  it('the points left never count it', () => {
+    expect(multiRaceLeft(seriesA('motogp'))).toEqual({ points: 62, scales: ['one Sprint at 12', 'two Grands Prix at 25'] });
+  });
+});
+
+describe('family A: a weekend before and during it, as Formula 1’s (default 8)', () => {
+  it("MotoGP's round 21 between its Sprint and its Grand Prix", () => {
+    const r21 = at(MOTO, W('motogp', 21));
+    expect(r21).toContain('<h2>Done so far</h2>');
+    expect(r21).toContain('<h3>Sprint</h3>');
+    expect(r21).toContain('<h2>Still to come</h2>');
+    expect(r21).toContain(`<a class="pd-wk-row" href="${W('motogp', 21)}race/">`);
+    expect(r21).not.toContain('pd-wk-pill is-fin');
+    expect(barA(r21).at(-1)).toBe('Race | Sun 13:00 UTC · still to run');
+    expect(at(MOTO, `${W('motogp', 21)}race/`)).toContain('<p class="pd-wk-empty">Not run yet. Its results join this page when it ends.</p>');
+  });
+
+  it("MotoGP's round 22 before it starts: every session to come, dashed", () => {
+    const r22 = at(MOTO, W('motogp', 22));
+    expect(r22).toContain('<h2>The weekend</h2>');
+    expect(barA(r22).slice(1).every(x => x.endsWith('still to run'))).toBe(true);
+    // Two rounds off the latest raced, the table as it stands, as Formula 1's side says it.
+    expect(r22).toContain('<h3>Championship after round 20</h3>');
+  });
+});
+
+describe("family A: a session's own page (L)", () => {
+  it('every driver, time and points; a qualifying in groups, the order they make and each group', () => {
+    const feature = at(F2, `${W('f2', 11)}feature-race/`);
+    expect(feature).toContain('<h2>Classification</h2><p class="pd-wk-hint">All 21, as classified</p>');
+    expect(rowsA(feature)).toBe(21);
+    const monaco = at(F2, `${W('f2', 4)}qualifying/`);
+    expect([...monaco.matchAll(/<h3 class="pd-fa-part">([^<]+)/g)].map(m => m[1].trim())).toEqual(['The order the two groups make', 'Group A', 'Group B']);
+    expect(monaco).toContain('<h1>Qualifying</h1><p class="pd-ss-sub">Friday 5 June · Group A 15:10 · Group B 15:34 at the track, from');
+    expect(F2.has(`${W('f2', 4)}qualifying-group-a/`)).toBe(false);
+    expect([...at(DTM, `${W('dtm', 4)}qualifying-1/`).matchAll(/<h3 class="pd-fa-part">([^<]+)/g)].map(m => m[1].trim())).toEqual(['The order the two groups make', 'Group A', 'Group B']);
+  });
+});
+
+describe('family A: Standings, points left and the title box (All five; Name the champion)', () => {
+  it('points left by each series’ scale, every point counted', () => {
+    expect(multiRaceLeft(seriesA('f2'))).toEqual({ points: 78, scales: ['two Sprint Races at 10', 'two Feature Races at 25', 'two Feature poles at 2', 'four fastest laps at 1'] });
+    for (const slug of ['f3', 'wsbk', 'dtm'] as const) expect(multiRaceLeft(seriesA(slug)).points).toBe(0);
+    // A round with no timetable counts the series' standard weekend.
+    const f2 = seriesA('f2');
+    expect(multiRaceLeft({ ...f2, calendar: (f2.calendar ?? []).filter(e => e.round !== 14) }).points).toBe(78);
+  });
+
+  it("Formula 2: Who can still win it, as drawn on 12 Nov", () => {
+    const body = at(F2, '/series/f2/standings/');
+    expect(body).toContain('<p>78 points left: two Sprint Races at 10, two Feature Races at 25, two Feature poles at 2, four fastest laps at 1. A bar is how much of that a driver needs just to draw level.</p>');
+    expect([...body.matchAll(/<li(?: class="(?:ld|out)")? style="--t:[^"]+"><b>([^<]+)<\/b>/g)].map(m => m[1])).toEqual(['Câmara', 'Tsolov', 'Dunne', 'Minì', 'Beganovic', 'León', 'Stenshorne']);
+    expect(body).toContain('<p class="pd-st-sum">Six drivers are still in it on paper. Stenshorne is out by 22 points.</p>');
+    expect(body).toContain('<h3 class="pd-st-ch">Teams</h3>');
+    expect(body).not.toContain('Teammates');
+  });
+
+  it('Formula 3, WorldSBK and DTM: the season over, the champion named, where it was clinched (24 Nov)', () => {
+    expect(at(F3, '/series/f3/standings/')).toContain(
+      '<h3>The 2026 title</h3><p class="pd-fa-champ"><b>Ugo Ugochukwu</b> is the 2026 champion, 14 points clear of Freddie Slater. Clinched in Feature Race 2 at Madrid on 13 September, the last race of the season.</p><p>Teams&#39; champion: Campos Racing.</p><a class="pd-fa-how" href="/series/f3/champions/">How it was won →</a>',
+    );
+    expect(at(WSBK, '/series/wsbk/standings/')).toContain('<b>Nicolò Bulega</b> is the 2026 champion, 163 points clear of Iker Lecuona. Clinched in Race 2 at Cremona on 27 September with six races to spare.</p><p>Manufacturers&#39; champion: Ducati.</p>');
+    expect(at(DTM, '/series/dtm/standings/')).toContain('<b>Thomas Preining</b> is the 2026 champion, 12 points clear of Maro Engel. Clinched in Race 2 at the Hockenheimring on 11 October, the last race of the season.');
+    // DTM's teams beside its manufacturers, each under its own name, the manufacturers without wins.
+    const dtm = at(DTM, '/series/dtm/standings/');
+    expect([...dtm.matchAll(/<h3 class="pd-st-ch">([^<]+)<\/h3>/g)].map(m => m[1])).toEqual(['Teams', 'Manufacturers']);
+    expect(dtm).toContain('<button type="button" data-pd-st="constructors">Teams and manufacturers</button>');
+  });
+
+  it("MotoGP: the riders' words, the head as of the Sprint, wins its Grands Prix", () => {
+    const body = at(MOTO, '/series/motogp/standings/');
+    expect(body).toContain(`<h2 class="pd-st-h">Standings after the round 21 Sprint</h2><p>Portuguese Grand Prix Sprint, 21 November<span class="pd-st-next"> · next update after Sunday's Portuguese Grand Prix</span></p>`);
+    expect(body).toContain('<p class="pd-st-sum">Three riders are still in it on paper. Acosta is out by 54 points.</p>');
+    expect(multiRaceWins(seriesA('motogp')).driver('Marc Márquez')).toBe(7);
+  });
+});
+
+describe('family A: Champions, in each series’ words (default 13)', () => {
+  const crowned = (slug: SlugA): Map<string, Page> =>
+    pagesA(seriesA(slug, { champions: { seasons: JSON.parse(readFileSync(path.join(process.cwd(), 'content', 'series', slug, 'champions.json'), 'utf8')) as Champion[], notes: null, records: null, historic: {}, names: null } }));
+
+  it("Formula 2's footnote and its door to Formula 1's champions", () => {
+    const body = at(crowned('f2'), '/series/f2/champions/');
+    expect(body).toContain("Every drivers' champion since 2005 and every teams' champion since 2005");
+    expect(body).toContain('<p class="pd-ch-foot">From 2005 to 2016 the series was GP2; the FIA renamed it the FIA Formula 2 Championship in 2017. ×2, ×3: the driver\'s second, third title.');
+    expect(body).toContain('<a class="pd-ch-door" href="/series/f1/champions/"><small>/series/f1/champions/</small><b>Formula 1 champions</b><span>Since 1950.</span><em>Open →</em></a>');
+  });
+
+  it("MotoGP's riders and manufacturers, WorldSBK's door, DTM's to GT World's", () => {
+    const body = at(crowned('motogp'), '/series/motogp/champions/');
+    expect(body).toContain("Every riders' champion since 1949 and every constructors' champion since 1949");
+    expect(body).toContain('<h2>Most successful manufacturers</h2>');
+    expect(body).toContain('Until 2001 the top class raced 500cc bikes; in 2002 990cc bikes replaced them and the class was renamed MotoGP. ×2, ×3: the rider\'s second, third title.');
+    expect(at(WSBK, '/series/wsbk/champions/')).toContain('<b>MotoGP champions</b><span>Since 1949, including the 500cc years.</span><em>Open →</em>');
+    expect(at(WSBK, '/series/wsbk/champions/')).toContain('<p class="pd-ch-foot">×2, ×3: the rider\'s second, third title.');
+    expect(at(DTM, '/series/dtm/champions/')).toContain('<a class="pd-ch-door" href="/series/gt-world/champions/"><small>/series/gt-world/champions/</small><b>GT World Challenge champions</b><span>Since 2014.</span><em>Open →</em></a>');
+  });
+});
+
+describe('family A: the kit as the registry holds it', () => {
+  it('names its races where the shared pages name them, and folds the weekend’s points under a Results row', () => {
+    const f2 = seriesA('f2');
+    expect([raceName(f2, 'Feature 1'), raceName(f2, 'Sprint'), raceName(f2, 'Feature 2', true)]).toEqual(['Feature Race 1', 'Sprint', 'FR2']);
+    expect([raceName(seriesA('motogp'), 'Race', true), raceName(seriesA('motogp'), 'Grand Prix')]).toEqual(['GP', 'Grand Prix']);
+    expect(at(F2, '/series/f2/results/')).toContain('<b>Dino Beganovic</b><small>DAMS Lucas Oil · Sprint: Miyata</small>');
+    expect(at(WSBK, '/series/wsbk/results/')).toContain('<b>Nicolò Bulega</b><small>Aruba.it Racing - Ducati · Race 1: Bulega · Superpole Race: Bulega</small>');
+    expect(at(F2, '/series/f2/results/')).toContain('<th class="n">Sprint</th><th class="n">Feature</th><th class="n tot">Total</th>');
+  });
+
+  it('builds every page a series lists, a session greyed without one', () => {
+    // From the saved document, whose rounds but the ones read whole keep their races alone: their practice and
+    // qualifying are greyed, with no page.
+    expect([F2.size, F3.size, MOTO.size, WSBK.size, DTM.size]).toEqual([51, 40, 92, 63, 37]);
+    expect([...F2.keys()].slice(0, 5)).toEqual(['/series/f2/', '/series/f2/results/', '/series/f2/standings/', '/series/f2/champions/', '/series/f2/2026/']);
+    expect(groupsGrid({ title: 'A', columns: ['Pos', 'Driver', 'Team', 'Time'], rows: [['1', 'A1', 'T', '1:21.000'], ['2', 'A2', 'T', '1:21.500']] }, { title: 'B', columns: ['Pos', 'Driver', 'Team', 'Time'], rows: [['1', 'B1', 'T', '1:20.900'], ['NC', 'B2', 'T', '']] }).rows).toEqual([
+      ['1', 'B1', 'T', '1:20.900', 'B'],
+      ['2', 'A1', 'T', '1:21.000', 'A'],
+      ['3', 'A2', 'T', '1:21.500', 'A'],
+      ['NC', 'B2', 'T', '', 'B'],
+    ]);
   });
 });

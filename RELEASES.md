@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.320 — 2026-11-24
+
+Formula 2, Formula 3, MotoGP, WorldSBK and DTM now have their own series pages, as Formula 1 has: an overview of the season, every round's results, the standings with who can still win the title, and the roll of champions. Each weekend has a page of its own, with every race of the weekend in one table (the points from all of them first, then a tab for each race), and each session has its page. MotoGP's Australian round shows its Sprint as the weekend's only race, since the Grand Prix was called off. Where a season is over, the standings name the champion and where the title was won.
+
 ## 1.0.319 — 2026-11-25
 
 Behind the scenes, ready for WorldSBK's pages: its race and lap times are now read as the series writes them. Every race's winning time had read far too long (Jerez's first race 55:09.762, where the official time is 33'09.762), a gap that crossed a minute forty seconds too long, and the fastest lap of each practice, Superpole and warm-up forty seconds too slow. Each of the season's 36 races now has the winning time and the gaps of its official classification, and the lap times of practice, Superpole and warm-up are read as the series writes them too. A rider who finished laps down reads "+4 Laps" instead of a gap, and at Magny-Cours, where the second race was classified as the timing last caught each rider, those riders read "Classified" instead of a gap they never had.

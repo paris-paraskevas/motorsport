@@ -2,6 +2,7 @@
   "teams": [
     {
       "name": "Winward Racing",
+      "also": ["Mercedes-AMG Team Winward"],
       "color": "#D2232A",
       "drivers": [
         { "name": "Maro Engel", "number": 80 },

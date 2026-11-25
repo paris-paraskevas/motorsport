@@ -15,8 +15,8 @@
 import { stepFor, symbolLabel, type ForecastStep } from '@/lib/met-norway';
 import { isMap, trackDay as trackDate, trackTimeToUtc, type DriverStints, type SessionExtras } from '@/lib/openf1/weekend';
 import { slugify } from '@/lib/slug';
-import { built, escapeHtml, isRaceLaps, seasonPath, seriesPath, sessionSlug, weekendPath, type CalendarEntry, type CalendarRound, type Page, type ResultRound, type SeriesData, type Table } from './render';
-import { band, codeOf, col, colourOf, dates, htmlBlock, numberOf, outline, pointsTable, raceWins, sameDriver, seatOf, sprintWeekend, tabs, teamLabel, tick, weekendPoints, winnerLine, wk } from './series';
+import { built, escapeHtml, isRaceLaps, seasonPath, seriesPath, sessionKind, sessionSlug, weekendPath, type CalendarEntry, type CalendarRound, type Page, type ResultRound, type SeriesData, type Table } from './render';
+import { band, codeOf, col, colourOf, dates, htmlBlock, numberOf, outline, pointsTable, raceWins, sameDriver, scores, seatOf, sprintWeekend, tabs, teamLabel, tick, weekendPoints, winnerLine, wk, type RoundWin } from './series';
 
 /** The rows a session's card leads with (the operator, 22 Oct): three in practice, ten in qualifying and sprint
  *  qualifying, the eight who score in a sprint; the race's ten lead its own section. */
@@ -790,8 +790,9 @@ export interface Standing {
 }
 
 /** The drivers' championship after a round: the official table after the latest round raced (it carries any
- *  penalty), else the points summed from the stored races and sprints, drivers level on points split on their Grand
- *  Prix finishes (countback; sprints not counted). */
+ *  penalty), else the points summed from the stored races and sprints, and any session kept beside them that pays
+ *  (DTM's qualifying, family A), drivers level on points split on their Grand Prix finishes (countback; sprints not
+ *  counted). */
 export function championship(d: SeriesData, after: number): Standing[] {
   const raced = [...raceWins(d).keys()];
   const official = d.standings?.[0];
@@ -806,7 +807,7 @@ export function championship(d: SeriesData, after: number): Standing[] {
   const places = new Map<string, number[]>();
   for (const r of d.results ?? []) {
     if (r.round === null || r.round > after) continue;
-    for (const s of r.sessions) {
+    for (const s of [...r.sessions, ...(r.others ?? []).filter(scores)]) {
       const t = s.tables[0];
       if (!t) continue;
       const c = cols(t);
@@ -1055,6 +1056,9 @@ export interface SeasonOptions {
   /** A called-off round's line on its tile, as text: its reason by default (WEC's "First set for 26–28 March; called
    *  off on 28 July", C5). */
   offLine?: (c: NonNullable<SeriesData['cancelled']>[number]) => string;
+  /** A race's name (FamilyKit.raceName), for the tile of a round whose race was called off: "Sprint: Márquez · Grand
+   *  Prix called off" (family A); without it, the winner as on any tile. */
+  raceName?: (label: string) => string;
 }
 
 /** The season: a tile a weekend in date order, each opening its weekend page; a moved round also where it was first
@@ -1065,11 +1069,17 @@ export function seasonPage(d: SeriesData, season: number, o: SeasonOptions = {})
   const rounds = d.rounds ?? [];
   const current = rounds.find(r => !wins.has(r.round));
   const tiles: { at: string; html: string }[] = [];
+  const name = o.raceName;
+  const line = (w: RoundWin, r: CalendarRound): string => {
+    if (!w.only || !name) return winnerLine(w);
+    const off = r.calledOff?.find(c => sessionKind(c.session) === 'race');
+    return `${name(w.only)}: ${w.winner.trim().split(/\s+/).pop() ?? ''}${off ? ` · ${name(off.session)} called off` : ''}`;
+  };
   for (const r of rounds) {
     const w = wins.get(r.round);
     const page = weekendPath(d.slug, season, r.round);
     const state = w
-      ? `<span>${tick(d, w.team)}${esc(winnerLine(w))}</span>`
+      ? `<span>${tick(d, w.team)}${esc(line(w, r))}</span>`
       : r === current
         ? `<span class="pd-sn-next">${wk(r, 'Next', 'This weekend')}</span>`
         : '<span></span>';

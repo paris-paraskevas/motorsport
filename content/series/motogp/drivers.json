@@ -18,6 +18,7 @@
     },
     {
       "name": "SuperFile Trackhouse MotoGP Team",
+      "also": ["Trackhouse MotoGP Team"],
       "color": "#24449C",
       "drivers": [
         { "name": "Raúl Fernández", "number": 25 },
@@ -58,6 +59,7 @@
     },
     {
       "name": "LCR Honda",
+      "also": ["Castrol Honda LCR", "Pro Honda LCR"],
       "color": "#00873E",
       "drivers": [
         { "name": "Johann Zarco", "number": 5 },
@@ -74,6 +76,7 @@
     },
     {
       "name": "Monster Energy Yamaha MotoGP",
+      "also": ["Monster Energy Yamaha MotoGP Team"],
       "color": "#2140C9",
       "drivers": [
         { "name": "Fabio Quartararo", "number": 20 },

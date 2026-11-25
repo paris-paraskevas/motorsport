@@ -12,5 +12,14 @@
   "seasonPage": "2026_FIA_Formula_2_Championship",
   "officialStandingsUrl": "https://www.fiaformula2.com/en/standings/2026/drivers",
   "officialSite": "https://www.fiaformula2.com/",
-  "watch": { "service": "F1 TV", "url": "https://f1tv.formula1.com/" }
+  "watch": { "service": "F1 TV", "url": "https://f1tv.formula1.com/" },
+  "site": {
+    "family": "A",
+    "pages": ["results", "standings", "champions", "weekends"],
+    "champions": {
+      "footnote": "From 2005 to 2016 the series was GP2; the FIA renamed it the FIA Formula 2 Championship in 2017.",
+      "sources": ["https://en.wikipedia.org/wiki/FIA_Formula_2_Championship"],
+      "door": { "href": "/series/f1/champions/", "title": "Formula 1 champions", "line": "Since 1950." }
+    }
+  }
 }

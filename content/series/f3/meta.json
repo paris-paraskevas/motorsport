@@ -12,5 +12,14 @@
   "seasonPage": "2026_FIA_Formula_3_Championship",
   "officialStandingsUrl": "https://www.fiaformula3.com/en/standings/2026/drivers",
   "officialSite": "https://www.fiaformula3.com/",
-  "watch": { "service": "F1 TV", "url": "https://f1tv.formula1.com/" }
+  "watch": { "service": "F1 TV", "url": "https://f1tv.formula1.com/" },
+  "site": {
+    "family": "A",
+    "pages": ["results", "standings", "champions", "weekends"],
+    "champions": {
+      "footnote": "From 2010 to 2018 the series was GP3; it merged with the FIA Formula 3 European Championship to become the FIA Formula 3 Championship in 2019.",
+      "sources": ["https://en.wikipedia.org/wiki/FIA_Formula_3_Championship"],
+      "door": { "href": "/series/f2/champions/", "title": "Formula 2 champions", "line": "Since 2005, including the GP2 years." }
+    }
+  }
 }

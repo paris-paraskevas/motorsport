@@ -11,5 +11,14 @@
   "seasonPage": "2026_Deutsche_Tourenwagen_Masters",
   "officialStandingsUrl": "https://www.dtm.com/en/live/standings",
   "officialSite": "https://www.dtm.com/",
-  "watch": { "service": "YouTube", "url": "https://www.youtube.com/@DTM/streams" }
+  "watch": { "service": "YouTube", "url": "https://www.youtube.com/@DTM/streams" },
+  "site": {
+    "family": "A",
+    "pages": ["results", "standings", "champions", "weekends"],
+    "champions": {
+      "footnote": "The DTM has had two lives: the Deutsche Tourenwagen Meisterschaft from 1984 to 1996, its last season run as the International Touring Car Championship, and the Deutsche Tourenwagen Masters since 2000; there was no championship from 1997 to 1999.",
+      "sources": ["https://en.wikipedia.org/wiki/Deutsche_Tourenwagen_Meisterschaft"],
+      "door": { "href": "/series/gt-world/champions/", "title": "GT World Challenge champions", "line": "Since 2014." }
+    }
+  }
 }

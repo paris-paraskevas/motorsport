@@ -33,6 +33,7 @@
     },
     {
       "name": "Team Pata GoEleven",
+      "also": ["Team Goeleven"],
       "color": "#FFD200",
       "drivers": [
         { "name": "Lorenzo Baldassarri", "number": 34 }
@@ -79,6 +80,7 @@
     },
     {
       "name": "Yamaha Motoxracing WorldSBK Team",
+      "also": ["Motoxracing WorldSBK Team"],
       "color": "#2E9BD6",
       "drivers": [
         { "name": "Bahattin Sofuoğlu", "number": 54 },
@@ -94,6 +96,7 @@
     },
     {
       "name": "MGM Racing Performance",
+      "also": ["MGM Optical Express Racing"],
       "color": "#3C3C3B",
       "drivers": [
         { "name": "Tarran Mackenzie", "number": 95 }
@@ -101,9 +104,10 @@
     },
     {
       "name": "Superbike Advocates Racing",
+      "also": ["Superbike Advocates"],
       "color": "#13294B",
       "drivers": [
-        { "name": "Tommy Bridewell", "number": 46 }
+        { "name": "Tommy Bridewell", "number": 46, "also": ["Thomas Bridewell"] }
       ]
     }
   ]
