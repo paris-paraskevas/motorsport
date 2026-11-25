@@ -34,6 +34,10 @@ export interface ResultSession {
    *  round's list again only while the round is being run, and a restarted race keeps its result on a run its API
    *  does not answer. */
   parts?: number;
+  /** WorldSBK's races (family A, 1.0.319): the API session the table was read from by family A itself, its times read
+   *  as the digits they are ("003"; a restarted race's restart, "101"). A stored race without it holds the old
+   *  fetcher's table, which reads them as milliseconds, and its round is read again. */
+  from?: string;
 }
 
 export interface ResultRound {

@@ -25,6 +25,7 @@ import {
   timedTable,
   wsbkCarried,
   wsbkDue,
+  wsbkMs,
   wsbkPoints,
   wsbkRaceTable,
   wsbkScored,
@@ -472,18 +473,81 @@ describe("WorldSBK's race points (O33)", () => {
     expect(wsbkPoints(15, 'Retired', false)).toBe(0);
   });
 
-  it("builds a restarted race's table from its results answer, as the stored tables write it", () => {
-    const row = (id: string, position: number, status: string, time: number | null) => ({ type: 'results', attributes: { position, status, time }, relationships: { rider: { data: { id } }, team: { data: { id: `t${id}` } } } });
-    const names = ['Bulega', 'Lecuona', 'Lowes', 'Montella', 'Lowes', 'Baldassarri', 'Bassani', 'Surra', 'Bridewell'];
-    const env = {
-      data: [...names.slice(0, 8).map((_, i) => row(`r${i}`, i + 1, 'Classified', 1_000_000 + i * 1500)), row('r8', 15, 'Retired', null)],
-      included: names.flatMap((n, i) => [{ type: 'rider', id: `r${i}`, attributes: { name: `R${i}`, surname: n } }, { type: 'team', id: `tr${i}`, attributes: { name: `Team ${i}` } }]),
-    };
-    const t = wsbkRaceTable('Race 1', env, false);
+  // WorldSBK's API answers of 24 Nov 2026 (api.wsbk.pulselive.com/wsbk-results/v1/seasons/2026/categories/SBK/rounds/
+  // <round>/sessions/<session>/results), every row with its position, rider, time, status and laps as answered, the
+  // teams left out. The official classifications: resources.worldsbk.com/files/results/2026/<round>/SBK/<session>/CLA/Results.pdf.
+  type Saved = [position: number, rider: string, time: number, status: string, laps: number];
+  const answer = (rows: Saved[]) => ({
+    data: rows.map(([position, , time, status, laps], i) => ({ type: 'results', attributes: { position, time, status, laps }, relationships: { rider: { data: { id: `r${i}` } }, team: { data: { id: 't' } } } })),
+    included: [...rows.map(([, rider], i) => ({ type: 'rider', id: `r${i}`, attributes: { name: rider.split(' ')[0], surname: rider.split(' ').slice(1).join(' ') } })), { type: 'team', id: 't', attributes: { name: 'Team' } }],
+  });
+  // JER, session 003.
+  const JEREZ_RACE_2: Saved[] = [
+    [1, 'Nicolo Bulega', 3256372, 'Classified', 20], [2, 'Iker Lecuona', 3301068, 'Classified', 20], [3, 'Sam Lowes', 3309721, 'Classified', 20], [4, 'Alvaro Bautista', 3311300, 'Classified', 20],
+    [5, 'Yari Montella', 3313564, 'Classified', 20], [6, 'Lorenzo Baldassarri', 3314492, 'Classified', 20], [7, 'Alex Lowes', 3318968, 'Classified', 20], [8, 'Axel Bassani', 3322329, 'Classified', 20],
+    [9, 'Alberto Surra', 3323514, 'Classified', 20], [10, 'Miguel Oliveira', 3324374, 'Classified', 20], [11, 'Thomas Bridewell', 3325423, 'Classified', 20], [12, 'Xavi Vierge', 3326465, 'Classified', 20],
+    [13, 'Garrett Gerloff', 3329111, 'Classified', 20], [14, 'Somkiat Chantra', 3331471, 'Classified', 20], [15, 'Jake Dixon', 3332378, 'Classified', 20], [16, 'Andrea Locatelli', 3333996, 'Classified', 20],
+    [17, 'Stefano Manzi', 3335125, 'Classified', 20], [18, 'Loris Baz', 3337039, 'Classified', 20], [19, 'Remy Gardner', 3337217, 'Classified', 20], [20, 'Danilo Petrucci', 3344197, 'Classified', 20],
+    [21, 'Twan Smits', 3347973, 'Classified', 20], [22, 'Mattia Rato', 3413411, 'Classified', 20],
+  ];
+  // GBR (Donington Park), session 003.
+  const DONINGTON_RACE_2: Saved[] = [
+    [1, 'Nicolo Bulega', 3256440, 'Classified', 23], [2, 'Iker Lecuona', 3300601, 'Classified', 23], [3, 'Yari Montella', 3303290, 'Classified', 23], [4, 'Axel Bassani', 3311786, 'Classified', 23],
+    [5, 'Alex Lowes', 3312022, 'Classified', 23], [6, 'Garrett Gerloff', 3313096, 'Classified', 23], [7, 'Sam Lowes', 3318878, 'Classified', 23], [8, 'Lorenzo Baldassarri', 3321188, 'Classified', 23],
+    [9, 'Xavi Vierge', 3321733, 'Classified', 23], [10, 'Alvaro Bautista', 3323067, 'Classified', 23], [11, 'Andrea Locatelli', 3324895, 'Classified', 23], [12, 'Miguel Oliveira', 3325868, 'Classified', 23],
+    [13, 'Remy Gardner', 3328049, 'Classified', 23], [14, 'Jonathan Rea', 3328618, 'Classified', 23], [15, 'Danilo Petrucci', 3336168, 'Classified', 23], [16, 'Stefano Manzi', 3338728, 'Classified', 23],
+    [17, 'Jake Dixon', 3340260, 'Classified', 23], [18, 'Mattia Rato', 3346684, 'Classified', 23], [19, 'Bahattin Sofuoglu', 3347086, 'Classified', 19], [20, 'Somkiat Chantra', 2834337, 'Retired', 19],
+    [21, 'Thomas Bridewell', 1006109, 'Retired', 7],
+  ];
+  // FRA (Magny-Cours), session 003.
+  const MAGNY_COURS_RACE_2: Saved[] = [
+    [1, 'Nicolo Bulega', 3131396, 'Classified', 19], [2, 'Iker Lecuona', 3136854, 'Classified', 19], [3, 'Yari Montella', 3130075, 'Classified', 19], [4, 'Lorenzo Baldassarri', 3134558, 'Classified', 19],
+    [5, 'Alberto Surra', 3137413, 'Classified', 19], [6, 'Alvaro Bautista', 3131446, 'Classified', 19], [7, 'Garrett Gerloff', 3132784, 'Classified', 19], [8, 'Xavi Vierge', 3133581, 'Classified', 19],
+    [9, 'Axel Bassani', 3134185, 'Classified', 19], [10, 'Remy Gardner', 3135364, 'Classified', 19], [11, 'Sam Lowes', 3136463, 'Classified', 19], [12, 'Danilo Petrucci', 3130827, 'Classified', 19],
+    [13, 'Alex Lowes', 3135137, 'Classified', 19], [14, 'Somkiat Chantra', 3135294, 'Classified', 19], [15, 'Miguel Oliveira', 3136556, 'Classified', 19], [16, 'Thomas Bridewell', 3055979, 'Retired', 19],
+    [17, 'Stefano Manzi', 2834624, 'Retired', 17], [18, 'Jake Dixon', 1722014, 'Retired', 10], [19, 'Mattia Rato', 756727, 'Retired', 4], [20, 'Andrea Locatelli', 405933, 'Retired', 2],
+  ];
+  // FRA, session 101: Race 1's restart, after "001", the nine laps before the red flag.
+  const MAGNY_COURS_RESTART: Saved[] = [
+    [1, 'Nicolo Bulega', 1906594, 'Classified', 12], [2, 'Iker Lecuona', 1909712, 'Classified', 12], [3, 'Sam Lowes', 1912887, 'Classified', 12], [4, 'Yari Montella', 1915380, 'Classified', 12],
+    [5, 'Alex Lowes', 1916027, 'Classified', 12], [6, 'Lorenzo Baldassarri', 1916644, 'Classified', 12], [7, 'Axel Bassani', 1919189, 'Classified', 12], [8, 'Alberto Surra', 1920437, 'Classified', 12],
+    [9, 'Garrett Gerloff', 1921827, 'Classified', 12], [10, 'Xavi Vierge', 1922889, 'Classified', 12], [11, 'Jake Dixon', 1923332, 'Classified', 12], [12, 'Andrea Locatelli', 1923919, 'Classified', 12],
+    [13, 'Danilo Petrucci', 1930625, 'Classified', 12], [14, 'Alvaro Bautista', 2016056, 'Classified', 12], [15, 'Somkiat Chantra', 0, 'Retired', 0], [16, 'Thomas Bridewell', 0, 'Retired', 0],
+    [17, 'Stefano Manzi', 0, 'Retired', 0], [18, 'Mattia Rato', 0, 'Retired', 0], [19, 'Miguel Oliveira', 0, 'Retired', 0], [20, 'Remy Gardner', 0, 'Retired', 0],
+  ];
+  const times = (t: Table | null) => t?.rows.map(row => row[3]);
+
+  it("reads the API's times as the digits they are: 3309762 is 33'09.762, 136643 a lap of 1'36.643", () => {
+    expect(wsbkMs(3309762)).toBe(1_989_762);
+    expect(wsbkMs(136643)).toBe(96_643);
+    for (const none of [0, -1, 3360000, 1906594.5, '3309762', null]) expect(wsbkMs(none)).toBeNull();
+  });
+
+  it("draws Jerez's second race as its official classification: 32'56.372, then gaps across a minute", () => {
+    const t = wsbkRaceTable('Race 2', answer(JEREZ_RACE_2), false);
     expect(t?.columns).toEqual(['Pos', 'Rider', 'Team', 'Time', 'Pts']);
-    expect(t?.rows[0]).toEqual(['1', 'R0 Bulega', 'Team 0', '16:40.000', '25']);
-    expect(t?.rows[1]).toEqual(['2', 'R1 Lecuona', 'Team 1', '+1.500s', '20']);
-    expect(t?.rows[8]).toEqual(['15', 'R8 Bridewell', 'Team 8', 'Retired', '0']);
+    expect(t?.rows.slice(0, 3)).toEqual([
+      ['1', 'Nicolo Bulega', 'Team', '32:56.372', '25'],
+      ['2', 'Iker Lecuona', 'Team', '+4.696s', '20'],
+      ['3', 'Sam Lowes', 'Team', '+13.349s', '16'],
+    ]);
+    expect(t?.rows[21]).toEqual(['22', 'Mattia Rato', 'Team', '+1:17.039', '0']);
+  });
+
+  it('reads a lapped rider his laps, and a rider timed at an intermediate his status: neither has a gap at the line', () => {
+    const donington = wsbkRaceTable('Race 2', answer(DONINGTON_RACE_2), false);
+    expect(times(donington)?.slice(16)).toEqual(['+43.820s', '+50.244s', '+4 Laps', 'Retired', 'Retired']);
+    // Magny-Cours's official classification: P3 to P14 "1 Sector" to "3 Sectors" behind.
+    const magnyCours = times(wsbkRaceTable('Race 2', answer(MAGNY_COURS_RACE_2), false));
+    expect(magnyCours?.slice(0, 2)).toEqual(['31:31.396', '+5.458s']);
+    expect(magnyCours?.slice(2)).toEqual([...Array<string>(13).fill('Classified'), ...Array<string>(5).fill('Retired')]);
+  });
+
+  it("draws Magny-Cours's restarted first race from the restart: 19'06.594, a gap over a minute, retirements with no time", () => {
+    const t = wsbkRaceTable('Race 1', answer(MAGNY_COURS_RESTART), false);
+    expect(times(t)?.slice(0, 3)).toEqual(['19:06.594', '+3.118s', '+6.293s']);
+    expect(t?.rows[13]).toEqual(['14', 'Alvaro Bautista', 'Team', '+1:09.462', '2']);
+    expect(t?.rows[14]).toEqual(['15', 'Somkiat Chantra', 'Team', 'Retired', '0']);
   });
 
   const table = (title: string, rows: string[][]): Table => ({ title, columns: ['Pos', 'Rider', 'Team', 'Time', 'Pts'], rows });
@@ -504,12 +568,25 @@ describe("WorldSBK's race points (O33)", () => {
     expect(wsbkCarried([magnyCours(nineLaps)], null, 2026)[0].sessions[0]).toEqual({ label: 'Race 1', tables: [nineLaps] });
   });
 
-  it("reads a round's session list while the round is run, until its races are known, and for a restarted race", () => {
-    const known = (round: number, date: string, parts: number): ResultRound => ({ round, name: `Round ${round}`, date, sessions: [{ label: 'Race 1', tables: [], parts }, { label: 'Race 2', tables: [], parts: 1 }] });
-    const rounds = [known(8, '2026-08-02', 1), known(9, '2026-09-06', 2), { ...known(10, '2026-09-27', 1), sessions: [{ label: 'Race 1', tables: [] }] }, known(12, '2026-10-18', 1)];
+  it("keeps the table a run read from a race's own result, over the old fetcher's", () => {
+    const read = table('Superpole Race', [['1', 'Nicolo Bulega', 'Aruba.it Racing - Ducati', '15:52.648', '12']]);
+    const stored: ResultRound = { ...magnyCours(restart), sessions: [{ label: 'Race 1', tables: [restart], parts: 2, from: '101' }, { label: 'Superpole Race', tables: [read], parts: 1, from: '002' }] };
+    expect(wsbkCarried([magnyCours(nineLaps)], [stored], 2026)[0].sessions).toEqual(stored.sessions);
+  });
+
+  it("reads a round's session list while the round is run, until its races are known and read, and for a restarted race", () => {
+    const known = (round: number, date: string, parts: number): ResultRound => ({
+      round,
+      name: `Round ${round}`,
+      date,
+      sessions: [{ label: 'Race 1', tables: [], parts, from: parts > 1 ? '101' : '001' }, { label: 'Race 2', tables: [], parts: 1, from: '003' }],
+    });
+    // Round 11 as stored before 1.0.319: its races known to be one part each, their tables the old fetcher's.
+    const unread: ResultRound = { ...known(11, '2026-10-11', 1), sessions: [{ label: 'Race 1', tables: [], parts: 1 }, { label: 'Race 2', tables: [], parts: 1 }] };
+    const rounds = [known(8, '2026-08-02', 1), known(9, '2026-09-06', 2), { ...known(10, '2026-09-27', 1), sessions: [{ label: 'Race 1', tables: [] }] }, unread, known(12, '2026-10-18', 1)];
     const endOf = (round: number | null) => rounds.find(r => r.round === round)?.date;
-    expect(wsbkDue(rounds, endOf, new Date('2026-11-17T08:00:00Z')).map(r => r.round)).toEqual([10, 9]);
-    expect(wsbkDue(rounds, endOf, new Date('2026-10-19T08:00:00Z')).map(r => r.round)).toEqual([12, 10, 9]);
+    expect(wsbkDue(rounds, endOf, new Date('2026-11-17T08:00:00Z')).map(r => r.round)).toEqual([11, 10, 9]);
+    expect(wsbkDue(rounds, endOf, new Date('2026-10-19T08:00:00Z')).map(r => r.round)).toEqual([12, 11, 10, 9]);
   });
 
   it('pays a retirement nothing in the stored tables', () => {

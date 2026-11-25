@@ -378,25 +378,28 @@ export const WSBK_RACES: readonly (readonly [short: string, label: string, super
 ];
 
 /** This run's WorldSBK rounds with what earlier runs learned of each race: how many sessions its API holds for it
- *  (ResultSession.parts), and for a restarted race the restart's own result, which the fetcher never reads. So a
- *  run its API does not answer keeps a restarted race as it was stored. Only the season's own stored rounds count. */
+ *  (ResultSession.parts), and the table read from its own result (ResultSession.from; for a restarted race the
+ *  restart's), which the old fetcher's never replaces: it reads the API's times as milliseconds. So a run its API does
+ *  not answer keeps a race as it was stored. Only the season's own stored rounds count. */
 export function wsbkCarried(fresh: readonly ResultRound[], stored: readonly ResultRound[] | null, season: number): ResultRound[] {
   const own = (stored ?? []).filter(r => r.date?.slice(0, 4) === String(season));
   return fresh.map(r => ({
     ...r,
     sessions: r.sessions.map(s => {
       const was = own.find(x => x.round === r.round)?.sessions.find(x => x.label === s.label);
-      return was?.parts === undefined ? s : was.parts > 1 ? { ...s, tables: was.tables, parts: was.parts } : { ...s, parts: was.parts };
+      if (was?.parts === undefined) return s;
+      return was.from !== undefined || was.parts > 1 ? { ...s, tables: was.tables, parts: was.parts, ...(was.from !== undefined ? { from: was.from } : {}) } : { ...s, parts: was.parts };
     }),
   }));
 }
 
 /** The rounds whose session list a run reads, the newest first: a round with a race not yet known to be one part or
- *  two, a round still being run (a restart is listed after its race's first part), and a round with a restarted
- *  race, whose result is read again each run. A finished round of races run once is never asked about again. */
+ *  two or not yet read from its own result, a round still being run (a restart is listed after its race's first
+ *  part), and a round with a restarted race, whose result is read again each run. A finished round of races run once
+ *  and read is never asked about again. */
 export function wsbkDue(rounds: readonly ResultRound[], endOf: (round: number | null) => string | null | undefined, now: Date): ResultRound[] {
   const race = new Set(WSBK_RACES.map(([, label]) => label));
-  return rounds.filter(r => r.round !== null && r.sessions.some(s => race.has(s.label) && (s.parts === undefined || s.parts > 1 || !roundOver(endOf(r.round) ?? r.date, now)))).reverse();
+  return rounds.filter(r => r.round !== null && r.sessions.some(s => race.has(s.label) && (s.parts === undefined || s.from === undefined || s.parts > 1 || !roundOver(endOf(r.round) ?? r.date, now)))).reverse();
 }
 
 /** A retirement scores nothing: every race table with no points beside a rider whose Time names him retired, not
@@ -426,6 +429,16 @@ export function wsbkPoints(pos: number, status: string, superpole: boolean): num
   return (superpole ? WSBK_SUPERPOLE : WSBK_RACE)[pos - 1] ?? 0;
 }
 
+/** A time as WorldSBK's API writes it, in milliseconds: its digits are the minutes, the seconds and the thousandths run
+ *  together (Jerez 2026's first race, 3309762, is "Time of Race 33'09.762" in its official classification,
+ *  resources.worldsbk.com/files/results/2026/JER/SBK/001/CLA/Results.pdf; a lap of 1'36.643 is 136643). Null for no
+ *  time: 0, anything not a whole number, or digits whose seconds reach 60. */
+export function wsbkMs(time: unknown): number | null {
+  if (typeof time !== 'number' || !Number.isInteger(time) || time <= 0) return null;
+  const seconds = Math.floor(time / 1000) % 100;
+  return seconds < 60 ? (Math.floor(time / 100_000) * 60 + seconds) * 1000 + (time % 1000) : null;
+}
+
 const formatRace = (ms: number): string => {
   const s = ms / 1000;
   const h = Math.floor(s / 3600);
@@ -435,8 +448,12 @@ const formatRace = (ms: number): string => {
 };
 const formatGap = (ms: number): string => (ms < 60_000 ? `${(ms / 1000).toFixed(3)}s` : `${Math.floor(ms / 60_000)}:${((ms % 60_000) / 1000).toFixed(3).padStart(6, '0')}`);
 
-/** A WorldSBK race's results answer as the stored race table writes it (lib/results/wsbk.ts's own format: the winner's
- *  time, the others' gaps, a status where there is none), its points by wsbkPoints. */
+/** A WorldSBK race's results answer as its stored table: the winner's time and the others' gaps to him, as its
+ *  official classification prints them (resources.worldsbk.com's Results.pdf), its times read by wsbkMs. A rider the
+ *  answer classifies laps down reads them ("+4 Laps"); one not classified, or with no time, reads his status. The
+ *  riders on the winner's lap cross the line in their order: from the first timed below the one ahead of him, they
+ *  were classified where an intermediate last timed them (Magny-Cours 2026's second race, "1 Sector" to "3 Sectors"
+ *  in its classification, which the answer cannot say), and they read their status too. Its points by wsbkPoints. */
 export function wsbkRaceTable(title: string, env: unknown, superpole: boolean): Table | null {
   type Item = { id?: string; type?: string; attributes?: Record<string, unknown>; relationships?: Record<string, { data?: { id?: string } }> };
   const e = env as { data?: Item[]; included?: Item[] } | null;
@@ -447,13 +464,24 @@ export function wsbkRaceTable(title: string, env: unknown, superpole: boolean): 
     .map(x => {
       const rider = of(['rider', 'riders'], x.relationships?.rider?.data?.id);
       const team = of(['team', 'teams'], x.relationships?.team?.data?.id);
-      const ms = typeof x.attributes?.time === 'number' && x.attributes.time > 0 ? x.attributes.time : null;
-      return { pos: x.attributes?.position as number, name: `${rider?.name ?? ''} ${rider?.surname ?? ''}`.trim(), team: String(team?.name ?? ''), status: String(x.attributes?.status ?? ''), ms };
+      const laps = x.attributes?.laps;
+      return { pos: x.attributes?.position as number, name: `${rider?.name ?? ''} ${rider?.surname ?? ''}`.trim(), team: String(team?.name ?? ''), status: String(x.attributes?.status ?? ''), ms: wsbkMs(x.attributes?.time), laps: typeof laps === 'number' ? laps : null };
     })
     .filter(x => x.name !== '' && x.pos >= 1 && x.pos < 90)
     .sort((a, b) => a.pos - b.pos);
   if (rows.length < 8) return null;
-  const win = rows.find(x => x.pos === 1)?.ms ?? null;
-  const time = (x: (typeof rows)[number]) => (x.ms === null ? x.status : x.pos === 1 ? formatRace(x.ms) : win !== null && x.ms > win ? `+${formatGap(x.ms - win)}` : x.status);
+  const win = rows.find(x => x.pos === 1);
+  let ahead = win?.ms ?? null;
+  let line = true;
+  const time = (x: (typeof rows)[number]): string => {
+    if (x === win) return x.ms === null ? x.status : formatRace(x.ms);
+    if (!win || win.ms === null || !/^classified$/i.test(x.status.trim())) return x.status;
+    const down = x.laps !== null && win.laps !== null ? win.laps - x.laps : 0;
+    if (down > 0) return `+${down} Lap${down === 1 ? '' : 's'}`;
+    if (x.ms === null || ahead === null) return x.status;
+    line &&= x.ms >= ahead;
+    ahead = x.ms;
+    return line && x.ms > win.ms ? `+${formatGap(x.ms - win.ms)}` : x.status;
+  };
   return { title, columns: ['Pos', 'Rider', 'Team', 'Time', 'Pts'], rows: rows.map(x => [String(x.pos), x.name, x.team, time(x), String(wsbkPoints(x.pos, x.status, superpole))]) };
 }

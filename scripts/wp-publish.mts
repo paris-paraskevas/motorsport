@@ -1282,12 +1282,13 @@ function wsbkFinder(api: WsbkEvents): FindSession {
   };
 }
 
-/** WorldSBK's race points as the series awards them (Task 2.b): a race its API holds twice was stopped and restarted
- *  (Magny-Cours 2026's Race 1: "001" the nine laps before the red flag, "101" the restart, the official result) and
- *  is read from its restart; a retirement scores nothing. A round's session list is read while the round is being
- *  run and until each of its races is known to be one part or two (wsbkDue); from then only a restarted race is
- *  read again, and on a run its API does not answer it keeps the result stored (wsbkCarried). Every rider's total
- *  is checked against the official table each run. */
+/** WorldSBK's races as the series classifies them (Task 2.b): each read from its own result, whose times are digits
+ *  (wsbkRaceTable), not taken from the old fetcher, which reads them as milliseconds; a race its API holds twice was
+ *  stopped and restarted (Magny-Cours 2026's Race 1: "001" the nine laps before the red flag, "101" the restart, the
+ *  official result) and is read from its restart; a retirement scores nothing. A round's session list and its races
+ *  are read while the round is being run and until each race is known to be one part or two and read (wsbkDue);
+ *  from then only a restarted race is read again, and a race keeps the table read before, also on a run its API
+ *  does not answer (wsbkCarried). Every rider's total is checked against the official table each run. */
 async function wsbkRaces(out: Fetched, api: WsbkEvents, entries: SeriesRoundEntry[], now: Date, deadline: number): Promise<void> {
   const fresh = out.results.get('wsbk');
   if (!fresh?.data) return;
@@ -1299,6 +1300,7 @@ async function wsbkRaces(out: Fetched, api: WsbkEvents, entries: SeriesRoundEntr
     rounds = rounds.map(r => (r.round === round ? { ...r, sessions: r.sessions.map(s => (s.label === label ? { ...s, ...patch } : s)) } : r));
   };
   const due = wsbkDue(rounds, round => entries.find(e => e.round === round)?.endDate, now);
+  let read = 0;
   for (const [i, r] of due.entries()) {
     if (Date.now() > deadline || i >= FAMILY_A_MAX) {
       log('F', `results wsbk points: the session lists of ${due.length - i} rounds wait for the next run`);
@@ -1310,21 +1312,23 @@ async function wsbkRaces(out: Fetched, api: WsbkEvents, entries: SeriesRoundEntr
       log('F', `results wsbk points: no session list for R${r.round} this run; its races stay as they are`);
       continue;
     }
+    const over = roundOver(entries.find(e => e.round === r.round)?.endDate ?? r.date, now);
     for (const [short, label, superpole] of WSBK_RACES) {
       const same = list.filter(s => String(s.attributes?.short_name ?? '').trim() === short).map(s => String(s.attributes?.source_id ?? '')).sort();
-      if (!same.length || !r.sessions.some(s => s.label === label)) continue;
-      if (same.length === 1) {
-        const own = fetched.find(x => x.round === r.round)?.sessions.find(s => s.label === label)?.tables;
-        put(r.round, label, { ...(own ? { tables: own } : {}), parts: 1 });
-        continue;
-      }
-      const restart = same[same.length - 1];
-      const env = await api.results(src, restart);
+      const held = r.sessions.find(s => s.label === label);
+      // A race run once and read before, of a round that is over, keeps its table: only its round's restart is due.
+      if (!same.length || !held || (same.length === 1 && held.from !== undefined && over)) continue;
+      const last = same[same.length - 1];
+      const env = await api.results(src, last);
       const t = env ? wsbkRaceTable(label, env, superpole) : null;
-      if (t) put(r.round, label, { tables: [t], parts: same.length });
-      log('F', `results wsbk R${r.round} ${label}: restarted, ${t ? `its classification from session ${restart}` : `session ${restart} did not answer and the result stays as it is`} (of ${same.join(', ')})`);
+      if (t) {
+        put(r.round, label, { tables: [t], parts: same.length, from: last });
+        read++;
+      } else if (same.length === 1) put(r.round, label, { parts: 1 });
+      if (same.length > 1 || !t) log('F', `results wsbk R${r.round} ${label}: ${same.length > 1 ? 'restarted, ' : ''}${t ? `its classification from session ${last}` : `session ${last} did not answer and the race stays as it is`}${same.length > 1 ? ` (of ${same.join(', ')})` : ''}`);
     }
   }
+  if (due.length) log('F', `results wsbk races: ${read} read from their own results this run`);
   const data = wsbkScored(rounds);
   const table = out.standings.get('wsbk')?.data?.[0];
   if (table) {
