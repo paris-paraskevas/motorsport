@@ -151,6 +151,7 @@ import {
   wsbkDue,
   wsbkHeld,
   wsbkRaceTable,
+  wsbkReclassified,
   wsbkScored,
   wsbkTimedTable,
   type DtmGroups,
@@ -1203,8 +1204,10 @@ async function riderSessions(out: Fetched, slug: 'motogp' | 'wsbk', season: numb
     const s = await find(round, e.session);
     const table = s && !/cancel/i.test(s.status) ? await s.table() : undefined;
     const none = s ? sessionNone(s.status, table, roundOver(entry?.endDate, now)) : undefined;
-    if (table || none) rounds = withSession(rounds, round, e.event, entry?.endDate ?? null, table ? { label: e.session, tables: [table], ...(s?.from ? { from: s.from } : {}) } : { label: e.session, tables: [], none });
-    log('F', `results ${slug}-sessions R${round} ${e.session} ${table ? `OK ${table.rows.length} rows` : none ? none.toUpperCase() : !s ? 'NOT LISTED' : table === null ? `EMPTY (${s.status || 'no status'})` : `NO ANSWER (${s.status || 'no status'})`}`);
+    // A table held already (a WorldSBK session asked for again, wsbkHeld) is replaced by a table, never by none.
+    const held = (rounds.find(r => r.round === round)?.others?.find(o => o.label === e.session)?.tables.length ?? 0) > 0;
+    if (table || (none && !held)) rounds = withSession(rounds, round, e.event, entry?.endDate ?? null, table ? { label: e.session, tables: [table], ...(s?.from ? { from: s.from } : {}) } : { label: e.session, tables: [], none });
+    log('F', `results ${slug}-sessions R${round} ${e.session} ${table ? `OK ${table.rows.length} rows` : none ? `${none.toUpperCase()}${held ? ': the table held is kept' : ''}` : !s ? 'NOT LISTED' : table === null ? `EMPTY (${s.status || 'no status'})` : `NO ANSWER (${s.status || 'no status'})`}`);
   }
   out.results.set(slug, { ...fresh, data: rounds });
 }
@@ -1301,7 +1304,9 @@ async function wsbkRaces(out: Fetched, api: WsbkEvents, entries: SeriesRoundEntr
   const put = (round: number | null, label: string, patch: Partial<ResultSession>) => {
     rounds = rounds.map(r => (r.round === round ? { ...r, sessions: r.sessions.map(s => (s.label === label ? { ...s, ...patch } : s)) } : r));
   };
-  const due = wsbkDue(rounds, round => entries.find(e => e.round === round)?.endDate, now);
+  const again = wsbkReclassified(rounds, fetched);
+  if (again.size) log('F', `results wsbk races: ${[...again].join(', ')} classified again since read: read again`);
+  const due = wsbkDue(rounds, round => entries.find(e => e.round === round)?.endDate, now, again);
   let read = 0;
   for (const [i, r] of due.entries()) {
     if (Date.now() > deadline || i >= FAMILY_A_MAX) {
@@ -1318,8 +1323,8 @@ async function wsbkRaces(out: Fetched, api: WsbkEvents, entries: SeriesRoundEntr
     for (const [short, label, superpole] of WSBK_RACES) {
       const same = list.filter(s => String(s.attributes?.short_name ?? '').trim() === short).map(s => String(s.attributes?.source_id ?? '')).sort();
       const held = r.sessions.find(s => s.label === label);
-      // A race run once and read before, of a round that is over, keeps its table: only its round's restart is due.
-      if (!same.length || !held || (same.length === 1 && held.from !== undefined && over)) continue;
+      // A race run once and read before, of a round that is over and not classified again, keeps its table.
+      if (!same.length || !held || (same.length === 1 && held.from !== undefined && over && !again.has(`${r.round}|${label}`))) continue;
       const last = same[same.length - 1];
       const env = await api.results(src, last);
       const t = env ? wsbkRaceTable(label, env, superpole) : null;
@@ -1327,7 +1332,7 @@ async function wsbkRaces(out: Fetched, api: WsbkEvents, entries: SeriesRoundEntr
         put(r.round, label, { tables: [t], parts: same.length, from: last });
         read++;
       } else if (same.length === 1) put(r.round, label, { parts: 1 });
-      if (same.length > 1 || !t) log('F', `results wsbk R${r.round} ${label}: ${same.length > 1 ? 'restarted, ' : ''}${t ? `its classification from session ${last}` : `session ${last} did not answer and the race stays as it is`}${same.length > 1 ? ` (of ${same.join(', ')})` : ''}`);
+      if (same.length > 1 || !t) log('F', `results wsbk R${r.round} ${label}: ${same.length > 1 ? 'restarted, ' : ''}${t ? `its classification from session ${last}` : `session ${last} ${env ? 'gave no classification' : 'did not answer'} and the race stays as it is`}${same.length > 1 ? ` (of ${same.join(', ')})` : ''}`);
     }
   }
   if (due.length) log('F', `results wsbk races: ${read} read from their own results this run`);

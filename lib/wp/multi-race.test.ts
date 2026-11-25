@@ -29,6 +29,7 @@ import {
   wsbkMs,
   wsbkPoints,
   wsbkRaceTable,
+  wsbkReclassified,
   wsbkScored,
   wsbkTimedTable,
   type DtmGroups,
@@ -591,6 +592,36 @@ describe("WorldSBK's race points (O33)", () => {
     };
     expect(wsbkHeld([jerez])[0].others?.map(s => s.label)).toEqual(['FP1', 'Warm Up']);
     expect(wsbkHeld([{ ...jerez, others: undefined }])[0]).toEqual({ ...jerez, others: undefined });
+  });
+
+  it('takes an answer whose leader has no time for none, so it never replaces a table held', () => {
+    const timeless = (rows: Saved[]) => rows.map(([p, n, , s, l]): Saved => [p, n, 0, s, l]);
+    expect(wsbkRaceTable('Race 2', answer(timeless(JEREZ_RACE_2)), false)).toBeNull();
+    expect(wsbkTimedTable('Superpole', answer(timeless(JEREZ_SUPERPOLE)))).toBeNull();
+  });
+
+  it('reads a rider one lap down as "+1 Lap"', () => {
+    // Donington's second race with Sofuoglu made one lap down instead of four.
+    const rows = DONINGTON_RACE_2.map(([p, n, t, s, l]): Saved => [p, n, t, s, p === 19 ? 22 : l]);
+    expect(wsbkRaceTable('Race 2', answer(rows), false)?.rows[18][3]).toBe('+1 Lap');
+  });
+
+  it('reads again a race the old fetcher now orders otherwise: classified again since it was read', () => {
+    const t = (rows: string[][]): Table => ({ title: 'Race 2', columns: ['Pos', 'Rider', 'Team', 'Time', 'Pts'], rows });
+    const read = t([['1', 'Nicolo Bulega', 'T', '32:56.372', '25'], ['2', 'Iker Lecuona', 'T', '+4.696s', '20']]);
+    const swapped = t([['1', 'Iker Lecuona', 'T', '54:21.068', '25'], ['2', 'Nicolo Bulega', 'T', '+0.304s', '20']]);
+    const round = (sessions: ResultRound['sessions']): ResultRound => ({ round: 12, name: 'Spain', date: '2026-10-18', sessions });
+    const stored = [round([{ label: 'Race 2', tables: [read], parts: 1, from: '003' }, { label: 'Race 1', tables: [read], parts: 2, from: '101' }])];
+    // The old fetcher's tables carry its own times: only the order of the riders counts.
+    const same = [round([{ label: 'Race 2', tables: [{ ...read, rows: read.rows.map(row => [...row.slice(0, 3), '54:16.372', row[4]]) }] }, { label: 'Race 1', tables: [swapped] }])];
+    expect([...wsbkReclassified(stored, same)]).toEqual([]);
+    const again = wsbkReclassified(stored, [round([{ label: 'Race 2', tables: [swapped] }, { label: 'Race 1', tables: [swapped] }])]);
+    expect([...again]).toEqual(['12|Race 2']);
+    expect(wsbkReclassified([round([{ label: 'Race 2', tables: [read], parts: 1 }])], [round([{ label: 'Race 2', tables: [swapped] }])]).size).toBe(0);
+    const finished = [round([{ label: 'Race 2', tables: [read], parts: 1, from: '003' }])];
+    const endOf = () => '2026-10-18';
+    expect(wsbkDue(finished, endOf, new Date('2026-11-25T08:00:00Z'))).toEqual([]);
+    expect(wsbkDue(finished, endOf, new Date('2026-11-25T08:00:00Z'), again).map(r => r.round)).toEqual([12]);
   });
 
   const table = (title: string, rows: string[][]): Table => ({ title, columns: ['Pos', 'Rider', 'Team', 'Time', 'Pts'], rows });
