@@ -126,7 +126,6 @@ import { decideFeed, resultsShrank, statusPage, type FeedHealth, type FeedKind, 
 import { fetchFomJson, roundOfMeeting, type FomManifest, type FomSessionResponse } from '../lib/results/fom-api';
 import { buildSessionClassification } from '../lib/results/motogp';
 import { MOTOGP_API_BASE, MOTOGP_CATEGORY_UUID_EXPORT, resolveMotoGPSeasonUuid } from '../lib/standings/motogp';
-import { parseSessionClassification } from '../lib/results/wsbk';
 import {
   answered,
   datedByLastDay,
@@ -152,8 +151,11 @@ import {
   WSBK_RACES,
   wsbkCarried,
   wsbkDue,
+  wsbkHeld,
   wsbkRaceTable,
+  wsbkReclassified,
   wsbkScored,
+  wsbkTimedTable,
   type DtmGroups,
   type RosterTeam,
 } from '../lib/wp/multi-race';
@@ -1175,6 +1177,8 @@ async function getJson<T>(url: string): Promise<T | null> {
 interface RiderSession {
   status: string;
   table(): Promise<Table | null | undefined>;
+  /** WorldSBK's: the API session its table is read from, kept with it (ResultSession.from). */
+  from?: string;
 }
 type FindSession = (round: number, label: string) => Promise<RiderSession | null>;
 
@@ -1189,7 +1193,8 @@ async function riderSessions(out: Fetched, slug: 'motogp' | 'wsbk', season: numb
   let rounds = carrySessions(fresh.data, readStored<ResultRound[]>(relOf(slug, 'results')), season);
   // The stored sessions go into the run first: a failure below leaves them in place.
   out.results.set(slug, { ...fresh, data: rounds });
-  const wanted = sessionsWanted(rounds, out.calendar.get(slug)?.data ?? [], names, now, FAMILY_A_MAX);
+  // WorldSBK's tables drawn by the old fetcher's reader are asked for again (wsbkHeld), FAMILY_A_MAX a run like the rest.
+  const wanted = sessionsWanted(slug === 'wsbk' ? wsbkHeld(rounds) : rounds, out.calendar.get(slug)?.data ?? [], names, now, FAMILY_A_MAX);
   const find = wanted.length ? await finder() : null;
   for (const [i, e] of wanted.entries()) {
     if (Date.now() > deadline) {
@@ -1202,8 +1207,10 @@ async function riderSessions(out: Fetched, slug: 'motogp' | 'wsbk', season: numb
     const s = await find(round, e.session);
     const table = s && !/cancel/i.test(s.status) ? await s.table() : undefined;
     const none = s ? sessionNone(s.status, table, roundOver(entry?.endDate, now)) : undefined;
-    if (table || none) rounds = withSession(rounds, round, e.event, entry?.endDate ?? null, table ? { label: e.session, tables: [table] } : { label: e.session, tables: [], none });
-    log('F', `results ${slug}-sessions R${round} ${e.session} ${table ? `OK ${table.rows.length} rows` : none ? none.toUpperCase() : !s ? 'NOT LISTED' : table === null ? `EMPTY (${s.status || 'no status'})` : `NO ANSWER (${s.status || 'no status'})`}`);
+    // A table held already (a WorldSBK session asked for again, wsbkHeld) is replaced by a table, never by none.
+    const held = (rounds.find(r => r.round === round)?.others?.find(o => o.label === e.session)?.tables.length ?? 0) > 0;
+    if (table || (none && !held)) rounds = withSession(rounds, round, e.event, entry?.endDate ?? null, table ? { label: e.session, tables: [table], ...(s?.from ? { from: s.from } : {}) } : { label: e.session, tables: [], none });
+    log('F', `results ${slug}-sessions R${round} ${e.session} ${table ? `OK ${table.rows.length} rows` : none ? `${none.toUpperCase()}${held ? ': the table held is kept' : ''}` : !s ? 'NOT LISTED' : table === null ? `EMPTY (${s.status || 'no status'})` : `NO ANSWER (${s.status || 'no status'})`}`);
   }
   out.results.set(slug, { ...fresh, data: rounds });
 }
@@ -1262,8 +1269,8 @@ function wsbkEvents(season: number) {
 }
 type WsbkEvents = ReturnType<typeof wsbkEvents>;
 
-/** WorldSBK's sessions: a round's SBK session list, then each session's results (lib/results/wsbk.ts
- *  parseSessionClassification). */
+/** WorldSBK's sessions: a round's SBK session list, then each session's results, read by family A (wsbkTimedTable:
+ *  the old fetcher's reader, lib/results/wsbk.ts parseSessionClassification, reads their laps as milliseconds). */
 function wsbkFinder(api: WsbkEvents): FindSession {
   return async (round, label) => {
     const short = WSBK_SESSIONS.get(label);
@@ -1276,21 +1283,20 @@ function wsbkFinder(api: WsbkEvents): FindSession {
       status: String(s?.attributes?.status ?? ''),
       table: async () => {
         const env = await api.results(src, sid);
-        return answered(env?.data, () => {
-          const cls = parseSessionClassification(env as Parameters<typeof parseSessionClassification>[0]);
-          return cls ? timedTable(label, cls.entries, 'Rider') : null;
-        });
+        return answered(env?.data, () => wsbkTimedTable(label, env));
       },
+      from: sid,
     };
   };
 }
 
-/** WorldSBK's race points as the series awards them (Task 2.b): a race its API holds twice was stopped and restarted
- *  (Magny-Cours 2026's Race 1: "001" the nine laps before the red flag, "101" the restart, the official result) and
- *  is read from its restart; a retirement scores nothing. A round's session list is read while the round is being
- *  run and until each of its races is known to be one part or two (wsbkDue); from then only a restarted race is
- *  read again, and on a run its API does not answer it keeps the result stored (wsbkCarried). Every rider's total
- *  is checked against the official table each run. */
+/** WorldSBK's races as the series classifies them (Task 2.b): each read from its own result, whose times are digits
+ *  (wsbkRaceTable), not taken from the old fetcher, which reads them as milliseconds; a race its API holds twice was
+ *  stopped and restarted (Magny-Cours 2026's Race 1: "001" the nine laps before the red flag, "101" the restart, the
+ *  official result) and is read from its restart; a retirement scores nothing. A round's session list and its races
+ *  are read while the round is being run and until each race is known to be one part or two and read (wsbkDue);
+ *  from then only a restarted race is read again, and a race keeps the table read before, also on a run its API
+ *  does not answer (wsbkCarried). Every rider's total is checked against the official table each run. */
 async function wsbkRaces(out: Fetched, api: WsbkEvents, entries: SeriesRoundEntry[], now: Date, deadline: number): Promise<void> {
   const fresh = out.results.get('wsbk');
   if (!fresh?.data) return;
@@ -1301,7 +1307,10 @@ async function wsbkRaces(out: Fetched, api: WsbkEvents, entries: SeriesRoundEntr
   const put = (round: number | null, label: string, patch: Partial<ResultSession>) => {
     rounds = rounds.map(r => (r.round === round ? { ...r, sessions: r.sessions.map(s => (s.label === label ? { ...s, ...patch } : s)) } : r));
   };
-  const due = wsbkDue(rounds, round => entries.find(e => e.round === round)?.endDate, now);
+  const again = wsbkReclassified(rounds, fetched);
+  if (again.size) log('F', `results wsbk races: ${[...again].join(', ')} classified again since read: read again`);
+  const due = wsbkDue(rounds, round => entries.find(e => e.round === round)?.endDate, now, again);
+  let read = 0;
   for (const [i, r] of due.entries()) {
     if (Date.now() > deadline || i >= FAMILY_A_MAX) {
       log('F', `results wsbk points: the session lists of ${due.length - i} rounds wait for the next run`);
@@ -1313,21 +1322,23 @@ async function wsbkRaces(out: Fetched, api: WsbkEvents, entries: SeriesRoundEntr
       log('F', `results wsbk points: no session list for R${r.round} this run; its races stay as they are`);
       continue;
     }
+    const over = roundOver(entries.find(e => e.round === r.round)?.endDate ?? r.date, now);
     for (const [short, label, superpole] of WSBK_RACES) {
       const same = list.filter(s => String(s.attributes?.short_name ?? '').trim() === short).map(s => String(s.attributes?.source_id ?? '')).sort();
-      if (!same.length || !r.sessions.some(s => s.label === label)) continue;
-      if (same.length === 1) {
-        const own = fetched.find(x => x.round === r.round)?.sessions.find(s => s.label === label)?.tables;
-        put(r.round, label, { ...(own ? { tables: own } : {}), parts: 1 });
-        continue;
-      }
-      const restart = same[same.length - 1];
-      const env = await api.results(src, restart);
+      const held = r.sessions.find(s => s.label === label);
+      // A race run once and read before, of a round that is over and not classified again, keeps its table.
+      if (!same.length || !held || (same.length === 1 && held.from !== undefined && over && !again.has(`${r.round}|${label}`))) continue;
+      const last = same[same.length - 1];
+      const env = await api.results(src, last);
       const t = env ? wsbkRaceTable(label, env, superpole) : null;
-      if (t) put(r.round, label, { tables: [t], parts: same.length });
-      log('F', `results wsbk R${r.round} ${label}: restarted, ${t ? `its classification from session ${restart}` : `session ${restart} did not answer and the result stays as it is`} (of ${same.join(', ')})`);
+      if (t) {
+        put(r.round, label, { tables: [t], parts: same.length, from: last });
+        read++;
+      } else if (same.length === 1) put(r.round, label, { parts: 1 });
+      if (same.length > 1 || !t) log('F', `results wsbk R${r.round} ${label}: ${same.length > 1 ? 'restarted, ' : ''}${t ? `its classification from session ${last}` : `session ${last} ${env ? 'gave no classification' : 'did not answer'} and the race stays as it is`}${same.length > 1 ? ` (of ${same.join(', ')})` : ''}`);
     }
   }
+  if (due.length) log('F', `results wsbk races: ${read} read from their own results this run`);
   const data = wsbkScored(rounds);
   const table = out.standings.get('wsbk')?.data?.[0];
   if (table) {
