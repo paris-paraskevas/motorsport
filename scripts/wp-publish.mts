@@ -126,7 +126,6 @@ import { decideFeed, resultsShrank, statusPage, type FeedHealth, type FeedKind, 
 import { fetchFomJson, roundOfMeeting, type FomManifest, type FomSessionResponse } from '../lib/results/fom-api';
 import { buildSessionClassification } from '../lib/results/motogp';
 import { MOTOGP_API_BASE, MOTOGP_CATEGORY_UUID_EXPORT, resolveMotoGPSeasonUuid } from '../lib/standings/motogp';
-import { parseSessionClassification } from '../lib/results/wsbk';
 import {
   answered,
   datedByLastDay,
@@ -150,8 +149,10 @@ import {
   WSBK_RACES,
   wsbkCarried,
   wsbkDue,
+  wsbkHeld,
   wsbkRaceTable,
   wsbkScored,
+  wsbkTimedTable,
   type DtmGroups,
 } from '../lib/wp/multi-race';
 import { calledOffOf } from '../lib/wp/render';
@@ -1172,6 +1173,8 @@ async function getJson<T>(url: string): Promise<T | null> {
 interface RiderSession {
   status: string;
   table(): Promise<Table | null | undefined>;
+  /** WorldSBK's: the API session its table is read from, kept with it (ResultSession.from). */
+  from?: string;
 }
 type FindSession = (round: number, label: string) => Promise<RiderSession | null>;
 
@@ -1186,7 +1189,8 @@ async function riderSessions(out: Fetched, slug: 'motogp' | 'wsbk', season: numb
   let rounds = carrySessions(fresh.data, readStored<ResultRound[]>(relOf(slug, 'results')), season);
   // The stored sessions go into the run first: a failure below leaves them in place.
   out.results.set(slug, { ...fresh, data: rounds });
-  const wanted = sessionsWanted(rounds, out.calendar.get(slug)?.data ?? [], names, now, FAMILY_A_MAX);
+  // WorldSBK's tables drawn by the old fetcher's reader are asked for again (wsbkHeld), FAMILY_A_MAX a run like the rest.
+  const wanted = sessionsWanted(slug === 'wsbk' ? wsbkHeld(rounds) : rounds, out.calendar.get(slug)?.data ?? [], names, now, FAMILY_A_MAX);
   const find = wanted.length ? await finder() : null;
   for (const [i, e] of wanted.entries()) {
     if (Date.now() > deadline) {
@@ -1199,7 +1203,7 @@ async function riderSessions(out: Fetched, slug: 'motogp' | 'wsbk', season: numb
     const s = await find(round, e.session);
     const table = s && !/cancel/i.test(s.status) ? await s.table() : undefined;
     const none = s ? sessionNone(s.status, table, roundOver(entry?.endDate, now)) : undefined;
-    if (table || none) rounds = withSession(rounds, round, e.event, entry?.endDate ?? null, table ? { label: e.session, tables: [table] } : { label: e.session, tables: [], none });
+    if (table || none) rounds = withSession(rounds, round, e.event, entry?.endDate ?? null, table ? { label: e.session, tables: [table], ...(s?.from ? { from: s.from } : {}) } : { label: e.session, tables: [], none });
     log('F', `results ${slug}-sessions R${round} ${e.session} ${table ? `OK ${table.rows.length} rows` : none ? none.toUpperCase() : !s ? 'NOT LISTED' : table === null ? `EMPTY (${s.status || 'no status'})` : `NO ANSWER (${s.status || 'no status'})`}`);
   }
   out.results.set(slug, { ...fresh, data: rounds });
@@ -1259,8 +1263,8 @@ function wsbkEvents(season: number) {
 }
 type WsbkEvents = ReturnType<typeof wsbkEvents>;
 
-/** WorldSBK's sessions: a round's SBK session list, then each session's results (lib/results/wsbk.ts
- *  parseSessionClassification). */
+/** WorldSBK's sessions: a round's SBK session list, then each session's results, read by family A (wsbkTimedTable:
+ *  the old fetcher's reader, lib/results/wsbk.ts parseSessionClassification, reads their laps as milliseconds). */
 function wsbkFinder(api: WsbkEvents): FindSession {
   return async (round, label) => {
     const short = WSBK_SESSIONS.get(label);
@@ -1273,11 +1277,9 @@ function wsbkFinder(api: WsbkEvents): FindSession {
       status: String(s?.attributes?.status ?? ''),
       table: async () => {
         const env = await api.results(src, sid);
-        return answered(env?.data, () => {
-          const cls = parseSessionClassification(env as Parameters<typeof parseSessionClassification>[0]);
-          return cls ? timedTable(label, cls.entries, 'Rider') : null;
-        });
+        return answered(env?.data, () => wsbkTimedTable(label, env));
       },
+      from: sid,
     };
   };
 }

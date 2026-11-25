@@ -25,10 +25,12 @@ import {
   timedTable,
   wsbkCarried,
   wsbkDue,
+  wsbkHeld,
   wsbkMs,
   wsbkPoints,
   wsbkRaceTable,
   wsbkScored,
+  wsbkTimedTable,
   type DtmGroups,
 } from './multi-race';
 import { calledOffOf, padHour, type CalendarEntry, type ResultRound, type Table } from './render';
@@ -515,6 +517,15 @@ describe("WorldSBK's race points (O33)", () => {
     [13, 'Danilo Petrucci', 1930625, 'Classified', 12], [14, 'Alvaro Bautista', 2016056, 'Classified', 12], [15, 'Somkiat Chantra', 0, 'Retired', 0], [16, 'Thomas Bridewell', 0, 'Retired', 0],
     [17, 'Stefano Manzi', 0, 'Retired', 0], [18, 'Mattia Rato', 0, 'Retired', 0], [19, 'Miguel Oliveira', 0, 'Retired', 0], [20, 'Remy Gardner', 0, 'Retired', 0],
   ];
+  // JER, session Q1A: the Superpole.
+  const JEREZ_SUPERPOLE: Saved[] = [
+    [1, 'Nicolo Bulega', 136643, 'Classified', 7], [2, 'Sam Lowes', 136960, 'Classified', 7], [3, 'Iker Lecuona', 137098, 'Classified', 8], [4, 'Yari Montella', 137381, 'Classified', 8],
+    [5, 'Alex Lowes', 137443, 'Classified', 8], [6, 'Lorenzo Baldassarri', 137639, 'Classified', 7], [7, 'Thomas Bridewell', 137753, 'Classified', 7], [8, 'Alberto Surra', 137759, 'Classified', 7],
+    [9, 'Alvaro Bautista', 138115, 'Classified', 8], [10, 'Axel Bassani', 138178, 'Classified', 8], [11, 'Xavi Vierge', 138193, 'Classified', 6], [12, 'Jake Dixon', 138209, 'Classified', 7],
+    [13, 'Miguel Oliveira', 138312, 'Classified', 8], [14, 'Loris Baz', 138381, 'Classified', 8], [15, 'Danilo Petrucci', 138392, 'Classified', 7], [16, 'Garrett Gerloff', 138416, 'Classified', 8],
+    [17, 'Remy Gardner', 138542, 'Classified', 6], [18, 'Somkiat Chantra', 138606, 'Classified', 7], [19, 'Stefano Manzi', 138822, 'Classified', 6], [20, 'Andrea Locatelli', 138826, 'Classified', 6],
+    [21, 'Twan Smits', 139374, 'Classified', 5], [22, 'Mattia Rato', 139563, 'Classified', 7],
+  ];
   const times = (t: Table | null) => t?.rows.map(row => row[3]);
 
   it("reads the API's times as the digits they are: 3309762 is 33'09.762, 136643 a lap of 1'36.643", () => {
@@ -548,6 +559,38 @@ describe("WorldSBK's race points (O33)", () => {
     expect(times(t)?.slice(0, 3)).toEqual(['19:06.594', '+3.118s', '+6.293s']);
     expect(t?.rows[13]).toEqual(['14', 'Alvaro Bautista', 'Team', '+1:09.462', '2']);
     expect(t?.rows[14]).toEqual(['15', 'Somkiat Chantra', 'Team', 'Retired', '0']);
+  });
+
+  it("draws Jerez's Superpole as its official classification: the leader's 1'36.643, then the gaps to it", () => {
+    const t = wsbkTimedTable('Superpole', answer(JEREZ_SUPERPOLE));
+    expect(t?.columns).toEqual(['Pos', 'Rider', 'Team', 'Time']);
+    expect(t?.rows.slice(0, 3)).toEqual([
+      ['1', 'Nicolo Bulega', 'Team', '1:36.643'],
+      ['2', 'Sam Lowes', 'Team', '+0.317s'],
+      ['3', 'Iker Lecuona', 'Team', '+0.455s'],
+    ]);
+    expect(t?.rows[21]).toEqual(['22', 'Mattia Rato', 'Team', '+2.920s']);
+    expect(wsbkTimedTable('Superpole', answer(JEREZ_SUPERPOLE.slice(0, 7)))).toBeNull();
+  });
+
+  it("reads a lap's gap across a minute, and a rider with no place under the old reader's word for him", () => {
+    // Made up: a leader on 1'59.900, a rider on 2'00.100 (0.200 behind, not 40.200), one not started.
+    const rows: Saved[] = [[1, 'A One', 159900, 'Classified', 9], [2, 'B Two', 200100, 'Classified', 9], ...[3, 4, 5, 6, 7].map((p): Saved => [p, `C${p} Rider`, 200100 + p, 'Classified', 9]), [0, 'D Four', 0, 'DNS', 0]];
+    expect(wsbkTimedTable('FP1', answer(rows))?.rows.map(row => row[3])).toEqual(['1:59.900', '+0.200s', '+0.203s', '+0.204s', '+0.205s', '+0.206s', '+0.207s', '']);
+    expect(wsbkTimedTable('FP1', answer(rows))?.rows[7].slice(0, 2)).toEqual(['DNS', 'D Four']);
+  });
+
+  it('asks again, once, for a timed session the old reader drew: one with a table and no `from`', () => {
+    const lap = table('Superpole', [['1', 'Nicolo Bulega', 'Aruba.it Racing - Ducati', '2:16.643']]);
+    const jerez: ResultRound = {
+      round: 12,
+      name: 'Spain',
+      date: '2026-10-18',
+      sessions: [],
+      others: [{ label: 'Superpole', tables: [lap] }, { label: 'FP1', tables: [lap], from: 'L1A' }, { label: 'Warm Up', tables: [], none: 'called off' }],
+    };
+    expect(wsbkHeld([jerez])[0].others?.map(s => s.label)).toEqual(['FP1', 'Warm Up']);
+    expect(wsbkHeld([{ ...jerez, others: undefined }])[0]).toEqual({ ...jerez, others: undefined });
   });
 
   const table = (title: string, rows: string[][]): Table => ({ title, columns: ['Pos', 'Rider', 'Team', 'Time', 'Pts'], rows });

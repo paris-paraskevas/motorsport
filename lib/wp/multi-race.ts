@@ -402,6 +402,14 @@ export function wsbkDue(rounds: readonly ResultRound[], endOf: (round: number | 
   return rounds.filter(r => r.round !== null && r.sessions.some(s => race.has(s.label) && (s.parts === undefined || s.from === undefined || s.parts > 1 || !roundOver(endOf(r.round) ?? r.date, now)))).reverse();
 }
 
+/** WorldSBK's rounds as sessionsWanted should count what they hold: a practice, Superpole or warm-up stored with a
+ *  table and no `from` was drawn by the old fetcher's reader, which reads the API's laps as milliseconds (Jerez
+ *  2026's Superpole leader, 1'36.643, as 2:16.643), so it is asked for again, once: the table read then replaces it.
+ *  A session kept without a table (called off, no classification) stays held. */
+export function wsbkHeld(rounds: readonly ResultRound[]): ResultRound[] {
+  return rounds.map(r => (r.others ? { ...r, others: r.others.filter(s => !s.tables.length || s.from !== undefined) } : r));
+}
+
 /** A retirement scores nothing: every race table with no points beside a rider whose Time names him retired, not
  *  classified, not started or excluded (the old fetcher pays one inside the top fifteen). */
 export function wsbkScored(rounds: readonly ResultRound[]): ResultRound[] {
@@ -447,6 +455,41 @@ const formatRace = (ms: number): string => {
   return h > 0 ? `${h}:${String(m).padStart(2, '0')}:${rest}` : `${m}:${rest}`;
 };
 const formatGap = (ms: number): string => (ms < 60_000 ? `${(ms / 1000).toFixed(3)}s` : `${Math.floor(ms / 60_000)}:${((ms % 60_000) / 1000).toFixed(3).padStart(6, '0')}`);
+
+/** A WorldSBK practice's, Superpole's or warm-up's results answer as its stored table, drawn as the old fetcher's
+ *  reader drew one (lib/results/wsbk.ts parseSessionClassification, then timedTable: each placed rider's best lap,
+ *  the leader's own and the others' gaps to it; DNS, DSQ or DNF for a rider with no place), but its laps read by
+ *  wsbkMs: that reader reads them as milliseconds. Null under eight riders, as it. */
+export function wsbkTimedTable(title: string, env: unknown): Table | null {
+  type Item = { id?: string; type?: string; attributes?: Record<string, unknown>; relationships?: Record<string, { data?: { id?: string } }> };
+  const e = env as { data?: Item[]; included?: Item[] } | null;
+  const inc = new Map((e?.included ?? []).map(x => [`${x.type}|${x.id}`, x.attributes ?? {}]));
+  const of = (kinds: string[], id: string | undefined) => kinds.map(k => inc.get(`${k}|${id}`)).find(Boolean);
+  const text = (v: unknown) => (typeof v === 'string' ? v : '');
+  const rows = (e?.data ?? [])
+    .filter(x => x.type === 'results' && typeof x.attributes?.position === 'number')
+    .map(x => {
+      const rider = of(['rider', 'riders'], x.relationships?.rider?.data?.id);
+      const team = of(['team', 'teams'], x.relationships?.team?.data?.id);
+      return { position: x.attributes?.position as number, name: text(rider?.name), surname: text(rider?.surname), team: text(team?.name), ms: wsbkMs(x.attributes?.time), status: text(x.attributes?.status) };
+    })
+    .filter(x => x.name !== '' && x.surname !== '' && x.team !== '')
+    .sort((a, b) => a.position - b.position);
+  if (rows.length < 8) return null;
+  const top = rows.find(x => x.position === 1)?.ms ?? null;
+  const entries: SessionClassificationEntry[] = rows.map(x => {
+    const lap = x.ms !== null && (x.position === 1 || top === null || x.ms <= top);
+    const status = x.status === '' || /classified|finished/i.test(x.status) ? undefined : /^dns/i.test(x.status) ? 'DNS' : /excl|dsq|dnq/i.test(x.status) ? 'DSQ' : 'DNF';
+    return {
+      position: x.position,
+      driverName: `${x.name} ${x.surname}`.trim(),
+      team: x.team,
+      ...(x.ms === null ? {} : lap ? { time: formatRace(x.ms) } : { gap: `+${formatGap(x.ms - (top ?? 0))}` }),
+      ...(status ? { status } : {}),
+    };
+  });
+  return timedTable(title, entries, 'Rider');
+}
 
 /** A WorldSBK race's results answer as its stored table: the winner's time and the others' gaps to him, as its
  *  official classification prints them (resources.worldsbk.com's Results.pdf), its times read by wsbkMs. A rider the
