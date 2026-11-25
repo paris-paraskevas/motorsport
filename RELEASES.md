@@ -4,6 +4,10 @@ What's new in Paddock Tracker. Newest first.
 
 Paddock is out of early access. Fifteen championships in one place, every session in your own time zone, and free to browse without an account — built in the open, by one person, over a hundred days.
 
+## 1.0.319 — 2026-11-25
+
+Behind the scenes, ready for WorldSBK's pages: its race and lap times are now read as the series writes them. Every race's winning time had read far too long (Jerez's first race 55:09.762, where the official time is 33'09.762), a gap that crossed a minute forty seconds too long, and the fastest lap of each practice, Superpole and warm-up forty seconds too slow. Each of the season's 36 races now has the winning time and the gaps of its official classification, and the lap times of practice, Superpole and warm-up are read as the series writes them too. A rider who finished laps down reads "+4 Laps" instead of a gap, and at Magny-Cours, where the second race was classified as the timing last caught each rider, those riders read "Classified" instead of a gap they never had.
+
 ## 1.0.318 — 2026-11-24
 
 Formula 2's Qatar weekend now has its session times on the calendar: practice and qualifying on Friday 27 November, the Sprint Race on Saturday and the Feature Race on Sunday, each shown in your own time zone. Until the series published them, the weekend's card read "Times not published yet". Abu Dhabi's, a week later, are still to come.
