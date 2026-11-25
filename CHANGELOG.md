@@ -19,7 +19,7 @@ The third and last PR of Task 2.b, on the plan approved in plan mode on 24 Nov (
 - **scripts/wp-publish.mts**: `KITS.A`, and beside family C's line the spelling and colour join, logging each team without one.
 - **wp-theme/paddock/style.css**: family A's marked block; theme 0.1.28.
 - **tests/fixtures/multi-race.json** (new, the operator's word with the plan): paddock-data 868b8dc4 for the five series, the rounds the tests read whole with their sessions.
-- **Checked**: tsc 0; lint 0 errors (the 2 known warnings); tests in lib/wp: 7 files, 448 passed (67 in multi-race.test.ts). The stored-data dry run on paddock-data 868b8dc4 against next at c1f1bc2f: 389 pages to 799 (8,407,218 to 12,048,997 bytes); outside family A only /series/, the Calendar's months and the Champions pages of Formula 1, FIA WEC, IMSA and GT World differ, as planned; Formula 1's other 143 pages are byte-identical; the five plain calendar pages of family A go; 415 new pages. WordPress Playground at 1,440 and 390 px, Day and Night, with real clicks.
+- **Checked** (on the tree with next at 7597471a merged in): tsc 0; lint 0 errors (the 2 known warnings); npm test 285 files, 3,245 passed (67 in multi-race.test.ts). The stored-data dry run on paddock-data 868b8dc4 against next at 7597471a: 389 pages to 799 (8,407,218 to 12,048,997 bytes); outside family A only /series/, the Calendar's months and the Champions pages of Formula 1, FIA WEC, IMSA and GT World differ, as planned; Formula 1's other 143 pages are byte-identical; the five plain calendar pages of family A go; 415 new pages. WordPress Playground at 1,440 and 390 px, Day and Night, with real clicks.
 
 ## 1.0.319 — 2026-11-25
 
